@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InforMestre - Curso Dinâmico de Informática Básica</title>
+  <meta name="description" content="Aprenda informática básica de forma dinâmica, interativa e gamificada com simuladores de hardware, software e conquistas.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles_v2.css?v=3">
+</head>
+<body>
+
+  <!-- App Container -->
+  <div class="app-layout" id="main-app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img class="logo-icon-img" src="images/logo_icon.png" alt="InforMestre Logo Icon">
+          <div class="logo-text">
+            <h2>InforMestre</h2>
+            <span>Informática Básica</span>
+          </div>
+        </div>
+        <button class="mobile-close-btn" id="sidebar-close-trigger" aria-label="Fechar Menu">×</button>
+      </div>
+
+      <!-- Gamification Card -->
+      <div class="gamification-card">
+        <div class="user-stats">
+          <div class="stat-badge">
+            <span class="badge-icon">🎖️</span>
+            <span class="badge-text" id="user-level-badge">Nível 1</span>
+          </div>
+          <div class="xp-display">
+            <span id="user-xp-counter">0</span> <span class="xp-label">XP</span>
+          </div>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar-label">
+            <span>Progresso do Curso</span>
+            <span id="course-progress-percent">0%</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="course-progress-bar" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Outline -->
+      <nav class="course-navigation" id="course-menu-nav">
+        <!-- Chapters and pages will be loaded here dynamically from content.js -->
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary btn-full" id="achievements-modal-trigger">
+          🏆 Ver Conquistas (<span id="achievement-unlocked-count">0</span>/6)
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="content-wrapper">
+      
+      <!-- Top Navbar -->
+      <header class="top-navbar" id="app-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" id="sidebar-toggle-trigger" aria-label="Abrir Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="header-breadcrumbs">
+            <span class="breadcrumb-module" id="header-breadcrumb-module">Aula 1</span>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-chapter" id="header-breadcrumb-chapter">Carregando...</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Dark/Light Theme Switcher -->
+          <button class="theme-toggle" id="theme-mode-switcher" aria-label="Alternar Tema">
+            <span class="theme-icon-sun">☀️</span>
+            <span class="theme-icon-moon">🌙</span>
+          </button>
+          
+          <!-- Notepad Drawer Toggle -->
+          <button class="btn btn-primary btn-icon-only" id="notepad-toggle-trigger" title="Minhas Anotações">
+            📝 <span class="btn-text">Notas</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Container -->
+      <main class="main-content" id="main-content-panel">
+        
+        <!-- Interactive Slide Container -->
+        <article class="slide-container" id="current-slide-article">
+          <div class="slide-inner" id="slide-inner-content">
+            <!-- Dynamic lesson content goes here -->
+          </div>
+
+          <!-- Interactive Simulator Area -->
+          <div class="simulator-outer-container hidden" id="dynamic-simulator-container">
+            <div class="simulator-header">
+              <span class="simulator-tag">🎮 SIMULADOR PRÁTICO</span>
+              <button class="btn btn-small btn-secondary" id="reset-simulator-btn">Reiniciar</button>
+            </div>
+            <div class="simulator-body" id="simulator-content-render">
+              <!-- Simulator HTML injected here -->
+            </div>
+          </div>
+
+          <!-- Bottom Navigation Controls -->
+          <footer class="slide-navigation">
+            <button class="btn btn-secondary" id="prev-slide-btn" disabled>
+              ⬅️ Anterior
+            </button>
+            <div class="page-indicator">
+              Página <span id="current-page-num">1</span> de <span id="total-pages-num">35</span>
+            </div>
+            <button class="btn btn-primary" id="next-slide-btn">
+              Próximo ➡️
+            </button>
+          </footer>
+        </article>
+      </main>
+    </div>
+
+    <!-- Side Notepad Drawer -->
+    <section class="notepad-drawer" id="notepad-panel-drawer">
+      <div class="notepad-header">
+        <h3>📝 Suas Anotações</h3>
+        <button class="btn-close" id="notepad-close-trigger">×</button>
+      </div>
+      <div class="notepad-body">
+        <p class="text-small text-muted mb-1">Anotações vinculadas à página atual. São salvas automaticamente.</p>
+        <textarea id="notepad-text-area" placeholder="Digite aqui suas observações sobre esta aula, códigos, resumos..."></textarea>
+      </div>
+      <div class="notepad-footer">
+        <button class="btn btn-secondary btn-small btn-full" id="export-notes-txt-btn">📥 Exportar Todas Notas</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Achievements Modal -->
+  <div class="modal-overlay hidden" id="achievements-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🏆 Suas Conquistas</h3>
+        <button class="btn-close" id="achievements-close-trigger">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-2">Desbloqueie conquistas avançando pelas aulas e concluindo os desafios práticos com sucesso!</p>
+        <div class="achievements-list" id="modal-achievements-list-render">
+          <!-- Achievement cards will be injected here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievement Unlock Notification (Toast-like popup) -->
+  <div class="toast-notification hidden" id="achievement-toast">
+    <div class="toast-badge">🔓</div>
+    <div class="toast-body">
+      <h4 id="toast-title">Conquista Desbloqueada!</h4>
+      <p id="toast-desc">Você conquistou uma nova medalha.</p>
+    </div>
+  </div>
+
+  <!-- Certificate Modal -->
+  <div class="modal-overlay hidden" id="certificate-modal">
+    <div class="modal-content certificate-modal-content">
+      <div class="modal-header no-print">
+        <h3>🎓 Parabéns! Seu Certificado está Pronto!</h3>
+        <button class="btn-close" id="certificate-close-trigger">×</button>
+      </div>
+      <div class="modal-body text-center">
+        
+        <!-- Certificate Layout -->
+        <div class="certificate-container" id="printable-certificate-area">
+          <div class="certificate-border">
+            <div class="certificate-inner">
+              <div class="cert-logo">🎓</div>
+              <h1 class="cert-title">CERTIFICADO DE CONCLUSÃO</h1>
+              <p class="cert-subtitle">Certificamos para os devidos fins que</p>
+              
+              <h2 class="cert-student-name" id="cert-student-name-display">Nome do Aluno</h2>
+              
+              <p class="cert-text">
+                concluiu com êxito a <strong>Aula 1 – Introdução à Informática</strong> do <em>Curso de Informática Básica</em>, 
+                alcançando rendimento superior na avaliação teórica e prática realizada na plataforma <strong>InforMestre</strong>.
+              </p>
+              
+              <div class="cert-meta-grid">
+                <div class="cert-meta-item">
+                  <span class="meta-label">Data de Conclusão</span>
+                  <span class="meta-value" id="cert-date-display">05/07/2026</span>
+                </div>
+                <div class="cert-meta-item">
+                  <span class="meta-label">Carga Horária</span>
+                  <span class="meta-value">10 horas</span>
+                </div>
+                <div class="cert-meta-item">
+                  <span class="meta-label">Código de Autenticidade</span>
+                  <span class="meta-value" id="cert-code-display">INF-8472-MOD1</span>
+                </div>
+              </div>
+              
+              <div class="cert-signatures">
+                <div class="signature-line">
+                  <div class="signature-handwritten">InforMestre LMS</div>
+                  <span class="sig-title">Direção Acadêmica</span>
+                </div>
+                <div class="signature-line">
+                  <div class="signature-seal">🖃</div>
+                  <span class="sig-title">Selo de Qualidade</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="certificate-actions no-print mt-2">
+          <button class="btn btn-primary" id="print-certificate-btn">🖨️ Imprimir / Salvar PDF</button>
+          <p class="text-small text-muted mt-1">Dica: Selecione "Salvar como PDF" nas opções de impressão para exportar o arquivo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Javascript Modules -->
+  <script src="content_v1.js?v=4"></script>
+  <script src="app_v1.js?v=4"></script>
+</body>
+</html>
