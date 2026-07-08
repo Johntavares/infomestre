@@ -2265,3 +2265,34 @@ li {
 
 .info-card-clickable:hover::after { opacity: 1; }
 
+/* ==========================================================================
+   AULA 2 EXTRAS – Interactive elements styles
+   ========================================================================== */
+#pc-inspect-svg g[id^="hotspot-"] {
+  transition: fill 0.2s, stroke 0.2s;
+  fill: transparent;
+}
+
+#pc-inspect-svg g[id^="hotspot-"]:hover {
+  fill: rgba(131, 82, 255, 0.15);
+  stroke: var(--color-primary-light) !important;
+}
+
+/* Matching game select visual */
+#match-left-column .quiz-option-btn.selected,
+#match-right-column .quiz-option-btn.selected {
+  border-color: var(--color-primary-light) !important;
+  box-shadow: 0 0 10px rgba(131, 82, 255, 0.3);
+  background: var(--bg-surface-hover) !important;
+}
+
+#match-left-column .quiz-option-btn.correct,
+#match-right-column .quiz-option-btn.correct {
+  border-color: var(--color-success) !important;
+  background: var(--color-success-bg) !important;
+  color: var(--text-primary) !important;
+  opacity: 0.6;
+  cursor: default;
+}
+
+

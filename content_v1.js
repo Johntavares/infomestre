@@ -1112,6 +1112,437 @@ const COURSE_CONTENT = [
         <div style="font-size:0.8rem;color:var(--text-muted);">Continue estudando e compartilhe o que aprendeu!</div>
       </div>
     `
+  },
+  {
+    id: "aula2-etapa1",
+    title: "Revisão da Aula 1",
+    page: 36,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    interactiveId: "aula2-revision",
+    content: `
+      <h2>Revisão da Aula 1</h2>
+      <div class="welcome-card card-gradient">
+        <h3>O que aprendemos na última missão?</h3>
+        <p>Na aula passada, vimos que a <strong>Informática</strong> processa informação de forma automática. Descobrimos a diferença fundamental entre:</p>
+        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+          <li><strong>Hardware:</strong> A parte física, peças, cabos e circuitos que podemos tocar.</li>
+          <li><strong>Software:</strong> A parte lógica, os programas e dados que dão instruções ao hardware.</li>
+          <li><strong>Periféricos:</strong> Dispositivos externos de Entrada (teclado, mouse) e Saída (monitor, impressora) que nos comunicam com o computador.</li>
+        </ul>
+      </div>
+      <p class="mt-2">Responda a estas três perguntas rápidas para aquecer antes de começarmos a explorar o hardware de verdade! <strong>(Sem perda de corações nesta revisão!)</strong></p>
+    `
+  },
+  {
+    id: "aula2-etapa2",
+    title: "O que é Hardware?",
+    page: 37,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    content: `
+      <h2>O que é Hardware?</h2>
+      <p>Hardware é todo componente físico, circuito, placa, chip ou periférico que compõe o computador ou celular.</p>
+      
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>🧠 A Analogia do Corpo Humano</h4>
+          <p>Uma forma fácil de entender a relação entre Hardware e Software é pensar no ser humano:</p>
+          <ul style="margin-left: 1.2rem; margin-top: 0.5rem;">
+            <li><strong>Hardware:</strong> É o nosso <strong>corpo físico</strong> (cérebro, coração, olhos, mãos).</li>
+            <li><strong>Software:</strong> É a nossa <strong>mente</strong> (pensamentos, memórias, idiomas e habilidades que aprendemos).</li>
+          </ul>
+          <p class="text-small text-muted mt-1">Sem o corpo, a mente não tem como agir. Sem a mente, o corpo fica inanimado. No computador é igual!</p>
+        </div>
+        <div class="card bg-surface border-soft flex flex-column justify-center align-center text-center">
+          <div style="font-size: 4.5rem; margin-bottom: 0.5rem;">🔩</div>
+          <h4>Hardware Interno vs. Externo</h4>
+          <p class="text-small text-muted" style="line-height: 1.5;">
+            <strong>Interno:</strong> Componentes protegidos dentro do gabinete (ex: placa-mãe, CPU, memória RAM, SSD).<br><br>
+            <strong>Externo:</strong> Dispositivos conectados por fora do gabinete (ex: teclado, mouse, monitor, fone).
+          </p>
+        </div>
+      </div>
+      
+      <div class="highlight-quote mt-2">
+        "O hardware é a máquina física que executa as instruções lógicas do software em frações de bilionésimos de segundo."
+      </div>
+    `
+  },
+  {
+    id: "aula2-novo-1",
+    title: "O Processador (CPU)",
+    page: 38,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    content: `
+      <h2>O Processador (CPU): O Cérebro da Máquina</h2>
+      <p>A Unidade Central de Processamento (CPU) é responsável por calcular e executar todas as tarefas lógicas que você solicita ao computador.</p>
+      
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>Velocidade e Relógio (Clock)</h4>
+          <p>Medido em <strong>Gigahertz (GHz)</strong>, o clock define quantos bilhões de ciclos por segundo o processador pode executar. Um processador de 3.0 GHz realiza 3 bilhões de operações em um único segundo!</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>Núcleos (Cores) e Threads</h4>
+          <p>Imagine o processador como uma cozinha. Cada <strong>Núcleo</strong> é um cozinheiro trabalhando. Processadores modernos (Quad-core, Octa-core) possuem vários cozinheiros trabalhando simultaneamente, permitindo que você ouça música, navegue e jogue sem o computador travar.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula2-novo-2",
+    title: "Memória RAM vs Armazenamento",
+    page: 39,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    content: `
+      <h2>Memória RAM vs Armazenamento Definitivo</h2>
+      <p>Uma confusão comum é misturar memória RAM com espaço de armazenamento (HD/SSD). Entender essa diferença é o segredo para resolver lentidões no PC.</p>
+      
+      <div class="card card-glow mt-2">
+        <div style="display:flex; gap: 1rem; align-items: center;">
+          <div style="font-size: 3rem;">⚡</div>
+          <div>
+            <h4>A Mesa de Trabalho (Memória RAM)</h4>
+            <p>É o espaço rápido onde ficam os programas <strong>abertos no momento</strong>. Assim como uma mesa, o espaço é limitado. Se você abrir muitas coisas (muitas abas do navegador), a mesa fica cheia e o PC trava. É uma memória <strong>volátil</strong>: se a energia cair, tudo que estava na RAM desaparece.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card card-glow mt-2">
+        <div style="display:flex; gap: 1rem; align-items: center;">
+          <div style="font-size: 3rem;">🗄️</div>
+          <div>
+            <h4>O Arquivo Morto (HD / SSD)</h4>
+            <p>É o gaveteiro onde os dados ficam guardados para sempre (Windows, fotos, jogos instalados). É mais lento que a RAM, mas é <strong>não-volátil</strong>. O que está aqui não se perde quando o PC desliga.</p>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula2-novo-3",
+    title: "Placa-Mãe e Placa de Vídeo",
+    page: 40,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    content: `
+      <h2>Placa-Mãe e Placa de Vídeo (GPU)</h2>
+      
+      <h3>A Placa-Mãe (Motherboard)</h3>
+      <p>É a espinha dorsal do computador. Ela possui as conexões físicas (slots) e o <strong>Chipset</strong> (um controlador de tráfego) para garantir que o Processador, a Memória RAM e o SSD conversem entre si na velocidade correta.</p>
+      
+      <h3 class="mt-2">A Placa de Vídeo (GPU)</h3>
+      <p>Especializada exclusivamente em desenhar imagens na tela (renderização). Ela pode ser:</p>
+      <ul style="margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.6;">
+        <li><strong>Integrada:</strong> Vem embutida no processador. É econômica e ideal para uso de escritório e vídeos no YouTube.</li>
+        <li><strong>Dedicada:</strong> Uma placa enorme e separada, com sua própria memória e ventoinha (ex: placas NVIDIA ou AMD). Obrigatória para <strong>Jogos 3D pesados, Edição de Vídeo e Inteligência Artificial</strong>.</li>
+      </ul>
+    `
+  },
+  {
+    id: "aula2-novo-4",
+    title: "Periféricos",
+    page: 41,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    content: `
+      <h2>Periféricos: Entrada, Saída e Mistos</h2>
+      <p>Os periféricos são qualquer equipamento externo conectado ao computador, expandindo suas funções. Eles são classificados de acordo com a direção em que a informação viaja:</p>
+      
+      <div class="grid grid-3 gap-2 mt-2 text-center">
+        <div class="card bg-surface border-soft">
+          <h4>➡️ Entrada</h4>
+          <p class="text-small text-muted">Enviam comandos do mundo real <strong>para dentro</strong> do PC.</p>
+          <p class="mt-1">Teclado, Mouse, Microfone, Webcam, Scanner.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>⬅️ Saída</h4>
+          <p class="text-small text-muted">Mostram resultados <strong>do PC para</strong> o usuário.</p>
+          <p class="mt-1">Monitor, Impressora, Caixa de Som, Fone de Ouvido.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>🔁 Mistos (I/O)</h4>
+          <p class="text-small text-muted">Fazem as <strong>duas coisas</strong> ao mesmo tempo.</p>
+          <p class="mt-1">Telas Touchscreen, Headsets (fone+mic), Pendrives.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula2-novo-5",
+    title: "Cuidados e Energia",
+    page: 42,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    content: `
+      <h2>Cuidados, Resfriamento e Energia</h2>
+      <p>Hardware sofre desgaste físico. Entender como protegê-lo aumenta a vida útil do equipamento em muitos anos.</p>
+      
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>❄️ Resfriamento (Cooling)</h4>
+          <p>O inimigo número um do processador é o calor. Por isso, usa-se a <strong>Pasta Térmica</strong> e um <strong>Cooler</strong> (ventoinha) girando rápido para remover o calor. Sem eles, o PC desliga sozinho em segundos por segurança.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>🔌 Alimentação (PSU)</h4>
+          <p>A Fonte de Alimentação recebe a energia da tomada (110v/220v) e converte para voltagens minúsculas que o PC aguenta (12v, 5v). Uma fonte de baixa qualidade pode queimar o computador inteiro.</p>
+        </div>
+      </div>
+      
+      <div class="alert alert-warning mt-2">
+        ⚡ <strong>Dica de Proteção:</strong> Nunca ligue o PC direto na tomada sem proteção! Use um bom <strong>Filtro de Linha (DPS)</strong> contra surtos. Se possível, invista em um <strong>Nobreak (UPS)</strong>, que contém uma bateria interna para manter o PC ligado por alguns minutos em caso de queda de luz.
+      </div>
+    `
+  },
+  {
+    id: "aula2-etapa3",
+    title: "O Interior do Computador",
+    page: 38,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    interactiveId: "hardware-tour",
+    content: `
+      <h2>Conhecendo o Interior do Computador</h2>
+      <p>Quando abrimos um computador, encontramos peças incríveis trabalhando juntas. Clique nos botões de cada peça no painel do simulador abaixo para fazer um tour detalhado pelo interior do gabinete!</p>
+      <p class="text-small text-muted">Descubra a foto real, função, curiosidade, onde se instala e o que acontece se o componente não existir.</p>
+    `
+  },
+  {
+    id: "aula2-etapa4",
+    title: "Como Tudo Funciona Junto",
+    page: 39,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    interactiveId: "hardware-flow",
+    content: `
+      <h2>Como Tudo Funciona Junto?</h2>
+      <p>Nenhuma peça de hardware trabalha de forma isolada. O processador calcula, a RAM memoriza temporariamente, o SSD armazena para sempre e as portas conectam tudo.</p>
+      <p>Abaixo, veja a simulação interativa que mostra o fluxo de dados em tempo real quando você realiza uma ação simples no computador.</p>
+    `
+  },
+  {
+    id: "aula2-etapa5",
+    title: "Curiosidades do Hardware",
+    page: 40,
+    type: "lesson",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    content: `
+      <h2>Curiosidades do Mundo do Hardware</h2>
+      <p>O desenvolvimento da computação nos últimos 80 anos é marcado por avanços tecnológicos extraordinários de miniaturização e velocidade.</p>
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('O Primeiro Disco Rígido (1956)', 'O <strong>IBM 305 RAMAC</strong> foi o primeiro computador comercial a usar um disco rígido com cabeças magnéticas móveis. O HD inteiro era composto por 50 discos de metal de 24 polegadas. Sua capacidade total era de apenas <strong>5 Megabytes</strong> (hoje isso é uma única foto no celular!), e ele pesava <strong>mais de uma tonelada</strong>, necessitando de uma empilhadeira para transporte.', 'images/transistor.png', 'Curiosidade')">
+          <h4>💾 O primeiro HD do mundo</h4>
+          <p>Em 1956, o primeiro disco rígido (HD) armazenava apenas <strong>5 Megabytes</strong> e pesava **mais de uma tonelada**.</p>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('A Evolução dos SSDs', 'Hoje em dia, a memória Flash NAND permitiu a criação de SSDs com formato M.2 NVMe, que medem apenas <strong>22 mm de largura por 80 mm de comprimento</strong> (menores que um chiclete ou cartão de crédito) e conseguem armazenar <strong>até 8 Terabytes (8.000.000 MB)</strong> de arquivos. Eles são <strong>1000 vezes mais rápidos</strong> e infinitamente mais leves que os discos magnéticos antigos.', 'images/popup_ssd_hd_nvme.png', 'Curiosidade')">
+          <h4>⚡ SSDs ultraminiaturizados</h4>
+          <p>Hoje, um SSD com velocidade ultra-rápida e capacidade de Terabytes é **menor que um chiclete**.</p>
+        </div>
+      </div>
+      <div class="alert alert-info mt-2">
+        💡 <strong>Você sabia?</strong> Os chips modernos têm bilhões de transistores microscópicos. A espessura das trilhas de um processador moderno de 3nm é cerca de 20.000 vezes menor do que a espessura de um fio de cabelo humano!
+      </div>
+    `
+  },
+  {
+    id: "aula2-etapa6",
+    title: "Simulador: Identifique o Componente",
+    page: 41,
+    type: "challenge",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    interactiveId: "identify-component",
+    content: `
+      <h2>🔍 Missão Prática: Identifique o Componente</h2>
+      <p><strong>Desafio:</strong> Observe a foto real do componente de hardware e selecione a alternativa correta! Você tem <strong>3 corações (vidas) ❤️</strong>. Se errar, perde uma vida e recebe uma dica. Se acertar, vê uma curiosidade e avança!</p>
+      <div id="identify-component-widget" class="interactive-panel">
+        <!-- Will be rendered dynamically by app.js -->
+      </div>
+    `
+  },
+  {
+    id: "aula2-etapa7",
+    title: "Mini Game: Associe a Função",
+    page: 42,
+    type: "challenge",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    interactiveId: "match-functions",
+    content: `
+      <h2>🎮 Mini Game: Associe o Componente à Função</h2>
+      <p><strong>Desafio:</strong> Associe cada componente físico de hardware à sua respectiva função lógica no funcionamento do computador. Complete a associação para ganhar 50 XP. Cuidado, errar custa vidas! ❤️</p>
+      <div id="match-functions-widget" class="interactive-panel">
+        <!-- Will be rendered dynamically by app.js -->
+      </div>
+    `
+  },
+  {
+    id: "aula2-etapa8",
+    title: "Desafio Prático: Computador Aberto",
+    page: 43,
+    type: "challenge",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    interactiveId: "open-pc-inspect",
+    content: `
+      <h2>🛠️ Desafio: Onde está o Componente?</h2>
+      <p><strong>Desafio:</strong> Observe atentamente a fotografia do computador aberto. Sua tarefa é localizar e clicar na área correta do componente solicitado no topo da tela.</p>
+      <div id="open-pc-inspect-widget" class="interactive-panel">
+        <!-- Will be rendered dynamically by app.js -->
+      </div>
+    `
+  },
+  {
+    id: "aula2-etapa9",
+    title: "Questionário de Fixação",
+    page: 44,
+    type: "challenge",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    content: `
+      <h2>📝 Teste de Conhecimento: Aula 2</h2>
+      <p>Responda às 10 questões a seguir sobre funcionamento interno de computadores e características das peças de hardware. Ganhe XP e conclua o questionário!</p>
+    `,
+    quiz: [
+      {
+        question: "Qual componente de hardware é responsável por realizar cálculos aritméticos e lógicos e é considerado o cérebro do computador?",
+        options: ["Memória RAM", "Processador (CPU)", "Placa-Mãe", "Disco Rígido (HD)"],
+        correct: 1,
+        explanation: "A CPU (Central Processing Unit) calcula todas as operações matemáticas e coordena a execução de todas as tarefas e programas."
+      },
+      {
+        question: "Verdadeiro ou Falso: A Memória RAM é não-volátil, ou seja, retém todos os dados salvos nela mesmo depois que o computador é desligado.",
+        options: ["Verdadeiro", "Falso"],
+        correct: 1,
+        explanation: "A memória RAM é volátil. Ela perde seu conteúdo de dados instantaneamente ao desligar ou reiniciar o computador."
+      },
+      {
+        question: "Qual componente fornece energia elétrica estável e nas tensões adequadas para todas as peças internas do computador?",
+        options: ["Cooler", "Placa de vídeo (GPU)", "Fonte de Alimentação (PSU)", "Placa-Mãe"],
+        correct: 2,
+        explanation: "A Fonte de Alimentação (PSU) converte a corrente alternada da tomada (110V/220V) em corrente contínua de baixa voltagem para as peças do computador."
+      },
+      {
+        question: "Se você quer melhorar drasticamente o tempo de inicialização do Windows de 1 minuto para menos de 15 segundos, qual peça deve instalar?",
+        options: ["Um processador com mais núcleos", "Um cooler maior", "Uma placa de vídeo dedicada", "Uma unidade de estado sólido (SSD)"],
+        correct: 3,
+        explanation: "O SSD possui velocidade de leitura e gravação imensamente superior à de um HD mecânico tradicional, acelerando absurdamente a abertura do Sistema e programas."
+      },
+      {
+        question: "Qual é o slot/barramento de alta velocidade utilizado na placa-mãe para conectar placas de vídeo dedicadas de jogos e edição?",
+        options: ["Porta SATA", "Soquete CPU", "PCI Express (PCIe)", "Porta USB"],
+        correct: 2,
+        explanation: "O PCI Express (PCIe) é o barramento de expansão de alta velocidade ideal para placas de vídeo dedicadas devido à sua alta taxa de transferência."
+      },
+      {
+        question: "Verdadeiro ou Falso: O cooler é uma peça opcional. O computador pode funcionar perfeitamente sem ele sem qualquer risco físico.",
+        options: ["Verdadeiro", "Falso"],
+        correct: 1,
+        explanation: "O cooler é vital. Sem ele, a CPU aquece a mais de 100°C em poucos segundos e desliga automaticamente para não derreter ou queimar fisicamente."
+      },
+      {
+        question: "Complete a lacuna: A Placa de vídeo (GPU) é responsável por transformar sinais lógicos de dados em ______ que podem ser desenhados no monitor.",
+        options: ["arquivos de texto", "correntes elétricas brutas", "pixels e imagens", "frequências de áudio"],
+        correct: 2,
+        explanation: "A placa de vídeo processa e desenha pixels e imagens em tempo real para serem exibidas na tela do monitor."
+      },
+      {
+        question: "Qual cabo é utilizado especificamente para transferir dados entre a placa-mãe e uma unidade de armazenamento (HD ou SSD SATA)?",
+        options: ["Cabo de energia de 24 pinos", "Cabo SATA", "Cabo HDMI", "Cabo de áudio P2"],
+        correct: 1,
+        explanation: "Cabos SATA são a interface padrão de dados usada para conectar discos rígidos mecânicos e SSDs de formato SATA à placa-mãe."
+      },
+      {
+        question: "Verdadeiro ou Falso: O gabinete é apenas uma carcaça estética e não tem nenhuma função prática de fluxo de ar ou suporte mecânico.",
+        options: ["Verdadeiro", "Falso"],
+        correct: 1,
+        explanation: "O gabinete serve como a sustentação mecânica de todas as peças, protege-as contra curto-circuitos e canaliza o fluxo de ar para resfriamento adequado."
+      },
+      {
+        question: "Se um computador liga, os coolers giram, mas a tela fica preta e a placa-mãe emite bipes sonoros contínuos, qual peça é provável de estar com mau contato?",
+        options: ["O SSD ou HD", "A Memória RAM", "O Gabinete", "Os Cabos SATA"],
+        correct: 1,
+        explanation: "Falhas na memória RAM impedem a inicialização básica do PC, fazendo com que o BIOS emita códigos de bipes de alerta sonoro."
+      }
+    ]
+  },
+  {
+    id: "aula2-etapa10",
+    title: "Missão Final: Seu PC Ideal",
+    page: 45,
+    type: "challenge",
+    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    interactiveId: "aula2-mission-final",
+    content: `
+      <h2>🗺️ Missão Final: Planejando seu Computador</h2>
+      <p><strong>Missão Reflexiva:</strong> Se você fosse montar um computador hoje para estudar e trabalhar de forma produtiva, quais peças de hardware você considera <strong>indispensáveis</strong> e por quê?</p>
+      <p class="text-muted">Escreva sua resposta e salve-a nas suas anotações do curso. Reflita sobre o que aprendeu sobre a RAM, o SSD e o Processador!</p>
+    `
+  },
+  {
+    id: "conclusao-aula-2",
+    title: "🎉 Conclusão da Aula 2",
+    page: 46,
+    type: "lesson",
+    chapter: "ENCERRAMENTO DA AULA 2",
+    content: `
+      <style>
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes pop { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+        @keyframes shimmer { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+        .conclusao-hero { text-align:center; padding:2rem 1rem 1.5rem; }
+        .conclusao-trophy { font-size:5rem; display:block; animation:float 3s ease-in-out infinite; }
+        .conclusao-title { font-family:var(--font-display); font-size:2rem; font-weight:900; background:linear-gradient(90deg,#8352ff,#10b981,#f59e0b,#8352ff); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:shimmer 3s linear infinite; margin:0.5rem 0; }
+        .conclusao-sub { color:var(--text-muted); font-size:1rem; }
+        .conquistas-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:1.5rem 0; }
+        .conquista-card { background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:14px 10px; text-align:center; animation:pop 0.5s ease both; }
+        .conquista-card:nth-child(1){animation-delay:0.1s}
+        .conquista-card:nth-child(2){animation-delay:0.2s}
+        .conquista-icon { font-size:2rem; display:block; margin-bottom:6px; }
+        .conquista-label { font-family:var(--font-display); font-weight:700; font-size:0.8rem; color:var(--text-primary); }
+        .conquista-desc { font-size:0.7rem; color:var(--text-muted); margin-top:2px; }
+        .progresso-bar-wrap { background:var(--bg-surface); border-radius:50px; height:12px; overflow:hidden; margin:8px 0; }
+        .progresso-bar-fill { height:100%; border-radius:50px; background:linear-gradient(90deg,#8352ff,#10b981); width:0; animation:progressAnim 1.5s ease 0.5s both; }
+        @keyframes progressAnim { from{width:0} to{width:100%} }
+        .proximas-aulas { background:linear-gradient(135deg,rgba(131,82,255,0.1),rgba(16,185,129,0.1)); border:1px solid rgba(131,82,255,0.3); border-radius:16px; padding:18px; margin-top:1.5rem; }
+        .badge-aula { display:inline-block; background:var(--color-primary); color:#fff; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:20px; margin-left:6px; vertical-align:middle; }
+      </style>
+
+      <div class="conclusao-hero">
+        <span class="conclusao-trophy">🏆</span>
+        <div class="conclusao-title">Aula 2 Concluída!</div>
+        <p class="conclusao-sub">Parabéns! Você completou com sucesso a segunda aula do InforMestre.<br>Sua compreensão técnica de Hardware foi validada! 🔧</p>
+      </div>
+
+      <div style="background:var(--bg-surface);border-radius:14px;padding:16px;margin-bottom:1.5rem;">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);margin-bottom:8px;">📊 Progresso da Aula 2</div>
+        <div class="progresso-bar-wrap"><div class="progresso-bar-fill"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+          <span>10 Etapas</span><span style="color:var(--color-success);font-weight:700;">100% ✓</span>
+        </div>
+      </div>
+
+      <h3 style="font-family:var(--font-display);font-size:1rem;color:var(--text-muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">🎖️ Conquistas Desbloqueadas</h3>
+      <div class="conquistas-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="conquista-card">
+          <span class="conquista-icon">🔧</span>
+          <div class="conquista-label">Aprendiz de Hardware</div>
+          <div class="conquista-desc">Completou com sucesso a Aula 2 e provou que conhece hardware.</div>
+        </div>
+      </div>
+
+      <div class="proximas-aulas">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--text-primary);margin-bottom:10px;">🗺️ O que vem a seguir?</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(131,82,255,0.1);border-radius:10px;border:1px solid rgba(131,82,255,0.2);">
+            <span style="font-size:1.5rem;">📶</span>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Aula 3 <span class="badge-aula">Em breve</span></div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">Internet, Redes e Navegadores — Explore o mundo conectado</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
   }
 ];
 
