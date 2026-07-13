@@ -12,12 +12,142 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="styles_v2.css?v=5">
+  <link rel="stylesheet" href="styles_v2.css?v=18">
 </head>
 <body>
 
-  <!-- App Container -->
-  <div class="app-layout" id="main-app-container">
+  <!-- Screen 1: Landing & Login Page -->
+  <div id="screen-landing" class="landing-screen">
+    <div class="landing-background">
+      <div class="blur-circle circle-1"></div>
+      <div class="blur-circle circle-2"></div>
+    </div>
+    
+    <div class="landing-container">
+      <div class="landing-hero">
+        <div class="landing-logo">
+          <img src="images/logo_icon.png" alt="InforMestre Logo" class="logo-large-img">
+          <h1>InforMestre</h1>
+          <span>Curso Dinâmico de Informática Básica</span>
+        </div>
+        <p class="landing-intro">Aprenda informática de forma dinâmica, interativa e gamificada com simuladores de hardware e sistemas operacionais reais direto no seu navegador!</p>
+      </div>
+
+      <div class="auth-box-card">
+        <div class="auth-card-tabs">
+          <button class="auth-card-tabactive active" id="landing-tab-login"
+            onclick="this.classList.add('active'); document.getElementById('landing-tab-register').classList.remove('active'); document.getElementById('landing-login-form').classList.remove('screen-hidden'); document.getElementById('register-tab-content').classList.add('screen-hidden');">
+            Entrar
+          </button>
+          <button class="" id="landing-tab-register"
+            onclick="this.classList.add('active'); document.getElementById('landing-tab-login').classList.remove('active'); document.getElementById('register-tab-content').classList.remove('screen-hidden'); document.getElementById('landing-login-form').classList.add('screen-hidden');">
+            Criar Conta
+          </button>
+        </div>
+
+        <!-- Landing Login Form -->
+        <form id="landing-login-form" autocomplete="off">
+          <div class="form-group-custom">
+            <label for="landing-login-email">E-mail de Acesso</label>
+            <input type="email" id="landing-login-email" required placeholder="seuemail@exemplo.com" autocomplete="off">
+          </div>
+          <div class="form-group-custom">
+            <label for="landing-login-password">Senha</label>
+            <input type="password" id="landing-login-password" required placeholder="Sua senha" autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Entrar na Plataforma</button>
+          <div class="auth-card-note">Se a sua escola criou sua conta, utilize o e-mail e senha informados pelo seu tutor.</div>
+        </form>
+
+        <!-- Conteúdo da aba Criar Conta (form aluno + botão escola) -->
+        <div id="register-tab-content" class="screen-hidden">
+          <form id="landing-register-form" autocomplete="off">
+            <div class="form-group-custom">
+              <label for="landing-register-name">Nome Completo</label>
+              <input type="text" id="landing-register-name" required placeholder="Seu nome completo" autocomplete="off">
+            </div>
+            <div class="form-group-custom">
+              <label for="landing-register-email">E-mail</label>
+              <input type="email" id="landing-register-email" required placeholder="seuemail@exemplo.com" autocomplete="off">
+            </div>
+            <div class="form-group-custom">
+              <label for="landing-register-password">Senha (mínimo 6 caracteres)</label>
+              <input type="password" id="landing-register-password" required minlength="6" placeholder="Crie uma senha" autocomplete="new-password">
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Criar Conta de Aluno</button>
+            <div class="auth-card-note">Cadastro exclusivo para alunos independentes (que estudam sozinhos).</div>
+          </form>
+
+          <!-- Botão escola FORA do form de aluno -->
+          <div style="display:flex; align-items:center; gap:0.75rem; margin: 1.1rem 0 0.9rem;">
+            <div style="flex:1; height:1px; background: rgba(255,255,255,0.12);"></div>
+            <span style="font-size:0.78rem; color:var(--text-muted); white-space:nowrap;">ou</span>
+            <div style="flex:1; height:1px; background: rgba(255,255,255,0.12);"></div>
+          </div>
+          <button
+            id="btn-open-school-register"
+            type="button"
+            onclick="abrirModalEscola()"
+            style="width:100%; padding:0.65rem 1rem; border-radius:10px; border: 1.5px solid var(--color-primary-light); background: transparent; color: var(--color-primary-light); font-size:0.92rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+            🏫 Sou escola / tutor — criar conta institucional
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Portal Hub Dashboard -->
+  <div id="screen-hub" class="hub-screen screen-hidden">
+    <!-- Header de Banner Premium (Fundo Customizável) -->
+    <div class="hub-banner-header" id="hub-banner-background" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200');">
+      <div class="hub-banner-overlay"></div>
+      
+      <div class="hub-banner-content">
+        <div class="hub-logo-nav">
+          <img src="images/logo_icon.png" alt="InforMestre Logo" class="hub-logo-img" style="width: 38px; height: 38px; object-fit: contain;">
+          <div>
+            <h2 class="hub-title-brand" style="margin:0; font-size:1.4rem; font-weight:800; background: linear-gradient(135deg, #ffffff 0%, var(--color-primary-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">InforMestre</h2>
+            <span class="hub-subtitle-brand" style="font-size:0.75rem; color: rgba(255,255,255,0.7); display:block; margin-top:-2px;">Curso de Informática Básica</span>
+          </div>
+        </div>
+        
+        <div class="hub-user-meta" id="hub-user-profile-header">
+          <!-- Dinamicamente preenchido com papel do usuário e logout -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Perfil Flutuante e Barra de Abas -->
+    <div class="hub-profile-bar-container">
+      <div class="hub-profile-bar-inner">
+        <!-- Foto de Perfil / Avatar -->
+        <div class="hub-avatar-wrapper" id="hub-avatar-main">
+          <span class="hub-avatar-display">👨‍💻</span>
+        </div>
+        
+        <div class="hub-profile-info-block">
+          <h3 id="hub-user-full-name" style="margin: 0; font-size: 1.3rem;">Carregando...</h3>
+          <p id="hub-user-role-label" class="text-muted" style="margin: 0; font-size: 0.85rem; font-weight: 500;">Aluno Autônomo</p>
+        </div>
+
+        <!-- Abas do Portal -->
+        <nav class="hub-tabs-nav" id="hub-tabs-navigation">
+          <!-- Dinamicamente preenchido de acordo com a Role -->
+        </nav>
+      </div>
+    </div>
+
+    <!-- Contêiner de Abas Dinâmico -->
+    <div class="hub-container" style="padding-top: 1rem;">
+      <main class="hub-main-panel" id="hub-main-panel-content">
+        <!-- Renderizações do Aluno (Painel, Módulos, Conquistas, Configs) / Escola / Admin irão aqui -->
+      </main>
+    </div>
+  </div>
+
+  <!-- Screen 3: Study Mode (Course) -->
+  <div id="screen-app" class="screen-hidden" style="width: 100%; height: 100%;">
+    <div class="app-layout" id="main-app-container">
     
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="app-sidebar">
@@ -60,10 +190,13 @@
       </nav>
 
       <!-- Sidebar Footer -->
-      <div class="sidebar-footer">
+      <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 0.5rem;">
         <button class="btn btn-secondary btn-full" id="achievements-modal-trigger">
           🏆 Ver Conquistas (<span id="achievement-unlocked-count">0</span>/8)
         </button>
+        <div id="auth-status-container" class="auth-status-container" style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%;">
+          <button class="btn btn-outline btn-full" id="login-modal-trigger">🔑 Entrar / Cadastrar</button>
+        </div>
       </div>
     </aside>
 
@@ -86,6 +219,11 @@
         </div>
 
         <div class="header-right">
+          <!-- Voltar ao Painel Hub -->
+          <button class="btn btn-secondary btn-icon-only" id="back-to-hub-trigger" title="Voltar ao Painel Principal" style="margin-right: 0.5rem;">
+            🔙 <span class="btn-text">Painel</span>
+          </button>
+
           <!-- Dark/Light Theme Switcher -->
           <button class="theme-toggle" id="theme-mode-switcher" aria-label="Alternar Tema">
             <span class="theme-icon-sun">☀️</span>
@@ -149,6 +287,197 @@
         <button class="btn btn-secondary btn-small btn-full" id="export-notes-txt-btn">📥 Exportar Todas Notas</button>
       </div>
     </section>
+  </div>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay hidden" id="auth-modal">
+    <div class="modal-content" style="max-width: 400px; width: 90%;">
+      <div class="modal-header">
+        <h3 id="auth-modal-title">Acesso ao InforMestre</h3>
+        <button class="btn-close" id="auth-close-trigger">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="auth-tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+          <button class="auth-tab-btn active" id="tab-login-btn" style="background:none; border:none; color:inherit; font-weight:bold; cursor:pointer; padding: 0.25rem 0.5rem;">Entrar</button>
+          <button class="auth-tab-btn" id="tab-register-btn" style="background:none; border:none; color:inherit; font-weight:normal; cursor:pointer; padding: 0.25rem 0.5rem; opacity: 0.7;">Criar Conta</button>
+        </div>
+        
+        <!-- Login Form -->
+        <form id="login-form" autocomplete="off">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="login-email" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">E-mail</label>
+            <input type="email" id="login-email" required placeholder="seuemail@exemplo.com" autocomplete="off" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="login-password" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">Senha</label>
+            <input type="password" id="login-password" required placeholder="Sua senha" autocomplete="new-password" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="btn-submit-login">Entrar</button>
+          <p class="text-small text-muted mt-1" style="text-align: center; font-size: 0.8rem;">Alunos cadastrados por escolas devem usar as credenciais dadas pelo tutor.</p>
+        </form>
+
+        <!-- Register Form (Hidden by default) -->
+        <form id="register-form" class="hidden">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="register-name" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">Nome Completo</label>
+            <input type="text" id="register-name" required placeholder="Seu Nome Completo" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="register-email" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">E-mail</label>
+            <input type="email" id="register-email" required placeholder="seuemail@exemplo.com" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="register-password" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">Senha (mínimo 6 caracteres)</label>
+            <input type="password" id="register-password" required minlength="6" placeholder="Crie uma senha" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="btn-submit-register">Criar Conta</button>
+          <p class="text-small text-muted mt-1" style="text-align: center; font-size: 0.8rem;">Cadastro exclusivo para alunos independentes (sem escola).</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- School Register Modal -->
+  <div class="modal-overlay hidden" id="school-register-modal">
+    <div class="modal-content" style="max-width: 460px; width: 92%;">
+      <div class="modal-header">
+        <h3>🏫 Cadastrar Escola / Tutor</h3>
+        <button class="btn-close" id="school-register-close-btn" onclick="fecharModalEscola()">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5;">
+          Crie uma conta de <strong>tutor</strong> para gerenciar alunos, personalizar o perfil da sua escola e acompanhar o progresso da sua turma.
+        </p>
+        <form id="school-register-form">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="sreg-fullname" style="display:block; margin-bottom:0.3rem; font-size:0.9rem; font-weight:600;">Seu Nome Completo</label>
+            <input type="text" id="sreg-fullname" required placeholder="Ex: Maria da Silva" style="width:100%; padding:0.6rem 0.75rem; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:#fff; font-size:0.95rem; box-sizing:border-box;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="sreg-schoolname" style="display:block; margin-bottom:0.3rem; font-size:0.9rem; font-weight:600;">Nome da Escola</label>
+            <input type="text" id="sreg-schoolname" required placeholder="Ex: Escola Técnica Futuro" style="width:100%; padding:0.6rem 0.75rem; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:#fff; font-size:0.95rem; box-sizing:border-box;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="sreg-email" style="display:block; margin-bottom:0.3rem; font-size:0.9rem; font-weight:600;">E-mail de Acesso</label>
+            <input type="email" id="sreg-email" required placeholder="seuemail@escola.com" style="width:100%; padding:0.6rem 0.75rem; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:#fff; font-size:0.95rem; box-sizing:border-box;">
+          </div>
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="sreg-password" style="display:block; margin-bottom:0.3rem; font-size:0.9rem; font-weight:600;">Senha (mínimo 6 caracteres)</label>
+            <input type="password" id="sreg-password" required minlength="6" placeholder="Crie uma senha segura" style="width:100%; padding:0.6rem 0.75rem; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:#fff; font-size:0.95rem; box-sizing:border-box;">
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="sreg-submit-btn" style="padding: 0.75rem; font-size:1rem; font-weight:700;">
+            🏫 Criar Conta da Escola
+          </button>
+          <p style="font-size: 0.78rem; color: var(--text-muted); text-align:center; margin-top: 0.75rem;">
+            Após o cadastro, faça login com seu e-mail e senha para acessar o painel de tutor.
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- School Dashboard Modal -->
+  <div class="modal-overlay hidden" id="school-dashboard-modal">
+    <div class="modal-content" style="max-width: 900px; width: 95%; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3 id="school-dashboard-title">🏫 Painel de Controle Escolar</h3>
+        <button class="btn-close" id="school-dashboard-close">×</button>
+      </div>
+      <div class="modal-body" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; overflow-y: auto; flex-grow: 1; padding: 1.5rem;">
+        
+        <!-- Left Column: Add New Student -->
+        <div class="dashboard-card" style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); height: fit-content;">
+          <h4 style="margin-bottom: 0.5rem;">➕ Cadastrar Novo Aluno</h4>
+          <p class="text-small text-muted" style="margin-bottom: 1.5rem; font-size: 0.85rem;">Crie o login do aluno. Ele usará esse e-mail e senha para acessar e o progresso dele será mostrado aqui.</p>
+          <form id="create-student-form">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="new-student-name" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">Nome Completo</label>
+              <input type="text" id="new-student-name" required placeholder="Nome do Aluno" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="new-student-email" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">E-mail de Acesso</label>
+              <input type="email" id="new-student-email" required placeholder="exemplo@escola.com" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="new-student-password" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">Senha Provisória</label>
+              <input type="text" id="new-student-password" required minlength="6" placeholder="Senha provisória (min 6)" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
+            </div>
+            <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">Registrar Aluno</button>
+          </form>
+        </div>
+
+        <!-- Right Column: Student List & Progress -->
+        <div class="dashboard-card" style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; min-height: 350px;">
+          <h4 style="margin-bottom: 1rem;">👥 Alunos da Escola e Progresso</h4>
+          <div style="overflow-x: auto; flex-grow: 1;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid #444;">
+                  <th style="padding: 0.75rem 0.5rem; font-weight: 600;">Nome</th>
+                  <th style="padding: 0.75rem 0.5rem; font-weight: 600;">E-mail</th>
+                  <th style="padding: 0.75rem 0.5rem; font-weight: 600;">Nível/XP</th>
+                  <th style="padding: 0.75rem 0.5rem; font-weight: 600;">Progresso</th>
+                </tr>
+              </thead>
+              <tbody id="school-students-table-body">
+                <!-- Students list will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard Modal -->
+  <div class="modal-overlay hidden" id="admin-dashboard-modal">
+    <div class="modal-content" style="max-width: 950px; width: 95%; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3>🔑 Painel de Administração Central</h3>
+        <button class="btn-close" id="admin-dashboard-close">×</button>
+      </div>
+      <div class="modal-body" style="display: grid; grid-template-columns: 1fr 1.8fr; gap: 2rem; overflow-y: auto; flex-grow: 1; padding: 1.5rem;">
+        
+        <!-- Left Column: Manage Schools -->
+        <div class="dashboard-card" style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); height: fit-content;">
+          <h4 style="margin-bottom: 1rem;">🏫 Cadastrar Nova Escola</h4>
+          <form id="create-school-form" style="margin-bottom: 2rem;">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label for="new-school-name" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">Nome da Escola</label>
+              <input type="text" id="new-school-name" required placeholder="Ex: Escola Estadual Machado de Assis" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Criar Escola</button>
+          </form>
+
+          <h4 style="margin-bottom: 0.5rem;">Escolas Cadastradas</h4>
+          <ul id="admin-schools-list" style="list-style: none; padding: 0; max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <!-- Schools will be listed here -->
+          </ul>
+        </div>
+
+        <!-- Right Column: System-wide Stats and Students -->
+        <div class="dashboard-card" style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;">
+          <h4 style="margin-bottom: 1rem;">🌍 Todos os Alunos na Plataforma</h4>
+          <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid #444;">
+                  <th style="padding: 0.75rem 0.5rem; font-weight: 600;">Nome</th>
+                  <th style="padding: 0.75rem 0.5rem; font-weight: 600;">Escola</th>
+                  <th style="padding: 0.75rem 0.5rem; font-weight: 600;">Nível/XP</th>
+                  <th style="padding: 0.75rem 0.5rem; font-weight: 600;">Progresso</th>
+                </tr>
+              </thead>
+              <tbody id="admin-students-table-body">
+                <!-- All students listed here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
 
   <!-- Achievements Modal -->
@@ -237,8 +566,85 @@
     </div>
   </div>
 
+  </div> <!-- Fechamento da div screen-app -->
+
   <!-- Javascript Modules -->
-  <script src="content_v1.js?v=11"></script>
-  <script src="app_v1.js?v=11"></script>
+  <script src="supabase.js"></script>
+  <script src="supabase_config.js"></script>
+  <script src="content_v1.js?v=18"></script>
+  <script src="app_v1.js?v=18"></script>
+  <script>
+    function abrirModalEscola() {
+      // Remove qualquer modal anterior
+      var existing = document.getElementById('escola-modal-dinamico');
+      if (existing) existing.remove();
+
+      var overlay = document.createElement('div');
+      overlay.id = 'escola-modal-dinamico';
+      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:99999;display:flex;align-items:center;justify-content:center;';
+
+      overlay.innerHTML = `
+        <div style="background:#1a1a2e;border:1px solid #7c3aed;border-radius:16px;padding:2rem;width:90%;max-width:460px;position:relative;color:#fff;">
+          <button onclick="document.getElementById('escola-modal-dinamico').remove()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;">×</button>
+          <h3 style="margin:0 0 0.5rem;font-size:1.2rem;">🏫 Cadastrar Escola / Tutor</h3>
+          <p style="font-size:0.85rem;color:#aaa;margin-bottom:1.5rem;">Crie uma conta de tutor para gerenciar alunos e personalizar o perfil da sua escola.</p>
+          <form id="escola-form-dinamico" autocomplete="off">
+            <div style="margin-bottom:1rem;">
+              <label style="display:block;margin-bottom:0.3rem;font-size:0.9rem;font-weight:600;">Seu Nome Completo</label>
+              <input type="text" id="ef-nome" required placeholder="Ex: Maria da Silva" autocomplete="off" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid #444;background:#0d0d1a;color:#fff;font-size:0.95rem;box-sizing:border-box;">
+            </div>
+            <div style="margin-bottom:1rem;">
+              <label style="display:block;margin-bottom:0.3rem;font-size:0.9rem;font-weight:600;">Nome da Escola</label>
+              <input type="text" id="ef-escola" required placeholder="Ex: Escola Técnica Futuro" autocomplete="off" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid #444;background:#0d0d1a;color:#fff;font-size:0.95rem;box-sizing:border-box;">
+            </div>
+            <div style="margin-bottom:1rem;">
+              <label style="display:block;margin-bottom:0.3rem;font-size:0.9rem;font-weight:600;">E-mail</label>
+              <input type="email" id="ef-email" required placeholder="seuemail@escola.com" autocomplete="off" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid #444;background:#0d0d1a;color:#fff;font-size:0.95rem;box-sizing:border-box;">
+            </div>
+            <div style="margin-bottom:1.5rem;">
+              <label style="display:block;margin-bottom:0.3rem;font-size:0.9rem;font-weight:600;">Senha (mínimo 6 caracteres)</label>
+              <input type="password" id="ef-senha" required minlength="6" placeholder="Crie uma senha segura" autocomplete="new-password" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid #444;background:#0d0d1a;color:#fff;font-size:0.95rem;box-sizing:border-box;">
+            </div>
+            <button type="submit" id="ef-btn-submit" style="width:100%;padding:0.75rem;border-radius:10px;border:none;background:#7c3aed;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;">🏫 Criar Conta da Escola</button>
+            <p style="font-size:0.78rem;color:#aaa;text-align:center;margin-top:0.75rem;">Após o cadastro, faça login com seu e-mail e senha.</p>
+          </form>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      // Fechar ao clicar fora
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) overlay.remove();
+      });
+
+      // Submit
+      document.getElementById('escola-form-dinamico').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var nome   = document.getElementById('ef-nome').value.trim();
+        var escola = document.getElementById('ef-escola').value.trim();
+        var email  = document.getElementById('ef-email').value.trim();
+        var senha  = document.getElementById('ef-senha').value;
+        var btn    = document.getElementById('ef-btn-submit');
+
+        if (!window.signUpSchoolTutor) {
+          alert('Erro: função de cadastro não carregada. Verifique supabase_config.js.');
+          return;
+        }
+        try {
+          btn.disabled = true;
+          btn.textContent = 'Criando conta...';
+          await window.signUpSchoolTutor(email, senha, nome, escola);
+          overlay.remove();
+          alert('✅ Conta criada! Faça login com: ' + email);
+          document.getElementById('landing-login-email') && (document.getElementById('landing-login-email').value = email);
+        } catch (err) {
+          alert('Erro: ' + (err.message || err));
+          btn.disabled = false;
+          btn.textContent = '🏫 Criar Conta da Escola';
+        }
+      });
+    }
+  </script>
 </body>
 </html>

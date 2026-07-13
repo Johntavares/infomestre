@@ -8,7 +8,8 @@ let state = {
   completedSlides: {}, // { slideId: true }
   unlockedAchievements: {}, // { achievementId: true }
   notes: {}, // { slideId: "text notes" }
-  quizProgress: {} // { slideId: { currentQuestionIndex: 0, answers: [], completed: false } }
+  quizProgress: {}, // { slideId: { currentQuestionIndex: 0, answers: [], completed: false } }
+  collapsedChapters: {} // { "Chapter Name": true (collapsed) or false (expanded) }
 };
 
 const ACHIEVEMENTS = [
@@ -18,7 +19,8 @@ const ACHIEVEMENTS = [
   { id: "peripherals", title: "Mestre das Portas", desc: "Conectou todos os cabos periféricos traseiros.", icon: "🔌" },
   { id: "windows", title: "Admin do Windows", desc: "Aprendeu a criar pastas e mover arquivos no S.O.", icon: "🖥️" },
   { id: "ergonomics", title: "Ergonomista Chefe", desc: "Ajustou a postura ergonômica ideal.", icon: "🧘" },
-  { id: "graduated", title: "Diplomado", desc: "Aprovado na Avaliação Final!", icon: "🎓" }
+  { id: "graduated", title: "Diplomado", desc: "Aprovado na Avaliação Final!", icon: "🎓" },
+  { id: "peripheral_master", title: "Mestre dos Periféricos", desc: "Concluiu a Missão 3 — Periféricos e Conexões.", icon: "🔌" }
 ];
 
 // Load State from LocalStorage
@@ -33,11 +35,26 @@ function loadState() {
   }
 }
 
-// Save State to LocalStorage
+// Save State to LocalStorage (e sincroniza com Supabase)
+let dbSyncTimeout;
 function saveState() {
   localStorage.setItem("informestre_state", JSON.stringify(state));
   updateProgressUI();
+
+  // Se o usuário estiver logado e for aluno, sincroniza com o Supabase
+  if (window.currentUser && window.currentUserProfile && window.currentUserProfile.role === 'student') {
+    clearTimeout(dbSyncTimeout);
+    dbSyncTimeout = setTimeout(async () => {
+      try {
+        await window.saveProgressToDb(window.currentUser.id, state);
+        console.log("Progresso sincronizado com o Supabase.");
+      } catch (error) {
+        console.error("Erro ao sincronizar progresso com o Supabase:", error);
+      }
+    }, 1500); // Debounce de 1.5s
+  }
 }
+
 
 // Add XP and check Level Up
 function addXP(amount) {
@@ -85,6 +102,87 @@ function showToastNotification(title, message) {
     toast.classList.add("hidden");
   }, 4000);
 }
+
+/**
+ * Exibe um alerta moderno e elegante (Substituição premium do alert nativo)
+ */
+window.showModernAlert = function(title, message, callback) {
+  const existing = document.getElementById("modern-alert-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-alert-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions">
+        <button class="btn btn-primary" id="modern-alert-close-btn" style="padding: 0.6rem 2rem;">OK</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-alert-close-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (callback) callback();
+    }, 200);
+  });
+};
+
+/**
+ * Exibe uma confirmação moderna e elegante (Substituição premium do confirm nativo)
+ */
+window.showModernConfirm = function(title, message, onConfirm, onCancel) {
+  const existing = document.getElementById("modern-confirm-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-confirm-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-outline btn-small" id="modern-confirm-cancel-btn" style="padding: 0.6rem 1.5rem;">Cancelar</button>
+        <button class="btn btn-primary btn-small" id="modern-confirm-ok-btn" style="padding: 0.6rem 1.8rem;">Confirmar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-confirm-ok-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onConfirm) onConfirm();
+    }, 200);
+  });
+
+  document.getElementById("modern-confirm-cancel-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onCancel) onCancel();
+    }, 200);
+  });
+};
 
 // ==========================================================================
 // INFO POPUP SYSTEM – Visual Reference Modal
@@ -145,6 +243,11 @@ document.addEventListener("DOMContentLoaded", () => {
   loadSlide(state.currentSlideIndex);
   updateStatsUI();
   updateProgressUI();
+
+  // Inicializa integração com Supabase
+  if (typeof initSupabaseIntegration === "function") {
+    initSupabaseIntegration();
+  }
 });
 
 // Theme switcher init
@@ -184,13 +287,32 @@ function initSidebarMenu() {
     const groupDiv = document.createElement("div");
     groupDiv.className = "menu-chapter-group";
     
+    const allCompleted = items.every(item => state.completedSlides[item.id]);
+    const completedCount = items.filter(item => state.completedSlides[item.id]).length;
+    
+    // Determine collapsed state
+    let isCollapsed = false;
+    if (chapterTitle in state.collapsedChapters) {
+      isCollapsed = state.collapsedChapters[chapterTitle];
+    } else if (allCompleted) {
+      isCollapsed = true;
+      state.collapsedChapters[chapterTitle] = true;
+    }
+    
     const header = document.createElement("div");
     header.className = "chapter-title-header";
-    header.textContent = chapterTitle;
+    header.setAttribute("data-collapsed", isCollapsed ? "true" : "false");
+    header.innerHTML = `
+      <span class="chapter-toggle-icon">${isCollapsed ? '▶' : '▼'}</span>
+      <span class="chapter-title-text">${chapterTitle}</span>
+      <span class="chapter-progress-badge">${completedCount}/${items.length}</span>
+    `;
+    header.addEventListener("click", () => toggleChapter(chapterTitle));
     groupDiv.appendChild(header);
     
     const ul = document.createElement("ul");
     ul.className = "menu-items-list";
+    if (isCollapsed) ul.classList.add("collapsed");
     
     items.forEach(item => {
       const li = document.createElement("li");
@@ -214,6 +336,15 @@ function initSidebarMenu() {
   }
 }
 
+// Toggle chapter collapse state
+function toggleChapter(chapterTitle) {
+  const current = state.collapsedChapters[chapterTitle];
+  const newState = current === undefined ? true : !current;
+  state.collapsedChapters[chapterTitle] = newState;
+  saveState();
+  initSidebarMenu();
+}
+
 // Update stats (XP Counter & Level Badge)
 function updateStatsUI() {
   document.getElementById("user-xp-counter").textContent = state.xp;
@@ -233,6 +364,87 @@ function updateProgressUI() {
   document.getElementById("course-progress-percent").textContent = `${percent}%`;
   document.getElementById("course-progress-bar").style.width = `${percent}%`;
 }
+
+/**
+ * Exibe um alerta moderno e elegante (Substituição premium do alert nativo)
+ */
+window.showModernAlert = function(title, message, callback) {
+  const existing = document.getElementById("modern-alert-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-alert-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions">
+        <button class="btn btn-primary" id="modern-alert-close-btn" style="padding: 0.6rem 2rem;">OK</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-alert-close-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (callback) callback();
+    }, 200);
+  });
+};
+
+/**
+ * Exibe uma confirmação moderna e elegante (Substituição premium do confirm nativo)
+ */
+window.showModernConfirm = function(title, message, onConfirm, onCancel) {
+  const existing = document.getElementById("modern-confirm-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-confirm-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-outline btn-small" id="modern-confirm-cancel-btn" style="padding: 0.6rem 1.5rem;">Cancelar</button>
+        <button class="btn btn-primary btn-small" id="modern-confirm-ok-btn" style="padding: 0.6rem 1.8rem;">Confirmar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-confirm-ok-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onConfirm) onConfirm();
+    }, 200);
+  });
+
+  document.getElementById("modern-confirm-cancel-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onCancel) onCancel();
+    }, 200);
+  });
+};
 
 // ==========================================================================
 // SLIDE NAVIGATION & RENDERING
@@ -258,6 +470,9 @@ function loadSlide(index) {
   // Update page indicators
   document.getElementById("current-page-num").textContent = index + 1;
   document.getElementById("total-pages-num").textContent = COURSE_CONTENT.length;
+  
+  // Rebuild sidebar menu to reflect current progress
+  initSidebarMenu();
   
   // Highlight active menu item
   document.querySelectorAll(".menu-item-link").forEach(link => link.classList.remove("active"));
@@ -318,6 +533,7 @@ function markSlideAsCompleted(slideId) {
   
   addXP(10); // Standard read reward
   saveState();
+  initSidebarMenu();
 }
 
 // Setup Global Click Handlers
@@ -364,6 +580,87 @@ function initGlobalEvents() {
     window.print();
   });
 }
+
+/**
+ * Exibe um alerta moderno e elegante (Substituição premium do alert nativo)
+ */
+window.showModernAlert = function(title, message, callback) {
+  const existing = document.getElementById("modern-alert-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-alert-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions">
+        <button class="btn btn-primary" id="modern-alert-close-btn" style="padding: 0.6rem 2rem;">OK</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-alert-close-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (callback) callback();
+    }, 200);
+  });
+};
+
+/**
+ * Exibe uma confirmação moderna e elegante (Substituição premium do confirm nativo)
+ */
+window.showModernConfirm = function(title, message, onConfirm, onCancel) {
+  const existing = document.getElementById("modern-confirm-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-confirm-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-outline btn-small" id="modern-confirm-cancel-btn" style="padding: 0.6rem 1.5rem;">Cancelar</button>
+        <button class="btn btn-primary btn-small" id="modern-confirm-ok-btn" style="padding: 0.6rem 1.8rem;">Confirmar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-confirm-ok-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onConfirm) onConfirm();
+    }, 200);
+  });
+
+  document.getElementById("modern-confirm-cancel-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onCancel) onCancel();
+    }, 200);
+  });
+};
 
 // ==========================================================================
 // NOTEPAD FUNCTIONALITY
@@ -444,6 +741,87 @@ function exportAllNotes() {
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Exibe um alerta moderno e elegante (Substituição premium do alert nativo)
+ */
+window.showModernAlert = function(title, message, callback) {
+  const existing = document.getElementById("modern-alert-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-alert-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions">
+        <button class="btn btn-primary" id="modern-alert-close-btn" style="padding: 0.6rem 2rem;">OK</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-alert-close-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (callback) callback();
+    }, 200);
+  });
+};
+
+/**
+ * Exibe uma confirmação moderna e elegante (Substituição premium do confirm nativo)
+ */
+window.showModernConfirm = function(title, message, onConfirm, onCancel) {
+  const existing = document.getElementById("modern-confirm-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-confirm-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-outline btn-small" id="modern-confirm-cancel-btn" style="padding: 0.6rem 1.5rem;">Cancelar</button>
+        <button class="btn btn-primary btn-small" id="modern-confirm-ok-btn" style="padding: 0.6rem 1.8rem;">Confirmar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-confirm-ok-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onConfirm) onConfirm();
+    }, 200);
+  });
+
+  document.getElementById("modern-confirm-cancel-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onCancel) onCancel();
+    }, 200);
+  });
+};
+
 // ==========================================================================
 // ACHIEVEMENTS MODAL RENDERING
 // ==========================================================================
@@ -469,6 +847,87 @@ function openAchievementsModal() {
   
   document.getElementById("achievements-modal").classList.remove("hidden");
 }
+
+/**
+ * Exibe um alerta moderno e elegante (Substituição premium do alert nativo)
+ */
+window.showModernAlert = function(title, message, callback) {
+  const existing = document.getElementById("modern-alert-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-alert-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions">
+        <button class="btn btn-primary" id="modern-alert-close-btn" style="padding: 0.6rem 2rem;">OK</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-alert-close-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (callback) callback();
+    }, 200);
+  });
+};
+
+/**
+ * Exibe uma confirmação moderna e elegante (Substituição premium do confirm nativo)
+ */
+window.showModernConfirm = function(title, message, onConfirm, onCancel) {
+  const existing = document.getElementById("modern-confirm-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-confirm-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-outline btn-small" id="modern-confirm-cancel-btn" style="padding: 0.6rem 1.5rem;">Cancelar</button>
+        <button class="btn btn-primary btn-small" id="modern-confirm-ok-btn" style="padding: 0.6rem 1.8rem;">Confirmar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-confirm-ok-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onConfirm) onConfirm();
+    }, 200);
+  });
+
+  document.getElementById("modern-confirm-cancel-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onCancel) onCancel();
+    }, 200);
+  });
+};
 
 // ==========================================================================
 // SIMULATOR ROUTER & ENGINES
@@ -519,6 +978,34 @@ function loadSimulator(simId, slideData, isReset = false) {
       break;
     case "aula2-mission-final":
       initAula2MissionFinalSimulator(renderArea, isReset);
+      break;
+    // ---- AULA 3 SIMULATORS ----
+    case "hardware-review":
+      initHardwareReviewSimulator(renderArea, isReset);
+      break;
+    case "peripheral-quiz":
+      initPeripheralQuizSimulator(renderArea, isReset);
+      break;
+    case "guess-device":
+      initGuessDeviceSimulator(renderArea, isReset);
+      break;
+    case "output-sorter":
+      initOutputSorterSimulator(renderArea, isReset);
+      break;
+    case "storage-challenge":
+      initStorageChallengeSimulator(renderArea, isReset);
+      break;
+    case "connect-ports":
+      initConnectPortsSimulator(renderArea, isReset);
+      break;
+    case "workspace-builder":
+      initWorkspaceBuilderSimulator(renderArea, isReset);
+      break;
+    case "peripheral-final-quiz":
+      initPeripheralFinalQuizSimulator(renderArea, isReset);
+      break;
+    case "aula3-mission-final":
+      initAula3MissionFinalSimulator(renderArea, isReset);
       break;
     default:
       // If it has quiz in metadata (e.g. challenge pages 1.5, 32)
@@ -1889,6 +2376,87 @@ function initStudentGeneralNotepad(container) {
   markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
 }
 
+/**
+ * Exibe um alerta moderno e elegante (Substituição premium do alert nativo)
+ */
+window.showModernAlert = function(title, message, callback) {
+  const existing = document.getElementById("modern-alert-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-alert-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions">
+        <button class="btn btn-primary" id="modern-alert-close-btn" style="padding: 0.6rem 2rem;">OK</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-alert-close-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (callback) callback();
+    }, 200);
+  });
+};
+
+/**
+ * Exibe uma confirmação moderna e elegante (Substituição premium do confirm nativo)
+ */
+window.showModernConfirm = function(title, message, onConfirm, onCancel) {
+  const existing = document.getElementById("modern-confirm-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-confirm-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-outline btn-small" id="modern-confirm-cancel-btn" style="padding: 0.6rem 1.5rem;">Cancelar</button>
+        <button class="btn btn-primary btn-small" id="modern-confirm-ok-btn" style="padding: 0.6rem 1.8rem;">Confirmar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-confirm-ok-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onConfirm) onConfirm();
+    }, 200);
+  });
+
+  document.getElementById("modern-confirm-cancel-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onCancel) onCancel();
+    }, 200);
+  });
+};
+
 // ==========================================================================
 // CERTIFICATE GENERATION MODAL
 // ==========================================================================
@@ -3104,3 +3672,2373 @@ function initAula2MissionFinalSimulator(container, isReset) {
     }, 3000);
   });
 }
+
+/**
+ * Exibe um alerta moderno e elegante (Substituição premium do alert nativo)
+ */
+window.showModernAlert = function(title, message, callback) {
+  const existing = document.getElementById("modern-alert-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-alert-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions">
+        <button class="btn btn-primary" id="modern-alert-close-btn" style="padding: 0.6rem 2rem;">OK</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-alert-close-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (callback) callback();
+    }, 200);
+  });
+};
+
+/**
+ * Exibe uma confirmação moderna e elegante (Substituição premium do confirm nativo)
+ */
+window.showModernConfirm = function(title, message, onConfirm, onCancel) {
+  const existing = document.getElementById("modern-confirm-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "modern-confirm-modal";
+  modal.className = "modern-modal-overlay";
+  modal.innerHTML = `
+    <div class="modern-modal-card">
+      <div class="modern-modal-header">
+        <h3>${title}</h3>
+      </div>
+      <div class="modern-modal-body">
+        <p>${message}</p>
+      </div>
+      <div class="modern-modal-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+        <button class="btn btn-outline btn-small" id="modern-confirm-cancel-btn" style="padding: 0.6rem 1.5rem;">Cancelar</button>
+        <button class="btn btn-primary btn-small" id="modern-confirm-ok-btn" style="padding: 0.6rem 1.8rem;">Confirmar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  document.getElementById("modern-confirm-ok-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onConfirm) onConfirm();
+    }, 200);
+  });
+
+  document.getElementById("modern-confirm-cancel-btn").addEventListener("click", () => {
+    modal.classList.remove("active");
+    setTimeout(() => {
+      modal.remove();
+      if (onCancel) onCancel();
+    }, 200);
+  });
+};
+
+// ==========================================================================
+// AULA 3 SIMULATORS & MINI-GAMES — PERIFÉRICOS E CONEXÕES
+// ==========================================================================
+
+// Helper: build a lives-quiz widget reusable across Aula 3 simulators
+function buildLivesQuizWidget(container, questions, xpPerCorrect, onCompleted) {
+  container.innerHTML = "";
+
+  let lives = 3;
+  let currentIdx = 0;
+  let score = 0;
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  const renderHUD = () => {
+    const hearts = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+    const hud = widget.querySelector(".a3-hud");
+    if (hud) hud.innerHTML = `<span>${hearts}</span><span style="color:var(--color-primary);font-weight:700;">⭐ ${score * xpPerCorrect} XP</span>`;
+  };
+
+  const renderQuestion = () => {
+    widget.innerHTML = "";
+
+    if (lives <= 0) {
+      widget.innerHTML = `<div class="text-center"><span style="font-size:3rem;">💔</span><h4 class="mt-1">Sem vidas! Tente novamente.</h4><button class="btn btn-primary mt-2" onclick="this.closest('.card').dataset.reset='1';loadSimulator(COURSE_CONTENT[state.currentSlideIndex].interactiveId, COURSE_CONTENT[state.currentSlideIndex], true)">🔄 Recomeçar</button></div>`;
+      return;
+    }
+    if (currentIdx >= questions.length) {
+      if (onCompleted) onCompleted(score, widget);
+      return;
+    }
+
+    const curr = questions[currentIdx];
+    const hud = document.createElement("div");
+    hud.className = "a3-hud";
+    hud.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:0.9rem;";
+    hud.innerHTML = `<span>${"❤️".repeat(lives)}${"🖤".repeat(3 - lives)}</span><span style="color:var(--color-primary);font-weight:700;">⭐ ${score * xpPerCorrect} XP</span>`;
+    widget.appendChild(hud);
+
+    const qNum = document.createElement("div");
+    qNum.style.cssText = "font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;";
+    qNum.textContent = `Pergunta ${currentIdx + 1} de ${questions.length}`;
+    widget.appendChild(qNum);
+
+    const qTitle = document.createElement("h4");
+    qTitle.textContent = curr.q;
+    qTitle.style.marginBottom = "1rem";
+    widget.appendChild(qTitle);
+
+    if (curr.hint) {
+      const hint = document.createElement("div");
+      hint.style.cssText = "font-size:0.82rem;color:var(--text-muted);font-style:italic;margin-bottom:10px;padding:8px 12px;background:rgba(131,82,255,0.08);border-radius:8px;";
+      hint.textContent = "💡 " + curr.hint;
+      widget.appendChild(hint);
+    }
+
+    const optionsDiv = document.createElement("div");
+    optionsDiv.style.cssText = "display:flex;flex-direction:column;gap:8px;";
+
+    curr.opts.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "quiz-option-btn";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => {
+        optionsDiv.querySelectorAll("button").forEach(b => b.disabled = true);
+        if (idx === curr.correct) {
+          btn.classList.add("correct");
+          score++;
+          addXP(xpPerCorrect);
+          const feed = document.createElement("div");
+          feed.style.cssText = "color:var(--color-success);font-size:0.85rem;margin-top:8px;";
+          feed.innerHTML = `<strong>✅ Correto!</strong>${curr.explanation ? " " + curr.explanation : ""}`;
+          widget.appendChild(feed);
+        } else {
+          btn.classList.add("wrong");
+          const correctBtn = optionsDiv.children[curr.correct];
+          if (correctBtn) correctBtn.classList.add("correct");
+          lives--;
+          const feed = document.createElement("div");
+          feed.style.cssText = "color:var(--color-danger);font-size:0.85rem;margin-top:8px;";
+          feed.innerHTML = `<strong>❌ Incorreto!</strong> Resposta certa: <strong>${curr.opts[curr.correct]}</strong>.${curr.explanation ? " " + curr.explanation : ""}`;
+          widget.appendChild(feed);
+        }
+        setTimeout(() => {
+          currentIdx++;
+          renderQuestion();
+        }, 2400);
+      });
+      optionsDiv.appendChild(btn);
+    });
+    widget.appendChild(optionsDiv);
+  };
+
+  renderQuestion();
+  container.appendChild(widget);
+}
+
+// -----------------------------------------------------------------------
+// 1. HARDWARE REVIEW (hardware-review) — Cap.1 Aula 3
+// -----------------------------------------------------------------------
+function initHardwareReviewSimulator(container, isReset) {
+  const questions = [
+    { q: "Qual peça é responsável por executar todos os cálculos e instruções do computador?", opts: ["Memória RAM", "Processador (CPU)", "SSD", "Placa de vídeo"], correct: 1, explanation: "A CPU é o cérebro do computador — processa todas as instruções dos programas." },
+    { q: "Onde os arquivos e o sistema operacional ficam armazenados permanentemente?", opts: ["Memória RAM", "Cache L2", "SSD ou HD", "Placa-mãe"], correct: 2, explanation: "O SSD (ou HD) é o armazenamento permanente — os dados não se perdem ao desligar o PC." },
+    { q: "Qual peça distribui energia elétrica para todos os componentes do computador?", opts: ["Placa-mãe", "Fonte de alimentação (PSU)", "Gabinete", "Processador"], correct: 1, explanation: "A fonte converte a energia da tomada em tensões adequadas (12V, 5V) para as peças." },
+    { q: "O que é a Memória RAM?", opts: ["Armazenamento permanente de dados", "Memória temporária de trabalho ultra-rápida", "Um tipo de processador", "A memória do SSD"], correct: 1, explanation: "RAM = Random Access Memory. É temporária: ao desligar o PC, os dados são apagados." },
+    { q: "Qual componente conecta e faz comunicar TODAS as peças do computador?", opts: ["Cooler", "Placa-mãe", "Cabos SATA", "Gabinete"], correct: 1, explanation: "A placa-mãe é a espinha dorsal — todas as peças se conectam a ela direta ou indiretamente." }
+  ];
+  buildLivesQuizWidget(container, questions, 10, (score, widget) => {
+    widget.innerHTML = `<div class="text-center"><span style="font-size:3rem;">⚡</span><h4 class="mt-1">Revisão Concluída!</h4><p class="text-muted text-small">Você acertou ${score} de 5 perguntas! Hardware repassado com sucesso. Hora de avançar!</p><span class="badge badge-success">✓ +${score * 10} XP</span></div>`;
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+  });
+}
+
+// -----------------------------------------------------------------------
+// 2. VERDADEIRO OU FALSO — É PERIFÉRICO? (peripheral-quiz) — Cap.2
+// -----------------------------------------------------------------------
+function initPeripheralQuizSimulator(container, isReset) {
+  const items = [
+    { name: "🌐 Webcam", isPeripheral: true, explanation: "Sim! A webcam é um periférico de entrada que captura vídeo." },
+    { name: "🧊 Geladeira comum", isPeripheral: false, explanation: "Não! Uma geladeira comum não é conectável ao computador." },
+    { name: "🖨️ Impressora", isPeripheral: true, explanation: "Sim! A impressora é um periférico de saída que imprime documentos." },
+    { name: "🖥️ Monitor", isPeripheral: true, explanation: "Sim! O monitor é um periférico de saída que exibe imagens." },
+    { name: "🧠 Processador (CPU)", isPeripheral: false, explanation: "Não! A CPU é hardware interno — não é um periférico." },
+    { name: "⌨️ Teclado", isPeripheral: true, explanation: "Sim! O teclado é um periférico de entrada." },
+    { name: "💾 Pendrive", isPeripheral: true, explanation: "Sim! O pendrive é um periférico de armazenamento externo." },
+    { name: "⚡ Memória RAM", isPeripheral: false, explanation: "Não! A RAM é hardware interno, não um periférico." }
+  ];
+
+  container.innerHTML = "";
+  let lives = 3;
+  let idx = 0;
+  let score = 0;
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+  widget.style.textAlign = "center";
+
+  const render = () => {
+    widget.innerHTML = "";
+    const hearts = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+    const hud = document.createElement("div");
+    hud.style.cssText = "display:flex;justify-content:space-between;margin-bottom:1rem;font-size:0.9rem;";
+    hud.innerHTML = `<span>${hearts}</span><span style="color:var(--color-primary);font-weight:700;">✅ ${score}/${items.length}</span>`;
+    widget.appendChild(hud);
+
+    if (lives <= 0) { widget.innerHTML += `<div class="text-center"><span style="font-size:3rem;">💔</span><h4>Sem vidas!</h4><button class="btn btn-primary mt-2" onclick="loadSimulator('peripheral-quiz',COURSE_CONTENT[state.currentSlideIndex],true)">🔄 Tentar novamente</button></div>`; return; }
+    if (idx >= items.length) {
+      widget.innerHTML = `<div class="text-center"><span style="font-size:3rem;">🎉</span><h4 class="mt-1">Parabéns!</h4><p>Você identificou corretamente ${score} itens!</p><span class="badge badge-success">✓ +${score * 10} XP</span></div>`;
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      return;
+    }
+
+    const curr = items[idx];
+    const itemDiv = document.createElement("div");
+    itemDiv.style.cssText = "font-size:2.5rem;margin:1rem 0 0.5rem;";
+    itemDiv.textContent = curr.name;
+    widget.appendChild(itemDiv);
+
+    const q = document.createElement("h4");
+    q.textContent = "Isso é um periférico?";
+    q.style.marginBottom = "1.2rem";
+    widget.appendChild(q);
+
+    const btnRow = document.createElement("div");
+    btnRow.style.cssText = "display:flex;gap:12px;justify-content:center;";
+
+    const btnYes = document.createElement("button");
+    btnYes.className = "btn btn-primary";
+    btnYes.style.minWidth = "100px";
+    btnYes.textContent = "✅ Sim";
+
+    const btnNo = document.createElement("button");
+    btnNo.className = "btn btn-outline";
+    btnNo.style.minWidth = "100px";
+    btnNo.textContent = "❌ Não";
+
+    const answer = (chose) => {
+      btnYes.disabled = true; btnNo.disabled = true;
+      const correct = (chose === curr.isPeripheral);
+      const feed = document.createElement("div");
+      feed.style.cssText = `color:var(--color-${correct ? "success" : "danger"});font-size:0.85rem;margin-top:1rem;`;
+      feed.innerHTML = `<strong>${correct ? "✅ Correto!" : "❌ Incorreto!"}</strong> ${curr.explanation}`;
+      widget.appendChild(feed);
+      if (correct) { score++; addXP(10); } else { lives--; }
+      setTimeout(() => { idx++; render(); }, 2200);
+    };
+
+    btnYes.addEventListener("click", () => answer(true));
+    btnNo.addEventListener("click", () => answer(false));
+    btnRow.appendChild(btnYes);
+    btnRow.appendChild(btnNo);
+    widget.appendChild(btnRow);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// -----------------------------------------------------------------------
+// 3. QUEM SOU EU? (guess-device) — Cap.3
+// -----------------------------------------------------------------------
+function initGuessDeviceSimulator(container, isReset) {
+  const devices = [
+    { answer: "🎤 Microfone", clues: ["Transformo sua voz em dados digitais.", "Sou essencial em estúdios de gravação.", "Você me usa em videochamadas."], xpValues: [30, 20, 10] },
+    { answer: "📷 Webcam", clues: ["Capturo imagens e vídeos em tempo real.", "Sou comum em notebooks e monitores.", "Uso a porta USB para me conectar."], xpValues: [30, 20, 10] },
+    { answer: "⌨️ Teclado", clues: ["Transformo pressionamentos em letras e números.", "Existem versões mecânicas, de membrana e virtual.", "Sou o principal periférico de entrada de texto."], xpValues: [30, 20, 10] },
+    { answer: "👆 Leitor Biométrico", clues: ["Registro impressões digitais únicas de cada pessoa.", "Sou usado em bancos e controle de ponto.", "Capturo dados físicos para autenticação segura."], xpValues: [30, 20, 10] },
+    { answer: "🖱️ Mouse", clues: ["Converto movimentos físicos em coordenadas X,Y.", "Minha precisão é medida em DPI.", "Você me usa para clicar e arrastar na tela."], xpValues: [30, 20, 10] }
+  ];
+
+  const allAnswers = devices.map(d => d.answer);
+  container.innerHTML = "";
+  let lives = 3;
+  let deviceIdx = 0;
+  let clueIdx = 0;
+  let totalXP = 0;
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  const render = () => {
+    widget.innerHTML = "";
+    const hearts = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+    const hud = document.createElement("div");
+    hud.style.cssText = "display:flex;justify-content:space-between;margin-bottom:1rem;font-size:0.9rem;";
+    hud.innerHTML = `<span>${hearts}</span><span style="color:var(--color-primary);font-weight:700;">⭐ ${totalXP} XP</span>`;
+    widget.appendChild(hud);
+
+    if (lives <= 0) {
+      widget.innerHTML += `<div class="text-center"><span style="font-size:3rem;">💔</span><h4>Sem vidas!</h4><button class="btn btn-primary mt-2" onclick="loadSimulator('guess-device',COURSE_CONTENT[state.currentSlideIndex],true)">🔄 Tentar novamente</button></div>`;
+      return;
+    }
+    if (deviceIdx >= devices.length) {
+      widget.innerHTML = `<div class="text-center"><span style="font-size:3rem;">🕵️</span><h4 class="mt-1">Detetive Digital!</h4><p>Você identificou todos os dispositivos e ganhou <strong>+${totalXP} XP</strong>!</p><span class="badge badge-success">✓ Concluído</span></div>`;
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      return;
+    }
+
+    const curr = devices[deviceIdx];
+    const progress = document.createElement("div");
+    progress.style.cssText = "font-size:0.75rem;color:var(--text-muted);margin-bottom:8px;";
+    progress.textContent = `Dispositivo ${deviceIdx + 1} de ${devices.length}`;
+    widget.appendChild(progress);
+
+    const clueBox = document.createElement("div");
+    clueBox.style.cssText = "background:rgba(131,82,255,0.08);border-radius:10px;padding:14px;margin-bottom:1rem;";
+    const clueTitle = document.createElement("div");
+    clueTitle.style.cssText = "font-size:0.75rem;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em;";
+    clueTitle.textContent = `Pista ${clueIdx + 1}`;
+    clueBox.appendChild(clueTitle);
+    const clueText = document.createElement("p");
+    clueText.style.cssText = "font-size:1rem;margin:0;font-style:italic;";
+    clueText.textContent = `"${curr.clues[clueIdx]}"`;
+    clueBox.appendChild(clueText);
+    const xpHint = document.createElement("div");
+    xpHint.style.cssText = "font-size:0.75rem;color:var(--color-primary);margin-top:6px;";
+    xpHint.textContent = `Acertar agora: +${curr.xpValues[clueIdx]} XP`;
+    clueBox.appendChild(xpHint);
+    widget.appendChild(clueBox);
+
+    const optGrid = document.createElement("div");
+    optGrid.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;";
+    allAnswers.forEach(ans => {
+      const btn = document.createElement("button");
+      btn.className = "quiz-option-btn";
+      btn.textContent = ans;
+      btn.addEventListener("click", () => {
+        optGrid.querySelectorAll("button").forEach(b => b.disabled = true);
+        const feed = document.createElement("div");
+        feed.style.cssText = "margin-top:10px;font-size:0.85rem;";
+        if (ans === curr.answer) {
+          btn.classList.add("correct");
+          const earned = curr.xpValues[clueIdx];
+          totalXP += earned;
+          addXP(earned);
+          feed.style.color = "var(--color-success)";
+          feed.innerHTML = `<strong>✅ Correto!</strong> Era ${curr.answer}! +${earned} XP`;
+          widget.appendChild(feed);
+          setTimeout(() => { deviceIdx++; clueIdx = 0; render(); }, 2000);
+        } else {
+          btn.classList.add("wrong");
+          lives--;
+          clueIdx = Math.min(clueIdx + 1, curr.clues.length - 1);
+          feed.style.color = "var(--color-danger)";
+          if (clueIdx < curr.clues.length - 1 || lives <= 0) {
+            feed.innerHTML = `<strong>❌ Errou!</strong> ${lives > 0 ? "Próxima pista revelada..." : "Sem mais vidas!"}`;
+          } else {
+            feed.innerHTML = `<strong>❌ Errou!</strong> A resposta era ${curr.answer}.`;
+          }
+          widget.appendChild(feed);
+          setTimeout(() => render(), 2000);
+        }
+      });
+      optGrid.appendChild(btn);
+    });
+    widget.appendChild(optGrid);
+
+    if (clueIdx < curr.clues.length - 1) {
+      const moreClueBtn = document.createElement("button");
+      moreClueBtn.className = "btn btn-outline";
+      moreClueBtn.textContent = `🔍 Ver próxima pista (-${curr.xpValues[clueIdx] - curr.xpValues[Math.min(clueIdx + 1, curr.clues.length - 1)]} XP)`;
+      moreClueBtn.addEventListener("click", () => { clueIdx++; render(); });
+      widget.appendChild(moreClueBtn);
+    }
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// -----------------------------------------------------------------------
+// 4. ENTRADA OU SAÍDA? (output-sorter) — Cap.4
+// -----------------------------------------------------------------------
+function initOutputSorterSimulator(container, isReset) {
+  const allItems = [
+    { name: "🖥️ Monitor", category: "Saída", explanation: "O monitor exibe imagens enviadas pelo computador — é saída." },
+    { name: "🖱️ Mouse", category: "Entrada", explanation: "O mouse envia posição e cliques ao PC — é entrada." },
+    { name: "🖨️ Impressora", category: "Saída", explanation: "A impressora imprime dados vindos do PC — é saída." },
+    { name: "📷 Webcam", category: "Entrada", explanation: "A webcam captura imagens e envia ao PC — é entrada." },
+    { name: "🔊 Caixa de Som", category: "Saída", explanation: "A caixa de som reproduz áudio vindo do PC — é saída." },
+    { name: "⌨️ Teclado", category: "Entrada", explanation: "O teclado envia texto ao PC — é entrada." },
+    { name: "🎤 Microfone", category: "Entrada", explanation: "O microfone captura áudio e envia ao PC — é entrada." },
+    { name: "📽️ Projetor", category: "Saída", explanation: "O projetor exibe imagens do PC — é saída." }
+  ];
+
+  container.innerHTML = "";
+  let lives = 3;
+  let score = 0;
+  let remaining = [...allItems].sort(() => Math.random() - 0.5);
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  const render = () => {
+    widget.innerHTML = "";
+    const hearts = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+    const hud = document.createElement("div");
+    hud.style.cssText = "display:flex;justify-content:space-between;margin-bottom:1rem;font-size:0.9rem;";
+    hud.innerHTML = `<span>${hearts}</span><span style="color:var(--color-primary);font-weight:700;">✅ ${score}/${allItems.length}</span>`;
+    widget.appendChild(hud);
+
+    if (lives <= 0) {
+      widget.innerHTML += `<div class="text-center"><span style="font-size:3rem;">💔</span><h4>Sem vidas!</h4><button class="btn btn-primary mt-2" onclick="loadSimulator('output-sorter',COURSE_CONTENT[state.currentSlideIndex],true)">🔄 Tentar novamente</button></div>`;
+      return;
+    }
+    if (remaining.length === 0) {
+      widget.innerHTML = `<div class="text-center"><span style="font-size:3rem;">🎯</span><h4 class="mt-1">Classificação Completa!</h4><p>Você classificou ${score} de ${allItems.length} itens corretamente!</p><span class="badge badge-success">✓ +${score * 10} XP</span></div>`;
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      return;
+    }
+
+    const curr = remaining[0];
+    const itemDiv = document.createElement("div");
+    itemDiv.style.cssText = "text-align:center;font-size:2.5rem;margin:0.8rem 0 0.5rem;";
+    itemDiv.textContent = curr.name;
+    widget.appendChild(itemDiv);
+
+    const q = document.createElement("h4");
+    q.textContent = "Classifique este dispositivo:";
+    q.style.cssText = "text-align:center;margin-bottom:1.2rem;";
+    widget.appendChild(q);
+
+    const btnRow = document.createElement("div");
+    btnRow.style.cssText = "display:flex;gap:12px;justify-content:center;";
+
+    ["Entrada", "Saída"].forEach(cat => {
+      const btn = document.createElement("button");
+      btn.className = "btn btn-primary";
+      btn.style.cssText = "min-width:110px;padding:12px;font-size:1rem;";
+      btn.textContent = cat === "Entrada" ? "⌨️ Entrada" : "🖥️ Saída";
+      btn.addEventListener("click", () => {
+        btnRow.querySelectorAll("button").forEach(b => b.disabled = true);
+        const correct = (cat === curr.category);
+        const feed = document.createElement("div");
+        feed.style.cssText = `color:var(--color-${correct ? "success" : "danger"});font-size:0.85rem;margin-top:1rem;text-align:center;`;
+        feed.innerHTML = `<strong>${correct ? "✅ Correto!" : "❌ Incorreto!"}</strong> ${curr.explanation}`;
+        widget.appendChild(feed);
+        if (correct) { score++; addXP(10); } else { lives--; }
+        remaining.shift();
+        setTimeout(render, 2200);
+      });
+      btnRow.appendChild(btn);
+    });
+    widget.appendChild(btnRow);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// -----------------------------------------------------------------------
+// 5. ESCOLHA DE ARMAZENAMENTO (storage-challenge) — Cap.5
+// -----------------------------------------------------------------------
+function initStorageChallengeSimulator(container, isReset) {
+  const scenarios = [
+    { situation: "Você precisa guardar 500 fotos de uma viagem e levar para casa da avó.", options: ["Pendrive 32GB", "HD Externo 2TB", "Cartão SD 8GB"], correct: 0, explanation: "Um pendrive 32GB é compacto, suficiente e prático para transportar 500 fotos." },
+    { situation: "Você quer transportar seu trabalho escolar de 15 páginas do Word entre casa e a escola.", options: ["SSD Externo 1TB", "Pendrive 4GB", "HD Externo 4TB"], correct: 1, explanation: "Um pendrive simples de 4GB é mais que suficiente para um documento de texto — prático e barato!" },
+    { situation: "Você quer fazer backup de 3TB de vídeos editados da sua empresa.", options: ["Cartão SD 256GB", "Pendrive 128GB", "HD Externo 4TB"], correct: 2, explanation: "Para 3TB de dados, um HD externo de 4TB é o mais adequado pela capacidade e custo por GB." },
+    { situation: "Você é videomaker e precisa editar vídeos 4K com velocidade máxima em campo.", options: ["SSD Externo USB-C", "Pendrive USB 2.0", "HD Externo 500GB"], correct: 0, explanation: "O SSD externo USB-C oferece as velocidades de até 2.000 MB/s necessárias para edição 4K sem travamentos." },
+    { situation: "Você quer expandir o armazenamento da sua câmera fotográfica profissional.", options: ["Pendrive USB", "Cartão SD UHS-II", "HD Externo"], correct: 1, explanation: "Câmeras usam cartões SD. O UHS-II oferece alta velocidade de gravação para fotos em RAW e vídeo 4K." }
+  ];
+
+  const questions = scenarios.map(s => ({
+    q: s.situation,
+    opts: s.options,
+    correct: s.correct,
+    explanation: s.explanation
+  }));
+
+  buildLivesQuizWidget(container, questions, 15, (score, widget) => {
+    widget.innerHTML = `<div class="text-center"><span style="font-size:3rem;">💾</span><h4 class="mt-1">Desafio Concluído!</h4><p>Você escolheu o armazenamento certo em ${score} de ${scenarios.length} situações!</p><span class="badge badge-success">✓ +${score * 15} XP</span></div>`;
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+  });
+}
+
+// -----------------------------------------------------------------------
+// 6. CONECTE AS PORTAS (connect-ports) — Cap.6
+// -----------------------------------------------------------------------
+function initConnectPortsSimulator(container, isReset) {
+  const connections = [
+    { device: "🖥️ Monitor", port: "HDMI", hint: "Transmite vídeo e áudio em alta definição", options: ["USB-A", "HDMI", "P2 3,5mm", "Ethernet"], correct: 1 },
+    { device: "🖱️ Mouse", port: "USB-A", hint: "Porta retangular universal para periféricos", options: ["HDMI", "P2 3,5mm", "USB-A", "USB-C"], correct: 2 },
+    { device: "🔊 Caixa de Som", port: "P2 (3,5mm)", hint: "Cabo de áudio analógico circular", options: ["Ethernet", "HDMI", "USB-C", "P2 3,5mm"], correct: 3 },
+    { device: "🌐 Roteador/Internet", port: "Ethernet (RJ-45)", hint: "Cabo de rede cabeada mais estável que Wi-Fi", options: ["Ethernet (RJ-45)", "USB-A", "HDMI", "P2 3,5mm"], correct: 0 },
+    { device: "📱 Smartphone moderno", port: "USB-C", hint: "Conector reversível presente em celulares novos", options: ["P2 3,5mm", "USB-A", "Micro-USB", "USB-C"], correct: 3 }
+  ];
+
+  const questions = connections.map(c => ({
+    q: `Qual porta você usa para conectar: ${c.device}?`,
+    hint: `Dica: ${c.hint}`,
+    opts: c.options,
+    correct: c.correct,
+    explanation: `Correto! ${c.device} se conecta via ${c.port}.`
+  }));
+
+  buildLivesQuizWidget(container, questions, 20, (score, widget) => {
+    widget.innerHTML = `<div class="text-center"><span style="font-size:3rem;">🔌</span><h4 class="mt-1">Computador Conectado!</h4><p>Você conectou corretamente ${score} de ${connections.length} periféricos!</p><span class="badge badge-success">✓ +${score * 20} XP</span></div>`;
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+    if (score >= 4) unlockAchievement("peripheral_master");
+  });
+}
+
+// -----------------------------------------------------------------------
+// 7. MONTE SUA ESTAÇÃO DE TRABALHO (workspace-builder) — Cap.7
+// -----------------------------------------------------------------------
+function initWorkspaceBuilderSimulator(container, isReset) {
+  container.innerHTML = "";
+
+  const items = [
+    { id: "monitor", emoji: "🖥️", name: "Monitor", zone: "Centro da mesa (ao centro, à frente dos olhos)", correct: "monitor-zone" },
+    { id: "teclado", emoji: "⌨️", name: "Teclado", zone: "Frente da mesa (em frente ao monitor)", correct: "teclado-zone" },
+    { id: "mouse", emoji: "🖱️", name: "Mouse", zone: "Lado direito do teclado", correct: "mouse-zone" },
+    { id: "webcam", emoji: "📷", name: "Webcam", zone: "Topo do monitor (centralizada)", correct: "webcam-zone" },
+    { id: "impressora", emoji: "🖨️", name: "Impressora", zone: "Lado esquerdo da mesa", correct: "impressora-zone" },
+    { id: "caixasom", emoji: "🔊", name: "Caixa de Som", zone: "Lados do monitor (par)", correct: "som-zone" }
+  ];
+
+  let placed = {};
+  let lives = 3;
+  let selected = null;
+
+  const zones = [
+    { id: "monitor-zone", label: "🖥️ Centro (monitor)", item: "monitor" },
+    { id: "teclado-zone", label: "⌨️ Frente (teclado)", item: "teclado" },
+    { id: "mouse-zone", label: "🖱️ Dir. do teclado (mouse)", item: "mouse" },
+    { id: "webcam-zone", label: "📷 Topo do monitor (webcam)", item: "webcam" },
+    { id: "impressora-zone", label: "🖨️ Lado esq. (impressora)", item: "impressora" },
+    { id: "som-zone", label: "🔊 Lados monitor (som)", item: "caixasom" }
+  ];
+
+  const widget = document.createElement("div");
+  widget.style.maxWidth = "520px";
+  widget.style.margin = "0 auto";
+
+  const render = () => {
+    widget.innerHTML = "";
+
+    const hearts = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+    const hud = document.createElement("div");
+    hud.style.cssText = "display:flex;justify-content:space-between;margin-bottom:12px;font-size:0.9rem;";
+    hud.innerHTML = `<span>${hearts}</span><span style="color:var(--color-primary);font-weight:700;">✅ ${Object.keys(placed).length}/${items.length}</span>`;
+    widget.appendChild(hud);
+
+    if (lives <= 0) {
+      widget.innerHTML += `<div class="text-center"><span style="font-size:3rem;">💔</span><h4>Sem vidas!</h4><button class="btn btn-primary mt-2" onclick="loadSimulator('workspace-builder',COURSE_CONTENT[state.currentSlideIndex],true)">🔄 Tentar novamente</button></div>`;
+      return;
+    }
+    if (Object.keys(placed).length === items.length) {
+      widget.innerHTML = `<div class="text-center"><span style="font-size:3rem;">🖥️</span><h4 class="mt-1">Estação Montada!</h4><p>Sua mesa de trabalho está configurada! Você ganhou <strong>+${Object.keys(placed).length * 15} XP</strong>!</p><span class="badge badge-success">✓ Missão Cumprida!</span></div>`;
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      return;
+    }
+
+    // Instruction
+    const instr = document.createElement("p");
+    instr.style.cssText = "font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;";
+    instr.textContent = selected ? `Selecionado: ${selected.emoji} ${selected.name} — Agora clique no local correto!` : "Clique em um equipamento, depois clique no local correto da mesa.";
+    widget.appendChild(instr);
+
+    // Item bank
+    const bank = document.createElement("div");
+    bank.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;";
+    items.forEach(item => {
+      if (placed[item.id]) return;
+      const btn = document.createElement("button");
+      btn.className = `btn ${selected && selected.id === item.id ? "btn-primary" : "btn-outline"}`;
+      btn.style.fontSize = "1.2rem";
+      btn.textContent = `${item.emoji} ${item.name}`;
+      btn.addEventListener("click", () => { selected = item; render(); });
+      bank.appendChild(btn);
+    });
+    widget.appendChild(bank);
+
+    // Drop zones
+    const zoneGrid = document.createElement("div");
+    zoneGrid.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:8px;";
+    zones.forEach(zone => {
+      const zBtn = document.createElement("button");
+      zBtn.className = "btn btn-outline";
+      zBtn.style.cssText = "padding:12px 8px;text-align:left;font-size:0.82rem;";
+      const placedHere = Object.entries(placed).find(([k, v]) => v === zone.id);
+      if (placedHere) {
+        const placedItem = items.find(i => i.id === placedHere[0]);
+        zBtn.style.background = "rgba(16,185,129,0.15)";
+        zBtn.style.borderColor = "var(--color-success)";
+        zBtn.innerHTML = `✅ ${placedItem.emoji} ${placedItem.name}<br><small style="color:var(--text-muted)">${zone.label}</small>`;
+        zBtn.disabled = true;
+      } else {
+        zBtn.innerHTML = `📍 <small>${zone.label}</small>`;
+        zBtn.addEventListener("click", () => {
+          if (!selected) return;
+          const feed = document.createElement("div");
+          feed.style.cssText = "font-size:0.82rem;margin-top:8px;";
+          if (zone.item === selected.id) {
+            placed[selected.id] = zone.id;
+            addXP(15);
+            selected = null;
+          } else {
+            lives--;
+            selected = null;
+          }
+          render();
+        });
+      }
+      zoneGrid.appendChild(zBtn);
+    });
+    widget.appendChild(zoneGrid);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// -----------------------------------------------------------------------
+// 8. QUIZ FINAL DA AULA 3 (peripheral-final-quiz) — Cap.8
+// -----------------------------------------------------------------------
+function initPeripheralFinalQuizSimulator(container, isReset) {
+  const questions = [
+    { q: "Qual periférico envia informações DO usuário PARA o computador?", opts: ["Monitor", "Impressora", "Teclado", "Caixa de som"], correct: 2, explanation: "O teclado é um dispositivo de ENTRADA — envia dados do usuário para o computador." },
+    { q: "O monitor é um dispositivo de entrada ou de saída?", opts: ["Entrada", "Saída", "Entrada e Saída", "Armazenamento"], correct: 1, explanation: "O monitor é dispositivo de SAÍDA — recebe dados do PC e os exibe ao usuário." },
+    { q: "Qual cabo é usado para transmitir vídeo e áudio entre computador e TV/monitor?", opts: ["USB-A", "P2 3,5mm", "Ethernet", "HDMI"], correct: 3, explanation: "O HDMI transmite vídeo e áudio digitais em alta definição em um único cabo." },
+    { q: "Para que serve o Bluetooth?", opts: ["Conectar cabos SATA", "Transmitir energia elétrica", "Comunicação sem fio de curto alcance", "Expansão de RAM"], correct: 2, explanation: "Bluetooth é uma tecnologia de comunicação sem fio para curtas distâncias (até ~100m)." },
+    { q: "Qual dispositivo de armazenamento é mais resistente a quedas e impactos?", opts: ["HD Externo (disco rígido)", "SSD Externo (flash)", "Pendrive muito antigo", "CD/DVD"], correct: 1, explanation: "O SSD externo não tem partes móveis — é muito mais resistente a impactos que o HD." },
+    { q: "A webcam é um periférico de...", opts: ["Saída", "Armazenamento", "Entrada", "Processamento"], correct: 2, explanation: "A webcam captura imagens e as ENVIA ao computador — portanto é dispositivo de ENTRADA." },
+    { q: "Qual porta de computador é conhecida por ser reversível (não tem lado errado para plugar)?", opts: ["USB-A", "USB-C", "HDMI", "Ethernet RJ-45"], correct: 1, explanation: "O USB-C é o único conector reversível — pode ser inserido em qualquer posição." },
+    { q: "Um microfone é um dispositivo de...", opts: ["Saída de áudio", "Entrada de áudio", "Armazenamento de som", "Processamento de voz"], correct: 1, explanation: "O microfone converte ondas sonoras em dados e os ENVIA ao computador — é ENTRADA." },
+    { q: "Qual unidade de medida representa 1.024 Gigabytes?", opts: ["Megabyte (MB)", "Terabyte (TB)", "Kilobyte (KB)", "Petabyte (PB)"], correct: 1, explanation: "1 Terabyte = 1.024 Gigabytes. TBs são usados em HDs e SSDs de grande capacidade." },
+    { q: "Um pendrive se conecta ao computador por qual porta?", opts: ["HDMI", "P2 3,5mm", "USB", "Ethernet"], correct: 2, explanation: "O pendrive usa a porta USB (Universal Serial Bus) para se conectar ao computador." }
+  ];
+
+  buildLivesQuizWidget(container, questions, 20, (score, widget) => {
+    const pct = Math.round((score / questions.length) * 100);
+    const grade = pct >= 80 ? "🏆 Excelente!" : pct >= 60 ? "👍 Bom trabalho!" : "📚 Continue estudando!";
+    widget.innerHTML = `
+      <div class="text-center">
+        <span style="font-size:3rem;">${pct >= 70 ? "🏆" : "📚"}</span>
+        <h4 class="mt-1">${grade}</h4>
+        <p>Você acertou <strong>${score} de ${questions.length}</strong> perguntas (${pct}%)</p>
+        <p style="font-size:0.85rem;color:var(--text-muted);">+${score * 20} XP conquistados!</p>
+        <span class="badge badge-success">✓ Quiz Concluído</span>
+      </div>`;
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+    if (score >= 8) unlockAchievement("peripheral_master");
+  });
+}
+
+// -----------------------------------------------------------------------
+// 9. MISSÃO FINAL AULA 3 (aula3-mission-final) — Cap.9
+// -----------------------------------------------------------------------
+function initAula3MissionFinalSimulator(container, isReset) {
+  container.innerHTML = "";
+
+  const slideId = COURSE_CONTENT[state.currentSlideIndex].id;
+  const storageKey = `mission_final_aula3_${window.currentUser ? window.currentUser.id : "local"}`;
+  const saved = localStorage.getItem(storageKey) || "";
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  widget.innerHTML = `
+    <h4>✍️ Sua Resposta</h4>
+    <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;">Descreva os periféricos do seu dia a dia e quais você escolheria para sua estação ideal.</p>
+    <textarea id="a3-mission-textarea" style="width:100%;min-height:160px;background:var(--bg-base);border:1px solid var(--border-soft);border-radius:10px;padding:12px;color:var(--text-primary);font-size:0.9rem;resize:vertical;line-height:1.6;" placeholder="Escreva aqui sua reflexão... (mínimo 3 linhas)">${saved}</textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+      <span id="a3-char-count" style="font-size:0.75rem;color:var(--text-muted);">${saved.length} caracteres</span>
+      <button id="a3-mission-save-btn" class="btn btn-primary">💾 Salvar nas Anotações (+50 XP)</button>
+    </div>
+    <div id="a3-mission-feedback" style="margin-top:10px;"></div>
+  `;
+
+  container.appendChild(widget);
+
+  const textarea = document.getElementById("a3-mission-textarea");
+  const counter = document.getElementById("a3-char-count");
+  const saveBtn = document.getElementById("a3-mission-save-btn");
+  const feedback = document.getElementById("a3-mission-feedback");
+
+  textarea.addEventListener("input", () => {
+    counter.textContent = textarea.value.length + " caracteres";
+  });
+
+  saveBtn.addEventListener("click", () => {
+    const text = textarea.value.trim();
+    if (text.length < 50) {
+      feedback.innerHTML = `<span style="color:var(--color-danger);">✋ Escreva pelo menos 50 caracteres para salvar (mínimo 3 linhas).</span>`;
+      return;
+    }
+    localStorage.setItem(storageKey, textarea.value);
+    // Salva também nas anotações do slide
+    if (!state.notes) state.notes = {};
+    state.notes[slideId] = textarea.value;
+    saveState();
+    addXP(50);
+    markSlideAsCompleted(slideId);
+    unlockAchievement("peripheral_master");
+    saveBtn.disabled = true;
+    feedback.innerHTML = `<span style="color:var(--color-success);">✅ Reflexão salva com sucesso! +50 XP desbloqueados. 🔌 Medalha <strong>Mestre dos Periféricos</strong> conquistada!</span>`;
+  });
+}
+
+// ==========================================================================
+// SUPABASE INTEGRATION, NAV & DASHBOARD HUB HANDLERS (SPA FLOW)
+// ==========================================================================
+/**
+ * Comprime e redimensiona uma imagem usando Canvas HTML5 antes de converter para Base64.
+ * Isso evita salvar strings Base64 gigantescas no banco de dados.
+ */
+function resizeImage(file, maxWidth, maxHeight, callback) {
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
+
+      // Calcular novas dimensões mantendo o aspect ratio
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+      if (height > maxHeight) {
+        width = Math.round((width * maxHeight) / height);
+        height = maxHeight;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Retorna a imagem comprimida como JPEG base64 (qualidade 0.75)
+      callback(canvas.toDataURL("image/jpeg", 0.75));
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+window.currentUser = null;
+window.currentUserProfile = null;
+
+/**
+ * Controla a exibição das três telas principais da SPA
+ */
+function showScreen(screenId) {
+  const landingScreen = document.getElementById("screen-landing");
+  const hubScreen = document.getElementById("screen-hub");
+  const appScreen = document.getElementById("screen-app");
+
+  if (screenId === "landing") {
+    if (landingScreen) landingScreen.classList.remove("screen-hidden");
+    if (hubScreen) hubScreen.classList.add("screen-hidden");
+    if (appScreen) appScreen.classList.add("screen-hidden");
+  } else if (screenId === "hub") {
+    if (landingScreen) landingScreen.classList.add("screen-hidden");
+    if (hubScreen) hubScreen.classList.remove("screen-hidden");
+    if (appScreen) appScreen.classList.add("screen-hidden");
+  } else if (screenId === "course") {
+    if (landingScreen) landingScreen.classList.add("screen-hidden");
+    if (hubScreen) hubScreen.classList.add("screen-hidden");
+    if (appScreen) appScreen.classList.remove("screen-hidden");
+  }
+}
+
+/**
+ * Inicialização e escuta de eventos do Supabase e Navegação
+ */
+function initSupabaseIntegration() {
+  // 1. Ouvinte do Estado de Autenticação do Supabase
+  if (window.supabase) {
+        window.supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth Event:", event);
+      if (session && session.user) {
+        const previousUserId = window.currentUser ? window.currentUser.id : null;
+        const isSameUser = previousUserId === session.user.id;
+        // Verifica se o Hub OU a tela do curso está visível (usuário já estava logado)
+        const hubScreen = document.getElementById("screen-hub");
+        const appScreen = document.getElementById("screen-app");
+        const isInsideApp = (hubScreen && !hubScreen.classList.contains("screen-hidden")) ||
+                            (appScreen && !appScreen.classList.contains("screen-hidden"));
+
+        // Se o usuário já estava logado (hub ou aula) com o mesmo ID, apenas atualiza silenciosamente.
+        // Isso evita recarregar a aula ao trocar de aba do navegador (TOKEN_REFRESHED, etc.)
+        if (isSameUser && isInsideApp && event !== 'SIGNED_IN') {
+          console.log("Auth silent refresh - skipping full reload to preserve lesson state. Event:", event);
+          window.currentUser = session.user;
+          // Atualiza somente a UI de auth na sidebar, sem resetar a tela
+          const profile = window.currentUserProfile;
+          updateAuthUI(true, session.user, profile);
+          return;
+        }
+
+        window.currentUser = session.user;
+        
+        // Exibe tela de carregamento temporária no Hub
+        const hubContent = document.getElementById("hub-main-panel-content");
+        if (hubContent) {
+          hubContent.innerHTML = `<div style="text-align:center; padding: 3rem; font-size:1.2rem;">Carregando portal do usuário...</div>`;
+        }
+        showScreen("hub");
+
+        // Busca o perfil detalhado no banco de dados
+        const profile = await window.getUserProfile(session.user.id);
+        window.currentUserProfile = profile;
+        
+        // Se for um aluno, carrega o progresso do banco
+        if (profile && profile.role === 'student') {
+          const dbState = await window.loadProgressFromDb(session.user.id);
+          if (dbState) {
+            // Mescla progresso atual com o do banco de dados (prioriza o banco)
+            state = { ...state, ...dbState };
+            updateProgressUI();
+            updateStatsUI();
+            initSidebarMenu();
+            loadSlide(state.currentSlideIndex);
+          } else {
+            // Se não houver progresso no banco, salva o atual lá
+            await window.saveProgressToDb(session.user.id, state);
+          }
+        }
+
+        // Renderiza o cabeçalho e conteúdo do Portal Hub
+        renderHubHeader();
+        renderHubContents();
+        updateAuthUI(true, session.user, profile); // Mantém o status da barra lateral atualizado
+      } else {
+        window.currentUser = null;
+        window.currentUserProfile = null;
+        updateAuthUI(false);
+        showScreen("landing");
+      }
+    });
+  }
+
+  // 2. Abas da Landing Page (Login vs Cadastro)
+  const tabLogin = document.getElementById("landing-tab-login");
+  const tabRegister = document.getElementById("landing-tab-register");
+  const formLogin = document.getElementById("landing-login-form");
+  const formRegister = document.getElementById("landing-register-form");
+  const registerTabContent = document.getElementById("register-tab-content");
+
+  if (tabLogin && tabRegister && formLogin && registerTabContent) {
+    tabLogin.addEventListener("click", () => {
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+      formLogin.classList.remove("screen-hidden");
+      registerTabContent.classList.add("screen-hidden");
+    });
+
+    tabRegister.addEventListener("click", () => {
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+      registerTabContent.classList.remove("screen-hidden");
+      formLogin.classList.add("screen-hidden");
+    });
+  }
+
+  // Envio do formulário de Login da Landing Page
+  if (formLogin) {
+    formLogin.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("landing-login-email").value.trim();
+      const password = document.getElementById("landing-login-password").value;
+      const btn = formLogin.querySelector("button[type='submit']");
+
+      try {
+        btn.disabled = true;
+        btn.textContent = "Entrando...";
+        await window.signInUser(email, password);
+        showToastNotification("🔓 Bem-vindo!", "Sua sessão foi iniciada com sucesso.");
+      } catch (error) {
+        console.error(error);
+        window.showModernAlert("🔑 Erro de Acesso", (error.message || "Verifique suas credenciais."));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Entrar na Plataforma";
+      }
+    });
+  }
+
+  // Envio do formulário de Cadastro da Landing Page
+  if (formRegister) {
+    formRegister.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("landing-register-name").value.trim();
+      const email = document.getElementById("landing-register-email").value.trim();
+      const password = document.getElementById("landing-register-password").value;
+      const btn = formRegister.querySelector("button[type='submit']");
+
+      try {
+        btn.disabled = true;
+        btn.textContent = "Criando Conta...";
+        await window.signUpIndependentStudent(email, password, name);
+        showToastNotification("📧 Conta Criada!", "Sua conta foi criada com sucesso.");
+        window.showModernAlert("🚀 Conta Criada!", "Sua conta de Aluno foi criada com sucesso! Agora insira suas credenciais na tela de login para começar.", () => {
+          tabLogin.click();
+        });
+      } catch (error) {
+        console.error(error);
+        window.showModernAlert("❌ Erro ao Cadastrar", (error.message || "Erro desconhecido."));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Criar Conta de Aluno";
+      }
+    });
+  }
+
+  // --- Modal de Cadastro de Escola/Tutor ---
+  const schoolRegisterModal = document.getElementById("school-register-modal");
+  const schoolRegisterCloseBtn = document.getElementById("school-register-close-btn");
+  const schoolRegisterForm = document.getElementById("school-register-form");
+
+  // Abrir o modal via event delegation (funciona para botões dentro de forms ocultos)
+  document.addEventListener("click", function(e) {
+    if (e.target.closest(".link-create-school-trigger")) {
+      e.preventDefault();
+      const modal = document.getElementById("school-register-modal");
+      const form = document.getElementById("school-register-form");
+      if (modal) {
+        modal.classList.remove("hidden");
+        if (form) form.reset();
+      }
+    }
+  });
+
+  // Fechar o modal
+  if (schoolRegisterCloseBtn) {
+    schoolRegisterCloseBtn.addEventListener("click", () => {
+      schoolRegisterModal.classList.add("hidden");
+    });
+  }
+  if (schoolRegisterModal) {
+    schoolRegisterModal.addEventListener("click", (e) => {
+      if (e.target === schoolRegisterModal) schoolRegisterModal.classList.add("hidden");
+    });
+  }
+
+  // Submit do formulário de cadastro de escola
+  if (schoolRegisterForm) {
+    schoolRegisterForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fullName   = document.getElementById("sreg-fullname").value.trim();
+      const schoolName = document.getElementById("sreg-schoolname").value.trim();
+      const email      = document.getElementById("sreg-email").value.trim();
+      const password   = document.getElementById("sreg-password").value;
+      const btn        = document.getElementById("sreg-submit-btn");
+
+      if (!window.signUpSchoolTutor) {
+        window.showModernAlert("❌ Erro", "Função de cadastro não disponível. Verifique o supabase_config.js.");
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = "Criando conta...";
+
+        await window.signUpSchoolTutor(email, password, fullName, schoolName);
+
+        // Fechar modal e mostrar mensagem de sucesso
+        schoolRegisterModal.classList.add("hidden");
+        schoolRegisterForm.reset();
+
+        window.showModernAlert(
+          "🎉 Escola Cadastrada!",
+          `A conta do tutor e a escola "${schoolName}" foram criadas com sucesso!\n\nFaça login com seu e-mail e senha para acessar o painel de tutor e personalizar o perfil da escola.`,
+          () => {
+            // Focar no campo de e-mail do login
+            const loginEmail = document.getElementById("landing-login-email");
+            if (loginEmail) {
+              loginEmail.value = email;
+              loginEmail.focus();
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Erro ao cadastrar escola:", error);
+        window.showModernAlert("❌ Erro ao Cadastrar", error.message || "Verifique os dados e tente novamente.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🏫 Criar Conta da Escola";
+      }
+    });
+  }
+
+  // Botão "Voltar ao Painel" dentro da interface de aula
+  const backToHubBtn = document.getElementById("back-to-hub-trigger");
+  if (backToHubBtn) {
+    backToHubBtn.addEventListener("click", async () => {
+      // Se for aluno, faz uma sincronização rápida antes de voltar
+      if (window.currentUser && window.currentUserProfile && window.currentUserProfile.role === 'student') {
+        try {
+          backToHubBtn.disabled = true;
+          backToHubBtn.innerHTML = "💾 Sincronizando...";
+          await window.saveProgressToDb(window.currentUser.id, state);
+          showToastNotification("💾 Progresso Salvo!", "Seu progresso foi sincronizado.");
+        } catch (error) {
+          console.error("Erro ao sincronizar ao voltar pro Hub:", error);
+        } finally {
+          backToHubBtn.disabled = false;
+          backToHubBtn.innerHTML = "🔙 <span class=\"btn-text\">Painel</span>";
+        }
+      }
+      
+      // Atualiza o Hub antes de abrir a tela
+      renderHubContents();
+      showScreen("hub");
+    });
+  }
+}
+
+/**
+ * /**
+ * /**
+ * Renderiza o cabeçalho superior do Hub (Perfil, Banner e Avatar)
+ */
+function renderHubHeader() {
+  const headerMeta = document.getElementById("hub-user-profile-header");
+  const bannerBg = document.getElementById("hub-banner-background");
+  const avatarMain = document.getElementById("hub-avatar-main");
+  const profileName = document.getElementById("hub-user-full-name");
+  const profileRole = document.getElementById("hub-user-role-label");
+  const tabsNav = document.getElementById("hub-tabs-navigation");
+
+  if (!window.currentUserProfile) return;
+
+  // 1. Atualizar Mídias (Banner de Fundo e Foto de Perfil/Avatar) com Fallback
+  const currentBanner = window.currentUserProfile.banner_url || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200";
+  if (bannerBg) {
+    bannerBg.style.backgroundImage = `url("${currentBanner}")`;
+  }
+
+  const currentAvatar = window.currentUserProfile.avatar_url || "👨‍💻";
+  if (avatarMain) {
+    // Correção: Emojis complexos (como 👨‍💻) têm .length > 4 em UTF-16
+    const isEmoji = !currentAvatar.startsWith("data:image") && !currentAvatar.startsWith("http");
+    if (isEmoji) {
+      avatarMain.innerHTML = `<span class="hub-avatar-display">${currentAvatar}</span>`;
+    } else {
+      avatarMain.innerHTML = `<img src="${currentAvatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">`;
+    }
+  }
+
+  // 2. Atualizar Informações Básicas
+  if (profileName) {
+    profileName.textContent = window.currentUserProfile.full_name || window.currentUser.email;
+  }
+
+  let roleText = "Aluno Autônomo";
+  const role = window.currentUserProfile.role;
+  if (role === 'admin') roleText = "Administrador Central";
+  else if (role === 'school') {
+    const schoolName = window.currentUserProfile.schools ? window.currentUserProfile.schools.name : "Escola";
+    roleText = `Tutor • ${schoolName}`;
+  }
+  if (profileRole) {
+    profileRole.textContent = roleText;
+  }
+
+  // 3. Renderizar Botão de Logout no Topo
+  if (headerMeta) {
+    headerMeta.innerHTML = `
+      <button class="btn btn-outline btn-small" id="hub-logout-btn" style="background: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.2);">Sair 🚪</button>
+    `;
+    document.getElementById("hub-logout-btn").addEventListener("click", () => {
+      window.showModernConfirm("🚪 Encerrar Sessão", "Deseja realmente sair da plataforma?", async () => {
+        await window.signOutUser();
+        showToastNotification("🔒 Sessão Encerrada", "Você saiu da plataforma.");
+      });
+    });
+  }
+
+  // 4. Renderizar Abas de acordo com a função (Role)
+  if (tabsNav) {
+    if (role === 'student') {
+      tabsNav.innerHTML = `
+        <button class="tab-nav-btn active" data-tab="dashboard">📊 Meu Painel</button>
+        <button class="tab-nav-btn" data-tab="curriculum">📚 Módulos</button>
+        <button class="tab-nav-btn" data-tab="achievements">🏆 Conquistas</button>
+        <button class="tab-nav-btn" data-tab="settings">⚙️ Configurações</button>
+      `;
+    } else if (role === 'school') {
+      tabsNav.innerHTML = `
+        <button class="tab-nav-btn active" data-tab="school-dashboard">🏫 Painel da Escola</button>
+        <button class="tab-nav-btn" data-tab="school-profile">🏢 Perfil da Escola</button>
+        <button class="tab-nav-btn" data-tab="settings">⚙️ Configurações</button>
+      `;
+    } else if (role === 'admin') {
+      tabsNav.innerHTML = `
+        <button class="tab-nav-btn active" data-tab="admin-dashboard">🔑 Painel Admin</button>
+        <button class="tab-nav-btn" data-tab="settings">⚙️ Configurações</button>
+      `;
+    }
+
+    // Adiciona escuta de cliques nas abas do Hub
+    const tabButtons = tabsNav.querySelectorAll(".tab-nav-btn");
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const tabName = btn.getAttribute("data-tab");
+        switchHubTab(tabName);
+      });
+    });
+  }
+}
+
+/**
+ * Alterna entre as abas do Hub renderizando o conteúdo dinâmico
+ */
+function switchHubTab(tabName) {
+  const mainPanel = document.getElementById("hub-main-panel-content");
+  if (!mainPanel || !window.currentUserProfile) return;
+
+  // Limpa o painel e insere contêiner de carregamento
+  mainPanel.innerHTML = `<div style="text-align:center; padding: 2rem;">Carregando...</div>`;
+
+  if (tabName === "dashboard") {
+    renderStudentDashboardTab(mainPanel);
+  } else if (tabName === "curriculum") {
+    renderStudentCurriculumTab(mainPanel);
+  } else if (tabName === "achievements") {
+    renderStudentAchievementsTab(mainPanel);
+  } else if (tabName === "settings") {
+    renderSettingsTab(mainPanel);
+  } else if (tabName === "school-dashboard") {
+    renderSchoolDashboardTab(mainPanel);
+  } else if (tabName === "school-profile") {
+    renderSchoolProfileTab(mainPanel);
+  } else if (tabName === "admin-dashboard") {
+    renderAdminDashboardTab(mainPanel);
+  }
+}
+
+/**
+ * ABA 1: Painel do Aluno (Resumo de Progresso e Métricas Rápidas)
+ */
+function renderStudentDashboardTab(container) {
+  const schoolName = window.currentUserProfile.schools ? window.currentUserProfile.schools.name : "Estudo Individual";
+  
+  // Progresso do Curso
+  const totalSlides = COURSE_CONTENT.length;
+  const completedCount = Object.keys(state.completedSlides || {}).length;
+  const progressPercent = totalSlides > 0 ? Math.round((completedCount / totalSlides) * 100) : 0;
+  const achievementsCount = Object.keys(state.unlockedAchievements || {}).length;
+
+  // Achar o título da última aula ativa para continuar
+  const currentSlide = COURSE_CONTENT[state.currentSlideIndex] || COURSE_CONTENT[0];
+  const lastLessonTitle = currentSlide ? currentSlide.title : "Início do Curso";
+
+  // Card do perfil da escola (se o aluno estiver vinculado a uma)
+  let schoolCardHtml = "";
+  if (window.currentUserProfile.school_id && window.currentUserProfile.schools) {
+    const school = window.currentUserProfile.schools;
+    const banner = school.banner_url || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200";
+    const logo = school.logo_url || "";
+    
+    schoolCardHtml = `
+      <div class="school-profile-card" style="background: rgba(22, 20, 45, 0.95); border: 1px solid var(--border-soft); border-radius: var(--border-radius-lg); overflow: hidden; margin-top: 1rem;">
+        <!-- Banner -->
+        <div class="school-card-banner" style="background-image: url('${banner}'); height: 120px; background-size: cover; background-position: center; position: relative;">
+          <!-- Logo sobreposta -->
+          <div class="school-card-logo" style="width: 70px; height: 70px; border-radius: 8px; border: 3px solid rgba(22,20,45,0.95); background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; position: absolute; bottom: -25px; left: 20px; overflow: hidden; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+            ${logo ? `<img src="${logo}" style="width: 100%; height: 100%; object-fit: cover;">` : "🏫"}
+          </div>
+        </div>
+        
+        <!-- Conteúdo do card -->
+        <div class="school-card-content" style="padding: 2.2rem 1.5rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <h4 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--text-primary);">${school.name || "Minha Escola"}</h4>
+            ${school.description ? `<p class="text-muted" style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.45;">${school.description}</p>` : `<p class="text-muted" style="margin-top: 0.5rem; font-size: 0.9rem; font-style: italic;">Nenhuma mensagem cadastrada pela escola.</p>`}
+          </div>
+          
+          <!-- Informações de contato se houver alguma cadastrada -->
+          ${(school.contact_email || school.contact_phone || school.address) ? `
+            <div class="school-card-contacts" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; color: var(--text-secondary);">
+              ${school.contact_email ? `<div style="display:flex; align-items:center; gap:0.4rem;"><span>📧</span> <span style="word-break: break-all;">${school.contact_email}</span></div>` : ""}
+              ${school.contact_phone ? `<div style="display:flex; align-items:center; gap:0.4rem;"><span>📞</span> <span>${school.contact_phone}</span></div>` : ""}
+              ${school.address ? `<div style="display:flex; align-items:center; gap:0.4rem; grid-column: 1 / -1;"><span>📍</span> <span>${school.address}</span></div>` : ""}
+            </div>
+          ` : ""}
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="student-hub-layout" style="display: flex; flex-direction: column; gap: 2rem;">
+      <div class="hub-welcome-banner">
+        <h3 style="margin-bottom: 0.4rem;">👋 Bem-vindo de volta, <span>${window.currentUserProfile.full_name || "Estudante"}</span>!</h3>
+        <p class="text-muted" style="font-size: 0.95rem;">Escola: ${schoolName}</p>
+      </div>
+      
+      <div class="hub-stats-grid">
+        <div class="hub-stat-card">
+          <span class="card-icon">🎖️</span>
+          <div class="card-info">
+            <span class="card-value">Nível ${state.level}</span>
+            <span class="card-label">Seu Nível Atual</span>
+          </div>
+        </div>
+        <div class="hub-stat-card">
+          <span class="card-icon">⚡</span>
+          <div class="card-info">
+            <span class="card-value">${state.xp} XP</span>
+            <span class="card-label">Experiência Acumulada</span>
+          </div>
+        </div>
+        <div class="hub-stat-card">
+          <span class="card-icon">🏆</span>
+          <div class="card-info">
+            <span class="card-value">${achievementsCount} / 8</span>
+            <span class="card-label">Conquistas Desbloqueadas</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hub-progress-section">
+        <div class="progress-details">
+          <div style="display:flex; flex-direction:column; gap:0.2rem;">
+            <h4 style="margin: 0; font-size: 1.1rem;">Seu Progresso Total</h4>
+            <span style="font-size:0.8rem; color:var(--text-muted);">Aula Atual: <strong>${lastLessonTitle}</strong></span>
+          </div>
+          <span style="font-weight: 800; font-size: 1.4rem; color: var(--color-primary-light);">${progressPercent}%</span>
+        </div>
+        <div class="progress-bar-large-track">
+          <div class="progress-bar-large-fill" style="width: ${progressPercent}%;"></div>
+        </div>
+        <div style="display: flex; justify-content: center; margin-top: 1rem;">
+          <button class="btn btn-primary btn-large" id="student-hub-start-btn" style="padding: 0.8rem 2.5rem; font-size: 1.05rem;">
+            🚀 ${progressPercent > 0 ? "Continuar de Onde Parei" : "Começar o Curso de Informática"}
+          </button>
+        </div>
+      </div>
+
+      ${schoolCardHtml}
+    </div>
+  `;
+
+  document.getElementById("student-hub-start-btn").addEventListener("click", () => {
+    showScreen("course");
+  });
+}
+
+/**
+ * ABA 2: Módulos do Curso (Curriculum / Grade de Capítulos)
+ */
+function renderStudentCurriculumTab(container) {
+  // 1. Agrupar slides por capítulo dinamicamente
+  const chapters = [];
+  const chapterMap = {};
+
+  COURSE_CONTENT.forEach((slide, index) => {
+    const chName = slide.chapter || "AULA 1 – INTRODUÇÃO À INFORMÁTICA";
+    if (!chapterMap[chName]) {
+      chapterMap[chName] = {
+        name: chName,
+        slides: []
+      };
+      chapters.push(chapterMap[chName]);
+    }
+    chapterMap[chName].slides.push({
+      index: index,
+      id: slide.id,
+      title: slide.title,
+      type: slide.type
+    });
+  });
+
+  // 2. Construir HTML da lista de módulos
+  let listHtml = `<div style="margin-bottom: 1.5rem;">
+    <h3 style="margin-bottom: 0.2rem;">📚 Módulos Disponíveis</h3>
+    <p class="text-muted" style="font-size:0.9rem;">Explore as aulas e comece a estudar o módulo de sua preferência.</p>
+  </div>`;
+
+  chapters.forEach((chapter, chIdx) => {
+    // Calcular progresso do capítulo
+    const totalSlides = chapter.slides.length;
+    let completedCount = 0;
+    chapter.slides.forEach(s => {
+      if (state.completedSlides[s.id]) completedCount++;
+    });
+    const progressPercent = totalSlides > 0 ? Math.round((completedCount / totalSlides) * 100) : 0;
+
+    listHtml += `
+      <div class="curriculum-module-card ${chIdx === 0 ? 'active' : ''}" data-index="${chIdx}">
+        <div class="curriculum-module-header">
+          <div class="curriculum-module-title-group">
+            <h4 class="curriculum-module-title">${chapter.name}</h4>
+            <span class="curriculum-module-stats">${totalSlides} aulas • ${completedCount} concluídas</span>
+          </div>
+          <div class="curriculum-module-progress-group">
+            <span class="curriculum-module-progress-text">${progressPercent}%</span>
+            <span class="curriculum-module-chevron">❯</span>
+          </div>
+        </div>
+        
+        <ul class="curriculum-lessons-list">
+          ${chapter.slides.map(slide => {
+            const isCompleted = state.completedSlides[slide.id];
+            const isActive = state.currentSlideIndex === slide.index;
+            
+            let statusIcon = "⚪";
+            if (isCompleted) statusIcon = "✅";
+            else if (isActive) statusIcon = "👉";
+
+            let iconClass = isCompleted ? "status-done" : (isActive ? "status-active" : "status-pending");
+
+            return `
+              <li class="curriculum-lesson-item ${isActive ? 'active-slide' : ''}">
+                <span class="curriculum-lesson-status">${statusIcon}</span>
+                <a class="curriculum-lesson-link" data-slide-index="${slide.index}">${slide.title}</a>
+              </li>
+            `;
+          }).join('')}
+        </ul>
+      </div>
+    `;
+  });
+
+  container.innerHTML = listHtml;
+
+  // 3. Bind de Eventos
+  // Abertura/Fechamento do Accordion
+  const cards = container.querySelectorAll(".curriculum-module-card");
+  cards.forEach(card => {
+    const header = card.querySelector(".curriculum-module-header");
+    header.addEventListener("click", () => {
+      const isActive = card.classList.contains("active");
+      cards.forEach(c => c.classList.remove("active"));
+      if (!isActive) card.classList.add("active");
+    });
+  });
+
+  // Cliques nos links das aulas para abrir o curso direto
+  const lessonLinks = container.querySelectorAll(".curriculum-lesson-link");
+  lessonLinks.forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const slideIndex = parseInt(link.getAttribute("data-slide-index"), 10);
+      loadSlide(slideIndex);
+      showScreen("course");
+    });
+  });
+}
+
+/**
+ * ABA 3: Conquistas do Aluno (Visualização da Galeria de Medalhas)
+ */
+function renderStudentAchievementsTab(container) {
+  let listHtml = `
+    <div style="margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 0.2rem;">🏆 Suas Conquistas</h3>
+      <p class="text-muted" style="font-size:0.9rem;">Suba de nível e execute atividades práticas no curso para desbloquear medalhas.</p>
+    </div>
+    <div class="achievements-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.2rem;">
+  `;
+
+  ACHIEVEMENTS.forEach(ach => {
+    const isUnlocked = state.unlockedAchievements && state.unlockedAchievements[ach.id];
+    
+    listHtml += `
+      <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}" style="background: ${isUnlocked ? 'rgba(131, 82, 255, 0.05)' : 'rgba(255,255,255,0.01)'}; border: 1px solid ${isUnlocked ? 'rgba(131,82,255,0.2)' : 'rgba(255,255,255,0.05)'}; padding: 1.2rem; border-radius: 8px; display: flex; gap: 1rem; align-items: center; opacity: ${isUnlocked ? '1' : '0.45'}; transition: all var(--transition-fast);">
+        <div class="achievement-icon" style="font-size: 2.2rem; background: rgba(255,255,255,0.02); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          ${isUnlocked ? ach.icon : "🔒"}
+        </div>
+        <div class="achievement-info" style="display: flex; flex-direction: column; gap: 0.15rem;">
+          <h4 style="margin: 0; font-size: 0.95rem; color: ${isUnlocked ? 'var(--text-primary)' : 'var(--text-muted)'};">${ach.title}</h4>
+          <span style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.3;">${ach.desc}</span>
+          ${isUnlocked ? '<span style="font-size: 0.7rem; color: var(--color-primary-light); font-weight:700; margin-top:2px;">Desbloqueado!</span>' : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  listHtml += `</div>`;
+  container.innerHTML = listHtml;
+}
+
+/**
+ * /**
+ * ABA 4: Configurações do Perfil (Nome, Avatar e Banner Customizados)
+ */
+function renderSettingsTab(container) {
+  // Lista de Avatares Pré-definidos
+  const AVATARS = ["👨‍💻", "👩‍💻", "🧑‍🎓", "👩‍🎓", "🚀", "👾", "🐱", "🦊", "🐻", "🐼"];
+  
+  // Lista de Banners Pré-definidos
+  const BANNERS = [
+    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200", // Glass Wave
+    "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1200", // Cyberpunk Neon
+    "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1200", // Data Net
+    "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1200"  // Soft Gradient
+  ];
+
+  const currentAvatar = window.currentUserProfile.avatar_url || "👨‍💻";
+  const currentBanner = window.currentUserProfile.banner_url || BANNERS[0];
+
+  let selectedAvatar = currentAvatar;
+  let selectedBanner = currentBanner;
+
+  container.innerHTML = `
+    <div style="margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 0.2rem;">⚙️ Configurações da Conta</h3>
+      <p class="text-muted" style="font-size:0.9rem;">Gerencie o visual do seu perfil, altere seu avatar ou faça upload de novas imagens de banner.</p>
+    </div>
+
+    <form id="hub-settings-form">
+      <div class="settings-grid-layout">
+        
+        <!-- Coluna Esquerda: Dados do Usuário e Foto de Perfil -->
+        <div class="hub-card-box" style="display:flex; flex-direction:column; gap:1.2rem;">
+          <h4>👤 Informações do Perfil</h4>
+          
+          <div class="form-group-custom">
+            <label for="settings-display-name">Nome Completo</label>
+            <input type="text" id="settings-display-name" required value="${window.currentUserProfile.full_name || ''}">
+          </div>
+
+          <!-- Seletor de Avatar -->
+          <div class="form-group-custom">
+            <label>Selecione um Avatar Ilustrativo</label>
+            <div class="avatar-picker-grid" style="margin-bottom: 1rem;">
+              ${AVATARS.map(emoji => `
+                <div class="avatar-option-item ${currentAvatar === emoji ? 'selected' : ''}" data-avatar="${emoji}">${emoji}</div>
+              `).join('')}
+            </div>
+            
+            <label style="font-weight:600; display:block; margin-bottom: 0.4rem;">Ou envie uma Foto de Perfil</label>
+            <div class="upload-btn-wrapper">
+              <button type="button" class="btn btn-outline btn-small" id="trigger-avatar-upload" style="display:flex; align-items:center; gap:0.4rem; padding: 0.6rem 1.2rem;">
+                📤 Carregar Nova Foto
+              </button>
+              <input type="file" id="settings-avatar-upload" accept="image/*" style="display: none;">
+            </div>
+            <div id="avatar-upload-preview" style="margin-top:0.5rem; font-size:0.78rem; color:var(--color-primary-light); font-weight: 500;"></div>
+          </div>
+        </div>
+
+        <!-- Coluna Direita: Gerenciamento do Banner do Cabeçalho -->
+        <div class="hub-card-box" style="display:flex; flex-direction:column; gap:1.2rem;">
+          <h4>🖼️ Mídia do Banner de Fundo</h4>
+          
+          <!-- Seletor de Banners -->
+          <div class="form-group-custom">
+            <label>Selecione um Tema de Banner</label>
+            <div class="banner-picker-grid" style="margin-bottom: 1rem;">
+              ${BANNERS.map((bgUrl, idx) => `
+                <div class="banner-option-item ${currentBanner === bgUrl ? 'selected' : ''}" data-banner="${bgUrl}" style="background-image: url('${bgUrl}');"></div>
+              `).join('')}
+            </div>
+            
+            <div class="banner-upload-box" style="background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 6px;">
+              <p class="text-small text-muted" style="margin-bottom: 0.8rem; font-size: 0.78rem; line-height: 1.45;">
+                📐 <strong>Instruções de Medida Ideal:</strong><br>
+                Recomendamos imagens panorâmicas de <strong>1200x200 pixels</strong> (proporção panorâmica 6:1).<br>
+                Isso garante um corte central limpo e perfeito no topo do seu portal.<br>
+                Formatos: <strong>JPG, PNG, WEBP</strong>. Limite: <strong>2MB</strong>.
+              </p>
+              <button type="button" class="btn btn-outline btn-small" id="trigger-banner-upload" style="display:flex; align-items:center; gap:0.4rem; padding: 0.6rem 1.2rem;">
+                📤 Carregar Novo Banner
+              </button>
+              <input type="file" id="settings-banner-upload" accept="image/*" style="display: none;">
+              <div id="banner-upload-preview" style="margin-top:0.5rem; font-size:0.78rem; color:var(--color-primary-light); font-weight: 500;"></div>
+            </div>
+          </div>
+
+          <div style="margin-top: auto; display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary" style="padding:0.75rem 2rem;">Salvar Configurações</button>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  `;
+
+  // --- Lógica Interativa de Seleção ---
+  const avatarItems = container.querySelectorAll(".avatar-option-item");
+  const avatarUploadInput = document.getElementById("settings-avatar-upload");
+  const triggerAvatarBtn = document.getElementById("trigger-avatar-upload");
+  const avatarPreviewText = document.getElementById("avatar-upload-preview");
+  
+  const syncSettingsPreviews = () => {
+    const avatarPrev = document.getElementById("settings-avatar-preview");
+    if (avatarPrev) {
+      const isEmoji = !selectedAvatar.startsWith("data:image") && !selectedAvatar.startsWith("http");
+      if (isEmoji) {
+        avatarPrev.innerHTML = `<span style="font-size: 2.2rem; line-height: 1;">${selectedAvatar}</span>`;
+      } else {
+        avatarPrev.innerHTML = `<img src="${selectedAvatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">`;
+      }
+    }
+    const bannerPrev = document.getElementById("settings-banner-preview");
+    if (bannerPrev) {
+      bannerPrev.style.backgroundImage = `url("${selectedBanner}")`;
+    }
+  };
+
+  // Sincronização inicial
+  syncSettingsPreviews();
+
+  // Triggers para abrir seletor de arquivos ao clicar nos botões customizados
+  if (triggerAvatarBtn && avatarUploadInput) {
+    triggerAvatarBtn.addEventListener("click", () => {
+      avatarUploadInput.click();
+    });
+  }
+
+  // Preview Instantâneo e Seleção dos Emojis de Avatar
+  avatarItems.forEach(item => {
+    item.addEventListener("click", () => {
+      avatarItems.forEach(i => i.classList.remove("selected"));
+      item.classList.add("selected");
+      selectedAvatar = item.getAttribute("data-avatar");
+      avatarUploadInput.value = ""; // Limpa arquivo carregado
+      avatarPreviewText.textContent = "";
+
+      // Preview imediato no cabeçalho e na página de configurações
+      syncSettingsPreviews();
+      const avatarMain = document.getElementById("hub-avatar-main");
+      if (avatarMain) {
+        avatarMain.innerHTML = `<span class="hub-avatar-display">${selectedAvatar}</span>`;
+      }
+    });
+  });
+
+  // Preview Instantâneo e Upload de Foto de Perfil
+  avatarUploadInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        window.showModernAlert("⚠️ Foto Muito Grande", "O tamanho da foto excede o limite de 2MB. Por favor, escolha um arquivo menor.");
+        avatarUploadInput.value = "";
+        return;
+      }
+      avatarPreviewText.textContent = "⌛ Processando imagem...";
+      
+      // Comprime e redimensiona para 120x120 para o avatar ficar bem leve
+      resizeImage(file, 120, 120, (base64) => {
+        selectedAvatar = base64;
+        avatarItems.forEach(i => i.classList.remove("selected"));
+        avatarPreviewText.textContent = "✅ Foto pronta para salvar!";
+        
+        // Preview imediato no cabeçalho e nas configurações
+        syncSettingsPreviews();
+        const avatarMain = document.getElementById("hub-avatar-main");
+        if (avatarMain) {
+          avatarMain.innerHTML = `<img src="${selectedAvatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block;">`;
+        }
+        showToastNotification("📸 Foto Carregada!", "Foto do perfil atualizada na visualização.");
+      });
+    }
+  });
+
+  const bannerItems = container.querySelectorAll(".banner-option-item");
+  const bannerUploadInput = document.getElementById("settings-banner-upload");
+  const triggerBannerBtn = document.getElementById("trigger-banner-upload");
+  const bannerPreviewText = document.getElementById("banner-upload-preview");
+
+  if (triggerBannerBtn && bannerUploadInput) {
+    triggerBannerBtn.addEventListener("click", () => {
+      bannerUploadInput.click();
+    });
+  }
+
+  // Preview Instantâneo e Seleção dos Temas de Banner
+  bannerItems.forEach(item => {
+    item.addEventListener("click", () => {
+      bannerItems.forEach(i => i.classList.remove("selected"));
+      item.classList.add("selected");
+      selectedBanner = item.getAttribute("data-banner");
+      bannerUploadInput.value = ""; // Limpa arquivo de banner
+      bannerPreviewText.textContent = "";
+
+      // Preview imediato no cabeçalho e nas configurações
+      syncSettingsPreviews();
+      const bannerBg = document.getElementById("hub-banner-background");
+      if (bannerBg) {
+        bannerBg.style.backgroundImage = `url("${selectedBanner}")`;
+      }
+    });
+  });
+
+  // Preview Instantâneo e Upload de Banner Personalizado
+  bannerUploadInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 3 * 1024 * 1024) {
+        window.showModernAlert("⚠️ Arquivo Muito Grande", "O tamanho do banner excede o limite de 3MB. Selecione uma imagem menor.");
+        bannerUploadInput.value = "";
+        return;
+      }
+      bannerPreviewText.textContent = "⌛ Redimensionando banner para 1200x200...";
+      
+      // Redimensiona o banner para 1200x200 para salvar espaço e manter proporção
+      resizeImage(file, 1200, 200, (base64) => {
+        selectedBanner = base64;
+        bannerItems.forEach(i => i.classList.remove("selected"));
+        bannerPreviewText.textContent = "✅ Banner pronto para salvar!";
+        
+        // Preview imediato no cabeçalho e nas configurações
+        syncSettingsPreviews();
+        const bannerBg = document.getElementById("hub-banner-background");
+        if (bannerBg) {
+          bannerBg.style.backgroundImage = `url("${selectedBanner}")`;
+        }
+        showToastNotification("🖼️ Banner Carregado!", "Imagem do banner atualizada na visualização.");
+      });
+    }
+  });
+
+  // --- Submit do Formulário de Configurações ---
+  const form = document.getElementById("hub-settings-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const submitBtn = form.querySelector("button[type='submit']");
+    const displayName = document.getElementById("settings-display-name").value.trim();
+
+    try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Salvando...";
+
+      // Salva no Supabase Profiles
+      await window.updateUserProfile(window.currentUser.id, {
+        full_name: displayName,
+        avatar_url: selectedAvatar,
+        banner_url: selectedBanner
+      });
+
+      // Atualiza Cache Local
+      window.currentUserProfile.full_name = displayName;
+      window.currentUserProfile.avatar_url = selectedAvatar;
+      window.currentUserProfile.banner_url = selectedBanner;
+
+      // Re-renderiza o cabeçalho e avisa
+      renderHubHeader();
+      showToastNotification("⚙️ Configurações Salvas!", "Seu perfil foi atualizado com sucesso.");
+      window.showModernAlert("⚙️ Configurações Salvas!", "Seu perfil foi atualizado com sucesso no banco de dados.");
+      
+      // Atualiza a aba atual
+      switchHubTab("settings");
+    } catch (error) {
+      console.error("Erro ao atualizar configurações:", error);
+      window.showModernAlert("❌ Erro ao Salvar", "Não foi possível salvar o perfil: " + (error.message || "Erro desconhecido."));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Salvar Configurações";
+    }
+  });
+}
+
+/**
+ * ABA 5 (Escola): Painel da Escola (Gestão de Alunos)
+ */
+function renderSchoolDashboardTab(container) {
+  const schoolName = window.currentUserProfile.schools ? window.currentUserProfile.schools.name : "Minha Escola";
+  
+  container.innerHTML = `
+    <div class="school-hub-layout">
+      <div class="school-hub-grid" style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 2rem;">
+        
+        <!-- Cadastro de Aluno -->
+        <div class="hub-card-box">
+          <h4 style="margin-bottom: 0.5rem;">➕ Cadastrar Novo Aluno</h4>
+          <p class="text-small text-muted" style="margin-bottom: 1.5rem; font-size: 0.85rem;">Crie o login e senha provisória do aluno. Ele usará esses dados para entrar no portal.</p>
+          
+          <form id="hub-create-student-form">
+            <div class="form-group-custom">
+              <label for="hub-student-name">Nome Completo do Aluno</label>
+              <input type="text" id="hub-student-name" required placeholder="Nome do Aluno">
+            </div>
+            <div class="form-group-custom">
+              <label for="hub-student-email">E-mail de Acesso</label>
+              <input type="email" id="hub-student-email" required placeholder="aluno@escola.com">
+            </div>
+            <div class="form-group-custom">
+              <label for="hub-student-password">Senha Provisória</label>
+              <input type="text" id="hub-student-password" required minlength="6" placeholder="Crie uma senha (min 6)">
+            </div>
+            <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">Registrar Aluno</button>
+          </form>
+        </div>
+
+        <!-- Tabela de Alunos -->
+        <div class="hub-card-box" style="display: flex; flex-direction: column; min-height: 400px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h4 style="margin: 0;">👥 Alunos da Escola e Progresso</h4>
+            <button class="btn btn-outline btn-small" id="school-hub-view-course-btn">📚 Material do Curso</button>
+          </div>
+          
+          <div style="overflow-x: auto; flex-grow: 1;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                  <th style="padding: 0.5rem; font-weight: 600;">Nome</th>
+                  <th style="padding: 0.5rem; font-weight: 600;">E-mail</th>
+                  <th style="padding: 0.5rem; font-weight: 600;">Nível/XP</th>
+                  <th style="padding: 0.5rem; font-weight: 600;">Progresso</th>
+                </tr>
+              </thead>
+              <tbody id="hub-school-students-table-body">
+                <tr><td colspan="4" style="text-align:center; padding: 2rem;">Carregando alunos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Ações do painel do tutor
+  document.getElementById("school-hub-view-course-btn").addEventListener("click", () => {
+    showScreen("course");
+  });
+
+  const createForm = document.getElementById("hub-create-student-form");
+  createForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("hub-student-name").value.trim();
+    const email = document.getElementById("hub-student-email").value.trim();
+    const password = document.getElementById("hub-student-password").value;
+    const btn = createForm.querySelector("button[type='submit']");
+
+    try {
+      btn.disabled = true;
+      btn.textContent = "Registrando...";
+      await window.registerStudentBySchool(email, password, name, window.currentUserProfile.school_id);
+      alert("Aluno registrado com sucesso! Entregue o e-mail e senha criados para ele acessar.");
+      createForm.reset();
+      await loadHubSchoolStudents();
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao cadastrar aluno: " + (error.message || "Erro desconhecido."));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Registrar Aluno";
+    }
+  });
+
+  loadHubSchoolStudents();
+}
+
+/**
+ * ABA 5.2 (Escola): Configurações do Perfil da Escola
+ */
+function renderSchoolProfileTab(container) {
+  if (!window.currentUserProfile || !window.currentUserProfile.schools) {
+    container.innerHTML = `<div style="text-align:center; padding: 2rem;">Erro: Sua conta não está vinculada a nenhuma escola. Contate o administrador.</div>`;
+    return;
+  }
+
+  const school = window.currentUserProfile.schools;
+  const currentLogo = school.logo_url || "";
+  const currentBanner = school.banner_url || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200";
+
+  let selectedLogo = currentLogo;
+  let selectedBanner = currentBanner;
+
+  container.innerHTML = `
+    <div style="margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 0.2rem;">🏢 Perfil Público da Escola</h3>
+      <p class="text-muted" style="font-size:0.9rem;">Gerencie a identidade visual e informações de contato da sua escola. Estes dados serão exibidos no painel dos seus alunos.</p>
+    </div>
+
+    <form id="hub-school-settings-form">
+      <div class="settings-grid-layout">
+        
+        <!-- Coluna Esquerda: Logotipo e Banner -->
+        <div class="hub-card-box" style="display:flex; flex-direction:column; gap:1.2rem;">
+          <h4>🖼️ Identidade Visual</h4>
+          
+          <!-- Upload de Logotipo -->
+          <div class="form-group-custom">
+            <label style="font-weight:600; display:block; margin-bottom: 0.8rem;">Logotipo da Escola</label>
+            <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem;">
+              <div id="school-logo-preview" style="width: 80px; height: 80px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 2rem;">
+                ${currentLogo ? `<img src="${currentLogo}" style="width: 100%; height: 100%; object-fit: cover;">` : "🏫"}
+              </div>
+              <div>
+                <button type="button" class="btn btn-outline btn-small" id="trigger-school-logo-upload" style="display:flex; align-items:center; gap:0.4rem; padding: 0.5rem 1rem;">
+                  📤 Enviar Logo
+                </button>
+                <input type="file" id="school-logo-upload" accept="image/*" style="display: none;">
+                <div id="school-logo-upload-status" style="margin-top:0.4rem; font-size:0.75rem; color:var(--color-primary-light);"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload de Banner -->
+          <div class="form-group-custom">
+            <label style="font-weight:600; display:block; margin-bottom: 0.8rem;">Banner Superior da Escola</label>
+            <div id="school-banner-preview" style="width: 100%; height: 100px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background-size: cover; background-position: center; background-image: url('${currentBanner}'); margin-bottom: 1rem;"></div>
+            
+            <div class="banner-upload-box" style="background: rgba(255,255,255,0.01); border: 1px dashed rgba(255,255,255,0.1); padding: 1rem; border-radius: 6px;">
+              <p class="text-small text-muted" style="margin-bottom: 0.8rem; font-size: 0.75rem; line-height: 1.4;">
+                Recomendamos imagens horizontais de <strong>1200x200 pixels</strong> (proporção panorâmica 6:1) para corte perfeito.<br>
+                Limite: <strong>2MB</strong>.
+              </p>
+              <button type="button" class="btn btn-outline btn-small" id="trigger-school-banner-upload" style="display:flex; align-items:center; gap:0.4rem; padding: 0.5rem 1rem;">
+                📤 Enviar Banner
+              </button>
+              <input type="file" id="school-banner-upload" accept="image/*" style="display: none;">
+              <div id="school-banner-upload-status" style="margin-top:0.4rem; font-size:0.75rem; color:var(--color-primary-light);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna Direita: Informações de Cadastro e Contato -->
+        <div class="hub-card-box" style="display:flex; flex-direction:column; gap:1.2rem;">
+          <h4>📝 Dados Gerais e Contatos</h4>
+          
+          <div class="form-group-custom">
+            <label for="settings-school-name">Nome da Escola</label>
+            <input type="text" id="settings-school-name" required value="${school.name || ''}" placeholder="Nome Oficial da Escola">
+          </div>
+
+          <div class="form-group-custom">
+            <label for="settings-school-description">Mensagem de Boas-vindas / Bio da Escola</label>
+            <textarea id="settings-school-description" style="width:100%; min-height:80px; padding:0.6rem; border-radius:4px; border:1px solid rgba(255,255,255,0.15); background:#1a1936; color:#fff; font-family:inherit; font-size:0.9rem; resize:vertical;" placeholder="Ex: Escola focada no ensino tecnológico e inclusão digital para jovens da comunidade.">${school.description || ''}</textarea>
+          </div>
+
+          <div class="form-group-custom">
+            <label for="settings-school-email">E-mail de Contato</label>
+            <input type="email" id="settings-school-email" value="${school.contact_email || ''}" placeholder="contato@escola.com">
+          </div>
+
+          <div class="form-group-custom">
+            <label for="settings-school-phone">Telefone de Contato</label>
+            <input type="text" id="settings-school-phone" value="${school.contact_phone || ''}" placeholder="(XX) XXXXX-XXXX">
+          </div>
+
+          <div class="form-group-custom">
+            <label for="settings-school-address">Endereço Completo</label>
+            <input type="text" id="settings-school-address" value="${school.address || ''}" placeholder="Rua, Número, Bairro, Cidade - Estado">
+          </div>
+
+          <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary" style="padding:0.75rem 2rem;">Salvar Perfil da Escola</button>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  `;
+
+  // --- Lógica de Upload de Logo ---
+  const logoUploadInput = document.getElementById("school-logo-upload");
+  const triggerLogoBtn = document.getElementById("trigger-school-logo-upload");
+  const logoStatus = document.getElementById("school-logo-upload-status");
+  const logoPreview = document.getElementById("school-logo-preview");
+
+  if (triggerLogoBtn && logoUploadInput) {
+    triggerLogoBtn.addEventListener("click", () => logoUploadInput.click());
+  }
+
+  logoUploadInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        window.showModernAlert("⚠️ Foto Muito Grande", "O tamanho da logo excede o limite de 2MB. Selecione um arquivo menor.");
+        logoUploadInput.value = "";
+        return;
+      }
+      logoStatus.textContent = "⌛ Processando imagem...";
+      resizeImage(file, 150, 150, (base64) => {
+        selectedLogo = base64;
+        logoStatus.textContent = "✅ Logo pronta para salvar!";
+        logoPreview.innerHTML = `<img src="\${selectedLogo}" style="width: 100%; height: 100%; object-fit: cover;">`;
+        showToastNotification("📸 Logo Carregada!", "Imagem da logo atualizada na visualização.");
+      });
+    }
+  });
+
+  // --- Lógica de Upload de Banner ---
+  const bannerUploadInput = document.getElementById("school-banner-upload");
+  const triggerBannerBtn = document.getElementById("trigger-school-banner-upload");
+  const bannerStatus = document.getElementById("school-banner-upload-status");
+  const bannerPreview = document.getElementById("school-banner-preview");
+
+  if (triggerBannerBtn && bannerUploadInput) {
+    triggerBannerBtn.addEventListener("click", () => bannerUploadInput.click());
+  }
+
+  bannerUploadInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        window.showModernAlert("⚠️ Foto Muito Grande", "O tamanho do banner excede o limite de 2MB. Selecione uma imagem menor.");
+        bannerUploadInput.value = "";
+        return;
+      }
+      bannerStatus.textContent = "⌛ Redimensionando banner para 1200x200...";
+      resizeImage(file, 1200, 200, (base64) => {
+        selectedBanner = base64;
+        bannerStatus.textContent = "✅ Banner pronto para salvar!";
+        bannerPreview.style.backgroundImage = `url("\${selectedBanner}")`;
+        showToastNotification("🖼️ Banner Carregado!", "Imagem do banner atualizada na visualização.");
+      });
+    }
+  });
+
+  // --- Envio de Formulário ---
+  const form = document.getElementById("hub-school-settings-form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const submitBtn = form.querySelector("button[type='submit']");
+    const schoolName = document.getElementById("settings-school-name").value.trim();
+    const description = document.getElementById("settings-school-description").value.trim();
+    const contactEmail = document.getElementById("settings-school-email").value.trim();
+    const contactPhone = document.getElementById("settings-school-phone").value.trim();
+    const address = document.getElementById("settings-school-address").value.trim();
+
+    try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Salvando...";
+
+      // Chama atualização da escola
+      await window.updateSchoolProfile(window.currentUserProfile.school_id, {
+        name: schoolName,
+        description: description,
+        logo_url: selectedLogo,
+        banner_url: selectedBanner,
+        contact_email: contactEmail,
+        contact_phone: contactPhone,
+        address: address
+      });
+
+      // Atualiza Cache Local
+      window.currentUserProfile.schools.name = schoolName;
+      window.currentUserProfile.schools.description = description;
+      window.currentUserProfile.schools.logo_url = selectedLogo;
+      window.currentUserProfile.schools.banner_url = selectedBanner;
+      window.currentUserProfile.schools.contact_email = contactEmail;
+      window.currentUserProfile.schools.contact_phone = contactPhone;
+      window.currentUserProfile.schools.address = address;
+
+      // Re-renderiza o cabeçalho e avisa
+      renderHubHeader();
+      showToastNotification("🏫 Perfil Salvo!", "O perfil da escola foi atualizado com sucesso.");
+      window.showModernAlert("🏫 Perfil da Escola Salvo!", "O perfil público da escola foi atualizado no banco de dados.");
+      
+      // Atualiza a aba
+      switchHubTab("school-profile");
+    } catch (error) {
+      console.error("Erro ao atualizar perfil da escola:", error);
+      window.showModernAlert("❌ Erro ao Salvar", "Não foi possível salvar o perfil: " + (error.message || "Erro desconhecido."));
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Salvar Perfil da Escola";
+    }
+  });
+}
+
+/**
+ * ABA 6 (Admin): Painel do Admin Central
+ */
+function renderAdminDashboardTab(container) {
+  container.innerHTML = `
+    <div class="admin-hub-layout">
+      <div class="admin-hub-grid" style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 2rem;">
+        
+        <!-- Cadastro de Escola -->
+        <div class="hub-card-box">
+          <h4 style="margin-bottom: 1rem;">🏫 Cadastrar Nova Escola</h4>
+          <form id="hub-create-school-form" style="margin-bottom: 2rem;">
+            <div class="form-group-custom">
+              <label for="hub-school-name">Nome da Escola</label>
+              <input type="text" id="hub-school-name" required placeholder="Ex: Escola Estadual Machado de Assis">
+            </div>
+            <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">Criar Escola</button>
+          </form>
+
+          <h4 style="margin-bottom: 0.5rem;">Escolas do Sistema</h4>
+          <ul id="hub-admin-schools-list" style="list-style: none; padding: 0; max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
+            <li style="text-align:center;">Carregando escolas...</li>
+          </ul>
+        </div>
+
+        <!-- Tabela Global de Alunos -->
+        <div class="hub-card-box" style="display: flex; flex-direction: column; min-height: 400px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h4 style="margin: 0;">🌍 Todos os Alunos Cadastrados</h4>
+            <button class="btn btn-outline btn-small" id="admin-hub-view-course-btn">📚 Material do Curso</button>
+          </div>
+          
+          <div style="overflow-x: auto; flex-grow: 1;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                  <th style="padding: 0.5rem; font-weight: 600;">Nome</th>
+                  <th style="padding: 0.5rem; font-weight: 600;">Escola</th>
+                  <th style="padding: 0.5rem; font-weight: 600;">Nível/XP</th>
+                  <th style="padding: 0.5rem; font-weight: 600;">Progresso</th>
+                </tr>
+              </thead>
+              <tbody id="hub-admin-students-table-body">
+                <tr><td colspan="4" style="text-align:center; padding: 2rem;">Carregando alunos...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("admin-hub-view-course-btn").addEventListener("click", () => {
+    showScreen("course");
+  });
+
+  const createSchoolForm = document.getElementById("hub-create-school-form");
+  createSchoolForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const schoolName = document.getElementById("hub-school-name").value.trim();
+    const btn = createSchoolForm.querySelector("button[type='submit']");
+
+    try {
+      btn.disabled = true;
+      btn.textContent = "Criando...";
+      await window.createSchool(schoolName);
+      alert("Escola cadastrada com sucesso!");
+      createSchoolForm.reset();
+      await loadHubAdminSchools();
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao criar escola: " + (error.message || "Erro desconhecido."));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Criar Escola";
+    }
+  });
+
+  loadHubAdminSchools();
+  loadHubAdminStudents();
+}
+
+/**
+ * Método que renderiza o Hub inicialmente
+ */
+async function renderHubContents() {
+  if (!window.currentUserProfile) return;
+  const role = window.currentUserProfile.role;
+  
+  if (role === 'student') {
+    switchHubTab("dashboard");
+  } else if (role === 'school') {
+    switchHubTab("school-dashboard");
+  } else if (role === 'admin') {
+    switchHubTab("admin-dashboard");
+  }
+}
+
+/**
+ * Carrega a tabela de alunos da escola no Hub do Tutor
+ */
+async function loadHubSchoolStudents() {
+  const tableBody = document.getElementById("hub-school-students-table-body");
+  if (!tableBody || !window.currentUserProfile || !window.currentUserProfile.school_id) return;
+
+  try {
+    const students = await window.getSchoolStudents(window.currentUserProfile.school_id);
+    tableBody.innerHTML = "";
+
+    if (students.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Nenhum aluno cadastrado nesta escola.</td></tr>`;
+      return;
+    }
+
+    students.forEach(student => {
+      let progressPercent = 0;
+      let level = 1;
+      let xp = 0;
+      let completedSlides = {};
+      let currentSlide = 0;
+      
+      if (student.progress && student.progress.state) {
+        const studentState = student.progress.state;
+        xp = studentState.xp || 0;
+        level = studentState.level || 1;
+        completedSlides = studentState.completedSlides || {};
+        currentSlide = studentState.currentSlideIndex || 0;
+        
+        const totalSlides = COURSE_CONTENT.length;
+        const completedCount = Object.keys(completedSlides).length;
+        progressPercent = totalSlides > 0 ? Math.round((completedCount / totalSlides) * 100) : 0;
+      }
+
+      const currentLessonTitle = COURSE_CONTENT[currentSlide] ? COURSE_CONTENT[currentSlide].title : "—";
+
+      const tr = document.createElement("tr");
+      tr.style.cssText = "cursor:pointer; transition: background 0.15s;";
+      tr.innerHTML = `
+        <td style="padding: 0.75rem 0.5rem; font-weight:700;">${student.full_name || "Sem Nome"}</td>
+        <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary); font-size:0.85rem;">${student.email || "—"}</td>
+        <td style="padding: 0.75rem 0.5rem;">Nv ${level} <span class="text-muted" style="font-size:0.8rem;">(${xp} XP)</span></td>
+        <td style="padding: 0.75rem 0.5rem;">
+          <div class="progress-bar-mini-track">
+            <div class="progress-bar-mini-fill" style="width: ${progressPercent}%;"></div>
+          </div>
+          <span style="font-weight:700;">${progressPercent}%</span>
+        </td>
+        <td style="padding: 0.75rem 0.5rem;">
+          <button class="btn btn-outline btn-small" style="font-size:0.78rem; padding:0.25rem 0.6rem;">🔍 Ver Detalhes</button>
+        </td>
+      `;
+
+      // Hover
+      tr.addEventListener("mouseenter", () => tr.style.background = "rgba(255,255,255,0.04)");
+      tr.addEventListener("mouseleave", () => tr.style.background = "");
+
+      // Clique em "Ver Detalhes"
+      tr.querySelector("button").addEventListener("click", (e) => {
+        e.stopPropagation();
+        abrirDetalheAluno(student, { progressPercent, level, xp, completedSlides, currentSlide, currentLessonTitle });
+      });
+
+      tableBody.appendChild(tr);
+    });
+
+    // Atualiza header para incluir coluna de ação
+    const thead = tableBody.closest("table").querySelector("thead tr");
+    if (thead && thead.children.length === 4) {
+      const th = document.createElement("th");
+      th.style.cssText = "padding: 0.5rem; font-weight: 600;";
+      th.textContent = "Ação";
+      thead.appendChild(th);
+    }
+
+  } catch (error) {
+    console.error(error);
+    tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--color-error);">Erro ao carregar dados.</td></tr>`;
+  }
+}
+
+/**
+ * Abre modal com progresso detalhado de um aluno individual
+ */
+function abrirDetalheAluno(student, stats) {
+  const existing = document.getElementById("detalhe-aluno-modal");
+  if (existing) existing.remove();
+
+  const totalSlides = COURSE_CONTENT.length;
+  const completedCount = Object.keys(stats.completedSlides).length;
+
+  // Monta lista de aulas concluídas e pendentes
+  const aulaRows = COURSE_CONTENT.map((slide, idx) => {
+    const concluida = stats.completedSlides[idx] === true;
+    const atual = idx === stats.currentSlide;
+    const status = concluida
+      ? `<span style="color:#22c55e; font-weight:600;">✅ Concluída</span>`
+      : atual
+        ? `<span style="color:#f59e0b; font-weight:600;">▶ Aula Atual</span>`
+        : `<span style="color:#666;">⬜ Pendente</span>`;
+    return `
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+        <td style="padding:0.4rem 0.5rem; font-size:0.82rem; color:#aaa;">${idx + 1}</td>
+        <td style="padding:0.4rem 0.5rem; font-size:0.85rem;">${slide.title}</td>
+        <td style="padding:0.4rem 0.5rem; text-align:center;">${status}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const overlay = document.createElement("div");
+  overlay.id = "detalhe-aluno-modal";
+  overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:99999;display:flex;align-items:center;justify-content:center;";
+
+  overlay.innerHTML = `
+    <div style="background:#1a1a2e;border:1px solid #7c3aed;border-radius:16px;padding:1.5rem;width:95%;max-width:680px;max-height:85vh;overflow-y:auto;position:relative;color:#fff;">
+      <button onclick="document.getElementById('detalhe-aluno-modal').remove()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;">×</button>
+      
+      <h3 style="margin:0 0 0.25rem;">👤 ${student.full_name || "Aluno"}</h3>
+      <p style="margin:0 0 1.5rem; color:#aaa; font-size:0.85rem;">${student.email || ""}</p>
+
+      <!-- Cards de Resumo -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">
+        <div style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:1rem;text-align:center;">
+          <div style="font-size:1.6rem;font-weight:800;">${stats.level}</div>
+          <div style="font-size:0.8rem;color:#aaa;">Nível</div>
+        </div>
+        <div style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:1rem;text-align:center;">
+          <div style="font-size:1.6rem;font-weight:800;">${stats.xp}</div>
+          <div style="font-size:0.8rem;color:#aaa;">XP Total</div>
+        </div>
+        <div style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:1rem;text-align:center;">
+          <div style="font-size:1.6rem;font-weight:800;">${completedCount}/${totalSlides}</div>
+          <div style="font-size:0.8rem;color:#aaa;">Aulas (${stats.progressPercent}%)</div>
+        </div>
+      </div>
+
+      <!-- Barra de Progresso -->
+      <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:10px;margin-bottom:1.5rem;overflow:hidden;">
+        <div style="background:linear-gradient(90deg,#7c3aed,#a78bfa);height:100%;width:${stats.progressPercent}%;border-radius:99px;transition:width 0.5s;"></div>
+      </div>
+
+      <!-- Tabela de Aulas -->
+      <h4 style="margin:0 0 0.75rem;font-size:0.95rem;">📋 Progresso por Aula</h4>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+          <thead>
+            <tr style="border-bottom:2px solid rgba(255,255,255,0.1);">
+              <th style="padding:0.4rem 0.5rem;text-align:left;color:#aaa;font-weight:600;">#</th>
+              <th style="padding:0.4rem 0.5rem;text-align:left;color:#aaa;font-weight:600;">Aula</th>
+              <th style="padding:0.4rem 0.5rem;text-align:center;color:#aaa;font-weight:600;">Status</th>
+            </tr>
+          </thead>
+          <tbody>${aulaRows}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
+/**
+ * Carrega a lista de escolas no Hub do Admin
+ */
+async function loadHubAdminSchools() {
+  const schoolsList = document.getElementById("hub-admin-schools-list");
+  if (!schoolsList) return;
+
+  try {
+    const schools = await window.getAllSchools();
+    schoolsList.innerHTML = "";
+
+    if (schools.length === 0) {
+      schoolsList.innerHTML = `<li style="text-align:center; padding:0.5rem; color:var(--text-secondary);">Nenhuma escola criada.</li>`;
+      return;
+    }
+
+    schools.forEach(school => {
+      const li = document.createElement("li");
+      li.className = "school-list-item";
+      li.innerHTML = `
+        <span style="font-weight:700;">${school.name}</span>
+        <span style="font-size:0.7rem; color:var(--text-secondary);">${school.id.substring(0, 8)}...</span>
+      `;
+      schoolsList.appendChild(li);
+    });
+  } catch (error) {
+    console.error(error);
+    schoolsList.innerHTML = `<li style="text-align:center; padding:0.5rem; color:var(--color-error);">Erro ao carregar escolas.</li>`;
+  }
+}
+
+/**
+ * Carrega a listagem global de alunos no Hub do Admin
+ */
+async function loadHubAdminStudents() {
+  const studentsTable = document.getElementById("hub-admin-students-table-body");
+  if (!studentsTable) return;
+
+  try {
+    const students = await window.getAllStudentsAdmin();
+    studentsTable.innerHTML = "";
+
+    if (students.length === 0) {
+      studentsTable.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--text-secondary);">Nenhum aluno cadastrado no sistema.</td></tr>`;
+      return;
+    }
+
+    students.forEach(student => {
+      let progressPercent = 0;
+      let level = 1;
+      let xp = 0;
+      
+      if (student.progress && student.progress.state) {
+        const studentState = student.progress.state;
+        xp = studentState.xp || 0;
+        level = studentState.level || 1;
+        
+        const totalSlides = COURSE_CONTENT.length;
+        const completedCount = Object.keys(studentState.completedSlides || {}).length;
+        progressPercent = totalSlides > 0 ? Math.round((completedCount / totalSlides) * 100) : 0;
+      }
+
+      const schoolName = student.schools ? student.schools.name : "Independente";
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td style="padding: 0.75rem 0.5rem; font-weight:700;">${student.full_name || "Sem Nome"}</td>
+        <td style="padding: 0.75rem 0.5rem; font-style: ${student.school_id ? 'normal' : 'italic'}; color: ${student.school_id ? 'var(--text-primary)' : 'var(--color-primary-light)'};">${schoolName}</td>
+        <td style="padding: 0.75rem 0.5rem;">Nível ${level} <span class="text-muted" style="font-size:0.8rem;">(${xp} XP)</span></td>
+        <td style="padding: 0.75rem 0.5rem;">
+          <div class="progress-bar-mini-track">
+            <div class="progress-bar-mini-fill" style="width: ${progressPercent}%;"></div>
+          </div>
+          <span style="font-weight:700;">${progressPercent}%</span>
+        </td>
+      `;
+      studentsTable.appendChild(tr);
+    });
+  } catch (error) {
+    console.error(error);
+    studentsTable.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--color-error);">Erro ao carregar dados dos alunos.</td></tr>`;
+  }
+}
+
+/**
+ * Mantém o botão de login antigo atualizado caso acessem a área de aula diretamente
+ */
+function updateAuthUI(isLoggedIn, user = null, profile = null) {
+  const container = document.getElementById("auth-status-container");
+  if (!container) return;
+
+  if (isLoggedIn && user && profile) {
+    let roleText = "Aluno";
+    
+    if (profile.role === 'admin') roleText = "Administrador";
+    else if (profile.role === 'school') {
+      const schoolName = profile.schools ? profile.schools.name : "Escola";
+      roleText = `Tutor (${schoolName})`;
+    }
+
+    container.innerHTML = `
+      <div class="user-profile-info">
+        <span class="user-profile-name" title="${profile.full_name || user.email}">${profile.full_name || user.email}</span>
+        <span class="user-profile-role">${roleText}</span>
+      </div>
+      <button class="btn btn-outline btn-full btn-small" id="sidebar-logout-btn" style="margin-top: 4px;">Sair 🚪</button>
+    `;
+
+    document.getElementById("sidebar-logout-btn").addEventListener("click", () => {
+      window.showModernConfirm("🚪 Encerrar Sessão", "Deseja realmente sair do seu perfil e encerrar a sessão?", async () => {
+        await window.signOutUser();
+        showToastNotification("🔒 Sessão Encerrada", "Você saiu da plataforma.");
+      });
+    });
+  } else {
+    container.innerHTML = `<button class="btn btn-outline btn-full" id="login-modal-trigger">🔑 Entrar / Cadastrar</button>`;
+    const trigger = document.getElementById("login-modal-trigger");
+    if (trigger) {
+      trigger.addEventListener("click", () => {
+        showScreen("landing");
+      });
+    }
+  }
+}
+
+

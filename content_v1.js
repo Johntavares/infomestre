@@ -1,10 +1,10 @@
-const COURSE_CONTENT = [
+﻿const COURSE_CONTENT = [
   {
     id: "boas-vindas",
     title: "Boas-vindas ao Curso",
     page: 1,
     type: "intro",
-    chapter: "AULA 1 – INTRODUÇÃO À INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <div class="welcome-container text-center">
         <div class="welcome-badge">🚀 AULA 1</div>
@@ -38,7 +38,7 @@ const COURSE_CONTENT = [
     title: "Como Utilizar esta Apostila",
     page: 2,
     type: "intro",
-    chapter: "AULA 1 – INTRODUÇÃO À INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <h2>📖 Como Utilizar esta Apostila Digital</h2>
       <p>Esta plataforma combina teoria e prática de forma direta. Veja abaixo como navegar pelas suas aulas:</p>
@@ -81,7 +81,7 @@ const COURSE_CONTENT = [
     title: "Objetivos e Missões da Aula",
     page: 3,
     type: "intro",
-    chapter: "AULA 1 – INTRODUÇÃO À INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <h2>🎯 Objetivos e Missões da Aula 1</h2>
       <p>Nesta primeira aula, nosso foco é construir a fundação da sua alfabetização digital. Ao concluir esta aula, você será capaz de:</p>
@@ -126,7 +126,7 @@ const COURSE_CONTENT = [
     title: "1.1 O Mundo da Informática",
     page: 4,
     type: "lesson",
-    chapter: "CAPÍTULO 1 – PRIMEIROS PASSOS NA INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <h2>1.1 O Mundo da Informática</h2>
       <p>A palavra <strong>Informática</strong> surge da junção de dois termos essenciais: <strong>Informação</strong> + <strong>Automática</strong>. Ou seja, informática é o processamento automático da informação por meio de dispositivos eletrônicos chamados computadores.</p>
@@ -153,7 +153,7 @@ const COURSE_CONTENT = [
     title: "1.2 A História dos Computadores",
     page: 5,
     type: "lesson",
-    chapter: "CAPÍTULO 1 – PRIMEIROS PASSOS NA INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <h2>1.2 A História dos Computadores</h2>
       <p>Os seres humanos sempre precisaram calcular coisas. O primeiro grande ancestral do computador foi o <strong>Ábaco</strong>, inventado há milhares de anos para realizar operações simples de matemática.</p>
@@ -179,7 +179,7 @@ const COURSE_CONTENT = [
     title: "1.3 A Evolução da Computação",
     page: 6,
     type: "lesson",
-    chapter: "CAPÍTULO 1 – PRIMEIROS PASSOS NA INFORMÁTICA",
+    chapter: "AULA 1",
     interactiveId: "timeline",
     content: `
       <h2>1.3 A Evolução da Computação</h2>
@@ -197,7 +197,7 @@ const COURSE_CONTENT = [
     title: "1.4 A Informática no Dia a Dia",
     page: 7,
     type: "lesson",
-    chapter: "CAPÍTULO 1 – PRIMEIROS PASSOS NA INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <h2>1.4 A Informática no Dia a Dia</h2>
       <p>Você já parou para pensar em quantas vezes você interage com sistemas computacionais em um único dia?</p>
@@ -228,7 +228,7 @@ const COURSE_CONTENT = [
     title: "1.5 Desafio Prático",
     page: 8,
     type: "challenge",
-    chapter: "CAPÍTULO 1 – PRIMEIROS PASSOS NA INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <h2>🏆 Desafio Prático do Capítulo 1</h2>
       <p>Responda às questões sobre a introdução à informática e a história dos computadores para testar o que você aprendeu e desbloquear XP!</p>
@@ -264,7 +264,7 @@ const COURSE_CONTENT = [
     title: "2.1 O que é Hardware?",
     page: 9,
     type: "lesson",
-    chapter: "CAPÍTULO 2 – EXPLORANDO O COMPUTADOR",
+    chapter: "AULA 1",
     content: `
       <h2>2.1 O que é Hardware?</h2>
       <p>Se você perguntar a um profissional de TI de forma humorada, a resposta clássica é: <strong>"Hardware é a parte que você chuta; Software é a parte que você xinga."</strong></p>
@@ -285,7 +285,7 @@ const COURSE_CONTENT = [
     title: "2.2 Conhecendo os Componentes do Computador",
     page: 10,
     type: "lesson",
-    chapter: "CAPÍTULO 2 – EXPLORANDO O COMPUTADOR",
+    chapter: "AULA 1",
     content: `
       <h2>2.2 Componentes Internos do Computador</h2>
       <p>Quando abrimos o gabinete (aquela 'caixa' de metal que muitos chamam erroneamente de CPU), encontramos uma série de componentes trabalhando em perfeita sincronia:</p>
@@ -308,7 +308,7 @@ const COURSE_CONTENT = [
     title: "2.3 A Placa-Mãe",
     page: 11,
     type: "lesson",
-    chapter: "CAPÍTULO 2 – EXPLORANDO O COMPUTADOR",
+    chapter: "AULA 1",
     content: `
       <h2>2.3 A Placa-Mãe (Motherboard)</h2>
       <p>A <strong>Placa-Mãe</strong> é a espinha dorsal e o sistema circulatório do computador. Ela serve como a central de conectividade física de todas as outras peças.</p>
@@ -336,7 +336,7 @@ const COURSE_CONTENT = [
     title: "2.4 O Processador: o Cérebro do Computador",
     page: 12,
     type: "lesson",
-    chapter: "CAPÍTULO 2 – EXPLORANDO O COMPUTADOR",
+    chapter: "AULA 1",
     content: `
       <h2>2.4 O Processador (CPU)</h2>
       <p>A sigla <strong>CPU</strong> significa <em>Central Processing Unit</em> (Unidade Central de Processamento). Ele é o verdadeiro <strong>cérebro</strong> do computador.</p>
@@ -360,7 +360,7 @@ const COURSE_CONTENT = [
     title: "2.5 Memória RAM",
     page: 13,
     type: "lesson",
-    chapter: "CAPÍTULO 2 – EXPLORANDO O COMPUTADOR",
+    chapter: "AULA 1",
     content: `
       <h2>2.5 Memória RAM</h2>
       <p>A sigla <strong>RAM</strong> significa <em>Random Access Memory</em> (Memória de Acesso Aleatório).</p>
@@ -380,7 +380,7 @@ const COURSE_CONTENT = [
     title: "2.6 Armazenamento: HD e SSD",
     page: 14,
     type: "lesson",
-    chapter: "CAPÍTULO 2 – EXPLORANDO O COMPUTADOR",
+    chapter: "AULA 1",
     content: `
       <h2>2.6 Armazenamento: HD contra SSD</h2>
       <p>Diferente da RAM, a memória de armazenamento secundária é <strong>não-volátil</strong>. Os arquivos permanecem guardados mesmo sem energia elétrica.</p>
@@ -415,7 +415,7 @@ const COURSE_CONTENT = [
     title: "2.7 Fonte de Alimentação",
     page: 15,
     type: "lesson",
-    chapter: "CAPÍTULO 2 – EXPLORANDO O COMPUTADOR",
+    chapter: "AULA 1",
     content: `
       <h2>2.7 A Fonte de Alimentação (PSU)</h2>
       <p>Nenhum circuito eletrônico do computador funciona sem energia. A <strong>Fonte de Alimentação</strong> (ou <em>Power Supply Unit</em>) tem duas funções vitais:</p>
@@ -443,7 +443,7 @@ const COURSE_CONTENT = [
     title: "2.8 Desafio Prático",
     page: 16,
     type: "challenge",
-    chapter: "CAPÍTULO 2 – EXPLORANDO O COMPUTADOR",
+    chapter: "AULA 1",
     interactiveId: "hardware-builder",
     content: `
       <h2>🔧 Missão Prática: Montagem Virtual de Hardware</h2>
@@ -459,7 +459,7 @@ const COURSE_CONTENT = [
     title: "3.1 Dispositivos de Entrada",
     page: 17,
     type: "lesson",
-    chapter: "CAPÍTULO 3 – CONHECENDO OS PERIFÉRICOS",
+    chapter: "AULA 1",
     content: `
       <h2>3.1 Dispositivos de Entrada (Input)</h2>
       <p>Os <strong>Periféricos</strong> são todos os aparelhos externos conectados à CPU que permitem a comunicação entre o usuário e o computador.</p>
@@ -469,26 +469,26 @@ const COURSE_CONTENT = [
       </div>
 
       <h4 class="mt-2">Exemplos Principais:</h4>
-      <div class="grid grid-4 gap-1 mt-1">
-        <div class="card text-center text-small info-card-clickable" onclick="openInfoPopup('Teclado Mecânico','O teclado envia um <strong>código de varredura</strong> (scancode) para o computador a cada tecla pressionada. Teclados mecânicos (como o da foto) usam switches individuais para cada tecla, oferecendo feedback tátil e durabilidade de mais de 50 milhões de pressionamentos por tecla!','images/popup_keyboard.png','Dispositivo de Entrada')">
-          <div style="font-size:2rem">⌨️</div>
+      <div class="grid grid-2 gap-2 mt-1">
+        <div class="card bg-card-dark text-center info-card-clickable" onclick="openInfoPopup('Teclado Mecânico','O teclado envia um <strong>código de varredura</strong> (scancode) para o computador a cada tecla pressionada. Teclados mecânicos (como o da foto) usam switches individuais para cada tecla, oferecendo feedback tátil e durabilidade de mais de 50 milhões de pressionamentos por tecla!','images/popup_keyboard.png','Dispositivo de Entrada')">
+          <div style="font-size:2.5rem">⌨️</div>
           <strong>Teclado</strong>
-          <p>Envia códigos de teclas e caracteres de texto.</p>
+          <p class="text-small">Envia códigos de teclas e caracteres de texto.</p>
         </div>
-        <div class="card text-center text-small info-card-clickable" onclick="openInfoPopup('Mouse — Dispositivo Apontador','O mouse moderno usa um <strong>sensor óptico ou a laser</strong> que fotografa a superfície milhares de vezes por segundo para calcular o movimento. A precisão é medida em <strong>DPI</strong> (pontos por polegada) — quanto maior o DPI, maior a precisão do movimento na tela.','images/popup_mouse.png','Dispositivo de Entrada')">
-          <div style="font-size:2rem">🖱️</div>
+        <div class="card bg-card-dark text-center info-card-clickable" onclick="openInfoPopup('Mouse — Dispositivo Apontador','O mouse moderno usa um <strong>sensor óptico ou a laser</strong> que fotografa a superfície milhares de vezes por segundo para calcular o movimento. A precisão é medida em <strong>DPI</strong> (pontos por polegada) — quanto maior o DPI, maior a precisão do movimento na tela.','images/popup_mouse.png','Dispositivo de Entrada')">
+          <div style="font-size:2.5rem">🖱️</div>
           <strong>Mouse</strong>
-          <p>Envia coordenadas bidimensionais de movimento e cliques.</p>
+          <p class="text-small">Envia coordenadas bidimensionais de movimento e cliques.</p>
         </div>
-        <div class="card text-center text-small info-card-clickable" onclick="openInfoPopup('Microfone Digital','O microfone converte variações de pressão do ar (som) em sinais elétricos analógicos, que são então convertidos em dados digitais pela <strong>placa de som</strong> (ADC - Conversor Analógico-Digital). A qualidade do microfone afeta diretamente chamadas de vídeo, podcasts e gravações.','images/popup_microphone.png','Dispositivo de Entrada')">
-          <div style="font-size:2rem">🎙️</div>
+        <div class="card bg-card-dark text-center info-card-clickable" onclick="openInfoPopup('Microfone Digital','O microfone converte variações de pressão do ar (som) em sinais elétricos analógicos, que são então convertidos em dados digitais pela <strong>placa de som</strong> (ADC - Conversor Analógico-Digital). A qualidade do microfone afeta diretamente chamadas de vídeo, podcasts e gravações.','images/popup_microphone.png','Dispositivo de Entrada')">
+          <div style="font-size:2.5rem">🎙️</div>
           <strong>Microfone</strong>
-          <p>Converte ondas de som analógico em sinais digitais de áudio.</p>
+          <p class="text-small">Converte ondas de som analógico em sinais digitais de áudio.</p>
         </div>
-        <div class="card text-center text-small info-card-clickable" onclick="openInfoPopup('Webcam — Câmera Digital','A webcam captura imagens em sequência (frames) a uma taxa de <strong>30 ou 60 FPS</strong> (quadros por segundo). Cada frame é convertido em pixels digitais e enviado ao computador via USB. Webcams modernas gravam em <strong>Full HD (1080p)</strong> ou 4K!','images/popup_webcam.png','Dispositivo de Entrada')">
-          <div style="font-size:2rem">📷</div>
+        <div class="card bg-card-dark text-center info-card-clickable" onclick="openInfoPopup('Webcam — Câmera Digital','A webcam captura imagens em sequência (frames) a uma taxa de <strong>30 ou 60 FPS</strong> (quadros por segundo). Cada frame é convertido em pixels digitais e enviado ao computador via USB. Webcams modernas gravam em <strong>Full HD (1080p)</strong> ou 4K!','images/popup_webcam.png','Dispositivo de Entrada')">
+          <div style="font-size:2.5rem">📷</div>
           <strong>Webcam</strong>
-          <p>Captura quadros de imagem de vídeo em tempo real.</p>
+          <p class="text-small">Captura quadros de imagem de vídeo em tempo real.</p>
         </div>
       </div>
     `
@@ -498,7 +498,7 @@ const COURSE_CONTENT = [
     title: "3.2 Dispositivos de Saída",
     page: 18,
     type: "lesson",
-    chapter: "CAPÍTULO 3 – CONHECENDO OS PERIFÉRICOS",
+    chapter: "AULA 1",
     content: `
       <h2>3.2 Dispositivos de Saída (Output)</h2>
       <p>Diferente dos de entrada, os <strong>Dispositivos de Saída</strong> recebem as informações processadas em formato digital dentro do computador e as convertem para formatos compreensíveis pelos sentidos humanos (visão, audição, tato).</p>
@@ -533,7 +533,7 @@ const COURSE_CONTENT = [
     title: "3.3 Dispositivos de Armazenamento Externo",
     page: 19,
     type: "lesson",
-    chapter: "CAPÍTULO 3 – CONHECENDO OS PERIFÉRICOS",
+    chapter: "AULA 1",
     content: `
       <h2>3.3 Dispositivos de Armazenamento Externo</h2>
       <p>Estes periféricos são usados para transportar dados entre computadores diferentes ou fazer cópias de segurança externas (backups).</p>
@@ -559,7 +559,7 @@ const COURSE_CONTENT = [
     title: "3.4 Conectando os Periféricos",
     page: 20,
     type: "lesson",
-    chapter: "CAPÍTULO 3 – CONHECENDO OS PERIFÉRICOS",
+    chapter: "AULA 1",
     content: `
       <h2>3.4 Conectando os Periféricos e suas Portas</h2>
       <p>Para conectar os periféricos à placa-mãe do gabinete, precisamos conhecer os principais formatos de portas traseiras:</p>
@@ -606,7 +606,7 @@ const COURSE_CONTENT = [
     title: "3.5 Desafio Prático",
     page: 21,
     type: "challenge",
-    chapter: "CAPÍTULO 3 – CONHECENDO OS PERIFÉRICOS",
+    chapter: "AULA 1",
     interactiveId: "peripheral-connect",
     content: `
       <h2>🔌 Missão Prática: Conexão Traseira de Periféricos</h2>
@@ -622,7 +622,7 @@ const COURSE_CONTENT = [
     title: "4.1 O que é Software?",
     page: 22,
     type: "lesson",
-    chapter: "CAPÍTULO 4 – SOFTWARE EM AÇÃO",
+    chapter: "AULA 1",
     content: `
       <h2>4.1 O que é Software?</h2>
       <p>Se o hardware é a máquina física de metal, circuitos e plástico, o <strong>Software</strong> é a alma lógica que dá vida e utilidade a todo esse emaranhado elétrico.</p>
@@ -639,7 +639,7 @@ const COURSE_CONTENT = [
     title: "4.2 Tipos de Software",
     page: 23,
     type: "lesson",
-    chapter: "CAPÍTULO 4 – SOFTWARE EM AÇÃO",
+    chapter: "AULA 1",
     content: `
       <h2>4.2 Categorias Principais de Software</h2>
       <p>Dividimos os softwares de acordo com a proximidade do hardware e a finalidade de uso:</p>
@@ -665,7 +665,7 @@ const COURSE_CONTENT = [
     title: "4.3 Sistemas Operacionais",
     page: 24,
     type: "lesson",
-    chapter: "CAPÍTULO 4 – SOFTWARE EM AÇÃO",
+    chapter: "AULA 1",
     content: `
       <h2>4.3 O Sistema Operacional (S.O.)</h2>
       <p>O <strong>Sistema Operacional</strong> é o software mais importante de qualquer computador. Ele serve de intermediador invisível entre você (usuário), os aplicativos que você abre e o hardware da máquina.</p>
@@ -695,7 +695,7 @@ const COURSE_CONTENT = [
     title: "4.4 Windows: Conhecendo o Sistema Operacional",
     page: 25,
     type: "lesson",
-    chapter: "CAPÍTULO 4 – SOFTWARE EM AÇÃO",
+    chapter: "AULA 1",
     content: `
       <h2>4.4 Microsoft Windows e sua Interface</h2>
       <p>O Windows baseia-se no conceito de <strong>GUI</strong> (<em>Graphical User Interface</em>), onde interagimos por elementos visuais na tela. Seus conceitos básicos são:</p>
@@ -731,7 +731,7 @@ const COURSE_CONTENT = [
     title: "4.5 Desafio Prático",
     page: 26,
     type: "challenge",
-    chapter: "CAPÍTULO 4 – SOFTWARE EM AÇÃO",
+    chapter: "AULA 1",
     interactiveId: "windows-desktop",
     content: `
       <h2>🖥️ Missão Prática: O Simulador do Windows</h2>
@@ -752,7 +752,7 @@ const COURSE_CONTENT = [
     title: "5.1 Cuidados com o Computador",
     page: 27,
     type: "lesson",
-    chapter: "CAPÍTULO 5 – BOAS PRÁTICAS EM INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <h2>5.1 Cuidados Físicos e Limpeza</h2>
       <p>Para garantir que o computador tenha uma vida útil longa e funcione sem travamentos por superaquecimento, siga estas boas práticas básicas:</p>
@@ -782,7 +782,7 @@ const COURSE_CONTENT = [
     title: "5.2 Segurança Digital",
     page: 28,
     type: "lesson",
-    chapter: "CAPÍTULO 5 – BOAS PRÁTICAS EM INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <h2>5.2 Introdução à Segurança Digital</h2>
       <p>Usar o computador exige prudência digital para proteger seus dados pessoais e financeiros de golpistas e softwares maliciosos (malwares).</p>
@@ -803,7 +803,7 @@ const COURSE_CONTENT = [
     title: "5.3 Ergonomia no Ambiente de Trabalho",
     page: 29,
     type: "lesson",
-    chapter: "CAPÍTULO 5 – BOAS PRÁTICAS EM INFORMÁTICA",
+    chapter: "AULA 1",
     interactiveId: "ergonomics",
     content: `
       <h2>5.3 Ergonomia na Computação</h2>
@@ -823,7 +823,7 @@ const COURSE_CONTENT = [
     title: "5.4 Organização de Arquivos e Pastas",
     page: 30,
     type: "lesson",
-    chapter: "CAPÍTULO 5 – BOAS PRÁTICAS EM INFORMÁTICA",
+    chapter: "AULA 1",
     content: `
       <h2>5.4 Organização de Arquivos e Pastas</h2>
       <p>Manter seus arquivos bagunçados na Área de Trabalho é o equivalente a espalhar pilhas de papéis aleatórios por todo o chão do seu escritório. Cedo ou tarde, você vai gastar horas para achar um documento vital.</p>
@@ -856,7 +856,7 @@ const COURSE_CONTENT = [
     title: "Resumo da Aula",
     page: 31,
     type: "summary",
-    chapter: "ENCERRAMENTO DA AULA",
+    chapter: "AULA 1",
     content: `
       <h2>📚 Resumo da Aula 1</h2>
       <p>Parabéns por chegar até o encerramento da primeira aula! Vamos relembrar os pilares fundamentais que estudamos:</p>
@@ -886,7 +886,7 @@ const COURSE_CONTENT = [
     title: "Desafio Final",
     page: 32,
     type: "challenge",
-    chapter: "ENCERRAMENTO DA AULA",
+    chapter: "AULA 1",
     content: `
       <h2>🏆 Desafio Final da Aula 1</h2>
       <p>Responda às questões integradas sobre todo o conteúdo da Aula para verificar se você consolidou sua base de conhecimentos. Acerte as questões para se preparar para a Avaliação Final!</p>
@@ -922,7 +922,7 @@ const COURSE_CONTENT = [
     title: "Projeto Prático",
     page: 33,
     type: "project",
-    chapter: "ENCERRAMENTO DA AULA",
+    chapter: "AULA 1",
     content: `
       <h2>🚀 Projeto Prático: O Desafio do Novo Computador</h2>
       <p>Chegou a hora de aplicar tudo na vida real! Imagine a seguinte situação hipotética de projeto prático:</p>
@@ -949,7 +949,7 @@ const COURSE_CONTENT = [
     title: "Avaliação Final",
     page: 34,
     type: "evaluation",
-    chapter: "ENCERRAMENTO DA AULA",
+    chapter: "AULA 1",
     interactiveId: "final-exam",
     content: `
       <h2>🎓 Avaliação Final do Curso</h2>
@@ -1016,7 +1016,7 @@ const COURSE_CONTENT = [
     title: "🎉 Conclusão da Aula 1",
     page: 35,
     type: "lesson",
-    chapter: "ENCERRAMENTO DA AULA 1",
+    chapter: "AULA 1",
     content: `
       <style>
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
@@ -1118,7 +1118,7 @@ const COURSE_CONTENT = [
     title: "Revisão da Aula 1",
     page: 36,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     interactiveId: "aula2-revision",
     content: `
       <h2>Revisão da Aula 1</h2>
@@ -1139,7 +1139,7 @@ const COURSE_CONTENT = [
     title: "O que é Hardware?",
     page: 37,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     content: `
       <h2>O que é Hardware?</h2>
       <p>Hardware é todo componente físico, circuito, placa, chip ou periférico que compõe o computador ou celular.</p>
@@ -1174,7 +1174,7 @@ const COURSE_CONTENT = [
     title: "O Processador (CPU)",
     page: 38,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     content: `
       <h2>O Processador (CPU): O Cérebro da Máquina</h2>
       <p>A Unidade Central de Processamento (CPU) é responsável por calcular e executar todas as tarefas lógicas que você solicita ao computador.</p>
@@ -1196,7 +1196,7 @@ const COURSE_CONTENT = [
     title: "Memória RAM vs Armazenamento",
     page: 39,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     content: `
       <h2>Memória RAM vs Armazenamento Definitivo</h2>
       <p>Uma confusão comum é misturar memória RAM com espaço de armazenamento (HD/SSD). Entender essa diferença é o segredo para resolver lentidões no PC.</p>
@@ -1227,7 +1227,7 @@ const COURSE_CONTENT = [
     title: "Placa-Mãe e Placa de Vídeo",
     page: 40,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     content: `
       <h2>Placa-Mãe e Placa de Vídeo (GPU)</h2>
       
@@ -1247,7 +1247,7 @@ const COURSE_CONTENT = [
     title: "Periféricos",
     page: 41,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     content: `
       <h2>Periféricos: Entrada, Saída e Mistos</h2>
       <p>Os periféricos são qualquer equipamento externo conectado ao computador, expandindo suas funções. Eles são classificados de acordo com a direção em que a informação viaja:</p>
@@ -1276,7 +1276,7 @@ const COURSE_CONTENT = [
     title: "Cuidados e Energia",
     page: 42,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     content: `
       <h2>Cuidados, Resfriamento e Energia</h2>
       <p>Hardware sofre desgaste físico. Entender como protegê-lo aumenta a vida útil do equipamento em muitos anos.</p>
@@ -1302,7 +1302,7 @@ const COURSE_CONTENT = [
     title: "O Interior do Computador",
     page: 38,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     interactiveId: "hardware-tour",
     content: `
       <h2>Conhecendo o Interior do Computador</h2>
@@ -1315,7 +1315,7 @@ const COURSE_CONTENT = [
     title: "Como Tudo Funciona Junto",
     page: 39,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     interactiveId: "hardware-flow",
     content: `
       <h2>Como Tudo Funciona Junto?</h2>
@@ -1328,7 +1328,7 @@ const COURSE_CONTENT = [
     title: "Curiosidades do Hardware",
     page: 40,
     type: "lesson",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     content: `
       <h2>Curiosidades do Mundo do Hardware</h2>
       <p>O desenvolvimento da computação nos últimos 80 anos é marcado por avanços tecnológicos extraordinários de miniaturização e velocidade.</p>
@@ -1352,7 +1352,7 @@ const COURSE_CONTENT = [
     title: "Simulador: Identifique o Componente",
     page: 41,
     type: "challenge",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     interactiveId: "identify-component",
     content: `
       <h2>🔍 Missão Prática: Identifique o Componente</h2>
@@ -1367,7 +1367,7 @@ const COURSE_CONTENT = [
     title: "Mini Game: Associe a Função",
     page: 42,
     type: "challenge",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     interactiveId: "match-functions",
     content: `
       <h2>🎮 Mini Game: Associe o Componente à Função</h2>
@@ -1382,7 +1382,7 @@ const COURSE_CONTENT = [
     title: "Desafio Prático: Computador Aberto",
     page: 43,
     type: "challenge",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     interactiveId: "open-pc-inspect",
     content: `
       <h2>🛠️ Desafio: Onde está o Componente?</h2>
@@ -1397,7 +1397,7 @@ const COURSE_CONTENT = [
     title: "Questionário de Fixação",
     page: 44,
     type: "challenge",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     content: `
       <h2>📝 Teste de Conhecimento: Aula 2</h2>
       <p>Responda às 10 questões a seguir sobre funcionamento interno de computadores e características das peças de hardware. Ganhe XP e conclua o questionário!</p>
@@ -1470,7 +1470,7 @@ const COURSE_CONTENT = [
     title: "Missão Final: Seu PC Ideal",
     page: 45,
     type: "challenge",
-    chapter: "AULA 2 – EXPLORANDO O HARDWARE",
+    chapter: "AULA 2",
     interactiveId: "aula2-mission-final",
     content: `
       <h2>🗺️ Missão Final: Planejando seu Computador</h2>
@@ -1483,7 +1483,7 @@ const COURSE_CONTENT = [
     title: "🎉 Conclusão da Aula 2",
     page: 46,
     type: "lesson",
-    chapter: "ENCERRAMENTO DA AULA 2",
+    chapter: "AULA 2",
     content: `
       <style>
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
@@ -1534,10 +1534,585 @@ const COURSE_CONTENT = [
         <div style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--text-primary);margin-bottom:10px;">🗺️ O que vem a seguir?</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(131,82,255,0.1);border-radius:10px;border:1px solid rgba(131,82,255,0.2);">
-            <span style="font-size:1.5rem;">📶</span>
+            <span style="font-size:1.5rem;">🔌</span>
             <div>
-              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Aula 3 <span class="badge-aula">Em breve</span></div>
-              <div style="font-size:0.78rem;color:var(--text-muted);">Internet, Redes e Navegadores — Explore o mundo conectado</div>
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Aula 3 <span class="badge-aula" style="background:var(--color-success);">Disponível</span></div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">Periféricos e Conexões — Conecte o mundo ao seu computador</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+
+  // ============================================================
+  // AULA 3 — PERIFÉRICOS E CONEXÕES
+  // ============================================================
+  {
+    id: "aula3-intro",
+    title: "🔌 Missão 3 — Conectando o Mundo",
+    page: 47,
+    type: "intro",
+    chapter: "AULA 3",
+    content: `
+      <style>
+        @keyframes pulse3 { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
+        @keyframes slideIn3 { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        .a3-hero { text-align:center; padding:1.5rem 0.5rem 1rem; animation:slideIn3 0.6s ease both; }
+        .a3-badge { display:inline-block; background:linear-gradient(135deg,#8352ff,#06b6d4); color:#fff; font-size:0.7rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; padding:4px 14px; border-radius:20px; margin-bottom:12px; }
+        .a3-title { font-family:var(--font-display); font-size:2rem; font-weight:900; background:linear-gradient(90deg,#8352ff,#06b6d4,#10b981); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin:0 0 6px; }
+        .a3-subtitle { color:var(--text-muted); font-size:0.95rem; margin-bottom:1.5rem; }
+        .a3-icon-big { font-size:4.5rem; display:block; animation:pulse3 2s ease-in-out infinite; margin-bottom:10px; }
+        .a3-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:1.2rem 0; }
+        .a3-card { background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:14px; padding:16px; animation:slideIn3 0.6s ease both; }
+        .a3-card:nth-child(2){animation-delay:0.15s} .a3-card:nth-child(3){animation-delay:0.3s} .a3-card:nth-child(4){animation-delay:0.45s}
+        .a3-medal { background:linear-gradient(135deg,rgba(131,82,255,0.12),rgba(6,182,212,0.08)); border:1px solid rgba(131,82,255,0.3); border-radius:14px; padding:14px; display:flex; align-items:center; gap:14px; margin-top:1rem; }
+        .a3-xp-bar { background:var(--bg-surface); border-radius:50px; height:10px; overflow:hidden; margin-top:8px; }
+        .a3-xp-fill { height:100%; width:0; border-radius:50px; background:linear-gradient(90deg,#8352ff,#06b6d4); animation:progressAnim3 1.2s ease 0.4s both; }
+        @keyframes progressAnim3 { from{width:0} to{width:100%} }
+      </style>
+
+      <div class="a3-hero">
+        <span class="a3-badge">🔌 Aula 3 — Módulo 1</span>
+        <img src="images/peripherals_overview.png" alt="Visão Geral de Periféricos" class="img-responsive-centered" style="max-height: 220px; display: block; margin: 1rem auto; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.35);">
+        <div class="a3-title">Missão 3 — Conectando o Mundo</div>
+        <p class="a3-subtitle">Você já conhece o interior do computador. Agora é hora de descobrir como os periféricos conectam pessoas e máquinas!</p>
+      </div>
+
+      <div class="a3-grid">
+        <div class="a3-card">
+          <div style="font-size:1.5rem;margin-bottom:6px;">🎯</div>
+          <strong style="font-family:var(--font-display);font-size:0.9rem;">Objetivos</strong>
+          <ul style="margin:8px 0 0;padding-left:16px;font-size:0.83rem;line-height:1.7;color:var(--text-secondary);">
+            <li>Entender o conceito de periférico</li>
+            <li>Diferenciar entrada, saída e armazenamento</li>
+            <li>Reconhecer portas e conexões reais</li>
+            <li>Montar uma estação de trabalho completa</li>
+          </ul>
+        </div>
+        <div class="a3-card">
+          <div style="font-size:1.5rem;margin-bottom:6px;">🗺️</div>
+          <strong style="font-family:var(--font-display);font-size:0.9rem;">Capítulos</strong>
+          <ul style="margin:8px 0 0;padding-left:16px;font-size:0.83rem;line-height:1.7;color:var(--text-secondary);">
+            <li>Cap. 1 — Revisão relâmpago</li>
+            <li>Cap. 2 — O que são Periféricos?</li>
+            <li>Cap. 3 — Dispositivos de Entrada</li>
+            <li>Cap. 4 — Dispositivos de Saída</li>
+            <li>Cap. 5 — Armazenamento</li>
+            <li>Cap. 6 — Portas e Conexões</li>
+            <li>Cap. 7 — Monte sua estação</li>
+            <li>Cap. 8 — Quiz Final</li>
+          </ul>
+        </div>
+        <div class="a3-card">
+          <div style="font-size:1.5rem;margin-bottom:6px;">⭐</div>
+          <strong style="font-family:var(--font-display);font-size:0.9rem;">XP Disponível</strong>
+          <p style="font-size:0.83rem;color:var(--text-secondary);margin:6px 0;">Até <strong style="color:var(--color-primary);">+680 XP</strong> nesta aula!</p>
+          <div class="a3-xp-bar"><div class="a3-xp-fill"></div></div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">8 capítulos · 10 páginas</div>
+        </div>
+      </div>
+
+      <div class="a3-medal">
+        <span style="font-size:2.5rem;">🏅</span>
+        <div>
+          <div style="font-family:var(--font-display);font-weight:800;color:var(--text-primary);">Medalha Desbloqueável</div>
+          <div style="font-size:0.85rem;color:var(--text-muted);">🔌 <strong>Mestre dos Periféricos</strong> — Concluindo a Missão 3</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap1-revisao",
+    title: "Cap.1 — Revisão Relâmpago",
+    page: 48,
+    type: "challenge",
+    chapter: "AULA 3",
+    interactiveId: "hardware-review",
+    content: `
+      <h2>⚡ Revisão Relâmpago — Hardware</h2>
+      <p>Antes de avançar para os periféricos, vamos testar rapidamente o que você aprendeu na Aula 2 sobre o hardware interno do computador.</p>
+
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card card-outline">
+          <div class="card-header">🧠 Processador (CPU)</div>
+          <div class="card-body"><p>O <strong>cérebro</strong> do computador. Executa todas as instruções e cálculos dos programas.</p></div>
+        </div>
+        <div class="card card-outline">
+          <div class="card-header">⚡ Memória RAM</div>
+          <div class="card-body"><p>Memória <strong>temporária</strong> e ultra-rápida. Mantém abertos os programas em uso.</p></div>
+        </div>
+        <div class="card card-outline">
+          <div class="card-header">💾 SSD / HD</div>
+          <div class="card-body"><p>Armazenamento <strong>permanente</strong>. Guarda o sistema operacional e todos os seus arquivos.</p></div>
+        </div>
+        <div class="card card-outline">
+          <div class="card-header">🎛️ Placa-mãe</div>
+          <div class="card-body"><p>A <strong>espinha dorsal</strong> do PC. Conecta e permite a comunicação entre todas as peças.</p></div>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>🎯 Desafio Relâmpago</h4>
+        <p>Responda as 5 perguntas abaixo no simulador. Sem perda de vidas — apenas para testar sua memória! Cada resposta certa dá <strong>+10 XP</strong>.</p>
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap2-o-que-sao-perifericos",
+    title: "Cap.2 — O Que São Periféricos?",
+    page: 49,
+    type: "lesson",
+    chapter: "AULA 3",
+    content: `
+      <h2>🔌 O Que São Periféricos?</h2>
+      <p>Um <strong>periférico</strong> é qualquer dispositivo que se conecta ao computador para permitir a comunicação entre o usuário e a máquina — ou para ampliar as suas capacidades.</p>
+
+      <img src="images/peripherals_overview.png" alt="Exemplos de Periféricos" class="img-responsive-centered" style="max-height: 180px; display: block; margin: 1rem auto; border-radius: 8px;">
+
+      <div class="concept-grid mt-2">
+        <div class="concept-card">
+          <div class="icon">🖥️</div>
+          <div>
+            <h4>Hardware Interno vs. Externo</h4>
+            <p>O <strong>hardware interno</strong> (CPU, RAM, placa-mãe) fica dentro do gabinete e processa os dados. Já os <strong>periféricos</strong> são componentes externos que possibilitam a entrada e saída dessas informações.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="mt-2">🌍 Periféricos no Mundo Real</h3>
+      <p>Você convive com periféricos todos os dias, em situações que talvez não imaginasse:</p>
+
+      <div class="grid grid-2 gap-2 mt-1">
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Caixa Eletrônico (ATM)','O caixa eletrônico é um computador especializado com múltiplos periféricos integrados: teclado numérico (entrada), tela sensível ao toque (entrada/saída), câmera de segurança (entrada), leitor de cartão (entrada), impressora de comprovante (saída) e dispensador de cédulas (saída). Tudo controlado por um computador interno.','','Periféricos no Dia a Dia')">
+          <h4>🏧 Caixa Eletrônico (ATM)</h4>
+          <p>Um computador com teclado, tela touchscreen, leitor de cartão e impressora integrados. São <strong>vários periféricos em um</strong>!</p>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Maquininha de Cartão (POS)','A maquininha de cartão é um computador portátil com periféricos de entrada (teclado numérico, leitor de cartão/NFC), de saída (tela e impressora de comprovante) e de comunicação (módulo 4G/Wi-Fi/Bluetooth). Um exemplo perfeito de múltiplos periféricos compactos trabalhando juntos.','','Periféricos no Dia a Dia')">
+          <h4>💳 Maquininha de Cartão</h4>
+          <p>Leitor de cartão, teclado, tela e impressora térmica em um único dispositivo portátil com conexão Wi-Fi.</p>
+        </div>
+      </div>
+
+      <h2 class="mt-3">⌨️ Dispositivos de Entrada</h2>
+      <p>Os <strong>dispositivos de entrada</strong> são periféricos que <em>enviam</em> dados do usuário para o computador. Eles traduzem ações humanas em sinais digitais que o computador consegue processar.</p>
+
+      <img src="images/input_devices.png" alt="Exemplos de Dispositivos de Entrada" class="img-responsive-centered" style="max-height: 180px; display: block; margin: 1rem auto; border-radius: 8px;">
+
+      <div class="grid grid-3 gap-2 mt-2">
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Teclado','O teclado é o periférico de entrada mais usado no mundo. Cada tecla pressionada gera um sinal elétrico único que é convertido em um código digital (ASCII ou Unicode) e enviado ao computador. Existem teclados mecânicos (com switch físico sob cada tecla, mais preciso e durável), membrana (mais silencioso e barato) e virtual (em telas touchscreen). Um teclado gamer pode registrar até 6 teclas simultâneas (anti-ghosting) e até 24 com N-Key Rollover.','images/popup_keyboard.png','Dispositivos de Entrada')">
+          <h4>⌨️ Teclado</h4>
+          <p>Periférico de entrada mais utilizado. Converte teclas pressionadas em códigos digitais. Existem modelos mecânicos, de membrana e virtuais.</p>
+          <small class="text-muted">📍 Usado em: escritórios, jogos, smartphones (virtual)</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Mouse (Rato)','O mouse captura movimentos físicos e cliques e os converte em coordenadas X,Y na tela. O mouse óptico usa um sensor de luz LED para capturar o movimento a até 25.000 DPI de precisão. O mouse mecânico antigo usava uma bolinha de borracha. O DPI (Dots Per Inch) determina a sensibilidade: quanto maior, mais rápido o cursor se move com o mesmo gesto. Mouses gamers podem ter mais de 8 botões programáveis e taxa de polling de 1000Hz (1000 atualizações por segundo!).','images/popup_mouse.png','Dispositivos de Entrada')">
+          <h4>🖱️ Mouse</h4>
+          <p>Traduz movimentos físicos em coordenadas na tela. Modelos ópticos usam sensor LED de altíssima precisão (até 25.000 DPI).</p>
+          <small class="text-muted">📍 Usado em: desktops, laptops com mesa</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Scanner (Digitalizador)','O scanner usa uma fileira de sensores CCD ou CIS para capturar imagens de documentos físicos e transformá-las em arquivos digitais (JPEG, PDF, PNG). Scanners de mesa são comuns em escritórios; scanners portáteis permitem digitalizar livros e contratos em campo. Alguns scanners modernos possuem OCR (Reconhecimento Ótico de Caracteres) embutido que converte o texto da imagem em texto editável no computador.','','Dispositivos de Entrada')">
+          <h4>🖨️ Scanner</h4>
+          <p>Captura documentos e imagens físicas e as converte em arquivos digitais. Pode reconhecer texto com tecnologia OCR.</p>
+          <small class="text-muted">📍 Usado em: escritórios, cartórios, hospitais</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Webcam','A webcam é uma câmera digital compacta que captura vídeo e imagens em tempo real e os envia ao computador. A qualidade é medida em resolução (HD 720p, Full HD 1080p, 4K) e em quadros por segundo (fps). A câmera frontal do seu smartphone também é tecnicamente uma webcam quando usada em videoconferências. Webcams modernas possuem microfone embutido, cancellation de ruído e até foco automático por IA.','images/popup_webcam.png','Dispositivos de Entrada')">
+          <h4>📷 Webcam</h4>
+          <p>Câmera digital que captura vídeo e envia ao PC em tempo real. Essencial para videoconferências, streamings e segurança.</p>
+          <small class="text-muted">📍 Usado em: home office, salas de aula, segurança</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Microfone','O microfone converte ondas sonoras (vibrações do ar) em sinais elétricos analógicos. Estes sinais passam por um conversor A/D (Analógico para Digital) e chegam ao computador como dados de áudio. Existem microfones condensadores (mais sensíveis, usados em estúdio), dinâmicos (mais robustos, para shows ao vivo) e de lapela (pequenos e discretos). O microfone do seu celular funciona da mesma forma!','images/popup_microphone.png','Dispositivos de Entrada')">
+          <h4>🎤 Microfone</h4>
+          <p>Converte ondas sonoras em sinais digitais. Tipos: condensador (estúdio), dinâmico (palcos) e lapela (reuniões).</p>
+          <small class="text-muted">📍 Usado em: gravações, calls, assistentes de voz</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Leitor Biométrico','O leitor biométrico captura características físicas únicas de cada pessoa — principalmente impressões digitais — e as converte em dados digitais criptografados. Um sensor óptico fotografa a digital; um capacitivo mede as diferenças de carga elétrica entre cristas e vales da pele. O dado biométrico capturado é comparado com o armazenado no banco de dados em milissegundos. São usados em controle de ponto, acesso a prédios, bancos e smartphones.','','Dispositivos de Entrada')">
+          <h4>👆 Leitor Biométrico</h4>
+          <p>Captura impressões digitais ou outros dados físicos uniques para autenticação. Usado em bancos, controle de acesso e celulares.</p>
+          <small class="text-muted">📍 Usado em: bancos, ponto eletrônico, smartphones</small>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>🎮 Mini Game — Quem Sou Eu?</h4>
+        <p>O simulador vai dar pistas sobre um dispositivo de entrada. Descubra qual é! Cada acerto na 1ª pista vale mais XP.</p>
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap3-game",
+    title: "Cap.3 — Mini Game: Quem Sou Eu?",
+    page: 50.1,
+    type: "challenge",
+    chapter: "AULA 3",
+    interactiveId: "guess-device",
+    content: `
+      <h2>🕵️ Mini Game — Quem Sou Eu?</h2>
+      <p>Leia as pistas e descubra qual <strong>dispositivo de entrada</strong> está sendo descrito. Quanto menos pistas usar, mais XP você ganha! Você tem <strong>3 vidas</strong>.</p>
+      <div class="alert alert-info mt-1">
+        <strong>Como jogar:</strong> As pistas aparecem uma a uma. Clique em "Ver próxima pista" para revelar mais dicas. Escolha o dispositivo correto e ganhe XP!
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap4-saida",
+    title: "Cap.4 — Dispositivos de Saída",
+    page: 51,
+    type: "lesson",
+    chapter: "AULA 3",
+    content: `
+      <h2>🖥️ Dispositivos de Saída</h2>
+      <p>Os <strong>dispositivos de saída</strong> recebem dados processados do computador e os apresentam ao usuário de forma compreensível — como imagens, sons ou texto impresso.</p>
+
+      <img src="images/output_devices.png" alt="Exemplos de Dispositivos de Saída" class="img-responsive-centered" style="max-height: 180px; display: block; margin: 1rem auto; border-radius: 8px;">
+
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Monitor','O monitor converte sinais digitais de vídeo em imagens visíveis. A qualidade é definida pela resolução (HD, Full HD, 4K), taxa de atualização (60Hz, 144Hz, 240Hz) e tipo de painel: IPS (cores mais vivas e ângulo amplo), TN (mais rápido e barato) e VA (melhor contraste). Um monitor 4K com 144Hz e painel IPS é o sonho de gamers e designers. Conexões comuns: HDMI, DisplayPort e VGA (obsoleta).','images/popup_monitor.png','Dispositivos de Saída')">
+          <h4>🖥️ Monitor</h4>
+          <p>Exibe imagens e vídeos do computador. Qualidade definida por resolução (4K), taxa de atualização (144Hz) e tipo de painel (IPS/TN/VA).</p>
+          <small class="text-muted">📍 Conectado via: HDMI, DisplayPort, VGA</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Impressora','A impressora transfere dados digitais para papel ou outros materiais físicos. Tipos: Jato de tinta (usa tinta líquida, boa para fotos); Laser (usa toner em pó e calor, rápida e barata para texto); Térmica (sem tinta, usa calor — usada em maquininhas e cupons fiscais); 3D (deposita material camada por camada para criar objetos tridimensionais!). A impressora foi inventada por Johannes Gutenberg em 1450 com tipos móveis de metal, mas a impressora digital surgiu nos anos 1950.','images/popup_printer.png','Dispositivos de Saída')">
+          <h4>🖨️ Impressora</h4>
+          <p>Transfere dados para papel. Tipos: jato de tinta (fotos), laser (escritório), térmica (maquininhas) e 3D (objetos físicos).</p>
+          <small class="text-muted">📍 Conectada via: USB, Wi-Fi, Bluetooth</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Caixa de Som / Alto-falante','A caixa de som converte sinais elétricos digitais em ondas sonoras que vibram o ar. O computador envia sinais digitais que passam por um conversor D/A (Digital para Analógico) e um amplificador, fazendo o cone do alto-falante vibrar e criar ondas sonoras. Caixas de som 2.1 possuem dois satélites e um subwoofer. Caixas 5.1 e 7.1 criam som surround para cinema em casa. Headphones com cancelamento de ruído usam um microfone que detecta ruído externo e gera uma onda de fase inversa para cancelá-lo!','images/popup_speakers.png','Dispositivos de Saída')">
+          <h4>🔊 Caixa de Som</h4>
+          <p>Converte dados digitais em ondas sonoras. Sistemas 2.1, 5.1 e 7.1 criam experiência de som surround imersiva.</p>
+          <small class="text-muted">📍 Conectada via: P2, USB, Bluetooth, óptico</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Projetor','O projetor recebe o sinal de vídeo do computador e o projeta em uma superfície ampliada usando uma lâmpada de alta intensidade ou tecnologia LED/Laser. Os projetores são classificados por lumens (brilho) e resolução. Um projetor de 3.000 lumens é suficiente para salas com luz ambiente; projetores de cinema podem ter 30.000 lumens! A tecnologia DLP usa um chip com milhões de micro-espelhos que refletem a luz para criar a imagem. Muito usado em salas de aula, apresentações e home theater.','','Dispositivos de Saída')">
+          <h4>📽️ Projetor</h4>
+          <p>Projeta imagens do computador em superfícies ampliadas. Tecnologias: DLP (micro-espelhos), LCD e laser. Medido em lumens.</p>
+          <small class="text-muted">📍 Usado em: salas de aula, apresentações, cinemas</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Fones de Ouvido (Headphone)','Os fones de ouvido funcionam como mini alto-falantes individuais para cada ouvido. Os modelos in-ear (inseridos no canal auditivo) são os mais compactos. Os on-ear pressionam suavemente o ouvido. Os over-ear envolvem completamente a orelha — os mais confortáveis para uso prolongado. Fones com cancelamento ativo de ruído (ANC) usam um microfone externo para detectar ruídos e gerar ondas de fase oposta, reduzindo o ruído ambiente em até 30dB. Headsets possuem microfone embutido para comunicação — essenciais para gamers e call centers.','','Dispositivos de Saída')">
+          <h4>🎧 Fones de Ouvido</h4>
+          <p>Mini alto-falantes pessoais. Tipos: in-ear, on-ear e over-ear. Com ANC (cancelamento de ruído ativo) para foco total.</p>
+          <small class="text-muted">📍 Conectados via: P2 (3,5mm), USB, Bluetooth</small>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>🎮 Mini Game — Arraste para a Categoria</h4>
+        <p>No simulador desta página, arraste cada dispositivo para a categoria correta: <strong>Entrada</strong> ou <strong>Saída</strong>. Cuidado com as pegadinhas!</p>
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap4-game",
+    title: "Cap.4 — Jogo: Entrada ou Saída?",
+    page: 51.1,
+    type: "challenge",
+    chapter: "AULA 3",
+    interactiveId: "output-sorter",
+    content: `
+      <h2>🎯 Jogo — Entrada ou Saída?</h2>
+      <p>Classifique cada dispositivo na categoria correta. Arraste (ou clique) cada item para <strong>Entrada</strong> ou <strong>Saída</strong>. Você tem <strong>3 vidas</strong> e ganha <strong>+10 XP</strong> por acerto!</p>
+      <div class="alert alert-info mt-1">
+        <strong>Lembre-se:</strong> Entrada = envia dados <em>para</em> o PC. Saída = recebe dados do PC e apresenta ao usuário. Alguns dispositivos podem ser ambos!
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap5-armazenamento",
+    title: "Cap.5 — Dispositivos de Armazenamento",
+    page: 52,
+    type: "lesson",
+    chapter: "AULA 3",
+    content: `
+      <h2>💾 Dispositivos de Armazenamento Externo</h2>
+      <p>Os dispositivos de armazenamento externo permitem <strong>transportar e guardar dados</strong> fora do computador. São fundamentais para backup, compartilhamento e portabilidade de arquivos.</p>
+
+      <img src="images/storage_devices.png" alt="Dispositivos de Armazenamento Externo" class="img-responsive-centered" style="max-height: 180px; display: block; margin: 1rem auto; border-radius: 8px;">
+
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Pendrive (Memória Flash USB)','O pendrive usa memória flash NAND (a mesma tecnologia dos SSDs) para armazenar dados sem partes móveis. Conecta-se via USB e não precisa de energia própria. Capacidades comuns: 4GB, 8GB, 16GB, 32GB, 64GB, 128GB, 256GB e até 1TB. Um pendrive USB 3.0 transfere arquivos a ~400 MB/s — perfeito para transportar trabalhos, fotos e documentos. O pen drive foi inventado por Trek Technology e IBM e lançado em 2000 com apenas 8MB de capacidade!','images/popup_pendrive.png','Dispositivos de Armazenamento')">
+          <h4>🔌 Pendrive</h4>
+          <p>Memória flash portátil via USB. Compacto e sem partes móveis. Capacidade de 4GB a 1TB. Ideal para transportar arquivos.</p>
+          <small class="text-muted">⚡ USB 3.0: até 400 MB/s de transferência</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Cartão de Memória (SD Card)','Os cartões de memória SD (Secure Digital) são pequenos chips de memória flash usados em câmeras fotográficas, drones, consoles portáteis e smartphones. Classes de velocidade definem a taxa de gravação mínima: Class 10 (10 MB/s), UHS-I (104 MB/s), UHS-II (312 MB/s), UHS-III e V90 (90 MB/s). MicroSD é o formato menor usado em smartphones. Um cartão SD foi criado pela Matsushita, SanDisk e Toshiba in 1999 e desde então se tornou o padrão universal de armazenamento portátil.','','Dispositivos de Armazenamento')">
+          <h4>📷 Cartão de Memória (SD)</h4>
+          <p>Chip de memória flash compacto para câmeras, drones e celulares. Padrões: SD, microSD, SDHC e SDXC. Velocidade até 312 MB/s.</p>
+          <small class="text-muted">📍 Usado em: câmeras, drones, smartphones, Raspberry Pi</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('HD Externo (Disco Rígido Externo)','O HD externo é um disco rígido tradicional (com pratos magnéticos girando a 5.400 ou 7.200 RPM) dentro de uma carcaça portátil com interface USB. Por usar partes mecânicas em movimento, é mais sensível a quedas e choques físicos. Vantagem: capacidade enorme a custo baixo (até 20TB). Desvantagem: mais lento e frágil que um SSD. Ideal para backups de longo prazo e armazenamento de grandes coleções de fotos, vídeos e músicas.','images/popup_hd_externo.png','Dispositivos de Armazenamento')">
+          <h4>💽 HD Externo</h4>
+          <p>Disco rígido portátil com pratos magnéticos. Enorme capacidade (até 20TB) a baixo custo. Mais lento e frágil que SSD.</p>
+          <small class="text-muted">⚠️ Cuidado: sensível a quedas e impactos físicos</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('SSD Externo','O SSD externo usa a mesma tecnologia de memória flash dos SSDs internos, mas em uma carcaça portátil com conector USB ou USB-C. É silencioso, resistente a choques e muito mais rápido que o HD externo: transferências de até 2.000 MB/s em modelos USB-C / Thunderbolt! Ideal para edição de vídeo em campo, backups rápidos e transporte de arquivos pesados. O preço por GB ainda é maior que o HD, mas a diferença vem caindo rapidamente a cada ano.','','Dispositivos de Armazenamento')">
+          <h4>⚡ SSD Externo</h4>
+          <p>Armazenamento flash portátil ultra-rápido (até 2.000 MB/s). Resistente a choques, silencioso e compacto. Perfeito para edição.</p>
+          <small class="text-muted">⚡ USB-C / Thunderbolt para máxima velocidade</small>
+        </div>
+      </div>
+
+      <h3 class="mt-2">📏 Entendendo Capacidade de Armazenamento</h3>
+      <div class="grid grid-2 gap-2">
+        <div class="card bg-surface border-soft">
+          <h4>📊 Tabela de Unidades</h4>
+          <table style="width:100%;font-size:0.82rem;border-collapse:collapse;">
+            <tr style="border-bottom:1px solid var(--border-soft)"><td style="padding:4px 2px;font-weight:700;">1 Byte</td><td style="padding:4px 2px;color:var(--text-muted);">8 bits — 1 caractere de texto</td></tr>
+            <tr style="border-bottom:1px solid var(--border-soft)"><td style="padding:4px 2px;font-weight:700;">1 KB</td><td style="padding:4px 2px;color:var(--text-muted);">1.024 bytes — 1 página de texto</td></tr>
+            <tr style="border-bottom:1px solid var(--border-soft)"><td style="padding:4px 2px;font-weight:700;">1 MB</td><td style="padding:4px 2px;color:var(--text-muted);">1.024 KB — 1 música MP3 ~5MB</td></tr>
+            <tr style="border-bottom:1px solid var(--border-soft)"><td style="padding:4px 2px;font-weight:700;">1 GB</td><td style="padding:4px 2px;color:var(--text-muted);">1.024 MB — ~250 fotos em HD</td></tr>
+            <tr style="border-bottom:1px solid var(--border-soft)"><td style="padding:4px 2px;font-weight:700;">1 TB</td><td style="padding:4px 2px;color:var(--text-muted);">1.024 GB — ~250.000 fotos</td></tr>
+          </table>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>📸 O Que Cabe em...</h4>
+          <ul style="font-size:0.83rem;line-height:1.8;margin:0;padding-left:16px;">
+            <li><strong>8GB</strong>: ~2.000 fotos em alta resolução</li>
+            <li><strong>16GB</strong>: ~4 filmes Full HD</li>
+            <li><strong>64GB</strong>: ~16 filmes 4K</li>
+            <li><strong>1TB</strong>: ~250 jogos de PC modernos</li>
+            <li><strong>4TB</strong>: ~1.000 episódios de série Full HD</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>🎮 Desafio — Escolha Correta</h4>
+        <p>O simulador vai apresentar situações do dia a dia. Escolha o dispositivo de armazenamento mais adequado para cada situação!</p>
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap5-game",
+    title: "Cap.5 — Desafio: Escolha Correta",
+    page: 52.1,
+    type: "challenge",
+    chapter: "AULA 3",
+    interactiveId: "storage-challenge",
+    content: `
+      <h2>💡 Desafio — Escolha o Dispositivo Certo!</h2>
+      <p>Para cada situação apresentada, escolha o <strong>dispositivo de armazenamento mais adequado</strong>. Pense na capacidade, praticidade e velocidade necessárias!</p>
+      <div class="alert alert-info mt-1">
+        <strong>Dica:</strong> Considere: o que precisa ser guardado, quanto espaço é necessário, e se precisa de portabilidade ou velocidade de transferência!
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap6-portas",
+    title: "Cap.6 — Portas e Conexões",
+    page: 53,
+    type: "lesson",
+    chapter: "AULA 3",
+    content: `
+      <h2>🔌 Portas e Conexões</h2>
+      <p>As <strong>portas</strong> são as entradas físicas do computador onde os periféricos são conectados. Cada porta tem um formato e protocolo específico. Conhecê-las é essencial para conectar os dispositivos certos nos lugares certos!</p>
+
+      <img src="images/ports_connections.png" alt="Portas e Conexões Traseiras" class="img-responsive-centered" style="max-height: 180px; display: block; margin: 1rem auto; border-radius: 8px;">
+
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Porta USB (Universal Serial Bus)','USB significa Universal Serial Bus — uma porta universal criada em 1996 para substituir dezenas de conectores diferentes. Versões: USB 1.1 (12 Mbps), USB 2.0 (480 Mbps — conector preto), USB 3.0 (5 Gbps — conector azul), USB 3.2 (20 Gbps), USB 4.0 (40 Gbps). O formato Type-A é o retangular comum; o Type-B é quadrado (usado em impressoras); o Micro-USB e Mini-USB eram usados em celulares antigos. Conecta: mouse, teclado, pendrive, impressora, carregadores, hubs.','','Portas e Conexões')">
+          <h4>🔵 USB (Universal Serial Bus)</h4>
+          <p>A porta mais universal do mundo. USB 2.0 (preto), 3.0 (azul), 3.2 e 4.0. Conecta mouse, teclado, pendrive, câmera e mais.</p>
+          <small class="text-muted">⚡ USB 3.0: 5 Gbps | USB 4.0: até 40 Gbps</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('USB-C (USB Type-C)','O USB-C é o conector reversível (não tem lado errado para plugar!) que está substituindo todas as outras portas USB. É compacto, robusto e suporta múltiplos protocolos: USB 3.2, USB 4, Thunderbolt 3/4, DisplayPort e até entrega de energia (Power Delivery) de até 240W — suficiente para carregar um laptop profissional! Um único cabo USB-C pode transmitir dados, vídeo 8K e energia simultaneamente. Presente em smartphones modernos, MacBooks, tablets e monitores de última geração.','','Portas e Conexões')">
+          <h4>🔶 USB-C</h4>
+          <p>Conector universal reversível. Suporta dados (até 40Gbps), vídeo 8K e carga de 240W — tudo em um único cabo compacto!</p>
+          <small class="text-muted">📍 Presente em: celulares modernos, notebooks, iPads</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('HDMI (High-Definition Multimedia Interface)','O HDMI transmite áudio e vídeo digitais de alta definição em um único cabo — substituindo cabos separados de vídeo e áudio analógicos. Versões: HDMI 1.4 (4K/30Hz), HDMI 2.0 (4K/60Hz), HDMI 2.1 (8K/120Hz e 4K/144Hz para jogos em alta taxa). O conector HDMI padrão (Type A) é o mais comum em TVs e monitores. O mini-HDMI e micro-HDMI são versões menores para câmeras e tablets. Um cabo HDMI 2.1 é capaz de transmitir vídeo 10K de resolução — mais do que qualquer display disponível hoje!','','Portas e Conexões')">
+          <h4>🟥 HDMI</h4>
+          <p>Transmite vídeo + áudio em um único cabo. HDMI 2.1 suporta 8K/120Hz. Presente em TVs, monitores, projetores e consoles.</p>
+          <small class="text-muted">⚡ HDMI 2.1: 48 Gbps de largura de banda</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('P2 (Conector de 3,5mm / TRS)','O conector P2 (chamado de "jack de 3,5mm" ou "conector TRS") é o conector de áudio analógico mais comum do mundo. TRS significa Tip, Ring, Sleeve — os três segmentos do metal que correspondem a canal esquerdo, canal direito e terra (ground). Versões: TS (mono — microfones simples), TRS (estéreo — fones de ouvido), TRRS (estéreo + microfone — headsets). Apesar de analógico e antigo, ainda está presente em 90% dos fones de ouvido do mundo. Muitos smartphones novos o removeram em favor do USB-C.','','Portas e Conexões')">
+          <h4>🎵 P2 (Jack 3,5mm)</h4>
+          <p>Conector de áudio analógico universal. Presente em fones, microfones e caixas de som. Versão TRRS suporta microfone integrado.</p>
+          <small class="text-muted">📍 Ainda presente em: fones, amplificadores, instrumentos</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Ethernet (RJ-45)','O cabo Ethernet (conector RJ-45) é o padrão de rede cabeada para conexão à internet. É mais estável, seguro e veloz que o Wi-Fi em situações de uso intensivo. Padrões: Fast Ethernet (100 Mbps), Gigabit Ethernet (1.000 Mbps = 1 Gbps), 2.5G, 5G e 10 Gigabit Ethernet para servidores. A velocidade real depende também do roteador e do plano de internet contratado. Cabos Cat6 e Cat6A são recomendados para redes domésticas modernas pois suportam Gigabit com baixo ruído.','','Portas e Conexões')">
+          <h4>🌐 Ethernet (RJ-45)</h4>
+          <p>Rede cabeada ultra-estável. Gigabit Ethernet = 1.000 Mbps. Melhor que Wi-Fi para jogos online, streaming e home office.</p>
+          <small class="text-muted">🔒 Mais seguro e estável que conexão sem fio</small>
+        </div>
+        <div class="card card-glow info-card-clickable" onclick="openInfoPopup('Bluetooth','Bluetooth é uma tecnologia de comunicação sem fio de curto alcance (até ~100m) que opera na frequência de 2.4 GHz. Versões: BT 4.0 (Bluetooth Low Energy / BLE — para IoT e wearables), BT 5.0 (2x velocidade, 4x alcance), BT 5.3 (mais eficiente, menos interferência). Bluetooth multipoint permite que um headset se conecte a dois dispositivos ao mesmo tempo (ex: celular e laptop). Usado em: fones, teclados, mouses, caixas de som, smartwatches, teclados de carro e dispositivos médicos.','','Portas e Conexões')">
+          <h4>📶 Bluetooth</h4>
+          <p>Comunicação sem fio de curto alcance (2.4 GHz). BT 5.3: alcance de até 100m. Conecta fones, mouses, teclados e wearables.</p>
+          <small class="text-muted">📍 Multipoint: conecte-se a 2 dispositivos ao mesmo tempo</small>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>🎮 Simulador — Conecte os Periféricos!</h4>
+        <p>No simulador desta página, conecte cada cabo na porta correta do computador virtual. Cuidado para não conectar na porta errada!</p>
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap6-game",
+    title: "Cap.6 — Simulador: Conecte as Portas",
+    page: 53.1,
+    type: "challenge",
+    chapter: "AULA 3",
+    interactiveId: "connect-ports",
+    content: `
+      <h2>🔌 Simulador — Conectando o Computador</h2>
+      <p>Conecte cada dispositivo na porta correta do computador. Arraste (ou clique) cada item para a porta adequada. Você tem <strong>3 vidas</strong>. Erro = vida perdida!</p>
+      <div class="alert alert-info mt-1">
+        <strong>Lembre-se:</strong> HDMI → Monitor | USB → Mouse/Teclado/Pendrive | P2 → Fone/Caixa de Som | Ethernet → Roteador | USB-C → Smartphone/Notebook
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap7-workspace",
+    title: "Cap.7 — Monte sua Estação de Trabalho",
+    page: 54,
+    type: "challenge",
+    chapter: "AULA 3",
+    interactiveId: "workspace-builder",
+    content: `
+      <h2>🖥️ Monte sua Estação de Trabalho!</h2>
+      <p>Você vai montar uma mesa de trabalho completa e funcional. Arraste cada equipamento para o local correto na mesa. Ao finalizar, verifique se tudo está no lugar!</p>
+
+      <img src="images/workspace_ergonomics.png" alt="Layout da Estação de Trabalho" class="img-responsive-centered" style="max-height: 180px; display: block; margin: 1rem auto; border-radius: 8px;">
+
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>📋 Lista de Equipamentos</h4>
+          <ul style="font-size:0.85rem;line-height:1.8;margin:0;padding-left:16px;">
+            <li>🖥️ Monitor</li>
+            <li>⌨️ Teclado</li>
+            <li>🖱️ Mouse</li>
+            <li>📷 Webcam</li>
+            <li>🖨️ Impressora</li>
+            <li>🔊 Caixa de Som</li>
+          </ul>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>🎯 Objetivo</h4>
+          <p style="font-size:0.85rem;">Posicione cada item na mesa de trabalho corretamente e conecte-os ao computador. Uma estação bem organizada aumenta a produtividade!</p>
+          <p style="font-size:0.82rem;color:var(--text-muted);">Você tem <strong>3 vidas</strong>. Errar a posição = vida perdida!</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula3-cap8-quiz",
+    title: "Cap.8 — Quiz Final da Aula 3",
+    page: 55,
+    type: "challenge",
+    chapter: "AULA 3",
+    interactiveId: "peripheral-final-quiz",
+    content: `
+      <h2>🏆 Quiz Final — Periféricos e Conexões</h2>
+      <p>Chegou a hora de provar que você dominou os periféricos! Responda as <strong>10 perguntas</strong> do quiz. Você tem <strong>3 vidas</strong> e cada acerto vale <strong>+20 XP</strong>!</p>
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>📊 Regras</h4>
+          <ul style="font-size:0.85rem;line-height:1.8;margin:0;padding-left:16px;">
+            <li>10 perguntas no total</li>
+            <li>3 vidas disponíveis</li>
+            <li>Explicação após cada resposta</li>
+            <li>Cada acerto: +20 XP</li>
+            <li>Quiz completo: medalha especial</li>
+          </ul>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>🎯 Temas Abordados</h4>
+          <ul style="font-size:0.85rem;line-height:1.8;margin:0;padding-left:16px;">
+            <li>Conceito de periférico</li>
+            <li>Entrada vs. Saída</li>
+            <li>Portas e cabos</li>
+            <li>Armazenamento</li>
+            <li>Situações práticas</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula3-missao-final",
+    title: "🏆 Missão Final — Mestre dos Periféricos",
+    page: 56,
+    type: "challenge",
+    chapter: "AULA 3",
+    interactiveId: "aula3-mission-final",
+    content: `
+      <h2>🏆 Missão Final — Mestre dos Periféricos</h2>
+      <p>Você chegou à missão reflexiva da Aula 3! Esta é a sua oportunidade de consolidar tudo o que aprendeu e fazer uma conexão com a sua realidade.</p>
+
+      <div class="missions-panel mt-2">
+        <h3>📝 Sua Missão:</h3>
+        <div class="card bg-surface border-soft" style="margin-top:12px;padding:1.2rem;">
+          <p style="font-size:1rem;line-height:1.7;font-style:italic;color:var(--text-primary);">
+            "<strong>Descreva quais periféricos você utiliza no seu dia a dia</strong> (em casa, no trabalho ou na escola) e como cada um deles ajuda nas suas atividades. Se você pudesse melhorar sua estação de trabalho com 3 novos periféricos, quais escolheria e por quê?"
+          </p>
+        </div>
+      </div>
+
+      <div class="alert alert-info mt-2">
+        <strong>💡 Dica:</strong> Pense nos periféricos que você usa sem perceber: o microfone do celular durante uma ligação, o leitor biométrico do banco, a impressora do trabalho... Eles todos se encaixam no que você aprendeu hoje!
+      </div>
+
+      <p class="text-muted mt-1">Escreva sua resposta no simulador abaixo. Ela será salva automaticamente nas suas anotações da aula. <strong>+50 XP</strong> ao completar!</p>
+    `
+  },
+  {
+    id: "conclusao-aula-3",
+    title: "🎉 Conclusão da Aula 3",
+    page: 57,
+    type: "lesson",
+    chapter: "AULA 3",
+    content: `
+      <style>
+        @keyframes float3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes pop3 { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+        @keyframes shimmer3 { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+        .conclusao3-hero { text-align:center; padding:2rem 1rem 1.5rem; }
+        .conclusao3-trophy { font-size:5rem; display:block; animation:float3 3s ease-in-out infinite; }
+        .conclusao3-title { font-family:var(--font-display); font-size:2rem; font-weight:900; background:linear-gradient(90deg,#06b6d4,#8352ff,#10b981,#06b6d4); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:shimmer3 3s linear infinite; margin:0.5rem 0; }
+        .conclusao3-sub { color:var(--text-muted); font-size:1rem; }
+        .conquistas3-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin:1.5rem 0; }
+        .conquista3-card { background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:14px 10px; text-align:center; animation:pop3 0.5s ease both; }
+        .conquista3-card:nth-child(1){animation-delay:0.1s}
+        .conquista3-icon { font-size:2rem; display:block; margin-bottom:6px; }
+        .conquista3-label { font-family:var(--font-display); font-weight:700; font-size:0.8rem; color:var(--text-primary); }
+        .conquista3-desc { font-size:0.7rem; color:var(--text-muted); margin-top:2px; }
+        .progresso3-bar-wrap { background:var(--bg-surface); border-radius:50px; height:12px; overflow:hidden; margin:8px 0; }
+        .progresso3-bar-fill { height:100%; border-radius:50px; background:linear-gradient(90deg,#06b6d4,#10b981); width:0; animation:progressAnim3b 1.5s ease 0.5s both; }
+        @keyframes progressAnim3b { from{width:0} to{width:100%} }
+        .proximas3-aulas { background:linear-gradient(135deg,rgba(6,182,212,0.1),rgba(16,185,129,0.1)); border:1px solid rgba(6,182,212,0.3); border-radius:16px; padding:18px; margin-top:1.5rem; }
+        .badge3-aula { display:inline-block; background:var(--color-accent); color:#fff; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:20px; margin-left:6px; vertical-align:middle; }
+      </style>
+
+      <div class="conclusao3-hero">
+        <span class="conclusao3-trophy">🔌</span>
+        <div class="conclusao3-title">Aula 3 Concluída!</div>
+        <p class="conclusao3-sub">Parabéns! Você dominou os periféricos e conexões do mundo digital.<br>Agora você sabe conectar o mundo ao seu computador! 🌐</p>
+      </div>
+
+      <div style="background:var(--bg-surface);border-radius:14px;padding:16px;margin-bottom:1.5rem;">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);margin-bottom:8px;">📊 Progresso da Aula 3</div>
+        <div class="progresso3-bar-wrap"><div class="progresso3-bar-fill"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+          <span>9 Capítulos</span><span style="color:var(--color-success);font-weight:700;">100% ✓</span>
+        </div>
+      </div>
+
+      <h3 style="font-family:var(--font-display);font-size:1rem;color:var(--text-muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">🎖️ Conquistas Desbloqueadas</h3>
+      <div class="conquistas3-grid">
+        <div class="conquista3-card">
+          <span class="conquista3-icon">🔌</span>
+          <div class="conquista3-label">Mestre dos Periféricos</div>
+          <div class="conquista3-desc">Concluiu a Missão 3 — Periféricos e Conexões com excelência!</div>
+        </div>
+      </div>
+
+      <div class="proximas3-aulas">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--text-primary);margin-bottom:10px;">🗺️ O que vem a seguir?</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(6,182,212,0.1);border-radius:10px;border:1px solid rgba(6,182,212,0.2);">
+            <span style="font-size:1.5rem;">🌐</span>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Aula 4 <span class="badge3-aula">Em breve</span></div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">Internet, Redes e Segurança Digital — Navegue com segurança pelo mundo conectado</div>
             </div>
           </div>
         </div>
@@ -1550,3 +2125,4 @@ const COURSE_CONTENT = [
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { COURSE_CONTENT };
 }
+

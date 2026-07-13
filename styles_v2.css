@@ -300,11 +300,60 @@ li {
   color: var(--text-muted);
   font-weight: 800;
   padding: 0.6rem 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color var(--transition-fast);
+  user-select: none;
+  border-radius: var(--border-radius-sm);
+}
+
+.chapter-title-header:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-surface-hover);
+}
+
+.chapter-toggle-icon {
+  font-size: 0.6rem;
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+  width: 12px;
+  text-align: center;
+}
+
+.chapter-title-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chapter-progress-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-primary-light);
+  background: rgba(131, 82, 255, 0.1);
+  padding: 0.1rem 0.45rem;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .menu-items-list {
   list-style: none;
   margin: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+  max-height: 2000px;
+  opacity: 1;
+}
+
+.menu-items-list.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .menu-item-link {
@@ -484,9 +533,10 @@ li {
 .main-content {
   flex: 1;
   padding: 2.5rem;
-  max-width: 900px;
   width: 100%;
-  margin: 0 auto;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .slide-container {
@@ -602,7 +652,7 @@ li {
 
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
 .gap-1 { gap: 1rem; }
 .gap-2 { gap: 1.5rem; }
 .mt-1 { margin-top: 1rem; }
@@ -2244,6 +2294,12 @@ li {
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease !important;
   position: relative;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
 }
 
 .info-card-clickable::after {
@@ -2295,4 +2351,928 @@ li {
   cursor: default;
 }
 
+/* ==========================================================================
+   SISTEMA DE AUTENTICAÇÃO & DASHBOARDS
+   ========================================================================== */
 
+/* User Profile Badge in Sidebar */
+.user-profile-info {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem;
+  border-radius: var(--border-radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 0.25rem;
+}
+
+.user-profile-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-profile-role {
+  font-size: 0.7rem;
+  color: var(--color-primary-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 1px;
+}
+
+/* Tab buttons in Auth Modal */
+.auth-tab-btn {
+  transition: all var(--transition-fast);
+}
+
+.auth-tab-btn:hover {
+  opacity: 1 !important;
+}
+
+.auth-tab-btn.active {
+  border-bottom: 2px solid var(--color-primary-light) !important;
+  color: var(--color-primary-light) !important;
+  opacity: 1 !important;
+}
+
+/* Dashboard Cards & Layout */
+.dashboard-card {
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-fast);
+}
+
+.dashboard-card h4 {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Table styles inside dashboards */
+table th {
+  color: var(--text-secondary);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+table td {
+  padding: 0.75rem 0.5rem;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+/* Progress bar inside table */
+.progress-bar-mini-track {
+  width: 100px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+.progress-bar-mini-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary-dark) 0%, var(--color-primary-light) 100%);
+  border-radius: 3px;
+}
+
+/* School list under Admin Dashboard */
+.school-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.85rem;
+}
+
+.school-list-item:hover {
+  border-color: rgba(131, 82, 255, 0.3);
+}
+
+/* Glassmorphism custom styling for overlay scrolls */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* ==========================================================================
+   TELA DE ENTRADA (LANDING PAGE) & PORTAL HUB
+   ========================================================================== */
+
+/* Screen Visibility Utility */
+.screen-hidden {
+  display: none !important;
+}
+
+/* Landing Page Wrapper */
+.landing-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0b0a18;
+  overflow-y: auto;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+/* Animated Blur Circles for Fundo Aurora */
+.landing-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.blur-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.25;
+}
+
+.circle-1 {
+  width: 400px;
+  height: 400px;
+  background-color: var(--color-primary);
+  top: -100px;
+  left: -100px;
+  animation: moveCircle1 12s infinite alternate ease-in-out;
+}
+
+.circle-2 {
+  width: 500px;
+  height: 500px;
+  background-color: var(--color-primary-light);
+  bottom: -150px;
+  right: -100px;
+  animation: moveCircle2 15s infinite alternate ease-in-out;
+}
+
+@keyframes moveCircle1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(100px, 80px) scale(1.2); }
+}
+
+@keyframes moveCircle2 {
+  0% { transform: translate(0, 0) scale(1.1); }
+  100% { transform: translate(-120px, -60px) scale(0.9); }
+}
+
+/* Landing Page Grid Container */
+.landing-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1100px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .landing-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .landing-hero {
+    text-align: center;
+  }
+  .logo-large-img {
+    margin: 0 auto;
+  }
+}
+
+/* Landing Page Left Column (Hero) */
+.landing-hero {
+  color: var(--text-primary);
+}
+
+.landing-logo {
+  margin-bottom: 1.5rem;
+}
+
+.logo-large-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 4px 12px rgba(131, 82, 255, 0.5));
+}
+
+.landing-hero h1 {
+  font-size: 3rem;
+  margin-bottom: 0.2rem;
+  background: linear-gradient(135deg, #ffffff 0%, var(--color-primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.landing-hero span {
+  font-size: 1.1rem;
+  color: var(--color-primary-light);
+  font-weight: 600;
+  display: block;
+}
+
+.landing-intro {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* Landing Page Right Column (Auth Box) */
+.auth-box-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-lg);
+  backdrop-filter: blur(20px);
+  padding: 2.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.auth-card-tabs {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.auth-card-tabs button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.auth-card-tabs button:hover {
+  color: var(--text-primary);
+}
+
+.auth-card-tabs button.active {
+  color: var(--color-primary-light);
+  font-weight: 700;
+}
+
+.auth-card-tabs button.active::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-primary-light);
+}
+
+.form-group-custom {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-group-custom label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-group-custom input {
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: border-color var(--transition-fast);
+}
+
+.form-group-custom input:focus {
+  outline: none;
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 8px rgba(131, 82, 255, 0.2);
+}
+
+.auth-card-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 1rem;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   PORTAL HUB DASHBOARD STYLES
+   ========================================================================== */
+.hub-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-app);
+  z-index: 999;
+  overflow-y: auto;
+}
+
+.hub-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.hub-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 2rem;
+}
+
+.hub-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Hub Contents */
+.hub-welcome-banner {
+  background: linear-gradient(135deg, rgba(131, 82, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1px solid rgba(131, 82, 255, 0.15);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.hub-welcome-banner h3 {
+  font-size: 1.8rem;
+  margin-bottom: 0.4rem;
+}
+
+/* Quick Stats Grid */
+.hub-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.hub-stat-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  transition: transform var(--transition-fast);
+}
+
+.hub-stat-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(131, 82, 255, 0.2);
+}
+
+.hub-stat-card .card-icon {
+  font-size: 2.2rem;
+  background: rgba(131, 82, 255, 0.1);
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hub-stat-card .card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.hub-stat-card .card-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.hub-stat-card .card-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Hub Progress Section */
+.hub-progress-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hub-progress-section .progress-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-bar-large-track {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-bar-large-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary-dark) 0%, var(--color-primary-light) 100%);
+  border-radius: 6px;
+  transition: width 0.5s ease-in-out;
+}
+
+/* Hub General Card Boxes */
+.hub-card-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.hub-card-box h4 {
+  margin-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   VISUAL DE CURSO DIGITAL PREMIUM - PORTAL HUB
+   ========================================================================== */
+
+/* Banner do Cabeçalho */
+.hub-banner-header {
+  position: relative;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: flex-end;
+  padding: 1.5rem 2rem;
+  z-index: 5;
+  transition: background-image 0.5s ease-in-out;
+}
+
+.hub-banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(11, 10, 24, 0.2) 0%, rgba(11, 10, 24, 0.8) 100%);
+  z-index: 6;
+}
+
+.hub-banner-content {
+  position: relative;
+  z-index: 7;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hub-logo-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* Barra de Perfil e Abas */
+.hub-profile-bar-container {
+  background: rgba(18, 16, 35, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 8;
+  position: sticky;
+  top: 0;
+}
+
+.hub-profile-bar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: relative;
+  height: 70px;
+}
+
+/* Avatar flutuante */
+.hub-avatar-wrapper {
+  width: 90px;
+  height: 90px;
+  background-color: var(--bg-sidebar);
+  border: 4px solid var(--bg-app);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -65px;
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+  overflow: hidden;
+  transition: transform var(--transition-fast);
+}
+
+.hub-avatar-wrapper:hover {
+  transform: scale(1.05);
+}
+
+.hub-avatar-display {
+  font-size: 2.8rem;
+  line-height: 1;
+  user-select: none;
+}
+
+.hub-profile-info-block {
+  margin-top: -5px;
+}
+
+/* Navegação por Abas */
+.hub-tabs-nav {
+  display: flex;
+  gap: 1.5rem;
+  margin-left: auto;
+  align-self: flex-end;
+  height: 100%;
+}
+
+.hub-tabs-nav button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color var(--transition-fast);
+  position: relative;
+  height: 100%;
+}
+
+.hub-tabs-nav button:hover {
+  color: var(--text-primary);
+}
+
+.hub-tabs-nav button.active {
+  color: var(--color-primary-light);
+}
+
+.hub-tabs-nav button.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--color-primary-light);
+  border-radius: 3px 3px 0 0;
+}
+
+/* Layout de Currículo (Módulos do Curso) */
+.curriculum-module-card {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.curriculum-module-card:hover {
+  border-color: rgba(131, 82, 255, 0.2);
+}
+
+.curriculum-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+  transition: background var(--transition-fast);
+  user-select: none;
+}
+
+.curriculum-module-header:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.curriculum-module-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.curriculum-module-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.curriculum-module-stats {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.curriculum-module-progress-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.curriculum-module-progress-text {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary-light);
+}
+
+.curriculum-module-chevron {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.curriculum-module-card.active .curriculum-module-chevron {
+  transform: rotate(90deg);
+}
+
+.curriculum-lessons-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: none;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.curriculum-module-card.active .curriculum-lessons-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.curriculum-lesson-item {
+  display: flex;
+  align-items: center;
+  padding: 0.9rem 1.5rem;
+  border-top: 1px solid var(--border-soft);
+  transition: background var(--transition-fast);
+}
+
+.curriculum-lesson-item:hover {
+  background: rgba(131, 82, 255, 0.03);
+}
+
+.curriculum-lesson-status {
+  font-size: 1.1rem;
+  margin-right: 0.8rem;
+  width: 20px;
+  text-align: center;
+}
+
+.curriculum-lesson-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  flex-grow: 1;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.curriculum-lesson-link:hover {
+  color: var(--color-primary-light);
+}
+
+.curriculum-lesson-item.active-slide {
+  background: rgba(131, 82, 255, 0.06);
+  border-left: 3px solid var(--color-primary-light);
+}
+
+/* Configurações do Perfil */
+.settings-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+@media (max-width: 900px) {
+  .settings-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.avatar-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-option-item {
+  width: 55px;
+  height: 55px;
+  font-size: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.02);
+  border: 2px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.avatar-option-item:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.avatar-option-item.selected {
+  background: rgba(131, 82, 255, 0.15);
+  border-color: var(--color-primary-light);
+  transform: scale(1.08);
+}
+
+.banner-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.banner-option-item {
+  height: 70px;
+  border-radius: var(--border-radius-sm);
+  background-size: cover;
+  background-position: center;
+  border: 2px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.banner-option-item:hover {
+  border-color: rgba(255,255,255,0.3);
+}
+
+.banner-option-item.selected {
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 10px rgba(131, 82, 255, 0.4);
+}/* Custom Modern Alert/Confirm Modals */
+.modern-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(11, 10, 24, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+
+.modern-modal-overlay.active {
+  opacity: 1;
+}
+
+.modern-modal-card {
+  background: rgba(22, 20, 45, 0.96);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-lg);
+  width: 90%;
+  max-width: 440px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  transform: scale(0.92);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.modern-modal-overlay.active .modern-modal-card {
+  transform: scale(1);
+}
+
+.modern-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.modern-modal-body p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.modern-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+/* Card de Perfil da Escola no Dashboard do Aluno */
+.school-profile-card {
+  transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease, border-color var(--transition-fast) ease;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+.school-profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(131, 82, 255, 0.08);
+  border-color: rgba(131, 82, 255, 0.25) !important;
+}
+
+.school-card-banner {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.school-card-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.school-profile-card:hover .school-card-logo img {
+  transform: scale(1.05);
+}
+
+.school-card-contacts div {
+  transition: color var(--transition-fast) ease;
+}
+
+.school-card-contacts div:hover {
+  color: var(--text-primary);
+}
