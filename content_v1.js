@@ -1,4 +1,4 @@
-﻿const COURSE_CONTENT = [
+const COURSE_CONTENT = [
   {
     id: "boas-vindas",
     title: "Boas-vindas ao Curso",
@@ -2057,7 +2057,7 @@
   {
     id: "conclusao-aula-3",
     title: "🎉 Conclusão da Aula 3",
-    page: 57,
+    page: 56.1,
     type: "lesson",
     chapter: "AULA 3",
     content: `
@@ -2108,14 +2108,667 @@
       <div class="proximas3-aulas">
         <div style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--text-primary);margin-bottom:10px;">🗺️ O que vem a seguir?</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(6,182,212,0.1);border-radius:10px;border:1px solid rgba(6,182,212,0.2);">
-            <span style="font-size:1.5rem;">🌐</span>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(124,58,237,0.1);border-radius:10px;border:1px solid rgba(124,58,237,0.2);">
+            <span style="font-size:1.5rem;">🖥️</span>
             <div>
-              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Aula 4 <span class="badge3-aula">Em breve</span></div>
-              <div style="font-size:0.78rem;color:var(--text-muted);">Internet, Redes e Segurança Digital — Navegue com segurança pelo mundo conectado</div>
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Aula 4 <span class="badge3-aula" style="background:var(--color-primary-light);">Próxima Missão</span></div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">Dominando o Windows e o S.O. — Controle a máquina e organize seus arquivos</div>
             </div>
           </div>
         </div>
+      </div>
+    `
+  },
+  {
+    id: "boas-vindas-aula-4",
+    title: "🖥️ Missão 4 — Dominando o Windows",
+    page: 57,
+    type: "intro",
+    chapter: "AULA 4",
+    content: `
+      <div class="welcome-container text-center">
+        <div class="welcome-badge">🖥️ AULA 4</div>
+        <h1 class="welcome-title">Dominando o Windows e o Sistema Operacional</h1>
+        <p class="welcome-subtitle">Aprenda a controlar a máquina através de seu principal software de gerenciamento.</p>
+        
+        <div class="welcome-card card-gradient" style="margin-top:1.5rem;">
+          <h3>🎯 O que você vai aprender?</h3>
+          <p>Nesta aula, daremos o passo definitivo na alfabetização digital. Você sairá de um mero conhecedor de peças físicas (hardware) para alguém capaz de manipular pastas, gerenciar arquivos de forma organizada, usar atalhos rápidos e dominar a Área de Trabalho do Windows!</p>
+        </div>
+
+        <div class="grid grid-2 gap-2 mt-2">
+          <div class="card bg-surface border-soft">
+            <h4>🏅 Medalha Desbloqueável</h4>
+            <p><strong>Explorador do Windows</strong>: Concedida ao aluno que demonstrar controle absoluto do sistema operacional no Desafio Final da aula.</p>
+          </div>
+          <div class="card bg-surface border-soft">
+            <h4>⚡ XP Disponível</h4>
+            <p>Ganhe até <strong>250 XP</strong> nesta aula realizando todos os mini-games práticos e o quiz final.</p>
+          </div>
+        </div>
+
+        <div class="alert alert-info mt-2">
+          <strong>Como Jogar:</strong> Avance pelas páginas e resolva os desafios em cada simulador. O progresso é salvo na hora!
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula4-cap1-revisao",
+    title: "4.1 Revisão Relâmpago",
+    page: 58,
+    type: "challenge",
+    chapter: "AULA 4",
+    interactiveId: "windows-review",
+    content: `
+      <h2>4.1 Revisão da Aula Anterior: Periféricos</h2>
+      <p>Antes de começarmos a mexer no sistema operacional, vamos testar o que você lembra sobre a conexão física do computador!</p>
+      
+      <div class="definition-box card-gradient">
+        <p>Lembre-se: os cabos de vídeo (HDMI, VGA) transmitem a imagem para o monitor (Saída), enquanto os de dados (USB) trazem comandos de dispositivos como o teclado e o mouse (Entrada).</p>
+      </div>
+
+      <p class="text-muted mt-2">Responda as 5 perguntas da <strong>Revisão Relâmpago</strong> no simulador abaixo para liberar a próxima página da aula!</p>
+    `
+  },
+  {
+    id: "aula4-cap2-so",
+    title: "4.2 O que é um S.O.?",
+    page: 59,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "os-guess",
+    content: `
+      <h2>4.2 O que é um Sistema Operacional (S.O.)?</h2>
+      <p>Um <strong>Sistema Operacional</strong> é o software mais importante do computador. Ele serve como uma ponte de comunicação entre o hardware físico (placa-mãe, memória, processador) e os programas que nós usamos (Word, jogos, navegador).</p>
+
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>🤖 O Tradutor do Computador</h4>
+          <p>O processador só entende códigos complexos (zeros e uns). O Sistema Operacional traduz seus cliques no mouse em comandos que o processador entende, e desenha o resultado em janelas coloridas e amigáveis.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>📱 SOs de Todo Dia</h4>
+          <p>Eles estão em todo lugar! Seu celular usa <strong>Android</strong> ou <strong>iOS</strong>. O notebook da sua escola usa <strong>Windows</strong>, <strong>macOS</strong> ou <strong>Linux</strong>. Até Smart TVs usam sistemas operacionais próprios para rodar os apps de streaming.</p>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>💡 Sem o S.O., o computador é inútil</h4>
+        <p>Se você ligar um computador sem um sistema operacional, a tela ficará preta com textos brancos e o computador não saberá o que fazer. O SO é o cérebro lógico que dá vida às peças.</p>
+      </div>
+
+      <p class="text-muted mt-2">Participe do desafio <strong>Quem é quem?</strong> no simulador abaixo e identifique o sistema operacional dos diferentes aparelhos!</p>
+    `
+  },
+  {
+    id: "aula4-cap3-desktop",
+    title: "4.3 Área de Trabalho",
+    page: 60,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "desktop-explorer",
+    content: `
+      <h2>4.3 A Área de Trabalho (Desktop)</h2>
+      <p>Assim que o computador liga e faz o carregamento inicial, a primeira tela que você vê é a <strong>Área de Trabalho</strong> (ou <em>Desktop</em>). Pense nela como uma mesa física de trabalho virtual: nela você coloca os papéis, canetas e pastas que usa no dia a dia.</p>
+
+      <div class="grid grid-3 gap-1 mt-2">
+        <div class="card bg-card-dark text-center">
+          <div style="font-size:2rem">🖼️</div>
+          <strong>Papel de Parede</strong>
+          <p class="text-small">A imagem de fundo que você pode personalizar com suas fotos ou cores preferidas.</p>
+        </div>
+        <div class="card bg-card-dark text-center">
+          <div style="font-size:2rem">📂</div>
+          <strong>Ícones</strong>
+          <p class="text-small">Pequenos desenhos que representam pastas, arquivos ou atalhos para abrir programas com clique duplo.</p>
+        </div>
+        <div class="card bg-card-dark text-center">
+          <div style="font-size:2rem">➖</div>
+          <strong>Barra de Tarefas</strong>
+          <p class="text-small">A barra horizontal (geralmente abaixo) que mostra os apps abertos, a hora, rede e o botão Iniciar.</p>
+        </div>
+      </div>
+
+      <p class="text-muted mt-2">Interaja com a Área de Trabalho simulada abaixo. Clique em cada um dos elementos destacados para ver a explicação de seu papel no sistema!</p>
+    `
+  },
+  {
+    id: "aula4-cap4-menu-iniciar",
+    title: "4.4 Menu Iniciar",
+    page: 61,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "start-menu-hunt",
+    content: `
+      <h2>4.4 O Menu Iniciar e Programas</h2>
+      <p>O <strong>Menu Iniciar</strong> é o ponto de partida do Windows. Clicando nele, você tem acesso a todos os aplicativos instalados na máquina, arquivos recentes, opções de energia e às configurações do sistema.</p>
+
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>🔍 A Barra de Pesquisa</h4>
+          <p>Em vez de rolar toda a lista de aplicativos, você pode abrir o Iniciar e simplesmente digitar o nome do programa (ex: "Calculadora" ou "Word"). O Windows busca e abre na hora!</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>🔌 Energia e Desligamento</h4>
+          <p>Para desligar o computador com segurança, você nunca deve apertar o botão físico da CPU direto. Use o Menu Iniciar, clique no botão de **Ligar/Desligar** e selecione **Desligar** ou **Reiniciar**.</p>
+        </div>
+      </div>
+
+      <p class="text-muted mt-2">Ajude a encontrar os softwares corretos no desafio <strong>Caça ao Programa</strong> no menu iniciar do simulador abaixo!</p>
+    `
+  },
+  {
+    id: "aula4-cap11-explorer",
+    title: "4.5 O Explorador de Arquivos",
+    page: 62,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "explorer-simulator",
+    content: `
+      <h2>4.5 O Explorador de Arquivos do Windows</h2>
+      <p>O <strong>Explorador de Arquivos</strong> (ou <em>File Explorer</em>) é o aplicativo nativo do Windows que serve para gerenciar e visualizar todos os diretórios e pastas armazenados na sua máquina.</p>
+
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>📁 Pastas Padrão do Sistema</h4>
+          <p>O Windows cria automaticamente pastas dedicadas para facilitar a organização: <strong>Área de Trabalho</strong> (Desktop), <strong>Documentos</strong>, <strong>Downloads</strong> (onde caem os arquivos da internet), <strong>Imagens</strong> e <strong>Vídeos</strong>.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>💽 Disco Local (C:)</h4>
+          <p>O <strong>Disco Local C:</strong> representa a raiz do seu armazenamento interno (HD ou SSD). É nele onde o Windows e os arquivos cruciais de sistema estão instalados. Cuidado ao modificar arquivos nele!</p>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>💡 A Biblioteca do Computador</h4>
+        <p>"O computador funciona como uma grande biblioteca. Cada pasta é uma prateleira organizada por temas e cada arquivo é um livro contendo dados específicos."</p>
+      </div>
+
+      <p class="text-muted mt-2">No simulador abaixo, explore o sistema para: <strong>encontrar Downloads</strong>, <strong>abrir Imagens</strong>, <strong>achar o arquivo oculto</strong> e <strong>voltar para o Desktop</strong>!</p>
+    `
+  },
+  {
+    id: "aula4-cap5-pastas-arquivos",
+    title: "4.6 Pastas e Arquivos",
+    page: 63,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "file-organizer",
+    content: `
+      <h2>4.6 Entendendo Pastas e Arquivos</h2>
+      <p>Para manter o computador organizado, o sistema operacional divide os dados em **Pastas** (ou Diretórios) e **Arquivos**. Pense na pasta como uma gaveta e nos arquivos como as folhas guardadas nela.</p>
+
+      <div class="definition-box card-gradient">
+        <p>Um <strong>Arquivo</strong> é um bloco de informações gravadas no computador. Todo arquivo tem um <strong>Nome</strong> e uma <strong>Extensão</strong> (três ou quatro letras após o ponto, que dizem de que tipo de arquivo se trata).</p>
+      </div>
+
+      <h4 class="mt-2">Extensões de Arquivos Mais Comuns:</h4>
+      <div class="grid grid-4 gap-1 mt-1">
+        <div class="card text-center text-small">
+          <strong>📑 Documentos</strong>
+          <p style="font-size: 0.8rem; color: var(--color-primary-light); font-weight:700;">.pdf / .docx</p>
+          <p class="text-muted">Textos, relatórios, livros ou trabalhos de escola.</p>
+        </div>
+        <div class="card text-center text-small">
+          <strong>🖼️ Imagens</strong>
+          <p style="font-size: 0.8rem; color: var(--color-success); font-weight:700;">.jpg / .png</p>
+          <p class="text-muted">Fotografias digitais, designs e capturas de tela.</p>
+        </div>
+        <div class="card text-center text-small">
+          <strong>🎵 Músicas</strong>
+          <p style="font-size: 0.8rem; color: var(--color-warning); font-weight:700;">.mp3</p>
+          <p class="text-muted">Arquivos de música e gravações de áudio.</p>
+        </div>
+        <div class="card text-center text-small">
+          <strong>🎥 Vídeos</strong>
+          <p style="font-size: 0.8rem; color: var(--color-error); font-weight:700;">.mp4</p>
+          <p class="text-muted">Filmes, animações ou vídeo-aulas inteiras.</p>
+        </div>
+      </div>
+
+      <p class="text-muted mt-2">No simulador abaixo, ajude a organizar os arquivos jogando cada um para a pasta correta de acordo com a sua extensão!</p>
+    `
+  },
+  {
+    id: "aula4-cap12-extensoes",
+    title: "4.7 Tipos de Arquivos e Extensões",
+    page: 64,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "file-classifier",
+    content: `
+      <h2>4.7 Tipos de Arquivos e Extensões (Avançado)</h2>
+      <p>Cada arquivo possui uma **extensão** indicada por um ponto seguido de letras no final de seu nome. A extensão diz ao computador qual programa deve abrir aquele arquivo.</p>
+
+      <div class="grid grid-3 gap-1 mt-2">
+        <div class="card bg-card-dark text-center">
+          <strong>📄 Documentos</strong>
+          <p style="font-size:0.95rem; color:var(--color-primary-light); font-weight:700;">.pdf / .txt</p>
+          <p class="text-small text-muted">Contém relatórios, livros ou textos simples.</p>
+        </div>
+        <div class="card bg-card-dark text-center">
+          <strong>🖼️ Imagens</strong>
+          <p style="font-size:0.95rem; color:var(--color-success); font-weight:700;">.jpg / .png</p>
+          <p class="text-small text-muted">Fotos, logotipos ou capturas de tela comprimidas.</p>
+        </div>
+        <div class="card bg-card-dark text-center">
+          <strong>📦 Compactados</strong>
+          <p style="font-size:0.95rem; color:var(--color-warning); font-weight:700;">.zip / .rar</p>
+          <p class="text-small text-muted">Agrupam vários arquivos compactados para economizar espaço.</p>
+        </div>
+      </div>
+
+      <div class="alert alert-warning mt-2">
+        <strong>⚠️ Curiosidade sobre Extensões:</strong><br>
+        O que acontece se uma foto <code>foto.jpg</code> for renomeada para <code>foto.mp3</code>? O arquivo não vira música. Ele apenas gera erro de leitura. Mudar a extensão <strong>não</strong> transforma o tipo interno do arquivo!
+      </div>
+
+      <p class="text-muted mt-2">Ajude a organizar o sistema classificando os arquivos soltos em suas respectivas categorias no painel abaixo!</p>
+    `
+  },
+  {
+    id: "aula4-cap6-criando-movendo",
+    title: "4.8 Criando e Movendo Pastas",
+    page: 65,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "office-simulator",
+    content: `
+      <h2>4.8 Gerenciamento e Organização na Prática</h2>
+      <p>No Windows, você pode criar suas próprias pastas para classificar os trabalhos e arquivos. O aplicativo que faz isso é o **Explorador de Arquivos** (File Explorer).</p>
+
+      <h4 class="mt-2">Operações Essenciais:</h4>
+      <ul>
+        <li><strong>Criar Pasta:</strong> Clique com o botão direito em uma área vazia, selecione <em>Novo</em> > <em>Pasta</em> e digite o nome.</li>
+        <li><strong>Mover:</strong> Arraste o arquivo para dentro da pasta de destino ou use Recortar e Colar.</li>
+        <li><strong>Excluir:</strong> Envia o arquivo para a <strong>Lixeira</strong>. Arquivos na lixeira ainda ocupam espaço. Você deve **esvaziar a Lixeira** para apagá-los permanentemente e liberar espaço no disco rígido.</li>
+        <li><strong>Restaurar:</strong> Abre a Lixeira, clica com o botão direito no arquivo deletado por engano e seleciona <em>Restaurar</em> para devolvê-lo à sua pasta original.</li>
+      </ul>
+
+      <p class="text-muted mt-2">Entre no <strong>Escritório Virtual</strong> simulado abaixo para criar pastas, organizar relatórios de trabalho e resgatar documentos da Lixeira do sistema!</p>
+    `
+  },
+  {
+    id: "aula4-cap7-atalhos",
+    title: "4.9 Atalhos Básicos",
+    page: 66,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "shortcut-master",
+    content: `
+      <h2>4.9 Dominando Atalhos do Teclado</h2>
+      <p>Os atalhos de teclado poupam muito tempo e tornam você um usuário avançado. Em vez de usar o mouse para tudo, você pressiona duas teclas simultaneamente para realizar ações imediatas.</p>
+
+      <div class="grid grid-3 gap-1 mt-2">
+        <div class="card bg-card-dark text-center">
+          <strong>⌨️ Copiar / Recortar</strong>
+          <p style="font-size:1.1rem; font-weight:700;" class="mt-1">Ctrl + C / Ctrl + X</p>
+          <p class="text-small text-muted">Copia as informações para a memória (Clipboard) ou as recorta para remover da origem.</p>
+        </div>
+        <div class="card bg-card-dark text-center">
+          <strong>📋 Colar</strong>
+          <p style="font-size:1.1rem; font-weight:700;" class="mt-1">Ctrl + V</p>
+          <p class="text-small text-muted">Insere as informações copiadas ou recortadas na posição do cursor do mouse.</p>
+        </div>
+        <div class="card bg-card-dark text-center">
+          <strong>↩️ Desfazer</strong>
+          <p style="font-size:1.1rem; font-weight:700;" class="mt-1">Ctrl + Z</p>
+          <p class="text-small text-muted">Volta atrás. Cancela a última ação feita no sistema ou em qualquer documento.</p>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>💾 Salvamento Rápido: Ctrl + S</h4>
+        <p>Sempre que estiver escrevendo um texto importante, pressione <strong>Ctrl + S</strong> a cada poucos minutos. Esse atalho salva seu progresso no disco rígido e evita que você perca o arquivo caso o computador desligue do nada.</p>
+      </div>
+
+      <p class="text-muted mt-2">Mostre que você conhece os comandos jogando o quiz cronometrado de atalhos abaixo!</p>
+    `
+  },
+  {
+    id: "aula4-cap13-personalizar",
+    title: "4.10 Personalizando o Windows",
+    page: 67,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "desktop-customizer",
+    content: `
+      <h2>4.10 Personalizando o Windows</h2>
+      <p>O Windows permite que você deixe o ambiente de trabalho com a sua cara, melhorando não apenas o visual, mas a ergonomia de leitura.</p>
+
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>🎨 Visual e Temas</h4>
+          <p>Você pode trocar o <strong>Papel de Parede</strong> (Wallpaper), alternar entre o Tema Claro ou Escuro (Dark Mode) e personalizar as cores das barras e janelas do sistema.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>⚙️ Ajustes Físicos Rápidos</h4>
+          <p>Na bandeja do sistema, você pode ajustar o <strong>brilho do monitor</strong> (para proteger a visão) e o <strong>volume do som</strong> de forma rápida.</p>
+        </div>
+      </div>
+
+      <p class="text-muted mt-2">Use o <strong>Customizador de Desktop</strong> abaixo para personalizar o papel de parede, tema e controles do sistema!</p>
+    `
+  },
+  {
+    id: "aula4-cap14-central",
+    title: "4.11 Central de Controle do Windows",
+    page: 68,
+    type: "lesson",
+    chapter: "AULA 4",
+    interactiveId: "windows-control-center",
+    content: `
+      <h2>4.11 Central de Controle do Windows</h2>
+      <p>A <strong>Central de Controle</strong> do Windows agrupa os principais interruptores físicos e lógicos da máquina no canto da Barra de Tarefas.</p>
+
+      <div class="grid grid-3 gap-1 mt-2">
+        <div class="card bg-card-dark text-center">
+          <strong>🌐 Wi-Fi</strong>
+          <p class="text-small text-muted">Liga/Desliga a recepção de internet sem fio e conexões de rede.</p>
+        </div>
+        <div class="card bg-card-dark text-center">
+          <strong>🔊 Volume</strong>
+          <p class="text-small text-muted">Controla a saída de som de fones de ouvido e alto-falantes.</p>
+        </div>
+        <div class="card bg-card-dark text-center">
+          <strong>🎧 Bluetooth</strong>
+          <p class="text-small text-muted">Conecta aparelhos de som, celulares, teclados e mouses sem fio.</p>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>💡 Resolução de Problemas</h4>
+        <p>Muitos travamentos de rede ou ausência de som são causados por chaves desligadas na Central de Controle. Basta abri-la para verificar o status e religar os dispositivos em segundos!</p>
+      </div>
+
+      <p class="text-muted mt-2">Ajuste os interruptores e conexões corretas para resolver os problemas na Central de Controle simulada abaixo!</p>
+    `
+  },
+  {
+    id: "aula4-cap8-desafio",
+    title: "4.12 Desafio do Explorador",
+    page: 69,
+    type: "challenge",
+    chapter: "AULA 4",
+    interactiveId: "windows-challenge",
+    content: `
+      <h2>4.12 Desafio Prático: O Explorador do Windows</h2>
+      <p>Chegou a hora de juntar tudo o que você aprendeu em um teste completo de habilidades!</p>
+      
+      <div class="definition-box card-gradient">
+        <p>Você terá que gerenciar arquivos, criar pastas administrativas, resgatar dados da lixeira e buscar aplicativos utilitários do sistema operacional.</p>
+      </div>
+
+      <p class="text-muted mt-2">Cumpra todas as 6 missões listadas no simulador de Área de Trabalho e garanta os seus **+50 XP**!</p>
+    `
+  },
+  {
+    id: "aula4-cap15-missao",
+    title: "4.13 A Grande Missão do Windows",
+    page: 70,
+    type: "challenge",
+    chapter: "AULA 4",
+    interactiveId: "windows-master-challenge",
+    content: `
+      <h2>4.13 Grande Missão do Windows</h2>
+      <p>Chegou a hora do maior teste de sistema! Mostre que você domina o computador completando o checklist unificado.</p>
+
+      <div class="definition-box card-gradient">
+        <p>Você terá que resolver 10 ações essenciais do Windows contra o relógio: criar e renomear pastas, abrir calculadora, esvaziar lixeira, ligar internet, ajustar volume, alterar temas e buscar programas.</p>
+      </div>
+
+      <p class="text-muted mt-2">Conclua todas as tarefas da lista a tempo de desbloquear a classificação final de Guardião!</p>
+    `
+  },
+  {
+    id: "aula4-cap9-quiz",
+    title: "4.14 Teste de Aprendizado",
+    page: 71,
+    type: "quiz",
+    chapter: "AULA 4",
+    interactiveId: "windows-final-quiz",
+    quiz: [
+      {
+        question: "Qual é a principal função de um Sistema Operacional?",
+        options: [
+          "Limpar os vírus e poeiras físicas das peças do gabinete.",
+          "Fazer a ponte de comunicação entre o usuário, os programas e o hardware.",
+          "Permitir o envio de e-mails sem precisar de conexão com a Internet.",
+          "Substituir o processador e a memória RAM no trabalho pesado."
+        ],
+        correct: 1,
+        explanation: "O SO gerencia todos os recursos de hardware e softwares, permitindo que a gente use o computador de forma amigável."
+      },
+      {
+        question: "Qual das alternativas contém apenas sistemas operacionais?",
+        options: [
+          "Windows, Word e Excel.",
+          "Google Chrome, Android e iOS.",
+          "Windows, Android, Linux e macOS.",
+          "Teclado, Mouse e Monitor."
+        ],
+        correct: 2,
+        explanation: "Windows, Android, Linux e macOS são sistemas operacionais reais para computadores, servidores e smartphones."
+      },
+      {
+        question: "A tela inicial amigável carregada após ligar o Windows é chamada de:",
+        options: [
+          "Explorador de Arquivos.",
+          "Área de Trabalho (Desktop).",
+          "Menu Iniciar.",
+          "Painel de Controle."
+        ],
+        correct: 1,
+        explanation: "A Área de Trabalho é a tela base contendo o papel de parede, os ícones e a barra de tarefas."
+      },
+      {
+        question: "Para que serve a Barra de Tarefas no Windows?",
+        options: [
+          "Para monitorar a velocidade física do cooler e do processador.",
+          "Para exibir os programas que estão abertos, relógio, rede e dar acesso ao menu Iniciar.",
+          "Para digitar textos longos e salvar arquivos como fotos.",
+          "Para esvaziar os arquivos inúteis que estão na Lixeira."
+        ],
+        correct: 1,
+        explanation: "A Barra de Tarefas exibe as janelas em execução, atalhos de apps e a bandeja do relógio/notificações."
+      },
+      {
+        question: "Qual o procedimento correto para desligar o computador?",
+        options: [
+          "Puxar o cabo de energia da tomada diretamente.",
+          "Pressionar e segurar o botão físico de energia do gabinete até apagar.",
+          "Clicar no botão Iniciar, selecionar Ligar/Desligar e clicar em Desligar.",
+          "Fechar todas as janelas e deixar o computador ligado para sempre."
+        ],
+        correct: 2,
+        explanation: "Desligar pelo menu Iniciar avisa o sistema para fechar os arquivos abertos de forma segura, evitando corromper o HD."
+      },
+      {
+        question: "Um arquivo com a extensão '.mp3' é classificado como:",
+        options: [
+          "Um documento de texto editável.",
+          "Uma imagem ou fotografia digital.",
+          "Um arquivo de música ou áudio.",
+          "Um vídeo de alta definição."
+        ],
+        correct: 2,
+        explanation: "A extensão '.mp3' é o formato de compressão de áudio digital mais utilizado."
+      },
+      {
+        question: "Como liberamos espaço no disco rígido após deletar arquivos indesejados?",
+        options: [
+          "Basta reiniciar o computador.",
+          "Abrir o painel da Lixeira e clicar em Esvaziar Lixeira.",
+          "Desligar o monitor por alguns minutos.",
+          "Mover os arquivos da Lixeira de volta para a Área de Trabalho."
+        ],
+        correct: 1,
+        explanation: "Os arquivos na Lixeira continuam ocupando espaço no HD. Apenas esvaziando a Lixeira os dados são apagados de vez."
+      },
+      {
+        question: "Se você excluir um arquivo por engano no Windows, como pode recuperá-lo?",
+        options: [
+          "Pressionando Ctrl + Alt + Del.",
+          "Abrindo a Lixeira, clicando com o botão direito no arquivo e selecionando 'Restaurar'.",
+          "Baixando o arquivo novamente da Internet.",
+          "Não é possível recuperar arquivos excluídos."
+        ],
+        correct: 1,
+        explanation: "A opção 'Restaurar' na Lixeira devolve o arquivo excluído exatamente para a pasta onde ele estava antes."
+      },
+      {
+        question: "Quais teclas pressionamos para copiar um item selecionado?",
+        options: [
+          "Ctrl + V",
+          "Ctrl + X",
+          "Ctrl + C",
+          "Ctrl + Z"
+        ],
+        correct: 2,
+        explanation: "Ctrl + C (Copy) serve para copiar dados. Ctrl + V (Paste) serve para colar."
+      },
+      {
+        question: "Qual atalho é utilizado para desfazer a última ação realizada no Windows?",
+        options: [
+          "Ctrl + A",
+          "Ctrl + Z",
+          "Ctrl + S",
+          "Ctrl + X"
+        ],
+        correct: 1,
+        explanation: "Ctrl + Z é o atalho universal para desfazer qualquer alteração ou erro cometido na edição."
+      }
+    ],
+    content: `
+      <h2>4.14 Avaliação de Conhecimento</h2>
+      <p>Chegou a hora de consolidar tudo o que foi estudado! Nosso Quiz Final testará suas habilidades de gerenciamento e atalhos.</p>
+      
+      <div class="alert alert-warning">
+        <strong>Atenção:</strong> Você possui um limite de <strong>3 vidas</strong> para concluir o questionário. Leia cada pergunta com atenção!
+      </div>
+    `
+  },
+  {
+    id: "aula4-cap10-missao-final",
+    title: "4.15 Conclusão da Aula 4",
+    page: 72,
+    type: "challenge",
+    chapter: "AULA 4",
+    interactiveId: "default",
+    content: `
+      <style>
+        @keyframes float4 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes pop4 { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+        @keyframes shimmer4 { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+        .conclusao4-hero { text-align:center; padding:2rem 1rem 1.5rem; }
+        .conclusao4-trophy { font-size:5rem; display:block; animation:float4 3s ease-in-out infinite; }
+        .conclusao4-title { font-family:var(--font-display); font-size:2rem; font-weight:900; background:linear-gradient(90deg,#7c3aed,#a78bfa,#ec4899,#7c3aed); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:shimmer4 3s linear infinite; margin:0.5rem 0; }
+        .conclusao4-sub { color:var(--text-muted); font-size:1rem; }
+        .conquistas4-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin:1.5rem 0; }
+        .conquista4-card { background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:14px 10px; text-align:center; animation:pop4 0.5s ease both; }
+        .conquista4-icon { font-size:2rem; display:block; margin-bottom:6px; }
+        .conquista4-label { font-family:var(--font-display); font-weight:700; font-size:0.8rem; color:var(--text-primary); }
+        .conquista4-desc { font-size:0.7rem; color:var(--text-muted); margin-top:2px; }
+        .progresso4-bar-wrap { background:var(--bg-surface); border-radius:50px; height:12px; overflow:hidden; margin:8px 0; }
+        .progresso4-bar-fill { height:100%; border-radius:50px; background:linear-gradient(90deg,#7c3aed,#ec4899); width:0; animation:progressAnim4 1.5s ease 0.5s both; }
+        @keyframes progressAnim4 { from{width:0} to{width:100%} }
+        .proximas4-aulas { background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(236,72,153,0.1)); border:1px solid rgba(124,58,237,0.3); border-radius:16px; padding:18px; margin-top:1.5rem; }
+        .badge4-aula { display:inline-block; background:var(--color-accent); color:#fff; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:20px; margin-left:6px; vertical-align:middle; }
+      </style>
+
+      <div class="conclusao4-hero">
+        <span class="conclusao4-trophy">🖥️</span>
+        <div class="conclusao4-title">Aula 4 Concluída!</div>
+        <p class="conclusao4-sub">Parabéns! Você se tornou um verdadeiro Explorador do Windows.<br>Manipular arquivos e gerenciar o computador agora é fácil! 🌟</p>
+      </div>
+
+      <div style="background:var(--bg-surface);border-radius:14px;padding:16px;margin-bottom:1.5rem;">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:0.9rem;color:var(--text-primary);margin-bottom:8px;">📊 Progresso da Aula 4</div>
+        <div class="progresso4-bar-wrap"><div class="progresso4-bar-fill"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted);margin-top:4px;">
+          <span>17 Capítulos</span><span style="color:var(--color-success);font-weight:700;">100% ✓</span>
+        </div>
+      </div>
+
+      <h3 style="font-family:var(--font-display);font-size:1rem;color:var(--text-muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.05em;">🎖️ Conquistas Desbloqueadas</h3>
+      <div class="conquistas4-grid">
+        <div class="conquista4-card">
+          <span class="conquista4-icon">🖥️</span>
+          <div class="conquista4-label">Explorador do Windows</div>
+          <div class="conquista4-desc">Concluiu a Missão 4 — Dominando o Windows.</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border-color);border-radius:12px;padding:16px;margin-bottom:1.5rem;">
+        <h4 style="margin:0 0 8px;">✍️ Missão Final da Aula 4</h4>
+        <p class="text-small text-muted" style="line-height:1.4;margin-bottom:12px;">Descreva brevemente abaixo: <strong>Como você organizaria os arquivos do seu computador pessoal em pastas de forma prática e produtiva?</strong> Suas notas serão gravadas no seu bloco de anotações.</p>
+      </div>
+
+      <div class="proximas4-aulas">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--text-primary);margin-bottom:10px;">🗺️ O que vem a seguir?</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(124,58,237,0.1);border-radius:10px;border:1px solid rgba(124,58,237,0.2);">
+            <span style="font-size:1.5rem;">📁</span>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Módulo de Produtividade <span class="badge4-aula">Próxima Página</span></div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">Organização avançada e ferramentas do S.O. na próxima página!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula4-cap16-guardiao",
+    title: "🏆 Guardião do Windows",
+    page: 73,
+    type: "challenge",
+    chapter: "AULA 4",
+    interactiveId: "aula4-reflexao-extra",
+    content: `
+      <style>
+        @keyframes floatExp { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        @keyframes popExp { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+        @keyframes shimmerExp { 0%{background-position:0% 50%} 100%{background-position:200% 50%} }
+        .conclusaoExp-hero { text-align:center; padding:2rem 1rem 1.5rem; }
+        .conclusaoExp-trophy { font-size:5rem; display:block; animation:floatExp 3s ease-in-out infinite; }
+        .conclusaoExp-title { font-family:var(--font-display); font-size:2rem; font-weight:900; background:linear-gradient(90deg,#10b981,#34d399,#3b82f6,#10b981); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:shimmerExp 3s linear infinite; margin:0.5rem 0; }
+        .conclusaoExp-sub { color:var(--text-muted); font-size:1rem; }
+        .conquistasExp-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin:1.5rem 0; }
+        .conquistaExp-card { background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:14px 10px; text-align:center; animation:popExp 0.5s ease both; }
+        .conquistaExp-icon { font-size:2rem; display:block; margin-bottom:6px; }
+        .conquistaExp-label { font-family:var(--font-display); font-weight:700; font-size:0.8rem; color:var(--text-primary); }
+        .conquistaExp-desc { font-size:0.7rem; color:var(--text-muted); margin-top:2px; }
+        .proximasExp-aulas { background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(59,130,246,0.1)); border:1px solid rgba(16,185,129,0.3); border-radius:16px; padding:18px; margin-top:1.5rem; }
+        .badgeExp-aula { display:inline-block; background:var(--color-primary-light); color:#fff; font-size:0.65rem; font-weight:700; padding:2px 8px; border-radius:20px; margin-left:6px; vertical-align:middle; }
+      </style>
+
+      <div class="conclusaoExp-hero">
+        <span class="conclusaoExp-trophy">🛡️</span>
+        <div class="conclusaoExp-title">Missão Extra Concluída!</div>
+        <p class="conclusaoExp-sub">Parabéns! Você concluiu a expansão da Aula 4 e se tornou um <strong>Guardião do Windows</strong>.<br>Você domina o sistema operacional de ponta a ponta! 🌟</p>
+      </div>
+
+      <div class="proximasExp-aulas">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--text-primary);margin-bottom:10px;">🗺️ O que vem a seguir?</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(124,58,237,0.1);border-radius:10px;border:1px solid rgba(124,58,237,0.2);">
+            <span style="font-size:1.5rem;">📁</span>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Módulo 2 — Produtividade <span class="badgeExp-aula">Próxima Etapa</span></div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">Organização avançada, uso de pendrives, navegação de internet e ferramentas de escritório.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-top:1.5rem;">
+        <h4 style="margin:0 0 8px;">✍️ Atividade Reflexiva da Expansão</h4>
+        <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Reflexão:</strong> Imagine que você acabou de ganhar um computador novo. Explique como organizaria suas pastas, personalizaria a área de trabalho e configuraria o sistema para começar a utilizá-lo. Suas notas serão gravadas no seu bloco de anotações.</p>
+        <textarea id="exp-mission-textarea" style="width:100%; min-height:120px; background:var(--bg-base); border:1px solid var(--border-soft); border-radius:10px; padding:12px; color:var(--text-primary); font-size:0.9rem; resize:vertical; line-height:1.6;" placeholder="Escreva sua resposta de forma organizada..."></textarea>
+        <button class="btn btn-primary mt-1" id="exp-save-btn" style="width:100%;">💾 Salvar Anotações Reflexivas</button>
+        <div id="exp-save-feedback" class="text-small mt-1" style="font-weight:bold;"></div>
       </div>
     `
   }

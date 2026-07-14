@@ -20,7 +20,9 @@ const ACHIEVEMENTS = [
   { id: "windows", title: "Admin do Windows", desc: "Aprendeu a criar pastas e mover arquivos no S.O.", icon: "🖥️" },
   { id: "ergonomics", title: "Ergonomista Chefe", desc: "Ajustou a postura ergonômica ideal.", icon: "🧘" },
   { id: "graduated", title: "Diplomado", desc: "Aprovado na Avaliação Final!", icon: "🎓" },
-  { id: "peripheral_master", title: "Mestre dos Periféricos", desc: "Concluiu a Missão 3 — Periféricos e Conexões.", icon: "🔌" }
+  { id: "peripheral_master", title: "Mestre dos Periféricos", desc: "Concluiu a Missão 3 — Periféricos e Conexões.", icon: "🔌" },
+  { id: "windows_explorer", title: "Explorador do Windows", desc: "Concluiu a Missão 4 — Dominando o Windows.", icon: "🖥️" },
+  { id: "windows_guardian", title: "Guardião do Windows", desc: "Concluiu a expansão da Aula 4 e dominou os principais recursos do Windows.", icon: "🖥️" }
 ];
 
 // Load State from LocalStorage
@@ -1006,6 +1008,52 @@ function loadSimulator(simId, slideData, isReset = false) {
       break;
     case "aula3-mission-final":
       initAula3MissionFinalSimulator(renderArea, isReset);
+      break;
+    // ---- AULA 4 SIMULATORS ----
+    case "windows-review":
+      initWindowsReviewSimulator(renderArea, isReset);
+      break;
+    case "os-guess":
+      initOsGuessSimulator(renderArea, isReset);
+      break;
+    case "desktop-explorer":
+      initDesktopExplorerSimulator(renderArea, isReset);
+      break;
+    case "start-menu-hunt":
+      initStartMenuHuntSimulator(renderArea, isReset);
+      break;
+    case "file-organizer":
+      initFileOrganizerSimulator(renderArea, isReset);
+      break;
+    case "office-simulator":
+      initOfficeSimulator(renderArea, isReset);
+      break;
+    case "shortcut-master":
+      initShortcutMasterSimulator(renderArea, isReset);
+      break;
+    case "windows-challenge":
+      initWindowsChallengeSimulator(renderArea, isReset);
+      break;
+    case "windows-final-quiz":
+      initQuizComponent(renderArea, slideData, isReset, false);
+      break;
+    case "explorer-simulator":
+      initExplorerSimulator(renderArea, isReset);
+      break;
+    case "file-classifier":
+      initFileClassifierSimulator(renderArea, isReset);
+      break;
+    case "desktop-customizer":
+      initDesktopCustomizerSimulator(renderArea, isReset);
+      break;
+    case "windows-control-center":
+      initWindowsControlCenterSimulator(renderArea, isReset);
+      break;
+    case "windows-master-challenge":
+      initWindowsMasterChallengeSimulator(renderArea, isReset);
+      break;
+    case "aula4-reflexao-extra":
+      initAula4ReflexaoExtra(renderArea, isReset);
       break;
     default:
       // If it has quiz in metadata (e.g. challenge pages 1.5, 32)
@@ -4400,6 +4448,2451 @@ function initAula3MissionFinalSimulator(container, isReset) {
     feedback.innerHTML = `<span style="color:var(--color-success);">✅ Reflexão salva com sucesso! +50 XP desbloqueados. 🔌 Medalha <strong>Mestre dos Periféricos</strong> conquistada!</span>`;
   });
 }
+// ==========================================================================
+// AULA 4 SIMULATORS — SYSTEM & GAME ENGINES
+// ==========================================================================
+
+// 1. REVISÃO DA AULA 3 (PERIFÉRICOS)
+function initWindowsReviewSimulator(container, isReset) {
+  container.innerHTML = "";
+  const questions = [
+    { q: "Qual cabo transmite tanto vídeo quanto áudio em alta definição digital?", opts: ["VGA", "HDMI", "USB"], correct: 1 },
+    { q: "O mouse e o teclado são classificados como dispositivos de:", opts: ["Saída", "Processamento", "Entrada"], correct: 2 },
+    { q: "Um pendrive é um periférico de:", opts: ["Processamento", "Armazenamento Externo", "Entrada/Saída"], correct: 1 },
+    { q: "Qual porta de conexão é atualmente a mais comum para conectar múltiplos tipos de periféricos?", opts: ["USB", "Serial", "HDMI"], correct: 0 },
+    { q: "O monitor e os fones de ouvido são dispositivos de:", opts: ["Entrada", "Saída", "Entrada/Saída"], correct: 1 }
+  ];
+  let currentIdx = 0;
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+  
+  const render = () => {
+    widget.innerHTML = "";
+    if (currentIdx >= questions.length) {
+      widget.innerHTML = `
+        <div class="text-center">
+          <span style="font-size:3rem;">⚡</span>
+          <h4 class="mt-1" style="color:var(--color-success);">Revisão Concluída!</h4>
+          <p class="text-muted text-small">Excelente! Você lembrou de tudo sobre hardware e periféricos. Próximo capítulo desbloqueado!</p>
+          <span class="badge badge-success">✓ Revisado (+50 XP)</span>
+        </div>
+      `;
+      addXP(50);
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      return;
+    }
+    const curr = questions[currentIdx];
+    const qTitle = document.createElement("h4");
+    qTitle.textContent = `Questão ${currentIdx + 1} de ${questions.length}: ${curr.q}`;
+    qTitle.style.marginBottom = "1.2rem";
+    widget.appendChild(qTitle);
+    
+    const optsDiv = document.createElement("div");
+    optsDiv.style.display = "flex";
+    optsDiv.style.flexDirection = "column";
+    optsDiv.style.gap = "8px";
+    
+    curr.opts.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "quiz-option-btn";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => {
+        optsDiv.querySelectorAll("button").forEach(b => b.disabled = true);
+        if (idx === curr.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+          optsDiv.childNodes[curr.correct].classList.add("correct");
+        }
+        setTimeout(() => {
+          currentIdx++;
+          render();
+        }, 1500);
+      });
+      optsDiv.appendChild(btn);
+    });
+    widget.appendChild(optsDiv);
+  };
+  render();
+  container.appendChild(widget);
+}
+
+// 2. IDENTIFICAR SISTEMA OPERACIONAL (OS GUESS)
+function initOsGuessSimulator(container, isReset) {
+  container.innerHTML = "";
+  let hearts = 3;
+  let currentIdx = 0;
+  const questions = [
+    { item: "📱 Celulares da Apple (iPhone)", desc: "Aparelho de alto padrão exclusivo da Apple.", correct: "iOS", opts: ["Android", "iOS", "Windows", "macOS"] },
+    { item: "💻 Notebooks de Escritório", desc: "Computadores focados em produtividade corporativa ou jogos domésticos.", correct: "Windows", opts: ["Linux", "iOS", "Windows", "Android"] },
+    { item: "📱 Smartphone Samsung ou Xiaomi", desc: "O ecossistema móvel mais utilizado no mundo.", correct: "Android", opts: ["Windows", "Android", "iOS", "macOS"] },
+    { item: "🖥️ Computadores Mac (Apple)", desc: "Notebooks e desktops finos voltados para designers e desenvolvedores.", correct: "macOS", opts: ["Windows", "Linux", "macOS", "iOS"] },
+    { item: "🌐 Servidores de Internet e Smart TVs", desc: "Sistemas robustos de código aberto e aparelhos integrados de sala de estar.", correct: "Linux", opts: ["Linux", "macOS", "Windows", "iOS"] }
+  ];
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  const updateHearts = (heartsDiv) => {
+    heartsDiv.innerHTML = "Vidas: " + Array(3).fill(0).map((_, i) => i < hearts ? "❤️" : "💔").join(" ");
+  };
+
+  const render = () => {
+    widget.innerHTML = "";
+    if (hearts <= 0) {
+      widget.innerHTML = `
+        <div class="text-center">
+          <span style="font-size:3rem;">⚠️</span>
+          <h4 class="mt-1" style="color:var(--color-danger);">Você perdeu todas as vidas!</h4>
+          <p class="text-muted text-small">Sem problemas. Revise o texto e tente novamente.</p>
+          <button class="btn btn-secondary mt-1" id="btn-restart-os-guess">Reiniciar Desafio</button>
+        </div>
+      `;
+      widget.querySelector("#btn-restart-os-guess").addEventListener("click", () => {
+        hearts = 3;
+        currentIdx = 0;
+        render();
+      });
+      return;
+    }
+
+    if (currentIdx >= questions.length) {
+      widget.innerHTML = `
+        <div class="text-center">
+          <span style="font-size:3rem;">🤖</span>
+          <h4 class="mt-1" style="color:var(--color-success);">Desafio Concluído!</h4>
+          <p class="text-muted text-small">Você sabe reconhecer e classificar perfeitamente cada tipo de Sistema Operacional.</p>
+          <span class="badge badge-success">✓ Desafio Concluído (+50 XP)</span>
+        </div>
+      `;
+      addXP(50);
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      return;
+    }
+
+    const curr = questions[currentIdx];
+    const topBar = document.createElement("div");
+    topBar.style.display = "flex";
+    topBar.style.justifyContent = "space-between";
+    topBar.style.marginBottom = "1rem";
+    
+    const countSpan = document.createElement("span");
+    countSpan.textContent = `Aparelho ${currentIdx + 1} de ${questions.length}`;
+    countSpan.style.fontSize = "0.85rem";
+    
+    const heartsSpan = document.createElement("span");
+    heartsSpan.style.color = "var(--color-danger)";
+    heartsSpan.style.fontWeight = "bold";
+    heartsSpan.style.fontSize = "0.85rem";
+    updateHearts(heartsSpan);
+
+    topBar.appendChild(countSpan);
+    topBar.appendChild(heartsSpan);
+    widget.appendChild(topBar);
+
+    const card = document.createElement("div");
+    card.style.background = "rgba(255,255,255,0.03)";
+    card.style.border = "1px solid rgba(255,255,255,0.08)";
+    card.style.borderRadius = "12px";
+    card.style.padding = "1.5rem";
+    card.style.textAlign = "center";
+    card.style.marginBottom = "1.2rem";
+
+    const title = document.createElement("h3");
+    title.textContent = curr.item;
+    title.style.margin = "0 0 0.5rem 0";
+    
+    const desc = document.createElement("p");
+    desc.textContent = curr.desc;
+    desc.style.color = "var(--text-muted)";
+    desc.style.fontSize = "0.85rem";
+
+    card.appendChild(title);
+    card.appendChild(desc);
+    widget.appendChild(card);
+
+    const optsDiv = document.createElement("div");
+    optsDiv.style.display = "grid";
+    optsDiv.style.gridTemplateColumns = "repeat(2, 1fr)";
+    optsDiv.style.gap = "8px";
+
+    curr.opts.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "quiz-option-btn";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => {
+        optsDiv.querySelectorAll("button").forEach(b => b.disabled = true);
+        if (opt === curr.correct) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+          hearts--;
+          updateHearts(heartsSpan);
+        }
+        setTimeout(() => {
+          currentIdx++;
+          render();
+        }, 1500);
+      });
+      optsDiv.appendChild(btn);
+    });
+    widget.appendChild(optsDiv);
+  };
+  render();
+  container.appendChild(widget);
+}
+
+// 3. EXPLORAR ÁREA DE TRABALHO
+function initDesktopExplorerSimulator(container, isReset) {
+  container.innerHTML = "";
+  const clickedElements = {
+    lixeira: false,
+    relogio: false,
+    iniciar: false,
+    pasta: false,
+    barra: false
+  };
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.2rem";
+
+  const totalToExplore = Object.keys(clickedElements).length;
+
+  const checkCompletion = () => {
+    const clickedCount = Object.values(clickedElements).filter(Boolean).length;
+    progText.textContent = `Elementos explorados: ${clickedCount} de ${totalToExplore}`;
+    if (clickedCount === totalToExplore) {
+      infoPanel.innerHTML = `
+        <div style="text-align:center; color:var(--color-success); padding:1rem;">
+          <h4 style="margin:0; color:var(--color-success);">✨ Exploração Concluída!</h4>
+          <p class="text-small text-muted" style="margin-top:6px;">Parabéns! Você identificou e explorou todas as partes importantes da Área de Trabalho do Windows.</p>
+        </div>
+      `;
+      addXP(50);
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+    }
+  };
+
+  // Header progress
+  const header = document.createElement("div");
+  header.style.display = "flex";
+  header.style.justifyContent = "space-between";
+  header.style.alignItems = "center";
+  header.style.marginBottom = "0.75rem";
+  
+  const title = document.createElement("h4");
+  title.textContent = "💻 Área de Trabalho Interativa";
+  title.style.margin = "0";
+
+  const progText = document.createElement("span");
+  progText.style.fontSize = "0.82rem";
+  progText.style.color = "var(--color-primary-light)";
+  progText.style.fontWeight = "700";
+  progText.textContent = `Elementos explorados: 0 de ${totalToExplore}`;
+
+  header.appendChild(title);
+  header.appendChild(progText);
+  widget.appendChild(header);
+
+  // Desktop screen
+  const desktopFrame = document.createElement("div");
+  desktopFrame.style.cssText = "position:relative; width:100%; height:380px; background: linear-gradient(135deg, #1e1b4b, #311042); border-radius:12px; border:1px solid rgba(255,255,255,0.1); overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box; padding:12px;";
+  
+  // Desktop Icons Left
+  const leftIcons = document.createElement("div");
+  leftIcons.style.cssText = "display:flex; flex-direction:column; gap:16px; align-items:flex-start; width:fit-content;";
+
+  const lixeira = document.createElement("div");
+  lixeira.style.cssText = "display:flex; flex-direction:column; align-items:center; cursor:pointer; width:64px; text-align:center; padding:4px; border-radius:6px; transition: background 0.2s;";
+  lixeira.innerHTML = `<span style="font-size:1.8rem; display:block;">🗑️</span><span style="font-size:0.7rem; font-weight:700; color:#fff; display:block; margin-top:2px;">Lixeira</span>`;
+  lixeira.addEventListener("click", () => {
+    clickedElements.lixeira = true;
+    lixeira.style.background = "rgba(124,58,237,0.3)";
+    lixeira.style.border = "1px solid var(--color-primary-light)";
+    infoPanel.innerHTML = `<strong>🗑️ Lixeira do Sistema:</strong> É onde ficam salvos temporariamente os arquivos excluídos do computador. Eles só saem do seu HD de vez quando você esvazia a lixeira.`;
+    checkCompletion();
+  });
+
+  const pasta = document.createElement("div");
+  pasta.style.cssText = "display:flex; flex-direction:column; align-items:center; cursor:pointer; width:64px; text-align:center; padding:4px; border-radius:6px; transition: background 0.2s;";
+  pasta.innerHTML = `<span style="font-size:1.8rem; display:block;">📁</span><span style="font-size:0.7rem; font-weight:700; color:#fff; display:block; margin-top:2px;">Projetos</span>`;
+  pasta.addEventListener("click", () => {
+    clickedElements.pasta = true;
+    pasta.style.background = "rgba(124,58,237,0.3)";
+    pasta.style.border = "1px solid var(--color-primary-light)";
+    infoPanel.innerHTML = `<strong>📁 Ícones e Pastas:</strong> Atalhos rápidos colocados na Área de Trabalho para abrir aplicativos ou organizar arquivos importantes sem ter que procurá-los.`;
+    checkCompletion();
+  });
+
+  leftIcons.appendChild(lixeira);
+  leftIcons.appendChild(pasta);
+  desktopFrame.appendChild(leftIcons);
+
+  // Taskbar
+  const bar = document.createElement("div");
+  bar.style.cssText = "width:calc(100% + 24px); margin-left:-12px; margin-bottom:-12px; height:40px; background:rgba(15,15,35,0.85); backdrop-filter:blur(5px); border-top:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:space-between; padding:0 12px; box-sizing:border-box; cursor:pointer;";
+  bar.addEventListener("click", (e) => {
+    if (e.target === bar) {
+      clickedElements.barra = true;
+      bar.style.background = "rgba(124,58,237,0.2)";
+      infoPanel.innerHTML = `<strong>➖ Barra de Tarefas:</strong> Fica fixada na base do Windows. Ela exibe os botões dos aplicativos ativos para você alternar entre eles com um clique rápido.`;
+      checkCompletion();
+    }
+  });
+
+  const iniciar = document.createElement("button");
+  iniciar.style.cssText = "background:linear-gradient(135deg,#7c3aed,#ec4899); border:none; border-radius:6px; color:#fff; font-weight:bold; font-size:0.75rem; padding:4px 10px; cursor:pointer; font-family:var(--font-display); height:28px; display:flex; align-items:center; gap:4px; box-shadow:0 2px 5px rgba(0,0,0,0.3);";
+  iniciar.innerHTML = `🏁 Iniciar`;
+  iniciar.addEventListener("click", (e) => {
+    e.stopPropagation();
+    clickedElements.iniciar = true;
+    iniciar.style.boxShadow = "0 0 8px #7c3aed";
+    infoPanel.innerHTML = `<strong>🏁 Botão Iniciar:</strong> Abre o menu principal do sistema operacional. Desta janela você acessa todos os programas, arquivos recentes e atalhos de energia do computador.`;
+    checkCompletion();
+  });
+
+  const relogio = document.createElement("div");
+  relogio.style.cssText = "font-size:0.72rem; font-weight:700; color:#fff; font-family:var(--font-display); opacity:0.85; display:flex; flex-direction:column; align-items:flex-end; cursor:pointer; padding:2px 6px; border-radius:4px;";
+  relogio.innerHTML = `<span style="line-height:1.1;">20:45</span><span style="font-size:0.6rem; opacity:0.7; margin-top:1px;">13/07/2026</span>`;
+  relogio.addEventListener("click", (e) => {
+    e.stopPropagation();
+    clickedElements.relogio = true;
+    relogio.style.background = "rgba(124,58,237,0.3)";
+    infoPanel.innerHTML = `<strong>📅 Relógio e Área de Notificação:</strong> Mostra a hora, data, conexões de internet ativa, volume das caixas de som e os alertas/notificações urgentes do antivírus ou atualizações do sistema.`;
+    checkCompletion();
+  });
+
+  bar.appendChild(iniciar);
+  bar.appendChild(relogio);
+  desktopFrame.appendChild(bar);
+  widget.appendChild(desktopFrame);
+
+  // Info display panel below
+  const infoPanel = document.createElement("div");
+  infoPanel.style.cssText = "margin-top:12px; min-height:65px; background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.1); border-radius:8px; padding:10px; font-size:0.84rem; line-height:1.4; color:var(--text-secondary);";
+  infoPanel.innerHTML = `<span style="color:var(--text-muted);">👉 Clique em qualquer componente destacado da tela para iniciar a exploração e ler as descrições.</span>`;
+  widget.appendChild(infoPanel);
+
+  container.appendChild(widget);
+}
+
+// 4. CAÇA AO PROGRAMA (START MENU HUNT)
+function initStartMenuHuntSimulator(container, isReset) {
+  container.innerHTML = "";
+  const missions = [
+    { target: "Calculadora", emoji: "🧮", hint: "Clique em Iniciar e procure o ícone de calculadora." },
+    { target: "Configurações", emoji: "⚙️", hint: "Use o Iniciar e clique na engrenagem das definições." },
+    { target: "Bloco de Notas", emoji: "📝", hint: "Aplicativo de anotações de textos simples." },
+    { target: "Paint", emoji: "🎨", hint: "Software clássico de desenho livre." }
+  ];
+
+  let currentMission = 0;
+  let lives = 3;
+  let timerVal = 30;
+  let gameInterval;
+  let isMenuOpen = false;
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  const clearTimer = () => {
+    if (gameInterval) clearInterval(gameInterval);
+  };
+
+  const failGame = (reason) => {
+    clearTimer();
+    widget.innerHTML = `
+      <div class="text-center">
+        <span style="font-size:3rem;">💥</span>
+        <h4 class="mt-1" style="color:var(--color-danger);">${reason}</h4>
+        <p class="text-muted text-small">Tente de novo com mais foco nas opções!</p>
+        <button class="btn btn-secondary mt-1" id="btn-restart-hunt">Jogar Novamente</button>
+      </div>
+    `;
+    widget.querySelector("#btn-restart-hunt").addEventListener("click", () => {
+      initStartMenuHuntSimulator(container, true);
+    });
+  };
+
+  const completeGame = () => {
+    clearTimer();
+    widget.innerHTML = `
+      <div class="text-center">
+        <span style="font-size:3rem;">🔍</span>
+        <h4 class="mt-1" style="color:var(--color-success);">Você é um ótimo navegador!</h4>
+        <p class="text-muted text-small">Encontrou todos os programas no menu iniciar sem problemas. Bom trabalho!</p>
+        <span class="badge badge-success">✓ Caça Concluída (+50 XP)</span>
+      </div>
+    `;
+    addXP(50);
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+  };
+
+  // Start timer
+  gameInterval = setInterval(() => {
+    timerVal--;
+    const tSpan = document.getElementById("hunt-timer-disp");
+    if (tSpan) tSpan.textContent = `Tempo: ${timerVal}s`;
+    if (timerVal <= 0) {
+      failGame("O tempo acabou!");
+    }
+  }, 1000);
+
+  const render = () => {
+    widget.innerHTML = "";
+    
+    // Top Bar
+    const topBar = document.createElement("div");
+    topBar.style.cssText = "display:flex; justify-content:space-between; margin-bottom:12px; font-size:0.85rem; font-family:var(--font-display); font-weight:700;";
+    
+    const targetText = document.createElement("span");
+    targetText.style.color = "var(--color-warning)";
+    targetText.innerHTML = `Objetivo: Encontre o(a) <strong>${missions[currentMission].target}</strong>`;
+
+    const timerText = document.createElement("span");
+    timerText.id = "hunt-timer-disp";
+    timerText.textContent = `Tempo: ${timerVal}s`;
+
+    const livesText = document.createElement("span");
+    livesText.style.color = "var(--color-danger)";
+    livesText.textContent = "❤️ " + lives;
+
+    topBar.appendChild(targetText);
+    topBar.appendChild(timerText);
+    topBar.appendChild(livesText);
+    widget.appendChild(topBar);
+
+    // Simulated screen
+    const screen = document.createElement("div");
+    screen.style.cssText = "position:relative; width:100%; height:380px; background:#111; border-radius:12px; border:1px solid rgba(255,255,255,0.08); overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end;";
+
+    // Menu Iniciar Popup (Simulated)
+    const menuPopup = document.createElement("div");
+    menuPopup.style.cssText = "position:absolute; bottom:40px; left:12px; width:180px; background:#222; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:6px; box-sizing:border-box; display:flex; flex-direction:column; gap:4px; z-index:10;";
+    if (!isMenuOpen) menuPopup.style.display = "none";
+
+    const menuItems = [
+      { name: "Calculadora", emoji: "🧮" },
+      { name: "Paint", emoji: "🎨" },
+      { name: "Bloco de Notas", emoji: "📝" },
+      { name: "Navegador Web", emoji: "🌐" },
+      { name: "Configurações", emoji: "⚙️" },
+      { name: "Lixeira", emoji: "🗑️" }
+    ];
+
+    menuItems.forEach(item => {
+      const itemBtn = document.createElement("div");
+      itemBtn.style.cssText = "display:flex; align-items:center; gap:8px; padding:6px 10px; font-size:0.8rem; border-radius:6px; cursor:pointer; color:#fff; transition: background 0.15s;";
+      itemBtn.innerHTML = `<span>${item.emoji}</span><span>${item.name}</span>`;
+      
+      itemBtn.addEventListener("mouseenter", () => itemBtn.style.background = "rgba(124,58,237,0.2)");
+      itemBtn.addEventListener("mouseleave", () => itemBtn.style.background = "");
+
+      itemBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        isMenuOpen = false;
+        if (item.name === missions[currentMission].target) {
+          currentMission++;
+          if (currentMission >= missions.length) {
+            completeGame();
+          } else {
+            render();
+          }
+        } else {
+          lives--;
+          if (lives <= 0) {
+            failGame("Você cometeu muitos erros!");
+          } else {
+            alert(`❌ Incorreto! Aquele era o(a) ${item.name}. Restam ${lives} vidas.`);
+            render();
+          }
+        }
+      });
+      menuPopup.appendChild(itemBtn);
+    });
+    screen.appendChild(menuPopup);
+
+    // Desktop wallpaper area
+    const wall = document.createElement("div");
+    wall.style.cssText = "flex:1; display:flex; align-items:center; justify-content:center; color:#444; font-size:0.8rem;";
+    wall.textContent = "Área de Trabalho";
+    screen.appendChild(wall);
+
+    // Taskbar
+    const bar = document.createElement("div");
+    bar.style.cssText = "height:40px; background:#1e1e1e; border-top:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; padding:0 12px;";
+
+    const initBtn = document.createElement("button");
+    initBtn.style.cssText = "background:linear-gradient(135deg,#7c3aed,#ec4899); border:none; border-radius:6px; color:#fff; font-weight:bold; font-size:0.75rem; padding:4px 10px; cursor:pointer; font-family:var(--font-display); height:28px;";
+    initBtn.innerHTML = `🏁 Iniciar`;
+    initBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      isMenuOpen = !isMenuOpen;
+      render();
+    });
+
+    bar.appendChild(initBtn);
+    screen.appendChild(bar);
+    widget.appendChild(screen);
+
+    desktop.addEventListener("click", () => {
+      if (isMenuOpen) {
+        isMenuOpen = false;
+        render();
+      }
+    });
+  };
+
+  const desktop = document.createElement("div");
+  desktop.addEventListener("click", () => {
+    isMenuOpen = false;
+    render();
+  });
+
+  render();
+  container.appendChild(widget);
+}
+
+// 5. ORGANIZADOR DE ARQUIVOS (FILE ORGANIZER)
+function initFileOrganizerSimulator(container, isReset) {
+  container.innerHTML = "";
+  let lives = 3;
+  let selectedFile = null;
+
+  const files = [
+    { name: "foto_perfil.png", type: "img", label: "🖼️ foto_perfil.png" },
+    { name: "cancao_rock.mp3", type: "audio", label: "🎵 cancao_rock.mp3" },
+    { name: "trabalho_historia.docx", type: "doc", label: "📑 trabalho_historia.docx" },
+    { name: "aula_informatica.mp4", type: "video", label: "🎥 aula_informatica.mp4" },
+    { name: "manual_usuario.pdf", type: "doc", label: "📑 manual_usuario.pdf" },
+    { name: "screenshot.jpg", type: "img", label: "🖼️ screenshot.jpg" }
+  ];
+
+  let unorganizedFiles = [...files];
+  const foldersData = {
+    img: { name: "Imagens / Fotos", emoji: "🖼️", count: 0 },
+    audio: { name: "Músicas / Sons", emoji: "🎵", count: 0 },
+    doc: { name: "Documentos", emoji: "📑", count: 0 },
+    video: { name: "Vídeos", emoji: "🎥", count: 0 }
+  };
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  const render = () => {
+    widget.innerHTML = "";
+
+    if (lives <= 0) {
+      widget.innerHTML = `
+        <div class="text-center">
+          <span style="font-size:3rem;">🗑️</span>
+          <h4 class="mt-1" style="color:var(--color-danger);">Arquivos Bagunçados!</h4>
+          <p class="text-muted text-small">Suas tentativas terminaram. Tente classificar melhor as extensões.</p>
+          <button class="btn btn-secondary mt-1" id="btn-restart-organizer">Tentar Novamente</button>
+        </div>
+      `;
+      widget.querySelector("#btn-restart-organizer").addEventListener("click", () => {
+        initFileOrganizerSimulator(container, true);
+      });
+      return;
+    }
+
+    if (unorganizedFiles.length === 0) {
+      widget.innerHTML = `
+        <div class="text-center">
+          <span style="font-size:3rem;">📂</span>
+          <h4 class="mt-1" style="color:var(--color-success);">Tudo Organizado!</h4>
+          <p class="text-muted text-small">Parabéns! Você reconhece cada tipo de extensão de arquivos e organizou as pastas de forma limpa.</p>
+          <span class="badge badge-success">✓ Organizado (+50 XP)</span>
+        </div>
+      `;
+      addXP(50);
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      return;
+    }
+
+    // Top Bar
+    const topBar = document.createElement("div");
+    topBar.style.cssText = "display:flex; justify-content:space-between; margin-bottom:1.5rem; font-size:0.85rem;";
+    
+    const label = document.createElement("span");
+    label.innerHTML = "Instrução: <strong>Selecione um arquivo</strong> e clique na <strong>pasta correspondente</strong>.";
+
+    const livesSpan = document.createElement("span");
+    livesSpan.style.color = "var(--color-danger)";
+    livesSpan.style.fontWeight = "bold";
+    livesSpan.innerHTML = "Vidas: " + Array(3).fill(0).map((_, i) => i < lives ? "❤️" : "💔").join(" ");
+
+    topBar.appendChild(label);
+    topBar.appendChild(livesSpan);
+    widget.appendChild(topBar);
+
+    // Layout
+    const layout = document.createElement("div");
+    layout.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem;";
+
+    // Files list Column
+    const filesCol = document.createElement("div");
+    filesCol.style.cssText = "background:rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px;";
+    
+    const colTitle1 = document.createElement("h5");
+    colTitle1.style.margin = "0 0 8px 0";
+    colTitle1.textContent = "📄 Arquivos Soltos";
+    filesCol.appendChild(colTitle1);
+
+    unorganizedFiles.forEach(file => {
+      const fileBtn = document.createElement("button");
+      fileBtn.style.cssText = "text-align:left; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); background:#1e1e2f; color:#fff; font-size:0.82rem; cursor:pointer; font-family:monospace; display:flex; align-items:center; gap:8px; width:100%; transition: border-color 0.15s;";
+      fileBtn.textContent = file.label;
+
+      if (selectedFile && selectedFile.name === file.name) {
+        fileBtn.style.borderColor = "var(--color-primary-light)";
+        fileBtn.style.background = "rgba(124,58,237,0.15)";
+      }
+
+      fileBtn.addEventListener("click", () => {
+        selectedFile = file;
+        render();
+      });
+      filesCol.appendChild(fileBtn);
+    });
+    layout.appendChild(filesCol);
+
+    // Folders Column
+    const foldersCol = document.createElement("div");
+    foldersCol.style.cssText = "display:grid; grid-template-columns:1fr; gap:10px;";
+    
+    Object.keys(foldersData).forEach(key => {
+      const folder = foldersData[key];
+      const folderBtn = document.createElement("div");
+      folderBtn.style.cssText = "border:1px solid rgba(255,255,255,0.08); background:#161625; border-radius:10px; padding:12px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; transition: background 0.15s;";
+      
+      folderBtn.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:2rem;">${folder.emoji}</span>
+          <div>
+            <div style="font-weight:700; font-size:0.85rem; color:#fff;">${folder.name}</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">Contém: ${folder.count} arquivos</div>
+          </div>
+        </div>
+      `;
+
+      folderBtn.addEventListener("click", () => {
+        if (!selectedFile) {
+          alert("Por favor, selecione um arquivo na lista à esquerda antes!");
+          return;
+        }
+
+        if (selectedFile.type === key) {
+          foldersData[key].count++;
+          unorganizedFiles = unorganizedFiles.filter(f => f.name !== selectedFile.name);
+          selectedFile = null;
+          render();
+        } else {
+          lives--;
+          alert(`❌ Incorreto! A extensão do arquivo não corresponde a esta pasta.`);
+          selectedFile = null;
+          render();
+        }
+      });
+      foldersCol.appendChild(folderBtn);
+    });
+    layout.appendChild(foldersCol);
+
+    widget.appendChild(layout);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// 6. ESCRITÓRIO VIRTUAL (OFFICE SIMULATOR)
+function initOfficeSimulator(container, isReset) {
+  container.innerHTML = "";
+  
+  let lives = 3;
+  let folders = []; // strings "Documentos", "Fotos"
+  let unorganizedFiles = [
+    { name: "relatorio_vendas.docx", type: "Documentos", icon: "📄" },
+    { name: "ferias_2026.png", type: "Fotos", icon: "🖼️" }
+  ];
+  let recycleBin = ["projeto_final.docx"]; // Deleted file to restore
+  let activeTab = "explorer"; // explorer | lixeira
+  let statusMsg = "";
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  const render = () => {
+    widget.innerHTML = "";
+
+    if (lives <= 0) {
+      widget.innerHTML = `
+        <div class="text-center">
+          <span style="font-size:3rem;">👾</span>
+          <h4 style="color:var(--color-danger);">Escritório em Caos!</h4>
+          <p class="text-muted text-small">Muitas tentativas incorretas. Recarregue o simulador.</p>
+          <button class="btn btn-secondary mt-1" id="btn-restart-office">Tentar Novamente</button>
+        </div>
+      `;
+      widget.querySelector("#btn-restart-office").addEventListener("click", () => {
+        initOfficeSimulator(container, true);
+      });
+      return;
+    }
+
+    // Goal Checklist
+    const isDocFolderCreated = folders.includes("Documentos");
+    const isPhotosFolderCreated = folders.includes("Fotos");
+    const areFilesMoved = unorganizedFiles.length === 0;
+    const isTrashRestored = recycleBin.length === 0;
+
+    if (isDocFolderCreated && isPhotosFolderCreated && areFilesMoved && isTrashRestored) {
+      widget.innerHTML = `
+        <div class="text-center">
+          <span style="font-size:3rem;">🏢</span>
+          <h4 class="mt-1" style="color:var(--color-success);">Escritório Virtual Organizado!</h4>
+          <p class="text-muted text-small">Parabéns! Você concluiu todos os objetivos práticos com sucesso!</p>
+          <span class="badge badge-success">✓ Concluído (+50 XP)</span>
+        </div>
+      `;
+      addXP(50);
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      return;
+    }
+
+    // Top goals
+    const goalsContainer = document.createElement("div");
+    goalsContainer.style.cssText = "background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:12px; margin-bottom:1rem; font-size:0.8rem; display:grid; grid-template-columns:1fr 1fr; gap:8px;";
+    
+    goalsContainer.innerHTML = `
+      <div>
+        <div style="font-weight:700; margin-bottom:4px; font-family:var(--font-display);">Metas do Trabalho:</div>
+        <div>${isDocFolderCreated ? "✅" : "⬜"} Criar pasta 'Documentos'</div>
+        <div>${isPhotosFolderCreated ? "✅" : "⬜"} Criar pasta 'Fotos'</div>
+      </div>
+      <div>
+        <div style="font-weight:700; margin-bottom:4px; font-family:var(--font-display); display:flex; justify-content:space-between;">
+          <span>Outras tarefas:</span>
+          <span style="color:var(--color-danger);">Vidas: ${lives} ❤️</span>
+        </div>
+        <div>${areFilesMoved ? "✅" : "⬜"} Mover arquivos soltos às suas pastas</div>
+        <div>${isTrashRestored ? "✅" : "⬜"} Abrir Lixeira e Restaurar 'projeto_final.docx'</div>
+      </div>
+    `;
+    widget.appendChild(goalsContainer);
+
+    // Workspace
+    const explorer = document.createElement("div");
+    explorer.style.cssText = "background:#0f0f1b; border:1px solid rgba(255,255,255,0.08); border-radius:12px; overflow:hidden; min-height:380px; display:flex; flex-direction:column;";
+
+    // Toolbar
+    const toolbar = document.createElement("div");
+    toolbar.style.cssText = "background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(255,255,255,0.08); padding:8px 12px; display:flex; justify-content:space-between; align-items:center;";
+    
+    const actions = document.createElement("div");
+    actions.style.cssText = "display:flex; gap:8px;";
+
+    const newFolderBtn = document.createElement("button");
+    newFolderBtn.className = "btn btn-secondary btn-small";
+    newFolderBtn.textContent = "➕ Nova Pasta";
+    newFolderBtn.addEventListener("click", () => {
+      const name = prompt("Nome da nova pasta:");
+      if (!name) return;
+      const cleanName = name.trim();
+      if (cleanName === "Documentos" || cleanName === "Fotos") {
+        if (folders.includes(cleanName)) {
+          alert("Esta pasta já existe.");
+        } else {
+          folders.push(cleanName);
+          render();
+        }
+      } else {
+        lives--;
+        alert("❌ Nome incorreto! Crie a pasta com o nome exato: 'Documentos' ou 'Fotos'.");
+        render();
+      }
+    });
+
+    const trashBtn = document.createElement("button");
+    trashBtn.className = "btn btn-secondary btn-small";
+    trashBtn.textContent = `🗑️ Lixeira (${recycleBin.length})`;
+    trashBtn.addEventListener("click", () => {
+      activeTab = activeTab === "lixeira" ? "explorer" : "lixeira";
+      render();
+    });
+
+    actions.appendChild(newFolderBtn);
+    actions.appendChild(trashBtn);
+    toolbar.appendChild(actions);
+
+    const winTitle = document.createElement("span");
+    winTitle.style.cssText = "font-size:0.75rem; color:var(--text-muted); font-weight:700;";
+    winTitle.textContent = activeTab === "lixeira" ? "🗑️ Exibindo: Lixeira" : "📂 Exibindo: Meus Documentos";
+    toolbar.appendChild(winTitle);
+    explorer.appendChild(toolbar);
+
+    // List area
+    const listArea = document.createElement("div");
+    listArea.style.cssText = "padding:1rem; flex:1; display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; align-content:start;";
+
+    if (activeTab === "lixeira") {
+      if (recycleBin.length === 0) {
+        listArea.innerHTML = `<div style="grid-column: span 3; text-align:center; padding:2rem; color:var(--text-muted); font-size:0.82rem;">Lixeira vazia.</div>`;
+      } else {
+        recycleBin.forEach(item => {
+          const card = document.createElement("div");
+          card.style.cssText = "background:rgba(255,255,255,0.02); border:1px solid rgba(255,0,0,0.15); border-radius:8px; padding:10px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px;";
+          card.innerHTML = `
+            <span style="font-size:1.8rem;">📄</span>
+            <span style="font-size:0.7rem; font-family:monospace; color:#fff;">${item}</span>
+            <button class="btn btn-outline btn-small" style="font-size:0.7rem; padding:2px 6px;">Restaurar</button>
+          `;
+          card.querySelector("button").addEventListener("click", () => {
+            recycleBin = recycleBin.filter(x => x !== item);
+            unorganizedFiles.push({ name: item, type: "Documentos", icon: "📄" });
+            render();
+          });
+          listArea.appendChild(card);
+        });
+      }
+    } else {
+      // Explorer main view (Folders + Files)
+      folders.forEach(fold => {
+        const foldCard = document.createElement("div");
+        foldCard.style.cssText = "background:rgba(124,58,237,0.1); border:1px solid rgba(124,58,237,0.25); border-radius:8px; padding:12px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:4px;";
+        
+        const count = unorganizedFiles.filter(f => f.location === fold).length;
+        
+        foldCard.innerHTML = `
+          <span style="font-size:2rem;">📁</span>
+          <span style="font-size:0.8rem; font-weight:700; color:#fff;">${fold}</span>
+          <span style="font-size:0.65rem; color:var(--text-muted);">${count} arquivos</span>
+        `;
+        listArea.appendChild(foldCard);
+      });
+
+      unorganizedFiles.forEach(file => {
+        if (file.location) return; // Hidden because it is inside a folder
+
+        const fileCard = document.createElement("div");
+        fileCard.style.cssText = "background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px;";
+        
+        let selectHtml = `<select style="font-size:0.7rem; background:#111; color:#fff; border:1px solid #444; border-radius:4px; padding:2px;"><option value="">Mover para...</option>`;
+        folders.forEach(f => {
+          selectHtml += `<option value="${f}">${f}</option>`;
+        });
+        selectHtml += `</select>`;
+
+        fileCard.innerHTML = `
+          <span style="font-size:1.8rem;">${file.icon}</span>
+          <span style="font-size:0.7rem; font-family:monospace; color:#fff; word-break:break-all;">${file.name}</span>
+          ${folders.length > 0 ? selectHtml : '<span style="font-size:0.65rem; color:var(--text-muted);">Crie pastas primeiro</span>'}
+        `;
+
+        const select = fileCard.querySelector("select");
+        if (select) {
+          select.addEventListener("change", () => {
+            const dest = select.value;
+            if (!dest) return;
+            if (file.type === dest) {
+              file.location = dest;
+              render();
+            } else {
+              lives--;
+              alert(`❌ Erro! O arquivo '${file.name}' deve ser colocado na pasta '${file.type}', não em '${dest}'.`);
+              render();
+            }
+          });
+        }
+
+        listArea.appendChild(fileCard);
+      });
+    }
+
+    explorer.appendChild(listArea);
+    widget.appendChild(explorer);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// 7. MESTRE DOS ATALHOS (SHORTCUT MASTER)
+function initShortcutMasterSimulator(container, isReset) {
+  container.innerHTML = "";
+
+  const questions = [
+    { q: "Qual atalho é utilizado para COPIAR um texto ou arquivo selecionado?", opt: "Ctrl + C", options: ["Ctrl + V", "Ctrl + C", "Ctrl + X", "Ctrl + Z"] },
+    { q: "Qual atalho utilizamos para COLAR um item que foi copiado para a área de transferência?", opt: "Ctrl + V", options: ["Ctrl + V", "Ctrl + Z", "Ctrl + S", "Ctrl + A"] },
+    { q: "Para RECORTAR um arquivo (mover tirando da pasta de origem), qual o atalho?", opt: "Ctrl + X", options: ["Ctrl + C", "Ctrl + Z", "Ctrl + X", "Ctrl + S"] },
+    { q: "Qual atalho desfaz a última ação realizada no sistema?", opt: "Ctrl + Z", options: ["Ctrl + A", "Ctrl + X", "Ctrl + Z", "Ctrl + S"] },
+    { q: "Para salvar rapidamente um documento importante no disco rígido, usamos:", opt: "Ctrl + S", options: ["Ctrl + C", "Ctrl + S", "Ctrl + V", "Ctrl + A"] }
+  ];
+
+  let currentIdx = 0;
+  let timerVal = 10;
+  let timerInterval;
+  let points = 0;
+  let isAnswering = false;
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  const clearTimer = () => {
+    if (timerInterval) clearInterval(timerInterval);
+  };
+
+  const startTimer = () => {
+    timerVal = 10;
+    clearTimer();
+    const tSpan = document.getElementById("shortcut-timer");
+    if (tSpan) tSpan.textContent = `Tempo: ${timerVal}s`;
+
+    timerInterval = setInterval(() => {
+      timerVal--;
+      const t = document.getElementById("shortcut-timer");
+      if (t) t.textContent = `Tempo: ${timerVal}s`;
+      
+      if (timerVal <= 0) {
+        clearTimer();
+        handleAnswer(null); // Time out
+      }
+    }, 1000);
+  };
+
+  const handleAnswer = (selectedOpt) => {
+    if (isAnswering) return;
+    isAnswering = true;
+    clearTimer();
+
+    const curr = questions[currentIdx];
+    const optsDiv = widget.querySelector("#opts-container");
+    const btns = optsDiv.querySelectorAll("button");
+
+    btns.forEach(btn => {
+      btn.disabled = true;
+      if (btn.textContent === curr.opt) {
+        btn.classList.add("correct");
+      }
+    });
+
+    if (selectedOpt) {
+      if (selectedOpt === curr.opt) {
+        points += 10;
+      } else {
+        // wrong
+        btns.forEach(btn => {
+          if (btn.textContent === selectedOpt) btn.classList.add("wrong");
+        });
+      }
+    }
+
+    setTimeout(() => {
+      currentIdx++;
+      isAnswering = false;
+      render();
+    }, 2000);
+  };
+
+  const render = () => {
+    widget.innerHTML = "";
+    if (currentIdx >= questions.length) {
+      widget.innerHTML = `
+        <div class="text-center">
+          <span style="font-size:3rem;">⌨️</span>
+          <h4 class="mt-1" style="color:var(--color-success);">Desafio Atalhos Concluído!</h4>
+          <p class="text-muted text-small">Pontuação Final: <strong>${points} de 50 pontos</strong> fictícios.</p>
+          <span class="badge badge-success">✓ Atalhos Concluídos (+50 XP)</span>
+        </div>
+      `;
+      addXP(50);
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      return;
+    }
+
+    const curr = questions[currentIdx];
+
+    // Header
+    const topBar = document.createElement("div");
+    topBar.style.cssText = "display:flex; justify-content:space-between; margin-bottom:1rem; font-size:0.85rem;";
+    
+    const countSpan = document.createElement("span");
+    countSpan.textContent = `Questão ${currentIdx + 1} de ${questions.length}`;
+
+    const timerSpan = document.createElement("span");
+    timerSpan.id = "shortcut-timer";
+    timerSpan.style.color = "var(--color-warning)";
+    timerSpan.style.fontWeight = "bold";
+    timerSpan.textContent = `Tempo: 10s`;
+
+    const pointsSpan = document.createElement("span");
+    pointsSpan.textContent = `Pontos: ${points}`;
+
+    topBar.appendChild(countSpan);
+    topBar.appendChild(timerSpan);
+    topBar.appendChild(pointsSpan);
+    widget.appendChild(topBar);
+
+    // Card questions
+    const qTitle = document.createElement("h4");
+    qTitle.textContent = curr.q;
+    qTitle.style.marginBottom = "1.2rem";
+    widget.appendChild(qTitle);
+
+    const optsDiv = document.createElement("div");
+    optsDiv.id = "opts-container";
+    optsDiv.style.display = "grid";
+    optsDiv.style.gridTemplateColumns = "repeat(2, 1fr)";
+    optsDiv.style.gap = "8px";
+
+    curr.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "quiz-option-btn";
+      btn.textContent = opt;
+      btn.addEventListener("click", () => handleAnswer(opt));
+      optsDiv.appendChild(btn);
+    });
+    widget.appendChild(optsDiv);
+
+    startTimer();
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// 8. DESAFIO PRÁTICO UNIFICADO (WINDOWS CHALLENGE)
+function initWindowsChallengeSimulator(container, isReset) {
+  container.innerHTML = "";
+  
+  let lives = 3;
+  let timerVal = 120; // 2 minutes
+  let interval;
+  
+  // Game states
+  let isFolderCreated = false;
+  let isFolderRenamed = false;
+  let isFileMoved = false;
+  let isCalcOpened = false;
+  let isPaintOpened = false;
+  let isTrashCleared = false;
+
+  let isStartOpen = false;
+  let explorerOpen = false;
+  let folderNameInput = "";
+  let workspaceFiles = ["curriculo.docx"]; // Files on desktop
+  let targetFolderFiles = []; // Files inside "Trabalho" folder
+  let isRecycleBinFull = true;
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1rem";
+
+  const clearTimer = () => {
+    if (interval) clearInterval(interval);
+  };
+
+  const failChallenge = (reason) => {
+    clearTimer();
+    widget.innerHTML = `
+      <div class="text-center">
+        <span style="font-size:3rem;">💥</span>
+        <h4 class="mt-1" style="color:var(--color-danger);">${reason}</h4>
+        <p class="text-muted text-small">Não desista. Tente gerenciar as pastas com mais velocidade!</p>
+        <button class="btn btn-secondary mt-1" id="btn-restart-challenge">Jogar Novamente</button>
+      </div>
+    `;
+    widget.querySelector("#btn-restart-challenge").addEventListener("click", () => {
+      initWindowsChallengeSimulator(container, true);
+    });
+  };
+
+  const completeChallenge = () => {
+    clearTimer();
+    widget.innerHTML = `
+      <div class="text-center">
+        <span style="font-size:3rem;">🏆</span>
+        <h4 class="mt-1" style="color:var(--color-success);">Missão Cumprida, Explorador!</h4>
+        <p class="text-muted text-small">Você realizou todas as tarefas de sistema e organização com sucesso e maestria!</p>
+        <span class="badge badge-success">✓ Desafio Resolvido (+50 XP)</span>
+        <div style="margin-top:10px; font-weight:bold; color:var(--color-warning);">🎖️ Medalha 'Explorador do Windows' Desbloqueada!</div>
+      </div>
+    `;
+    addXP(50);
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+    unlockAchievement("windows_explorer");
+  };
+
+  interval = setInterval(() => {
+    timerVal--;
+    const t = document.getElementById("win-chal-timer");
+    if (t) t.textContent = `Tempo: ${timerVal}s`;
+    if (timerVal <= 0) {
+      failChallenge("O tempo expirou!");
+    }
+  }, 1000);
+
+  const render = () => {
+    widget.innerHTML = "";
+
+    if (lives <= 0) {
+      failChallenge("Todas as vidas foram perdidas!");
+      return;
+    }
+
+    // Completion check
+    if (isFolderCreated && isFolderRenamed && isFileMoved && isCalcOpened && isPaintOpened && isTrashCleared) {
+      completeChallenge();
+      return;
+    }
+
+    // Top goal checklist
+    const goalsPanel = document.createElement("div");
+    goalsPanel.style.cssText = "background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:12px; margin-bottom:1rem; font-size:0.76rem; display:grid; grid-template-columns:1.5fr 1fr; gap:10px;";
+    
+    goalsPanel.innerHTML = `
+      <div>
+        <div style="font-weight:700; margin-bottom:4px; font-family:var(--font-display);">Lista de Tarefas:</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:2px 10px;">
+          <div>${isFolderCreated ? "✅" : "⬜"} 1. Criar pasta</div>
+          <div>${isFolderRenamed ? "✅" : "⬜"} 2. Renomear para "Trabalho"</div>
+          <div>${isFileMoved ? "✅" : "⬜"} 3. Mover curriculo.docx</div>
+          <div>${isCalcOpened ? "✅" : "⬜"} 4. Abrir Calculadora</div>
+          <div>${isPaintOpened ? "✅" : "⬜"} 5. Abrir o Paint</div>
+          <div>${isTrashCleared ? "✅" : "⬜"} 6. Esvaziar a Lixeira</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-end;">
+        <span style="font-weight:700; color:var(--color-warning);" id="win-chal-timer">Tempo: ${timerVal}s</span>
+        <span style="color:var(--color-danger); font-weight:700; margin-top:4px;">Vidas: ${Array(3).fill(0).map((_, i) => i < lives ? "❤️" : "💔").join("")}</span>
+      </div>
+    `;
+    widget.appendChild(goalsPanel);
+
+    // Desktop
+    const desktop = document.createElement("div");
+    desktop.style.cssText = "position:relative; width:100%; height:380px; background:linear-gradient(135deg,#0d0b21,#1b0d2d); border:1px solid rgba(255,255,255,0.1); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;";
+
+    // Grid area
+    const gridArea = document.createElement("div");
+    gridArea.style.cssText = "flex:1; padding:12px; display:flex; flex-wrap:wrap; gap:16px; align-content:flex-start; position:relative;";
+
+    // 1. Curriculo file icon
+    if (workspaceFiles.includes("curriculo.docx")) {
+      const file = document.createElement("div");
+      file.style.cssText = "display:flex; flex-direction:column; align-items:center; cursor:pointer; width:64px; text-align:center; padding:4px; border-radius:6px;";
+      file.innerHTML = `<span style="font-size:1.8rem; display:block;">📄</span><span style="font-size:0.65rem; color:#fff; word-break:break-all; display:block; margin-top:2px;">curriculo.docx</span>`;
+      
+      file.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (isFolderRenamed) {
+          workspaceFiles = [];
+          targetFolderFiles.push("curriculo.docx");
+          isFileMoved = true;
+          render();
+        } else {
+          lives--;
+          alert("❌ Erro! Você precisa criar e renomear a pasta para 'Trabalho' antes de mover arquivos!");
+          render();
+        }
+      });
+      gridArea.appendChild(file);
+    }
+
+    // 2. Folder icon
+    if (isFolderCreated) {
+      const folder = document.createElement("div");
+      folder.style.cssText = "display:flex; flex-direction:column; align-items:center; cursor:pointer; width:64px; text-align:center; padding:4px; border-radius:6px;";
+      const label = isFolderRenamed ? "Trabalho" : "Nova Pasta";
+      
+      folder.innerHTML = `
+        <span style="font-size:2rem; display:block;">📁</span>
+        <span style="font-size:0.65rem; color:#fff; display:block; margin-top:2px;">${label}</span>
+      `;
+
+      folder.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!isFolderRenamed) {
+          const input = prompt("Digite o novo nome para a pasta:");
+          if (input && input.trim() === "Trabalho") {
+            isFolderRenamed = true;
+          } else {
+            lives--;
+            alert("❌ Erro! Nome incorreto. Renomeie a pasta exatamente para: 'Trabalho'.");
+          }
+          render();
+        } else {
+          alert(`Pasta 'Trabalho' contém: ${targetFolderFiles.length} arquivos.`);
+        }
+      });
+      gridArea.appendChild(folder);
+    }
+
+    // 3. Recycle Bin icon
+    const trash = document.createElement("div");
+    trash.style.cssText = "display:flex; flex-direction:column; align-items:center; cursor:pointer; width:64px; text-align:center; padding:4px; border-radius:6px; position:absolute; right:12px; top:12px;";
+    trash.innerHTML = `<span style="font-size:1.8rem; display:block;">🗑️</span><span style="font-size:0.65rem; color:#fff; display:block; margin-top:2px;">Lixeira</span>`;
+    
+    trash.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!isRecycleBinFull) {
+        alert("A lixeira está vazia.");
+        return;
+      }
+      const confirmClear = confirm("Deseja esvaziar a Lixeira do Sistema?");
+      if (confirmClear) {
+        isRecycleBinFull = false;
+        isTrashCleared = true;
+        render();
+      }
+    });
+    gridArea.appendChild(trash);
+
+    // Calculator Popup if opened
+    if (isCalcOpened && !isFolderCreated) {
+      // Closes it dynamically or keeps visible
+    }
+
+    // Start Menu Popup
+    const startMenu = document.createElement("div");
+    startMenu.style.cssText = "position:absolute; bottom:40px; left:12px; width:170px; background:#1c1b26; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:6px; display:flex; flex-direction:column; gap:4px; z-index:20;";
+    if (!isStartOpen) startMenu.style.display = "none";
+
+    const menuItems = [
+      { name: "Calculadora", emoji: "🧮", action: () => { isCalcOpened = true; } },
+      { name: "Paint", emoji: "🎨", action: () => { isPaintOpened = true; } },
+      { name: "Pasta Pessoal", emoji: "📁" }
+    ];
+
+    menuItems.forEach(item => {
+      const it = document.createElement("div");
+      it.style.cssText = "display:flex; align-items:center; gap:8px; padding:6px 10px; font-size:0.78rem; border-radius:6px; cursor:pointer; color:#fff;";
+      it.innerHTML = `<span>${item.emoji}</span><span>${item.name}</span>`;
+      
+      it.addEventListener("mouseenter", () => it.style.background = "rgba(124,58,237,0.2)");
+      it.addEventListener("mouseleave", () => it.style.background = "");
+      
+      it.addEventListener("click", (e) => {
+        e.stopPropagation();
+        isStartOpen = false;
+        if (item.action) item.action();
+        render();
+      });
+      startMenu.appendChild(it);
+    });
+    gridArea.appendChild(startMenu);
+
+    // Context / Action menu for right-click feel
+    if (!isFolderCreated) {
+      const createFolderBtn = document.createElement("button");
+      createFolderBtn.style.cssText = "position:absolute; bottom:12px; right:12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); border-radius:8px; color:#fff; font-size:0.7rem; padding:6px 12px; cursor:pointer;";
+      createFolderBtn.textContent = "🖱️ Clique Direito > Novo > Pasta";
+      createFolderBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        isFolderCreated = true;
+        render();
+      });
+      gridArea.appendChild(createFolderBtn);
+    }
+
+    desktop.appendChild(gridArea);
+
+    // Taskbar
+    const bar = document.createElement("div");
+    bar.style.cssText = "height:40px; background:#12111a; border-top:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:space-between; padding:0 12px;";
+
+    const initBtn = document.createElement("button");
+    initBtn.style.cssText = "background:linear-gradient(135deg,#7c3aed,#ec4899); border:none; border-radius:6px; color:#fff; font-weight:bold; font-size:0.75rem; padding:4px 10px; cursor:pointer; height:28px;";
+    initBtn.innerHTML = `🏁 Iniciar`;
+    initBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      isStartOpen = !isStartOpen;
+      render();
+    });
+
+    const clock = document.createElement("span");
+    clock.style.cssText = "font-size:0.7rem; color:#888; font-family:monospace;";
+    clock.textContent = "20:45 PM";
+
+    bar.appendChild(initBtn);
+    bar.appendChild(clock);
+    desktop.appendChild(bar);
+    desktop.addEventListener("click", () => {
+      isStartOpen = false;
+      render();
+    });
+
+    widget.appendChild(desktop);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// ==========================================================================
+// AULA 4 EXPANSION SIMULATORS (CAPÍTULOS 11 AO 16)
+// ==========================================================================
+
+// 10. EXPLORADOR VIRTUAL
+function initExplorerSimulator(container, isReset) {
+  container.innerHTML = "";
+  let lives = 3;
+  let timerVal = 60;
+  let interval;
+  let currentFolder = "Desktop"; // "Desktop", "Documentos", "Downloads", "Imagens", "Videos"
+  
+  // Tasks state
+  let hasVisitedDownloads = false;
+  let hasOpenedImagens = false;
+  let hasFoundFile = false;
+  let hasReturnedToDesktop = false;
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1rem";
+
+  const clearTimer = () => { if (interval) clearInterval(interval); };
+
+  const failGame = (reason) => {
+    clearTimer();
+    widget.innerHTML = `
+      <div class="text-center" style="padding:2rem 1rem;">
+        <span style="font-size:3rem;">💥</span>
+        <h4 class="mt-1" style="color:var(--color-danger);">${reason}</h4>
+        <p class="text-muted text-small">Tente prestar mais atenção nos nomes das pastas e atalhos laterais!</p>
+        <button class="btn btn-secondary mt-1" id="btn-restart-explorer">Tentar Novamente</button>
+      </div>
+    `;
+    widget.querySelector("#btn-restart-explorer").addEventListener("click", () => {
+      initExplorerSimulator(container, true);
+    });
+  };
+
+  const completeGame = () => {
+    clearTimer();
+    widget.innerHTML = `
+      <div class="text-center" style="padding:2rem 1rem;">
+        <span style="font-size:3rem;">🏆</span>
+        <h4 class="mt-1" style="color:var(--color-success);">Explorador Virtual Concluído!</h4>
+        <p class="text-muted text-small">Você aprendeu a navegar pelas pastas do Windows e encontrar arquivos perdidos!</p>
+        <span class="badge badge-success">✓ Desafio Resolvido (+50 XP)</span>
+      </div>
+    `;
+    addXP(50);
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+  };
+
+  interval = setInterval(() => {
+    timerVal--;
+    const t = document.getElementById("exp-timer");
+    if (t) t.textContent = `Tempo: ${timerVal}s`;
+    if (timerVal <= 0) {
+      failGame("O tempo acabou!");
+    }
+  }, 1000);
+
+  const getDica = () => {
+    if (!hasVisitedDownloads) return "Dica: Clique em 'Downloads' no painel esquerdo ou no centro.";
+    if (!hasOpenedImagens) return "Dica: Clique em 'Imagens' no painel de navegação.";
+    if (!hasFoundFile) return "Dica: Dê um clique duplo ou único no arquivo 'projeto_secreto.zip'.";
+    if (!hasReturnedToDesktop) return "Dica: Clique em 'Área de Trabalho' no menu esquerdo para voltar.";
+    return "";
+  };
+
+  const render = () => {
+    widget.innerHTML = "";
+    if (lives <= 0) {
+      failGame("Você perdeu todas as suas vidas!");
+      return;
+    }
+
+    if (hasVisitedDownloads && hasOpenedImagens && hasFoundFile && hasReturnedToDesktop) {
+      completeGame();
+      return;
+    }
+
+    // Top Header / Status
+    const topBar = document.createElement("div");
+    topBar.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:10px; margin-bottom:1rem; font-size:0.78rem;";
+    
+    // Checklist render
+    const checkListHtml = `
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <span>${hasVisitedDownloads ? "✅" : "⬜"} 1. Ir a Downloads</span>
+        <span>${hasOpenedImagens ? "✅" : "⬜"} 2. Ir a Imagens</span>
+        <span>${hasFoundFile ? "✅" : "⬜"} 3. Achar arquivo</span>
+        <span>${hasReturnedToDesktop ? "✅" : "⬜"} 4. Voltar ao Desktop</span>
+      </div>
+    `;
+
+    topBar.innerHTML = `
+      <div>
+        <div style="font-weight:700; margin-bottom:2px;">Metas do Explorador:</div>
+        ${checkListHtml}
+      </div>
+      <div style="text-align:right;">
+        <span style="font-weight:700; color:var(--color-warning); display:block;" id="exp-timer">Tempo: ${timerVal}s</span>
+        <span style="color:var(--color-danger); font-weight:700;">Vidas: ${"❤️".repeat(lives)}</span>
+      </div>
+    `;
+    widget.appendChild(topBar);
+
+    // Explorer Layout
+    const explorer = document.createElement("div");
+    explorer.style.cssText = "display:flex; height:380px; background:#0e0d16; border:1px solid rgba(255,255,255,0.08); border-radius:10px; overflow:hidden;";
+
+    // Left sidebar
+    const sidebar = document.createElement("div");
+    sidebar.style.cssText = "width:150px; background:#141322; border-right:1px solid rgba(255,255,255,0.08); padding:8px; display:flex; flex-direction:column; gap:4px;";
+    
+    const folders = [
+      { name: "Área de Trabalho", id: "Desktop", emoji: "🖥️" },
+      { name: "Documentos", id: "Documentos", emoji: "📄" },
+      { name: "Downloads", id: "Downloads", emoji: "📥" },
+      { name: "Imagens", id: "Imagens", emoji: "🖼️" },
+      { name: "Vídeos", id: "Videos", emoji: "🎥" }
+    ];
+
+    folders.forEach(f => {
+      const btn = document.createElement("div");
+      btn.style.cssText = `display:flex; align-items:center; gap:8px; padding:6px 10px; font-size:0.75rem; border-radius:6px; cursor:pointer; color:#fff; transition: background 0.2s; ${currentFolder === f.id ? "background:var(--color-primary);" : ""}`;
+      btn.innerHTML = `<span>${f.emoji}</span><span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.name}</span>`;
+      
+      btn.addEventListener("click", () => {
+        // Navigation validation
+        if (f.id === "Downloads") {
+          hasVisitedDownloads = true;
+        } else if (f.id === "Imagens") {
+          if (!hasVisitedDownloads) {
+            lives--;
+            alert("❌ Calma! Você precisa passar pela pasta Downloads primeiro!");
+            render();
+            return;
+          }
+          hasOpenedImagens = true;
+        } else if (f.id === "Desktop") {
+          if (hasFoundFile) {
+            hasReturnedToDesktop = true;
+          }
+        }
+        currentFolder = f.id;
+        render();
+      });
+      sidebar.appendChild(btn);
+    });
+    explorer.appendChild(sidebar);
+
+    // Right file area
+    const mainArea = document.createElement("div");
+    mainArea.style.cssText = "flex:1; display:flex; flex-direction:column;";
+
+    // Breadcrumb path header
+    const pathHeader = document.createElement("div");
+    pathHeader.style.cssText = "background:rgba(255,255,255,0.02); padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.06); font-size:0.7rem; color:#888;";
+    pathHeader.innerHTML = `Este Computador > <strong style="color:#fff;">${currentFolder}</strong>`;
+    mainArea.appendChild(pathHeader);
+
+    // File grid container
+    const grid = document.createElement("div");
+    grid.style.cssText = "flex:1; padding:12px; display:flex; flex-wrap:wrap; gap:16px; align-content:flex-start; overflow-y:auto;";
+
+    // Files mapping based on current folder
+    let files = [];
+    if (currentFolder === "Desktop") {
+      files = [
+        { name: "Downloads", type: "folder", emoji: "📁", action: () => { hasVisitedDownloads = true; currentFolder = "Downloads"; render(); } },
+        { name: "Imagens", type: "folder", emoji: "📁", action: () => { 
+          if (!hasVisitedDownloads) {
+            lives--;
+            alert("❌ Erro! Visite Downloads primeiro!");
+          } else {
+            hasOpenedImagens = true;
+            currentFolder = "Imagens";
+          }
+          render();
+        } }
+      ];
+    } else if (currentFolder === "Downloads") {
+      files = [
+        { name: "apostila.pdf", type: "file", emoji: "📄" },
+        { name: "Instalador_Jogo.exe", type: "file", emoji: "⚙️" }
+      ];
+    } else if (currentFolder === "Imagens") {
+      files = [
+        { name: "foto_perfil.png", type: "file", emoji: "🖼️" },
+        { name: "projeto_secreto.zip", type: "file", emoji: "📦", action: () => { 
+          if (!hasOpenedImagens) return;
+          hasFoundFile = true;
+          alert("🎉 Você encontrou o arquivo oculto compactado 'projeto_secreto.zip'!");
+          render();
+        } }
+      ];
+    } else if (currentFolder === "Documentos") {
+      files = [
+        { name: "Trabalho_Historia.docx", type: "file", emoji: "📄" }
+      ];
+    } else if (currentFolder === "Videos") {
+      files = [
+        { name: "aula_1.mp4", type: "file", emoji: "🎥" }
+      ];
+    }
+
+    files.forEach(item => {
+      const card = document.createElement("div");
+      card.style.cssText = "width:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:6px; border-radius:6px; cursor:pointer; transition: background 0.2s;";
+      card.innerHTML = `<span style="font-size:1.8rem; display:block; margin-bottom:4px;">${item.emoji}</span><span style="font-size:0.6rem; color:#fff; word-break:break-all; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${item.name}</span>`;
+      
+      card.addEventListener("mouseenter", () => card.style.background = "rgba(255,255,255,0.05)");
+      card.addEventListener("mouseleave", () => card.style.background = "");
+      
+      card.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (item.action) {
+          item.action();
+        } else {
+          // Wrong click penalization
+          lives--;
+          alert(`❌ Ops! Clicar em '${item.name}' não ajuda nas suas metas atuais.`);
+          render();
+        }
+      });
+      grid.appendChild(card);
+    });
+    mainArea.appendChild(grid);
+    explorer.appendChild(mainArea);
+    widget.appendChild(explorer);
+
+    // Tip line at the bottom
+    const tipDiv = document.createElement("div");
+    tipDiv.style.cssText = "margin-top:10px; font-size:0.75rem; color:#888; text-align:center; min-height:18px;";
+    tipDiv.textContent = getDica();
+    widget.appendChild(tipDiv);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// 11. CLASSIFICADOR DE ARQUIVOS
+function initFileClassifierSimulator(container, isReset) {
+  container.innerHTML = "";
+  let lives = 3;
+  let score = 0;
+  
+  const filesToClassify = [
+    { name: "documento_escola.pdf", cat: "Documentos", ext: ".pdf", explanation: "O formato .pdf (Portable Document Format) é o padrão de documentos prontos para leitura." },
+    { name: "foto_viagem.png", cat: "Imagens", ext: ".png", explanation: "O formato .png é excelente para imagens digitais pois suporta fundos transparentes." },
+    { name: "musica_tema.mp3", cat: "Áudios", ext: ".mp3", explanation: "A extensão .mp3 é a compressão mais popular para músicas e arquivos sonoros digitais." },
+    { name: "video_aula.mp4", cat: "Vídeos", ext: ".mp4", explanation: "A extensão .mp4 junta vídeo e áudio em alta definição digital para exibição." },
+    { name: "fotos_backup.zip", cat: "Compactados", ext: ".zip", explanation: "O formato .zip é usado para compactar e agrupar múltiplos arquivos em um tamanho reduzido." },
+    { name: "notas_diarias.txt", cat: "Documentos", ext: ".txt", explanation: "O formato .txt é um arquivo de texto simples do Bloco de Notas, sem formatação de cor ou estilo." }
+  ];
+  let currentIdx = 0;
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1.5rem";
+
+  const failGame = (reason) => {
+    widget.innerHTML = `
+      <div class="text-center" style="padding:1.5rem 0;">
+        <span style="font-size:3rem;">💥</span>
+        <h4 class="mt-1" style="color:var(--color-danger);">${reason}</h4>
+        <p class="text-muted text-small">Lembre-se: arquivos terminando em .pdf/.txt são Documentos, .png/.jpg são Imagens, .mp3 é Áudio, .mp4 é Vídeo e .zip é Compactado!</p>
+        <button class="btn btn-secondary mt-1" id="btn-restart-classifier">Recomeçar</button>
+      </div>
+    `;
+    widget.querySelector("#btn-restart-classifier").addEventListener("click", () => {
+      initFileClassifierSimulator(container, true);
+    });
+  };
+
+  const completeGame = () => {
+    widget.innerHTML = `
+      <div class="text-center" style="padding:1.5rem 0;">
+        <span style="font-size:3rem;">🏆</span>
+        <h4 class="mt-1" style="color:var(--color-success);">Classificação de Arquivos Concluída!</h4>
+        <p class="text-muted text-small">Parabéns! Você provou saber exatamente qual pasta ou categoria de arquivo corresponde a cada extensão.</p>
+        <span class="badge badge-success">✓ Desafio Resolvido (+50 XP)</span>
+      </div>
+    `;
+    addXP(50);
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+  };
+
+  const categories = ["Imagens", "Vídeos", "Áudios", "Documentos", "Compactados"];
+
+  const render = () => {
+    widget.innerHTML = "";
+
+    if (lives <= 0) {
+      failGame("Você cometeu muitos erros e perdeu as 3 vidas!");
+      return;
+    }
+
+    if (currentIdx >= filesToClassify.length) {
+      completeGame();
+      return;
+    }
+
+    const currentFile = filesToClassify[currentIdx];
+
+    // Status Panel
+    const statusPanel = document.createElement("div");
+    statusPanel.style.cssText = "display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; font-size:0.8rem; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:8px;";
+    statusPanel.innerHTML = `
+      <span class="text-muted">Classificar Arquivo: <strong>${currentIdx + 1} de ${filesToClassify.length}</strong></span>
+      <span style="color:var(--color-danger); font-weight:700;">Vidas: ${"❤️".repeat(lives)}</span>
+    `;
+    widget.appendChild(statusPanel);
+
+    // Target File Card Display
+    const fileCard = document.createElement("div");
+    fileCard.style.cssText = "background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(236,72,153,0.1)); border:1.5px dashed var(--color-primary-light); border-radius:12px; text-align:center; padding:2rem 1rem; margin-bottom:1.5rem;";
+    
+    let emoji = "📄";
+    if (currentFile.cat === "Imagens") emoji = "🖼️";
+    if (currentFile.cat === "Vídeos") emoji = "🎥";
+    if (currentFile.cat === "Áudios") emoji = "🎵";
+    if (currentFile.cat === "Compactados") emoji = "📦";
+
+    fileCard.innerHTML = `
+      <span style="font-size:3.5rem; display:block; margin-bottom:8px;">${emoji}</span>
+      <strong style="font-size:1.1rem; color:#fff; display:block; font-family:var(--font-mono);">${currentFile.name}</strong>
+      <span class="badge badge-outline mt-1" style="font-size:0.72rem; color:var(--color-primary-light);">Extensão: ${currentFile.ext}</span>
+    `;
+    widget.appendChild(fileCard);
+
+    // Option category buttons
+    const btnContainer = document.createElement("div");
+    btnContainer.style.cssText = "display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px;";
+    
+    categories.forEach(cat => {
+      const btn = document.createElement("button");
+      btn.className = "btn btn-secondary";
+      btn.style.padding = "0.75rem";
+      btn.style.fontSize = "0.82rem";
+      btn.textContent = cat;
+      
+      btn.addEventListener("click", () => {
+        if (cat === currentFile.cat) {
+          // Success
+          alert(`✅ Correto!\n\n${currentFile.explanation}`);
+          currentIdx++;
+        } else {
+          // Fail
+          lives--;
+          alert(`❌ Incorreto!\n\nO arquivo '${currentFile.name}' termina em '${currentFile.ext}' e pertence à categoria '${currentFile.cat}'.`);
+        }
+        render();
+      });
+      btnContainer.appendChild(btn);
+    });
+    widget.appendChild(btnContainer);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// 12. CUSTOMIZADOR DE DESKTOP
+function initDesktopCustomizerSimulator(container, isReset) {
+  container.innerHTML = "";
+  
+  let currentBg = "Espaço Cósmico";
+  let isDarkMode = true;
+  let brightness = 80;
+  let volume = 50;
+  let isTaskbarCentered = true;
+
+  // Goals
+  let wallpaperChanged = false;
+  let themeChanged = false;
+  let brightnessAdjusted = false;
+  let volumeAdjusted = false;
+  let taskbarAligned = false;
+
+  const wallpapers = {
+    "Espaço Cósmico": "linear-gradient(135deg, #0f0c20, #15102a, #201235)",
+    "Montanhas Nevadas": "linear-gradient(135deg, #1e293b, #0f172a, #020617)",
+    "Neon Cyberpunk": "linear-gradient(135deg, #3b0764, #120024, #03001c)"
+  };
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1rem";
+
+  const render = () => {
+    widget.innerHTML = "";
+
+    const allCustomized = wallpaperChanged && themeChanged && brightnessAdjusted && volumeAdjusted && taskbarAligned;
+
+    // Outer grid wrapper
+    const grid = document.createElement("div");
+    grid.style.cssText = "display:grid; grid-template-columns: 1.2fr 1fr; gap:16px; min-height:380px;";
+
+    // Left Desktop Preview Frame
+    const previewContainer = document.createElement("div");
+    previewContainer.style.cssText = "display:flex; flex-direction:column; justify-content:space-between; border-radius:12px; border:1px solid rgba(255,255,255,0.1); overflow:hidden; position:relative; transition: all 0.3s; box-sizing:border-box;";
+    previewContainer.style.background = wallpapers[currentBg];
+    
+    // Brightness overlay
+    const opacityVal = (100 - brightness) / 100 * 0.75;
+    const brightnessOverlay = document.createElement("div");
+    brightnessOverlay.style.cssText = `position:absolute; inset:0; background:rgba(0,0,0,${opacityVal}); pointer-events:none; z-index:5;`;
+    previewContainer.appendChild(brightnessOverlay);
+
+    // Desktop icons
+    const gridIcons = document.createElement("div");
+    gridIcons.style.cssText = "padding:12px; display:flex; flex-direction:column; gap:12px; align-items:flex-start; position:relative; z-index:1;";
+    gridIcons.innerHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center; width:50px;">
+        <span style="font-size:1.5rem;">🖥️</span>
+        <span style="font-size:0.55rem; color:#fff; margin-top:2px;">Este PC</span>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; width:50px;">
+        <span style="font-size:1.5rem;">🗑️</span>
+        <span style="font-size:0.55rem; color:#fff; margin-top:2px;">Lixeira</span>
+      </div>
+    `;
+    previewContainer.appendChild(gridIcons);
+
+    // Simulated taskbar
+    const simulatedBar = document.createElement("div");
+    const barBg = isDarkMode ? "rgba(10,10,20,0.85)" : "rgba(240,240,250,0.85)";
+    const textColor = isDarkMode ? "#fff" : "#000";
+    simulatedBar.style.cssText = `height:34px; background:${barBg}; backdrop-filter:blur(5px); border-top:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; padding:0 8px; justify-content:space-between; box-sizing:border-box; z-index:10; color:${textColor};`;
+
+    const startBtn = document.createElement("div");
+    startBtn.style.cssText = "background:linear-gradient(135deg,#7c3aed,#ec4899); border-radius:4px; padding:2px 6px; font-size:0.6rem; font-weight:700; color:#fff; cursor:pointer;";
+    startBtn.textContent = "🏁 Iniciar";
+
+    // Taskbar icons alignment
+    const trayIcons = document.createElement("div");
+    trayIcons.style.cssText = `display:flex; gap:6px; flex:1; margin:0 8px; justify-content:${isTaskbarCentered ? 'center' : 'flex-start'};`;
+    trayIcons.innerHTML = `
+      <span style="font-size:0.9rem;">🌐</span>
+      <span style="font-size:0.9rem;">📁</span>
+      <span style="font-size:0.9rem;">📝</span>
+    `;
+
+    const clockArea = document.createElement("div");
+    clockArea.style.cssText = "font-size:0.58rem; display:flex; align-items:center; gap:4px;";
+    clockArea.innerHTML = `
+      <span>🔊 ${volume}%</span>
+      <span>${brightness}% ☀️</span>
+      <span>12:00</span>
+    `;
+
+    simulatedBar.appendChild(startBtn);
+    simulatedBar.appendChild(trayIcons);
+    simulatedBar.appendChild(clockArea);
+    previewContainer.appendChild(simulatedBar);
+    grid.appendChild(previewContainer);
+
+    // Controls
+    const controls = document.createElement("div");
+    controls.style.cssText = "display:flex; flex-direction:column; gap:12px; justify-content:space-between;";
+
+    // Checklist panel
+    const checklist = document.createElement("div");
+    checklist.style.cssText = "background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:10px; font-size:0.74rem;";
+    checklist.innerHTML = `
+      <div style="font-weight:700; margin-bottom:4px; font-family:var(--font-display);">Metas de Personalização:</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px;">
+        <div>${wallpaperChanged ? "✅" : "⬜"} Papel de Parede</div>
+        <div>${themeChanged ? "✅" : "⬜"} Mudar Tema (Escuro/Claro)</div>
+        <div>${brightnessAdjusted ? "✅" : "⬜"} Ajustar Brilho</div>
+        <div>${volumeAdjusted ? "✅" : "⬜"} Ajustar Volume</div>
+        <div>${taskbarAligned ? "✅" : "⬜"} Alinhar Barra de Tarefas</div>
+      </div>
+    `;
+    controls.appendChild(checklist);
+
+    // 1. Wallpaper
+    const bgGroup = document.createElement("div");
+    bgGroup.innerHTML = `<label style="font-size:0.75rem; font-weight:700; color:#fff; display:block; margin-bottom:4px;">🖼️ Papel de Parede:</label>`;
+    const bgSelect = document.createElement("select");
+    bgSelect.style.cssText = "width:100%; padding:6px; background:#1a1936; border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:#fff; font-size:0.8rem;";
+    Object.keys(wallpapers).forEach(w => {
+      const opt = document.createElement("option");
+      opt.value = w;
+      opt.textContent = w;
+      if (w === currentBg) opt.selected = true;
+      bgSelect.appendChild(opt);
+    });
+    bgSelect.addEventListener("change", (e) => {
+      currentBg = e.target.value;
+      wallpaperChanged = true;
+      render();
+    });
+    bgGroup.appendChild(bgSelect);
+    controls.appendChild(bgGroup);
+
+    // 2. Theme
+    const themeGroup = document.createElement("div");
+    themeGroup.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.01); padding:6px; border-radius:6px;";
+    themeGroup.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#fff;">🌓 Tema Escuro / Claro:</span>`;
+    const themeBtn = document.createElement("button");
+    themeBtn.className = "btn btn-secondary btn-small";
+    themeBtn.textContent = isDarkMode ? "Mudar para Claro" : "Mudar para Escuro";
+    themeBtn.addEventListener("click", () => {
+      isDarkMode = !isDarkMode;
+      themeChanged = true;
+      render();
+    });
+    themeGroup.appendChild(themeBtn);
+    controls.appendChild(themeGroup);
+
+    // 3. Brightness
+    const brightGroup = document.createElement("div");
+    brightGroup.innerHTML = `<div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700; color:#fff; margin-bottom:2px;"><span>☀️ Brilho da Tela:</span><span>${brightness}%</span></div>`;
+    const brightSlider = document.createElement("input");
+    brightSlider.type = "range";
+    brightSlider.min = 10;
+    brightSlider.max = 100;
+    brightSlider.value = brightness;
+    brightSlider.style.width = "100%";
+    brightSlider.addEventListener("input", (e) => {
+      brightness = parseInt(e.target.value);
+      brightnessAdjusted = true;
+      render();
+    });
+    brightGroup.appendChild(brightSlider);
+    controls.appendChild(brightGroup);
+
+    // 4. Volume
+    const volGroup = document.createElement("div");
+    volGroup.innerHTML = `<div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700; color:#fff; margin-bottom:2px;"><span>🔊 Volume do Sistema:</span><span>${volume}%</span></div>`;
+    const volSlider = document.createElement("input");
+    volSlider.type = "range";
+    volSlider.min = 0;
+    volSlider.max = 100;
+    volSlider.value = volume;
+    volSlider.style.width = "100%";
+    volSlider.addEventListener("input", (e) => {
+      volume = parseInt(e.target.value);
+      volumeAdjusted = true;
+      render();
+    });
+    volGroup.appendChild(volSlider);
+    controls.appendChild(volGroup);
+
+    // 5. Taskbar Align
+    const alignGroup = document.createElement("div");
+    alignGroup.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.01); padding:6px; border-radius:6px;";
+    alignGroup.innerHTML = `<span style="font-size:0.75rem; font-weight:700; color:#fff;">📏 Alinhamento da Barra:</span>`;
+    const alignBtn = document.createElement("button");
+    alignBtn.className = "btn btn-secondary btn-small";
+    alignBtn.textContent = isTaskbarCentered ? "Alinhar à Esquerda" : "Alinhar ao Centro";
+    alignBtn.addEventListener("click", () => {
+      isTaskbarCentered = !isTaskbarCentered;
+      taskbarAligned = true;
+      render();
+    });
+    alignGroup.appendChild(alignBtn);
+    controls.appendChild(alignGroup);
+
+    // Done Button
+    const doneBtn = document.createElement("button");
+    doneBtn.className = "btn btn-primary";
+    doneBtn.style.width = "100%";
+    doneBtn.style.padding = "0.7rem";
+    doneBtn.textContent = allCustomized ? "💾 Concluir Customizações (+50 XP)" : "Ajuste os itens acima para concluir";
+    doneBtn.disabled = !allCustomized;
+    doneBtn.addEventListener("click", () => {
+      alert("🎉 Configurações salvas e aplicadas com sucesso no Windows Virtual!");
+      addXP(50);
+      markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+      doneBtn.disabled = true;
+      doneBtn.textContent = "✓ Customizações Concluídas!";
+    });
+    controls.appendChild(doneBtn);
+
+    grid.appendChild(controls);
+    widget.appendChild(grid);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// 13. CENTRAL DE CONTROLE
+function initWindowsControlCenterSimulator(container, isReset) {
+  container.innerHTML = "";
+  let lives = 3;
+  let wifiOn = false;
+  let volume = 0;
+  let brightness = 15;
+  let bluetoothOn = false;
+
+  const challenges = [
+    { id: 1, title: "🔊 O computador está sem som!", instruction: "Aumente o volume na barra de som para pelo menos 50%.", check: () => volume >= 50 },
+    { id: 2, title: "🌐 O Wi-Fi está desligado!", instruction: "Clique no botão 'Wi-Fi' para conectá-lo à rede da escola.", check: () => wifiOn },
+    { id: 3, title: "☀️ A tela está muito escura!", instruction: "Ajuste o brilho do monitor para pelo menos 60% para leitura.", check: () => brightness >= 60 },
+    { id: 4, title: "🎧 O Bluetooth não conecta!", instruction: "Ative a conexão Bluetooth no painel de controle rápido.", check: () => bluetoothOn }
+  ];
+  let currentIdx = 0;
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1rem";
+
+  const failGame = (reason) => {
+    widget.innerHTML = `
+      <div class="text-center" style="padding:1.5rem 0;">
+        <span style="font-size:3rem;">💥</span>
+        <h4 class="mt-1" style="color:var(--color-danger);">${reason}</h4>
+        <p class="text-muted text-small">A Central de Controle Rápida do Windows gerencia os interruptores físicos mais vitais.</p>
+        <button class="btn btn-secondary mt-1" id="btn-restart-control">Tentar de Novo</button>
+      </div>
+    `;
+    widget.querySelector("#btn-restart-control").addEventListener("click", () => {
+      initWindowsControlCenterSimulator(container, true);
+    });
+  };
+
+  const completeGame = () => {
+    widget.innerHTML = `
+      <div class="text-center" style="padding:1.5rem 0;">
+        <span style="font-size:3rem;">🏆</span>
+        <h4 class="mt-1" style="color:var(--color-success);">Problemas Resolvidos com Sucesso!</h4>
+        <p class="text-muted text-small">Você provou saber operar as configurações rápidas para solucionar dificuldades comuns no dia a dia!</p>
+        <span class="badge badge-success">✓ Desafio Resolvido (+50 XP)</span>
+      </div>
+    `;
+    addXP(50);
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+  };
+
+  const render = () => {
+    widget.innerHTML = "";
+
+    if (lives <= 0) {
+      failGame("Você perdeu todas as suas vidas!");
+      return;
+    }
+
+    if (currentIdx >= challenges.length) {
+      completeGame();
+      return;
+    }
+
+    const currentTask = challenges[currentIdx];
+
+    // Challenge Problem Panel
+    const taskPanel = document.createElement("div");
+    taskPanel.style.cssText = "background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:10px; padding:12px; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center;";
+    taskPanel.innerHTML = `
+      <div>
+        <strong style="color:var(--color-danger); font-size:0.9rem; display:block;">🚨 ${currentTask.title}</strong>
+        <span class="text-muted text-small">${currentTask.instruction}</span>
+      </div>
+      <div style="text-align:right;">
+        <span style="color:var(--color-danger); font-weight:700; display:block;">Vidas: ${"❤️".repeat(lives)}</span>
+        <span class="text-muted text-small">Meta: ${currentIdx + 1}/4</span>
+      </div>
+    `;
+    widget.appendChild(taskPanel);
+
+    // Control Center Simulated Box
+    const controlCenter = document.createElement("div");
+    controlCenter.style.cssText = "max-width:280px; margin:0 auto 1.2rem; background:#181728; border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:14px; box-sizing:border-box;";
+
+    const rowButtons = document.createElement("div");
+    rowButtons.style.cssText = "display:grid; grid-template-columns:1fr 1fr; gap:10px;";
+
+    // Wi-Fi
+    const wifiBtn = document.createElement("div");
+    wifiBtn.style.cssText = `display:flex; flex-direction:column; justify-content:center; align-items:center; padding:12px 6px; border-radius:8px; cursor:pointer; font-size:0.75rem; transition: background 0.2s; ${wifiOn ? "background:var(--color-primary); color:#fff;" : "background:rgba(255,255,255,0.05); color:#888;"}`;
+    wifiBtn.innerHTML = `<span style="font-size:1.4rem; display:block; margin-bottom:2px;">🌐</span><strong>Wi-Fi</strong><span style="font-size:0.6rem; opacity:0.8;">${wifiOn ? 'Conectado' : 'Desligado'}</span>`;
+    wifiBtn.addEventListener("click", () => {
+      wifiOn = !wifiOn;
+      render();
+    });
+    rowButtons.appendChild(wifiBtn);
+
+    // Bluetooth
+    const btBtn = document.createElement("div");
+    btBtn.style.cssText = `display:flex; flex-direction:column; justify-content:center; align-items:center; padding:12px 6px; border-radius:8px; cursor:pointer; font-size:0.75rem; transition: background 0.2s; ${bluetoothOn ? "background:var(--color-primary); color:#fff;" : "background:rgba(255,255,255,0.05); color:#888;"}`;
+    btBtn.innerHTML = `<span style="font-size:1.4rem; display:block; margin-bottom:2px;">🎧</span><strong>Bluetooth</strong><span style="font-size:0.6rem; opacity:0.8;">${bluetoothOn ? 'Ligado' : 'Desligado'}</span>`;
+    btBtn.addEventListener("click", () => {
+      bluetoothOn = !bluetoothOn;
+      render();
+    });
+    rowButtons.appendChild(btBtn);
+
+    controlCenter.appendChild(rowButtons);
+
+    // Sliders
+    const sliders = document.createElement("div");
+    sliders.style.cssText = "display:flex; flex-direction:column; gap:10px;";
+
+    // Brightness
+    const brWrapper = document.createElement("div");
+    brWrapper.innerHTML = `<div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#aaa; margin-bottom:2px;"><span>☀️ Brilho</span><span>${brightness}%</span></div>`;
+    const brRange = document.createElement("input");
+    brRange.type = "range";
+    brRange.min = 10;
+    brRange.max = 100;
+    brRange.value = brightness;
+    brRange.style.width = "100%";
+    brRange.addEventListener("input", (e) => {
+      brightness = parseInt(e.target.value);
+      const valText = brWrapper.querySelector("span:last-child");
+      if (valText) valText.textContent = `${brightness}%`;
+    });
+    brWrapper.appendChild(brRange);
+    sliders.appendChild(brWrapper);
+
+    // Volume
+    const volWrapper = document.createElement("div");
+    volWrapper.innerHTML = `<div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#aaa; margin-bottom:2px;"><span>🔊 Volume</span><span>${volume}%</span></div>`;
+    const volRange = document.createElement("input");
+    volRange.type = "range";
+    volRange.min = 0;
+    volRange.max = 100;
+    volRange.value = volume;
+    volRange.style.width = "100%";
+    volRange.addEventListener("input", (e) => {
+      volume = parseInt(e.target.value);
+      const valText = volWrapper.querySelector("span:last-child");
+      if (valText) valText.textContent = `${volume}%`;
+    });
+    volWrapper.appendChild(volRange);
+    sliders.appendChild(volWrapper);
+
+    controlCenter.appendChild(sliders);
+    widget.appendChild(controlCenter);
+
+    // Verify
+    const checkBtn = document.createElement("button");
+    checkBtn.className = "btn btn-primary";
+    checkBtn.style.width = "100%";
+    checkBtn.textContent = "✔️ Confirmar Resolução";
+    checkBtn.addEventListener("click", () => {
+      if (currentTask.check()) {
+        alert("🎉 Excelente! O problema foi resolvido de forma correta.");
+        currentIdx++;
+      } else {
+        lives--;
+        alert("❌ Erro! A central de controle ainda não foi configurada corretamente para esse problema.");
+      }
+      render();
+    });
+    widget.appendChild(checkBtn);
+  };
+
+  render();
+  container.appendChild(widget);
+}
+
+// 14. A GRANDE MISSÃO DO WINDOWS
+function initWindowsMasterChallengeSimulator(container, isReset) {
+  container.innerHTML = "";
+  let lives = 3;
+  let timerVal = 150; // 2.5 minutes
+  let interval;
+
+  // Checklist states
+  let mStartOpen = false;
+  let mCalcOpen = false;
+  let mFolderCreated = false;
+  let mFolderRenamed = false;
+  let mFileMoved = false;
+  let mDownloadsFound = false;
+  let mWallpaperChanged = false;
+  let mVolumeAdjusted = false;
+  let mWifiOn = false;
+  let mTrashRestored = false;
+
+  // Inner simulation states
+  let isRecycleBinFull = true;
+  let desktopFiles = ["relatorio.pdf"];
+  let folderName = "Nova Pasta";
+  let targetFolderFiles = [];
+  let currentBg = "bg-cyber";
+  let curVolume = 10;
+  let isInnerWifiConnected = false;
+  let isStartVisible = false;
+  let activeWindow = ""; // "explorador"
+
+  const wallpapers = {
+    "bg-cyber": "linear-gradient(135deg,#0d0b21,#1b0d2d)",
+    "bg-nature": "linear-gradient(135deg,#064e3b,#022c22)",
+    "bg-ocean": "linear-gradient(135deg,#1e3a8a,#172554)"
+  };
+
+  const widget = document.createElement("div");
+  widget.className = "card bg-surface border-soft mt-1";
+  widget.style.padding = "1rem";
+
+  const clearTimer = () => { if (interval) clearInterval(interval); };
+
+  const failChallenge = (reason) => {
+    clearTimer();
+    widget.innerHTML = `
+      <div class="text-center" style="padding:1.5rem 0;">
+        <span style="font-size:3rem;">💥</span>
+        <h4 class="mt-1" style="color:var(--color-danger);">${reason}</h4>
+        <p class="text-muted text-small">Treine um pouco mais nas metas parciais para ganhar mais agilidade!</p>
+        <button class="btn btn-secondary mt-1" id="btn-restart-master">Jogar Novamente</button>
+      </div>
+    `;
+    widget.querySelector("#btn-restart-master").addEventListener("click", () => {
+      initWindowsMasterChallengeSimulator(container, true);
+    });
+  };
+
+  const completeChallenge = () => {
+    clearTimer();
+    let stars = "⭐";
+    if (timerVal > 40) stars = "⭐⭐";
+    if (timerVal > 80) stars = "⭐⭐⭐";
+
+    widget.innerHTML = `
+      <div class="text-center" style="padding:1.5rem 0;">
+        <span style="font-size:3.5rem; display:block;">🛡️</span>
+        <h4 class="mt-1" style="color:var(--color-success);">A Grande Missão Cumprida!</h4>
+        <p class="text-muted text-small">Parabéns, Guardião! Você domina o Windows com maestria!</p>
+        <div style="font-size:1.5rem; margin:10px 0;">${stars}</div>
+        <span class="badge badge-success">✓ Mestre do Sistema (+100 XP Extra)</span>
+        <div style="margin-top:10px; font-weight:bold; color:var(--color-warning);">🎖️ Medalha 'Guardião do Windows' Desbloqueada!</div>
+      </div>
+    `;
+    addXP(100);
+    markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+    unlockAchievement("windows_guardian");
+  };
+
+  interval = setInterval(() => {
+    timerVal--;
+    const t = document.getElementById("win-mast-timer");
+    if (t) t.textContent = `Tempo: ${timerVal}s`;
+    if (timerVal <= 0) {
+      failChallenge("O tempo de missão expirou!");
+    }
+  }, 1000);
+
+  const render = () => {
+    widget.innerHTML = "";
+
+    if (lives <= 0) {
+      failChallenge("Você cometeu 3 erros e perdeu todas as vidas!");
+      return;
+    }
+
+    // Goal checks
+    if (mStartOpen && mCalcOpen && mFolderCreated && mFolderRenamed && mFileMoved && mDownloadsFound && mWallpaperChanged && mVolumeAdjusted && mWifiOn && mTrashRestored) {
+      completeChallenge();
+      return;
+    }
+
+    // Top checklist
+    const goalsPanel = document.createElement("div");
+    goalsPanel.style.cssText = "background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:10px; margin-bottom:1rem; font-size:0.7rem; display:grid; grid-template-columns:1.8fr 1fr; gap:10px;";
+    
+    const leftGoalsHtml = `
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px 8px;">
+        <div>${mStartOpen ? "✅" : "⬜"} 1. Iniciar</div>
+        <div>${mCalcOpen ? "✅" : "⬜"} 2. Calculadora</div>
+        <div>${mFolderCreated ? "✅" : "⬜"} 3. Criar Pasta</div>
+        <div>${mFolderRenamed ? "✅" : "⬜"} 4. Renomear "Trabalho"</div>
+        <div>${mFileMoved ? "✅" : "⬜"} 5. Mover relatorio.pdf</div>
+        <div>${mDownloadsFound ? "✅" : "⬜"} 6. Entrar Downloads</div>
+        <div>${mWallpaperChanged ? "✅" : "⬜"} 7. Mudar Fundo</div>
+        <div>${mVolumeAdjusted ? "✅" : "⬜"} 8. Volume (>=50%)</div>
+        <div>${mWifiOn ? "✅" : "⬜"} 9. Conectar Wi-Fi</div>
+        <div>${mTrashRestored ? "✅" : "⬜"} 10. Restaurar foto.png</div>
+      </div>
+    `;
+
+    goalsPanel.innerHTML = `
+      <div>
+        <div style="font-weight:700; margin-bottom:3px; font-family:var(--font-display);">Metas do Guardião:</div>
+        ${leftGoalsHtml}
+      </div>
+      <div style="display:flex; flex-direction:column; justify-content:center; align-items:flex-end;">
+        <span style="font-weight:700; color:var(--color-warning); font-size:0.8rem;" id="win-mast-timer">Tempo: ${timerVal}s</span>
+        <span style="color:var(--color-danger); font-weight:700; margin-top:2px;">Vidas: ${"❤️".repeat(lives)}</span>
+      </div>
+    `;
+    widget.appendChild(goalsPanel);
+
+    // Desktop
+    const desktop = document.createElement("div");
+    desktop.id = "mast-desktop";
+    desktop.style.cssText = `position:relative; width:100%; height:380px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box;`;
+    desktop.style.background = wallpapers[currentBg];
+
+    // Icons grid area
+    const gridArea = document.createElement("div");
+    gridArea.style.cssText = "flex:1; padding:12px; display:flex; flex-wrap:wrap; gap:16px; align-content:flex-start; position:relative;";
+
+    // Files & Folder
+    if (desktopFiles.includes("relatorio.pdf")) {
+      const file = document.createElement("div");
+      file.style.cssText = "display:flex; flex-direction:column; align-items:center; cursor:pointer; width:64px; text-align:center; padding:4px; border-radius:6px;";
+      file.innerHTML = `<span style="font-size:1.8rem; display:block;">📄</span><span style="font-size:0.6rem; color:#fff; word-break:break-all; display:block; margin-top:2px;">relatorio.pdf</span>`;
+      
+      file.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (mFolderRenamed) {
+          desktopFiles = [];
+          targetFolderFiles.push("relatorio.pdf");
+          mFileMoved = true;
+          render();
+        } else {
+          lives--;
+          alert("❌ Erro! Crie a pasta e mude o nome para 'Trabalho' antes de mover arquivos!");
+          render();
+        }
+      });
+      gridArea.appendChild(file);
+    }
+
+    if (mFolderCreated) {
+      const folder = document.createElement("div");
+      folder.style.cssText = "display:flex; flex-direction:column; align-items:center; cursor:pointer; width:64px; text-align:center; padding:4px; border-radius:6px;";
+      folder.innerHTML = `
+        <span style="font-size:2rem; display:block;">📁</span>
+        <span style="font-size:0.6rem; color:#fff; display:block; margin-top:2px;">${folderName}</span>
+      `;
+      folder.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (!mFolderRenamed) {
+          const input = prompt("Digite o novo nome para a pasta:");
+          if (input && input.trim() === "Trabalho") {
+            folderName = "Trabalho";
+            mFolderRenamed = true;
+          } else {
+            lives--;
+            alert("❌ Ops! Renomeie a pasta exatamente para 'Trabalho'.");
+          }
+          render();
+        } else {
+          alert(`Pasta 'Trabalho' aberta. Arquivos internos: ${targetFolderFiles.join(", ")}`);
+        }
+      });
+      gridArea.appendChild(folder);
+    }
+
+    // Recycle bin
+    const recycle = document.createElement("div");
+    recycle.style.cssText = "display:flex; flex-direction:column; align-items:center; cursor:pointer; width:64px; text-align:center; padding:4px; border-radius:6px; position:absolute; right:12px; top:12px;";
+    recycle.innerHTML = `<span style="font-size:1.8rem; display:block;">🗑️</span><span style="font-size:0.6rem; color:#fff; display:block; margin-top:2px;">Lixeira</span>`;
+    recycle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!isRecycleBinFull) {
+        alert("Lixeira está vazia.");
+        return;
+      }
+      const confirmRestore = confirm("Deseja abrir a Lixeira do Sistema para restaurar 'foto.png'?");
+      if (confirmRestore) {
+        isRecycleBinFull = false;
+        mTrashRestored = true;
+        alert("🎉 'foto.png' foi restaurada com sucesso!");
+        render();
+      }
+    });
+    gridArea.appendChild(recycle);
+
+    // File Explorer Window
+    if (activeWindow === "explorador") {
+      const win = document.createElement("div");
+      win.style.cssText = "position:absolute; width:220px; height:180px; background:#131122; border:1px solid rgba(255,255,255,0.15); border-radius:8px; left:60px; top:30px; z-index:15; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.5);";
+      
+      const winHeader = document.createElement("div");
+      winHeader.style.cssText = "background:rgba(255,255,255,0.03); padding:6px; display:flex; justify-content:space-between; align-items:center; font-size:0.65rem; font-weight:700;";
+      winHeader.innerHTML = `<span>📂 Explorador de Arquivos</span><span id="win-close-btn" style="cursor:pointer; color:var(--color-danger); font-size:0.8rem;">✕</span>`;
+      
+      winHeader.querySelector("#win-close-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        activeWindow = "";
+        render();
+      });
+      win.appendChild(winHeader);
+
+      const winBody = document.createElement("div");
+      winBody.style.cssText = "flex:1; display:flex;";
+
+      const winSidebar = document.createElement("div");
+      winSidebar.style.cssText = "width:60px; background:#0b0a14; padding:6px; display:flex; flex-direction:column; gap:4px; font-size:0.55rem;";
+      winSidebar.innerHTML = `
+        <div id="side-downloads" style="cursor:pointer; color:#888;">📥 Downloads</div>
+        <div style="color:#888;">📄 Documentos</div>
+      `;
+
+      winSidebar.querySelector("#side-downloads").addEventListener("click", (e) => {
+        e.stopPropagation();
+        mDownloadsFound = true;
+        alert("🎉 Você abriu a pasta Downloads e completou a meta!");
+        render();
+      });
+      winBody.appendChild(winSidebar);
+
+      const winContent = document.createElement("div");
+      winContent.style.cssText = "flex:1; padding:8px; font-size:0.55rem; color:#aaa;";
+      winContent.textContent = "Selecione uma pasta lateral.";
+      winBody.appendChild(winContent);
+
+      win.appendChild(winBody);
+      gridArea.appendChild(win);
+    }
+
+    // Start Menu
+    const startMenu = document.createElement("div");
+    startMenu.style.cssText = "position:absolute; bottom:40px; left:12px; width:150px; background:#181726; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:6px; display:flex; flex-direction:column; gap:4px; z-index:20; box-sizing:border-box;";
+    if (!isStartVisible) startMenu.style.display = "none";
+
+    const menuItems = [
+      { name: "Calculadora", emoji: "🧮", action: () => { mCalcOpen = true; alert("🧮 Calculadora aberta!"); } },
+      { name: "Explorador", emoji: "📂", action: () => { activeWindow = "explorador"; } },
+      { name: "Personalizar", emoji: "🎨", action: () => {
+        const wallKeys = Object.keys(wallpapers);
+        const nextWall = wallKeys[(wallKeys.indexOf(currentBg) + 1) % wallKeys.length];
+        currentBg = nextWall;
+        mWallpaperChanged = true;
+        alert("🎨 Papel de parede alterado com sucesso!");
+      } }
+    ];
+
+    menuItems.forEach(item => {
+      const it = document.createElement("div");
+      it.style.cssText = "display:flex; align-items:center; gap:6px; padding:4px 8px; font-size:0.7rem; border-radius:4px; cursor:pointer; color:#fff;";
+      it.innerHTML = `<span>${item.emoji}</span><span>${item.name}</span>`;
+      it.addEventListener("mouseenter", () => it.style.background = "rgba(124,58,237,0.2)");
+      it.addEventListener("mouseleave", () => it.style.background = "");
+      it.addEventListener("click", (e) => {
+        e.stopPropagation();
+        isStartVisible = false;
+        if (item.action) item.action();
+        render();
+      });
+      startMenu.appendChild(it);
+    });
+    gridArea.appendChild(startMenu);
+
+    // Context Folder creation option
+    if (!mFolderCreated) {
+      const contextBtn = document.createElement("button");
+      contextBtn.style.cssText = "position:absolute; bottom:12px; right:12px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:#fff; font-size:0.6rem; padding:4px 8px; cursor:pointer;";
+      contextBtn.textContent = "🖱️ Clique Direito > Novo > Pasta";
+      contextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        mFolderCreated = true;
+        render();
+      });
+      gridArea.appendChild(contextBtn);
+    }
+
+    desktop.appendChild(gridArea);
+
+    // Taskbar
+    const bar = document.createElement("div");
+    bar.style.cssText = "height:38px; background:#0c0b14; border-top:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:space-between; padding:0 12px; box-sizing:border-box;";
+
+    const initBtn = document.createElement("button");
+    initBtn.style.cssText = "background:linear-gradient(135deg,#7c3aed,#ec4899); border:none; border-radius:4px; color:#fff; font-weight:bold; font-size:0.7rem; padding:3px 8px; cursor:pointer; height:24px;";
+    initBtn.innerHTML = `🏁 Iniciar`;
+    initBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      isStartVisible = !isStartVisible;
+      mStartOpen = true;
+      render();
+    });
+    bar.appendChild(initBtn);
+
+    // Quick tray toggles
+    const quickControls = document.createElement("div");
+    quickControls.style.cssText = "display:flex; align-items:center; gap:8px;";
+
+    const wifiBtn = document.createElement("span");
+    wifiBtn.style.cssText = `cursor:pointer; font-size:0.8rem; padding:2px 6px; border-radius:4px; ${isInnerWifiConnected ? "color:var(--color-primary-light); background:rgba(124,58,237,0.15);" : "color:#666;"}`;
+    wifiBtn.textContent = "🌐 Wi-Fi";
+    wifiBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      isInnerWifiConnected = !isInnerWifiConnected;
+      if (isInnerWifiConnected) {
+        mWifiOn = true;
+        alert("🌐 Conectado ao Wi-Fi!");
+      }
+      render();
+    });
+    quickControls.appendChild(wifiBtn);
+
+    const volArea = document.createElement("span");
+    volArea.style.cssText = "cursor:pointer; font-size:0.7rem; color:#888;";
+    volArea.textContent = `🔊 Vol: ${curVolume}%`;
+    volArea.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const val = prompt("Defina o volume (0 a 100):");
+      if (val !== null) {
+        const numeric = parseInt(val);
+        if (numeric >= 0 && numeric <= 100) {
+          curVolume = numeric;
+          if (curVolume >= 50) {
+            mVolumeAdjusted = true;
+          }
+        }
+      }
+      render();
+    });
+    quickControls.appendChild(volArea);
+    bar.appendChild(quickControls);
+
+    desktop.appendChild(bar);
+    widget.appendChild(desktop);
+  };
+
+  desktop.addEventListener("click", () => {
+    isStartVisible = false;
+    render();
+  });
+
+  render();
+  container.appendChild(widget);
+}
+
+// 15. REFLEXÃO EXTRA EXPANSÃO
+function initAula4ReflexaoExtra(container, isReset) {
+  container.innerHTML = "";
+  const slideId = COURSE_CONTENT[state.currentSlideIndex].id;
+  const saved = state.notes[slideId] || "";
+
+  setTimeout(() => {
+    const textarea = document.getElementById("exp-mission-textarea");
+    const saveBtn = document.getElementById("exp-save-btn");
+    const feedback = document.getElementById("exp-save-feedback");
+
+    if (textarea) textarea.value = saved;
+
+    if (saveBtn) {
+      saveBtn.addEventListener("click", () => {
+        const val = textarea.value.trim();
+        if (val.length < 30) {
+          feedback.innerHTML = `<span style="color:var(--color-danger);">❌ Reflexão muito curta! Escreva pelo menos 30 caracteres.</span>`;
+          return;
+        }
+        
+        state.notes[slideId] = val;
+        addXP(50);
+        markSlideAsCompleted(slideId);
+        unlockAchievement("windows_guardian");
+        saveBtn.disabled = true;
+        feedback.innerHTML = `<span style="color:var(--color-success);">✅ Reflexão salva com sucesso! +50 XP desbloqueados. 🛡️ Medalha <strong>Guardião do Windows</strong> conquistada!</span>`;
+      });
+    }
+  }, 100);
+}
 
 // ==========================================================================
 // SUPABASE INTEGRATION, NAV & DASHBOARD HUB HANDLERS (SPA FLOW)
@@ -5843,11 +8336,10 @@ function abrirDetalheAluno(student, stats) {
   if (existing) existing.remove();
 
   const totalSlides = COURSE_CONTENT.length;
-  const completedCount = Object.keys(stats.completedSlides).length;
-
-  // Monta lista de aulas concluídas e pendentes
+  
+  // Monta lista de aulas concluídas e pendentes usando slide.id
   const aulaRows = COURSE_CONTENT.map((slide, idx) => {
-    const concluida = stats.completedSlides[idx] === true;
+    const concluida = stats.completedSlides[slide.id] === true;
     const atual = idx === stats.currentSlide;
     const status = concluida
       ? `<span style="color:#22c55e; font-weight:600;">✅ Concluída</span>`
@@ -5862,6 +8354,8 @@ function abrirDetalheAluno(student, stats) {
       </tr>
     `;
   }).join("");
+
+  const completedCount = Object.keys(stats.completedSlides).length;
 
   const overlay = document.createElement("div");
   overlay.id = "detalhe-aluno-modal";
@@ -5895,6 +8389,17 @@ function abrirDetalheAluno(student, stats) {
         <div style="background:linear-gradient(90deg,#7c3aed,#a78bfa);height:100%;width:${stats.progressPercent}%;border-radius:99px;transition:width 0.5s;"></div>
       </div>
 
+      <!-- Ações de Conclusão Rápida -->
+      <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(124, 58, 237, 0.25); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
+        <h4 style="margin: 0 0 0.5rem; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem; color: var(--color-primary-light);">
+          ⚡ Conclusão Rápida de Aulas (Tutor)
+        </h4>
+        <p class="text-muted" style="margin: 0 0 0.8rem; font-size: 0.78rem; line-height: 1.45;">
+          Marque ou desmarque a conclusão das aulas inteiras para este aluno. Isso poupará o tempo do aluno de revisar slides caso ele já tenha feito a aula fisicamente na escola.
+        </p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;" id="tutor-quick-completion-actions"></div>
+      </div>
+
       <!-- Tabela de Aulas -->
       <h4 style="margin:0 0 0.75rem;font-size:0.95rem;">📋 Progresso por Aula</h4>
       <div style="overflow-x:auto;">
@@ -5914,6 +8419,155 @@ function abrirDetalheAluno(student, stats) {
 
   document.body.appendChild(overlay);
   overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+
+  // Renderiza botões de ação rápida e trata cliques
+  const renderQuickActions = () => {
+    const quickActionsContainer = document.getElementById("tutor-quick-completion-actions");
+    if (!quickActionsContainer) return;
+    quickActionsContainer.innerHTML = "";
+
+    const aulas = ["AULA 1", "AULA 2", "AULA 3", "AULA 4"];
+    aulas.forEach(aulaName => {
+      const slidesDaAula = COURSE_CONTENT.filter(s => s.chapter === aulaName);
+      if (slidesDaAula.length === 0) return;
+      
+      const todosConcluidos = slidesDaAula.every(s => stats.completedSlides[s.id] === true);
+      
+      const btn = document.createElement("button");
+      btn.style.cssText = "padding: 0.4rem 0.8rem; font-size: 0.8rem; font-weight: 700; border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.12); transition: all 0.2s; display: flex; align-items: center; gap: 0.3rem;";
+      
+      if (todosConcluidos) {
+        btn.innerHTML = `<span>↩️</span> Resetar ${aulaName}`;
+        btn.style.background = "rgba(239, 68, 68, 0.15)";
+        btn.style.borderColor = "rgba(239, 68, 68, 0.4)";
+        btn.style.color = "#ef4444";
+      } else {
+        btn.innerHTML = `<span>✅</span> Concluir ${aulaName}`;
+        btn.style.background = "rgba(16, 185, 129, 0.15)";
+        btn.style.borderColor = "rgba(16, 185, 129, 0.4)";
+        btn.style.color = "#10b981";
+      }
+
+      btn.addEventListener("click", async () => {
+        btn.disabled = true;
+        btn.textContent = "Processando...";
+        try {
+          // 1. Carrega o progresso atual do aluno direto do Supabase
+          let studentState = await window.loadProgressFromDb(student.id);
+          if (!studentState) {
+            studentState = {
+              currentSlideIndex: 0,
+              completedSlides: {},
+              unlockedAchievements: {},
+              xp: 0,
+              level: 1
+            };
+          }
+
+          // 2. Marca/desmarca slides daquela aula
+          slidesDaAula.forEach(s => {
+            if (todosConcluidos) {
+              delete studentState.completedSlides[s.id];
+            } else {
+              studentState.completedSlides[s.id] = true;
+            }
+          });
+
+          // 3. Atualiza as conquistas correspondentes
+          if (!todosConcluidos) {
+            if (aulaName === "AULA 3") studentState.unlockedAchievements["peripheral_master"] = true;
+            if (aulaName === "AULA 4") {
+              studentState.unlockedAchievements["windows_explorer"] = true;
+              studentState.unlockedAchievements["windows_guardian"] = true;
+            }
+          } else {
+            if (aulaName === "AULA 3") delete studentState.unlockedAchievements["peripheral_master"];
+            if (aulaName === "AULA 4") {
+              delete studentState.unlockedAchievements["windows_explorer"];
+              delete studentState.unlockedAchievements["windows_guardian"];
+            }
+          }
+
+          // 4. Recalcula XP e Nível do Aluno
+          let calculatedXp = 0;
+          COURSE_CONTENT.forEach(slide => {
+            if (studentState.completedSlides[slide.id]) {
+              if (slide.type === "challenge" || slide.type === "quiz") {
+                calculatedXp += 50;
+              } else {
+                calculatedXp += 10;
+              }
+            }
+          });
+
+          Object.keys(studentState.unlockedAchievements).forEach(achId => {
+            if (studentState.unlockedAchievements[achId]) {
+              calculatedXp += 100; // 100 XP por conquista
+            }
+          });
+
+          studentState.xp = calculatedXp;
+          studentState.level = Math.floor(calculatedXp / 100) + 1;
+
+          // 5. Salva de volta no Supabase
+          await window.saveProgressToDb(student.id, studentState);
+
+          // 6. Atualiza estado em cache na janela modal local
+          stats.completedSlides = studentState.completedSlides;
+          stats.xp = studentState.xp;
+          stats.level = studentState.level;
+
+          const updatedCount = Object.keys(stats.completedSlides).length;
+          stats.progressPercent = totalSlides > 0 ? Math.round((updatedCount / totalSlides) * 100) : 0;
+
+          // 7. Atualiza a UI do próprio modal
+          const levelCard = overlay.querySelector("div[style*='rgba(124,58,237,0.15)'] div");
+          const xpCard = overlay.querySelectorAll("div[style*='rgba(124,58,237,0.15)']")[1].querySelector("div");
+          const completedCard = overlay.querySelectorAll("div[style*='rgba(124,58,237,0.15)']")[2].querySelector("div");
+          const progressBar = overlay.querySelector("div[style*='rgba(255,255,255,0.08)'] div");
+
+          if (levelCard) levelCard.textContent = stats.level;
+          if (xpCard) xpCard.textContent = stats.xp;
+          if (completedCard) completedCard.textContent = `${updatedCount}/${totalSlides}`;
+          if (progressBar) progressBar.style.width = `${stats.progressPercent}%`;
+
+          // 8. Atualiza a lista de aulas na tabela no modal
+          const newAulaRows = COURSE_CONTENT.map((slide, idx) => {
+            const concluida = stats.completedSlides[slide.id] === true;
+            const atual = idx === stats.currentSlide;
+            const status = concluida
+              ? `<span style="color:#22c55e; font-weight:600;">✅ Concluída</span>`
+              : atual
+                ? `<span style="color:#f59e0b; font-weight:600;">▶ Aula Atual</span>`
+                : `<span style="color:#666;">⬜ Pendente</span>`;
+            return `
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:0.4rem 0.5rem; font-size:0.82rem; color:#aaa;">${idx + 1}</td>
+                <td style="padding:0.4rem 0.5rem; font-size:0.85rem;">${slide.title}</td>
+                <td style="padding:0.4rem 0.5rem; text-align:center;">${status}</td>
+              </tr>
+            `;
+          }).join("");
+          overlay.querySelector("tbody").innerHTML = newAulaRows;
+
+          // 9. Recarrega as ações rápidas
+          renderQuickActions();
+
+          // 10. Recarrega a tabela de alunos no painel do Hub de fundo
+          await loadHubSchoolStudents();
+
+        } catch (error) {
+          console.error("Erro ao salvar progresso rápido:", error);
+          alert("Ocorreu um erro ao sincronizar no banco: " + (error.message || error));
+        } finally {
+          btn.disabled = false;
+        }
+      });
+      quickActionsContainer.appendChild(btn);
+    });
+  };
+
+  renderQuickActions();
 }
 
 /**
