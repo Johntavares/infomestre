@@ -6,6 +6,7 @@ let state = {
   xp: 0,
   level: 1,
   completedSlides: {}, // { slideId: true }
+  completedLessons: {}, // { lessonId: true }
   unlockedAchievements: {}, // { achievementId: true }
   notes: {}, // { slideId: "text notes" }
   quizProgress: {}, // { slideId: { currentQuestionIndex: 0, answers: [], completed: false } }
@@ -24,6 +25,53 @@ const ACHIEVEMENTS = [
   { id: "windows_explorer", title: "Explorador do Windows", desc: "Concluiu a Missão 4 — Dominando o Windows.", icon: "🖥️" },
   { id: "windows_guardian", title: "Guardião do Windows", desc: "Concluiu a expansão da Aula 4 e dominou os principais recursos do Windows.", icon: "🖥️" }
 ];
+
+const COURSE_JORNADA = [
+  {
+    id: "modulo-1",
+    title: "Explorador Digital",
+    icon: "🥉",
+    lessons: [
+      { id: "aula-1", title: "Introdução à Informática", chapter: "AULA 1", desc: "Aprenda o básico de computadores, história e funcionamento inicial." },
+      { id: "aula-2", title: "Explorando o Hardware", chapter: "AULA 2", desc: "Abra a máquina e conheça placa-mãe, processador, RAM, disco e fonte." },
+      { id: "aula-3", title: "Periféricos e Conexões", chapter: "AULA 3", desc: "Domine mouse, teclado, monitores, impressoras e as conexões traseiras." },
+      { id: "aula-4", title: "Dominando o Windows", chapter: "AULA 4", desc: "Aprenda a usar a Área de Trabalho, Menu Iniciar, Lixeira e recursos avançados." },
+      { id: "aula-5", title: "Organização Digital", desc: "Aprenda a organizar arquivos, pastas, armazenamento digital e pendrives." },
+      { id: "aula-6", title: "Segurança e Cuidados", desc: "Conheça vírus, golpes, segurança física e digital no uso do computador." },
+      { id: "aula-7", title: "Oficina Tecnológica", desc: "Simulações de manutenção preventiva e cuidados básicos essenciais." },
+      { id: "aula-8", title: "Desafio Final do Módulo", isDesafio: true, desc: "A grande avaliação integrada do Módulo 1. Mostre que é um mestre!" }
+    ]
+  },
+  {
+    id: "modulo-2",
+    title: "Produtividade Profissional",
+    icon: "🥈",
+    descMessage: "Conclua o Módulo 1 para desbloquear novas ferramentas profissionais.",
+    lessons: [
+      { id: "aula-9", title: "Digitação Inteligente", desc: "Técnicas de digitação rápida, ergonomia das mãos e uso inteligente do teclado." },
+      { id: "aula-10", title: "Introdução ao Word", desc: "Aprenda a criar documentos de texto formatados, margens e estilos de fonte." },
+      { id: "aula-11", title: "Criando um Currículo", desc: "Aplicação prática para estruturar e exportar seu próprio currículo profissional." },
+      { id: "aula-12", title: "PowerPoint", desc: "Criação de apresentações impactantes, transições de slides e organização de ideias." },
+      { id: "aula-13", title: "Excel", desc: "Entenda tabelas, células, fórmulas matemáticas básicas e gráficos interativos." },
+      { id: "aula-14", title: "Projeto Profissional", isDesafio: true, desc: "Uma atividade prática integrada aplicando Word, Excel e PowerPoint em conjunto." }
+    ]
+  },
+  {
+    id: "modulo-3",
+    title: "Internet e Mundo Digital",
+    icon: "🥇",
+    descMessage: "Conclua o Módulo 2 para acessar o mundo digital.",
+    lessons: [
+      { id: "aula-15", title: "História da Internet", desc: "Descubra como a grande rede global surgiu e como ela funciona estruturalmente." },
+      { id: "aula-16", title: "Navegadores e Pesquisas", desc: "Aprenda a usar o Chrome, abas, favoritos, e técnicas avançadas de busca no Google." },
+      { id: "aula-17", title: "Segurança Digital", desc: "Aprenda a identificar sites falsos, criar senhas seguras e evitar golpes online." },
+      { id: "aula-18", title: "E-mail Profissional", desc: "Como criar uma conta de e-mail, enviar anexos e usar a etiqueta digital profissional." },
+      { id: "aula-19", title: "Serviços Online", desc: "Aprenda sobre Armazenamento em Nuvem, Google Drive, assinaturas virtuais e utilitários." },
+      { id: "aula-20", title: "Projeto Final", isDesafio: true, desc: "A grande missão final da internet e encerramento do curso InforMestre." }
+    ]
+  }
+];
+
 
 // Load State from LocalStorage
 function loadState() {
@@ -269,73 +317,695 @@ function initTheme() {
   });
 }
 
-// Draw the left menu items
+// Draw the left menu items (Upgraded to Gamified Journey Modules & Lessons)
+const LESSON_CURIOSITIES = {
+  "aula-5": {
+    titulo: "Aula 5 — Organização Digital",
+    proxima: "Aula 5 — Organização Digital",
+    prev: "Prepare-se para aprender a organizar arquivos, pastas, armazenamento digital e pendrives de forma profissional.",
+    bulletPoints: [
+      "Como usar o Explorador de Arquivos como um profissional",
+      "Organização de pastas, subpastas e tags coloridas",
+      "Gerenciamento de pendrives, cartões de memória e discos externos",
+      "Introdução ao Armazenamento na Nuvem"
+    ]
+  },
+  "aula-6": {
+    titulo: "Aula 6 — Segurança e Cuidados",
+    proxima: "Aula 6 — Segurança e Cuidados",
+    prev: "Saiba como proteger seu computador contra vírus, golpes e entender os cuidados físicos essenciais com a máquina.",
+    bulletPoints: [
+      "O que são vírus, cavalos de troia e ransomware",
+      "Como usar e manter o antivírus atualizado",
+      "Cuidados físicos: limpeza correta, poeira e superaquecimento",
+      "Criação de senhas fortes e seguras"
+    ]
+  },
+  "aula-7": {
+    titulo: "Aula 7 — Oficina Tecnológica",
+    proxima: "Aula 7 — Oficina Tecnológica",
+    prev: "Coloque as mãos na massa com simulações de manutenção preventiva e cuidados básicos essenciais.",
+    bulletPoints: [
+      "Instalação de programas e desinstalação segura",
+      "Como liberar espaço em discos cheios",
+      "Identificação de problemas simples de hardware",
+      "Ferramentas de diagnóstico nativas do sistema"
+    ]
+  },
+  "aula-8": {
+    titulo: "Aula 8 — Desafio Final do Módulo",
+    proxima: "Aula 8 — Desafio Final",
+    prev: "O teste supremo do Módulo 1! Uma grande missão prática integrada cobrindo tudo o que você aprendeu.",
+    bulletPoints: [
+      "Avaliação de montagem de hardware",
+      "Desafio prático de gerenciamento de portas e cabos",
+      "Teste avançado de atalhos e navegação do Windows",
+      "Recompensa: 🏆 Medalha de Explorador Digital"
+    ]
+  },
+  "aula-9": {
+    titulo: "Aula 9 — Digitação Inteligente",
+    proxima: "Aula 9 — Digitação Inteligente",
+    prev: "Aprenda a digitar com rapidez e ergonomia para aumentar sua velocidade de trabalho no teclado.",
+    bulletPoints: [
+      "Postura correta das mãos e posicionamento das teclas guia",
+      "Exercícios dinâmicos de velocidade e precisão",
+      "Uso avançado de teclas de atalho de produtividade",
+      "Como evitar lesões por esforço repetitivo (LER)"
+    ]
+  },
+  "aula-10": {
+    titulo: "Aula 10 — Introdução ao Word",
+    proxima: "Aula 10 — Introdução ao Word",
+    prev: "Domine a criação de textos profissionais, formatações de página e designs elegantes de documentos.",
+    bulletPoints: [
+      "Formatando fontes, parágrafos, espaçamentos e recuos",
+      "Configuração de margens de página e cabeçalhos",
+      "Uso de estilos rápidos para sumários automáticos",
+      "Inserção de tabelas, imagens e formas"
+    ]
+  },
+  "aula-11": {
+    titulo: "Aula 11 — Criando um Currículo",
+    proxima: "Aula 11 — Criando um Currículo",
+    prev: "Uma aplicação real e prática para estruturar e exportar seu próprio currículo profissional de destaque.",
+    bulletPoints: [
+      "Estrutura padrão de um currículo moderno e atraente",
+      "Dicas de redação de qualificações e histórico profissional",
+      "Alinhamento, colunas e formatação limpa",
+      "Exportação correta em PDF para envio"
+    ]
+  },
+  "aula-12": {
+    titulo: "Aula 12 — PowerPoint",
+    proxima: "Aula 12 — Apresentações de Slides",
+    prev: "Aprenda a criar slides cativantes, transições fluidas e organizar apresentações de slides de alto impacto.",
+    bulletPoints: [
+      "Criação de slides de títulos, tópicos e layouts dinâmicos",
+      "Princípios de design: contraste de cores e tipografia legível",
+      "Uso de animações discretas e transições suaves de página",
+      "Modo de apresentação com notas do orador"
+    ]
+  },
+  "aula-13": {
+    titulo: "Aula 13 — Excel",
+    proxima: "Aula 13 — Planilhas do Excel",
+    prev: "Desvende as planilhas do Excel, fórmulas matemáticas básicas, automações e gráficos interativos.",
+    bulletPoints: [
+      "Estrutura de linhas, colunas, células e formatação de números",
+      "Fórmulas essenciais: SOMA, MÉDIA, MÁXIMO, MÍNIMO e SE",
+      "Criação de gráficos de pizza, barras e linhas a partir de tabelas",
+      "Filtros, classificação e organização de dados"
+    ]
+  },
+  "aula-14": {
+    titulo: "Aula 14 — Projeto Profissional",
+    proxima: "Aula 14 — Projeto Profissional",
+    prev: "O desafio de consolidação do Módulo 2! Crie e estruture um projeto profissional unificando Word, Excel e PowerPoint.",
+    bulletPoints: [
+      "Criação de relatório de vendas formatado no Word",
+      "Estruturação de planilha financeira e gráficos no Excel",
+      "Apresentação executiva dos resultados no PowerPoint",
+      "Recompensa: 🏆 Medalha de Produtividade Profissional"
+    ]
+  },
+  "aula-15": {
+    titulo: "Aula 15 — História da Internet",
+    proxima: "Aula 15 — História da Internet",
+    prev: "Aprenda como a rede global surgiu, como a informação viaja pelo mundo e como a web revolucionou nossa sociedade.",
+    bulletPoints: [
+      "De redes militares (ARPANET) à rede mundial de computadores (WWW)",
+      "O que são servidores, clientes, pacotes de dados e cabos submarinos",
+      "Funcionamento básico do protocolo IP e roteadores",
+      "A evolução dos sites de texto para a web multimídia moderna"
+    ]
+  },
+  "aula-16": {
+    titulo: "Aula 16 — Navegadores e Pesquisas",
+    proxima: "Aula 16 — Navegadores e Pesquisas",
+    prev: "Navegue com velocidade e segurança! Aprenda a usar recursos ocultos de navegadores e fazer buscas precisas no Google.",
+    bulletPoints: [
+      "Navegação por abas, histórico, favoritos e extensões",
+      "Uso de operadores de busca do Google (aspas, sinal de menos, site:)",
+      "Como limpar cookies e cache do navegador de forma seletiva",
+      "Modo de navegação anônima: mitos e verdades"
+    ]
+  },
+  "aula-17": {
+    titulo: "Aula 17 — Segurança Digital",
+    proxima: "Aula 17 — Segurança Digital",
+    prev: "Mantenha-se protegido na web. Aprenda a identificar golpes comuns de phishing, links perigosos e proteger sua privacidade.",
+    bulletPoints: [
+      "Identificação de selos de segurança HTTPS e cadeados em sites",
+      "Como desconfiar e identificar mensagens falsas (WhatsApp, SMS, e-mail)",
+      "Uso de Autenticação em Duas Etapas (2FA) em suas contas",
+      "Cuidados com redes Wi-Fi públicas e computadores compartilhados"
+    ]
+  },
+  "aula-18": {
+    titulo: "Aula 18 — E-mail Profissional",
+    proxima: "Aula 18 — E-mail Profissional",
+    prev: "Aprenda a criar contas comerciais, escrever e-mails formais e usar anexos e assinaturas de forma correta.",
+    bulletPoints: [
+      "Configuração de caixa de entrada, spam e pastas de organização",
+      "Escrevendo e-mails formais com saudação, corpo estruturado e encerramento",
+      "Como gerenciar o envio de anexos pesados e links compartilhados",
+      "Criação de assinaturas profissionais automáticas"
+    ]
+  },
+  "aula-19": {
+    titulo: "Aula 19 — Serviços Online",
+    proxima: "Aula 19 — Serviços Online e Nuvem",
+    prev: "Explore o ecossistema de serviços da internet, do Google Drive ao armazenamento de arquivos em nuvem.",
+    bulletPoints: [
+      "Como salvar, compartilhar e colaborar em tempo real com arquivos na nuvem",
+      "Uso de serviços públicos digitais (Gov.br, agendamentos, contas de consumo)",
+      "Introdução a plataformas de reuniões virtuais (Meet, Teams, Zoom)",
+      "Gerenciamento de assinaturas e armazenamento online"
+    ]
+  },
+  "aula-20": {
+    titulo: "Aula 20 — Projeto Final",
+    proxima: "Aula 20 — Projeto Final",
+    prev: "A grande missão final da internet e encerramento do curso InforMestre. Coloque tudo à prova e libere seu certificado!",
+    bulletPoints: [
+      "Planejamento de uma jornada digital segura na web",
+      "Criação e compartilhamento de um ecossistema colaborativo na nuvem",
+      "Desafio prático de identificação de golpes e segurança em tempo real",
+      "Recompensa: 🎓 Certificado Oficial de Conclusão do InforMestre"
+    ]
+  }
+};
+
+function isLessonCompleted(lesson) {
+  if (state.completedLessons && state.completedLessons[lesson.id] === true) {
+    return true;
+  }
+  if (lesson.chapter) {
+    const slides = COURSE_CONTENT.filter(s => s.chapter === lesson.chapter);
+    if (slides.length > 0) {
+      const todosConcluidos = slides.every(s => state.completedSlides[s.id] === true);
+      if (todosConcluidos) {
+        if (!state.completedLessons) state.completedLessons = {};
+        state.completedLessons[lesson.id] = true;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function getLessonStatus(lessonId) {
+  let flatLessons = [];
+  COURSE_JORNADA.forEach(mod => {
+    flatLessons.push(...mod.lessons);
+  });
+  
+  const idx = flatLessons.findIndex(l => l.id === lessonId);
+  if (idx === -1) return "locked";
+
+  if (idx === 0) {
+    return isLessonCompleted(flatLessons[0]) ? "completed" : "in_progress";
+  }
+
+  const anterior = flatLessons[idx - 1];
+  if (!isLessonCompleted(anterior)) {
+    return "locked";
+  }
+
+  const atual = flatLessons[idx];
+  if (isLessonCompleted(atual)) {
+    return "completed";
+  }
+
+  if (atual.chapter) {
+    const currentSlide = COURSE_CONTENT[state.currentSlideIndex];
+    if (currentSlide && currentSlide.chapter === atual.chapter) {
+      return "in_progress";
+    }
+  }
+
+  return "available";
+}
+
+function getModuloStatus(moduloId) {
+  if (moduloId === "modulo-1") return "unlocked";
+  if (moduloId === "modulo-2") {
+    return isLessonCompleted({ id: "aula-8" }) ? "unlocked" : "locked";
+  }
+  if (moduloId === "modulo-3") {
+    return isLessonCompleted({ id: "aula-14" }) ? "unlocked" : "locked";
+  }
+  return "locked";
+}
+
+function triggerLessonUnlockNotification(aulaId) {
+  let flatLessons = [];
+  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+  const idx = flatLessons.findIndex(l => l.id === aulaId);
+  if (idx === -1) return;
+
+  const aulaConcluida = flatLessons[idx];
+  const proximaAula = flatLessons[idx + 1];
+
+  if (aulaId === "aula-8") {
+    window.showModernAlert(
+      "🏆 Módulo 1 Concluído!",
+      `
+      <div style="text-align: center; padding: 0.5rem 0;">
+        <span style="font-size: 3.5rem; display: block; margin-bottom: 1rem;">🏆</span>
+        <h4 style="margin: 0 0 1rem; color: #f59e0b; font-size: 1.2rem;">Parabéns, Explorador Digital!</h4>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: #ddd; margin: 0 0 1.5rem;">
+          Você concluiu com maestria o <strong>Módulo 1 — Explorador Digital</strong> e dominou o hardware, periféricos e o sistema operacional!
+        </p>
+        <div style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); border-radius: 10px; padding: 1rem; text-align: left; font-size: 0.85rem;">
+          <strong>🔒 Próxima Etapa:</strong> O <em>Módulo 2 — Produtividade Profissional</em> foi desbloqueado na sua jornada! Como você concluiu todo o conteúdo atual do Módulo 1, as novas aulas práticas e exercícios de Digitação, Word, Excel e PowerPoint aguardam as próximas atividades da escola.
+        </div>
+      </div>
+      `
+    );
+    return;
+  }
+
+  if (aulaId === "aula-14") {
+    window.showModernAlert(
+      "🥈 Módulo 2 Concluído!",
+      `
+      <div style="text-align: center; padding: 0.5rem 0;">
+        <span style="font-size: 3.5rem; display: block; margin-bottom: 1rem;">🥈</span>
+        <h4 style="margin: 0 0 1rem; color: #38bdf8; font-size: 1.2rem;">Parabéns, Produtor Tecnológico!</h4>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: #ddd; margin: 0 0 1.5rem;">
+          Você concluiu todo o <strong>Módulo 2 — Produtividade Profissional</strong>!
+        </p>
+        <div style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 1rem; text-align: left; font-size: 0.85rem;">
+          <strong>🔒 Próxima Etapa:</strong> O <em>Módulo 3 — Internet e Mundo Digital</em> foi desbloqueado na sua jornada! Continue com dedicação.
+        </div>
+      </div>
+      `
+    );
+    return;
+  }
+
+  if (aulaId === "aula-20") {
+    window.showModernAlert(
+      "🎓 Curso Concluído!",
+      `
+      <div style="text-align: center; padding: 0.5rem 0;">
+        <span style="font-size: 3.5rem; display: block; margin-bottom: 1rem;">🎓</span>
+        <h4 style="margin: 0 0 1rem; color: #10b981; font-size: 1.2rem;">Você se formou no InforMestre!</h4>
+        <p style="font-size: 0.9rem; line-height: 1.5; color: #ddd; margin: 0 0 1.5rem;">
+          Parabéns! Você concluiu todas as 20 aulas do curso de Informática Básica!
+        </p>
+        <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 10px; padding: 1rem; text-align: left; font-size: 0.85rem;">
+          <strong>🏆 Certificado Disponível:</strong> Seu Certificado Oficial de Conclusão foi liberado! Acesse a seção de Conquistas ou o menu correspondente para gerá-lo e imprimi-lo.
+        </div>
+      </div>
+      `
+    );
+    return;
+  }
+
+  if (proximaAula) {
+    const curiosidade = LESSON_CURIOSITIES[proximaAula.id];
+    const previewText = curiosidade ? curiosidade.prev : "Prepare-se para novas missões práticas e aprendizados inéditos!";
+    
+    window.showModernAlert(
+      "🎉 Missão Concluída!",
+      `
+      <div style="text-align: center; padding: 0.5rem 0;">
+        <span style="font-size: 3.2rem; display: block; margin-bottom: 1rem;">🚀</span>
+        <h4 style="margin: 0 0 0.5rem; color: #a78bfa; font-size: 1.15rem;">Parabéns! Você concluiu a ${aulaConcluida.title}</h4>
+        <p style="font-size: 0.85rem; color: #aaa; margin: 0 0 1.5rem;">Você ganhou XP e subiu na jornada de aprendizado.</p>
+        
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1.2rem; text-align: left; font-size: 0.88rem;">
+          <div style="font-weight: 700; color: #fff; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>📁</span> Nova aula desbloqueada:
+          </div>
+          <div style="font-weight: 800; color: var(--color-primary-light); font-size: 0.95rem; margin-bottom: 0.6rem;">
+            ${proximaAula.title}
+          </div>
+          <p style="margin: 0; line-height: 1.45; color: #ccc; font-size: 0.82rem;">
+            ${previewText}
+          </p>
+        </div>
+      </div>
+      `
+    );
+  }
+}
+
+function abrirModalCuriosidade(lesson) {
+  const curiosidade = LESSON_CURIOSITIES[lesson.id];
+  const bulletList = curiosidade 
+    ? curiosidade.bulletPoints.map(point => `<li style="margin-bottom:0.4rem; color: #ccc;">• ${point}</li>`).join("")
+    : `
+      <li style="margin-bottom:0.4rem; color: #ccc;">• Novas ferramentas interativas</li>
+      <li style="margin-bottom:0.4rem; color: #ccc;">• Missões práticas inéditas</li>
+      <li style="margin-bottom:0.4rem; color: #ccc;">• Mini games exclusivos</li>
+      <li style="margin-bottom:0.4rem; color: #ccc;">• Desafios de produtividade</li>
+    `;
+
+  window.showModernAlert(
+    "🔒 Aula Bloqueada",
+    `
+    <div style="text-align: center; padding: 0.5rem 0;">
+      <span style="font-size: 3rem; display: block; margin-bottom: 0.8rem;">🔒</span>
+      <h4 style="margin: 0 0 0.5rem; color: #f59e0b; font-size: 1.1rem;">Aula Bloqueada</h4>
+      <p style="font-size: 0.85rem; color: #aaa; margin: 0 0 1.2rem;">Conclua as missões anteriores para desbloquear esta etapa.</p>
+      
+      <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1rem; text-align: left; font-size: 0.82rem;">
+        <strong style="color: #fff; display: block; margin-bottom: 0.5rem;">📖 O que você aprenderá nesta aula em breve:</strong>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          ${bulletList}
+        </ul>
+      </div>
+    </div>
+    `
+  );
+}
+
+function abrirModalAulaFutura(lesson) {
+  const curiosidade = LESSON_CURIOSITIES[lesson.id];
+  const bulletList = curiosidade 
+    ? curiosidade.bulletPoints.map(point => `<li style="margin-bottom:0.4rem; color: #ccc;">• ${point}</li>`).join("")
+    : `<li style="margin-bottom:0.4rem; color: #ccc;">• Conteúdo interativo em desenvolvimento</li>`;
+    
+  const desc = curiosidade ? curiosidade.prev : "Esta aula estará disponível em breve com simuladores práticos integrados.";
+
+  if (lesson.id === "aula-8") {
+    window.showModernAlert(
+      "🏆 Desafio Final do Módulo 1",
+      `
+      <div style="text-align: center; padding: 0.5rem 0;">
+        <span style="font-size: 3rem; display: block; margin-bottom: 0.8rem;">🏆</span>
+        <h4 style="margin: 0 0 0.5rem; color: #f59e0b; font-size: 1.15rem;">Desafio Final do Módulo 1</h4>
+        <p style="font-size: 0.85rem; color: #ccc; margin: 0 0 1.5rem;">
+          Você provou ser capaz! O Desafio Final é uma avaliação virtual do Módulo 1. Clique abaixo para concluir o Módulo 1 e liberar as medalhas correspondentes.
+        </p>
+        
+        <button id="btn-complete-desafio-final" class="btn" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; font-weight: 700; width: 100%; padding: 0.75rem; border-radius: 10px; border: none; cursor: pointer;">
+          🏁 Finalizar Módulo 1
+        </button>
+      </div>
+      `
+    );
+    
+    setTimeout(() => {
+      const btn = document.getElementById("btn-complete-desafio-final");
+      if (btn) {
+        btn.addEventListener("click", async () => {
+          const overlay = document.getElementById("modern-alert-modal");
+          if (overlay) overlay.remove();
+          
+          if (!state.completedLessons) state.completedLessons = {};
+          state.completedLessons["aula-8"] = true;
+          unlockAchievement("windows_explorer");
+          unlockAchievement("windows_guardian");
+          addXP(100);
+          saveState();
+          initSidebarMenu();
+          
+          triggerLessonUnlockNotification("aula-8");
+        });
+      }
+    }, 100);
+    return;
+  }
+
+  if (lesson.id === "aula-14") {
+    window.showModernAlert(
+      "🏆 Projeto Profissional - Módulo 2",
+      `
+      <div style="text-align: center; padding: 0.5rem 0;">
+        <span style="font-size: 3rem; display: block; margin-bottom: 0.8rem;">🏆</span>
+        <h4 style="margin: 0 0 0.5rem; color: #38bdf8; font-size: 1.15rem;">Projeto Profissional - Módulo 2</h4>
+        <p style="font-size: 0.85rem; color: #ccc; margin: 0 0 1.5rem;">
+          Você está quase lá! O Projeto Profissional é a consolidação do Módulo 2. Clique abaixo para concluir o Módulo 2.
+        </p>
+        
+        <button id="btn-complete-desafio-final-m2" class="btn" style="background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; font-weight: 700; width: 100%; padding: 0.75rem; border-radius: 10px; border: none; cursor: pointer;">
+          🏁 Finalizar Módulo 2
+        </button>
+      </div>
+      `
+    );
+    
+    setTimeout(() => {
+      const btn = document.getElementById("btn-complete-desafio-final-m2");
+      if (btn) {
+        btn.addEventListener("click", async () => {
+          const overlay = document.getElementById("modern-alert-modal");
+          if (overlay) overlay.remove();
+          
+          if (!state.completedLessons) state.completedLessons = {};
+          state.completedLessons["aula-14"] = true;
+          addXP(100);
+          saveState();
+          initSidebarMenu();
+          
+          triggerLessonUnlockNotification("aula-14");
+        });
+      }
+    }, 100);
+    return;
+  }
+
+  if (lesson.id === "aula-20") {
+    window.showModernAlert(
+      "🏆 Projeto Final - Módulo 3",
+      `
+      <div style="text-align: center; padding: 0.5rem 0;">
+        <span style="font-size: 3rem; display: block; margin-bottom: 0.8rem;">🏆</span>
+        <h4 style="margin: 0 0 0.5rem; color: #10b981; font-size: 1.15rem;">Projeto Final - Módulo 3</h4>
+        <p style="font-size: 0.85rem; color: #ccc; margin: 0 0 1.5rem;">
+          O teste supremo! Clique abaixo para finalizar a sua jornada no InforMestre e gerar o seu certificado.
+        </p>
+        
+        <button id="btn-complete-desafio-final-m3" class="btn" style="background: linear-gradient(135deg, #059669, #10b981); color: #fff; font-weight: 700; width: 100%; padding: 0.75rem; border-radius: 10px; border: none; cursor: pointer;">
+          🎓 Concluir Curso e Gerar Certificado
+        </button>
+      </div>
+      `
+    );
+    
+    setTimeout(() => {
+      const btn = document.getElementById("btn-complete-desafio-final-m3");
+      if (btn) {
+        btn.addEventListener("click", async () => {
+          const overlay = document.getElementById("modern-alert-modal");
+          if (overlay) overlay.remove();
+          
+          if (!state.completedLessons) state.completedLessons = {};
+          state.completedLessons["aula-20"] = true;
+          unlockAchievement("graduated");
+          addXP(200);
+          saveState();
+          initSidebarMenu();
+          
+          triggerLessonUnlockNotification("aula-20");
+        });
+      }
+    }, 100);
+    return;
+  }
+
+  window.showModernAlert(
+    lesson.title,
+    `
+    <div style="text-align: center; padding: 0.5rem 0;">
+      <span style="font-size: 3rem; display: block; margin-bottom: 0.8rem;">📁</span>
+      <h4 style="margin: 0 0 0.5rem; color: var(--color-primary-light); font-size: 1.15rem;">${lesson.title}</h4>
+      <p style="font-size: 0.85rem; color: #ccc; margin: 0 0 1.2rem; line-height:1.45;">${desc}</p>
+      
+      <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1rem; text-align: left; font-size: 0.82rem; margin-bottom: 1.2rem;">
+        <strong style="color: #fff; display: block; margin-bottom: 0.5rem;">📖 O que você aprenderá nesta aula:</strong>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          ${bulletList}
+        </ul>
+      </div>
+
+      <button id="btn-complete-virtual-lesson" class="btn" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; font-weight: 700; width: 100%; padding: 0.65rem; border-radius: 8px; cursor: pointer;">
+        🏁 Marcar Aula como Concluída
+      </button>
+    </div>
+    `
+  );
+
+  setTimeout(() => {
+    const btn = document.getElementById("btn-complete-virtual-lesson");
+    if (btn) {
+      btn.addEventListener("click", async () => {
+        const overlay = document.getElementById("modern-alert-modal");
+        if (overlay) overlay.remove();
+        
+        if (!state.completedLessons) state.completedLessons = {};
+        state.completedLessons[lesson.id] = true;
+        addXP(50);
+        saveState();
+        initSidebarMenu();
+        
+        triggerLessonUnlockNotification(lesson.id);
+      });
+    }
+  }, 100);
+}
+
 function initSidebarMenu() {
   const menuNav = document.getElementById("course-menu-nav");
+  if (!menuNav) return;
   menuNav.innerHTML = "";
-  
-  // Group course items by chapter
-  const chapters = {};
-  COURSE_CONTENT.forEach((item, index) => {
-    const chapterName = item.chapter || "INTRODUÇÃO";
-    if (!chapters[chapterName]) {
-      chapters[chapterName] = [];
-    }
-    chapters[chapterName].push({ ...item, index });
-  });
 
-  // Render chapters and items
-  for (const [chapterTitle, items] of Object.entries(chapters)) {
+  COURSE_JORNADA.forEach(modulo => {
     const groupDiv = document.createElement("div");
     groupDiv.className = "menu-chapter-group";
+    groupDiv.style.marginBottom = "1.2rem";
     
-    const allCompleted = items.every(item => state.completedSlides[item.id]);
-    const completedCount = items.filter(item => state.completedSlides[item.id]).length;
-    
-    // Determine collapsed state
-    let isCollapsed = false;
-    if (chapterTitle in state.collapsedChapters) {
-      isCollapsed = state.collapsedChapters[chapterTitle];
-    } else if (allCompleted) {
-      isCollapsed = true;
-      state.collapsedChapters[chapterTitle] = true;
-    }
+    const moduloStatus = getModuloStatus(modulo.id);
+    const isLocked = moduloStatus === "locked";
     
     const header = document.createElement("div");
     header.className = "chapter-title-header";
-    header.setAttribute("data-collapsed", isCollapsed ? "true" : "false");
-    header.innerHTML = `
-      <span class="chapter-toggle-icon">${isCollapsed ? '▶' : '▼'}</span>
-      <span class="chapter-title-text">${chapterTitle}</span>
-      <span class="chapter-progress-badge">${completedCount}/${items.length}</span>
-    `;
-    header.addEventListener("click", () => toggleChapter(chapterTitle));
-    groupDiv.appendChild(header);
+    header.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.8rem; border-radius: 8px; font-weight: 800; font-size: 0.88rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 0.6rem; user-select: none;";
+    if (isLocked) {
+      header.style.opacity = "0.45";
+    }
     
+    header.innerHTML = `
+      <span style="display: flex; align-items: center; gap: 0.4rem;">
+        <span>${modulo.icon}</span>
+        <span>${modulo.title}</span>
+      </span>
+      ${isLocked ? `<span style="font-size: 0.85rem;">🔒</span>` : ""}
+    `;
+    groupDiv.appendChild(header);
+
     const ul = document.createElement("ul");
     ul.className = "menu-items-list";
-    if (isCollapsed) ul.classList.add("collapsed");
-    
-    items.forEach(item => {
+    ul.style.listStyle = "none";
+    ul.style.padding = "0";
+    ul.style.margin = "0";
+
+    if (isLocked) {
       const li = document.createElement("li");
-      
-      const isCompleted = state.completedSlides[item.id] ? "completed" : "";
-      
-      li.innerHTML = `
-        <div class="menu-item-link ${isCompleted}" id="menu-item-${item.index}" onclick="loadSlide(${item.index})">
-          <div class="menu-item-left">
-            <span class="menu-item-check">${state.completedSlides[item.id] ? "✓" : ""}</span>
-            <span title="${item.title}">${item.title}</span>
-          </div>
-          <span class="menu-item-page">p. ${String(item.page).padStart(2, '0')}</span>
-        </div>
-      `;
+      li.style.cssText = "padding: 0.5rem 0.8rem; font-size: 0.76rem; color: #888; font-style: italic; border-left: 2px solid #ef4444; margin-left: 0.5rem; margin-bottom: 0.5rem; background: rgba(239, 68, 68, 0.05); border-radius: 4px;";
+      li.textContent = modulo.descMessage || "Módulo bloqueado.";
       ul.appendChild(li);
-    });
-    
+    } else {
+      modulo.lessons.forEach(aula => {
+        const li = document.createElement("li");
+        li.style.marginBottom = "0.4rem";
+        
+        const status = getLessonStatus(aula.id);
+        
+        let icon = "🔒";
+        let bgStyle = "rgba(255,255,255,0.02)";
+        let borderStyle = "rgba(255,255,255,0.05)";
+        let colorStyle = "#888";
+        let isPulsing = false;
+        let isDesafioEffect = false;
+
+        if (status === "completed") {
+          icon = "✅";
+          bgStyle = "rgba(16, 185, 129, 0.08)";
+          borderStyle = "rgba(16, 185, 129, 0.25)";
+          colorStyle = "#10b981";
+        } else if (status === "in_progress" || status === "available") {
+          icon = "🟡";
+          bgStyle = "rgba(124, 58, 237, 0.12)";
+          borderStyle = "rgba(124, 58, 237, 0.4)";
+          colorStyle = "#a78bfa";
+          isPulsing = true;
+        } else if (status === "locked") {
+          icon = "🔒";
+          bgStyle = "rgba(255,255,255,0.01)";
+          borderStyle = "rgba(255,255,255,0.03)";
+          colorStyle = "#555";
+        }
+
+        if (aula.isDesafio) {
+          if (status === "completed") {
+            icon = "🏆";
+          } else if (status !== "locked") {
+            icon = "🏆";
+            isDesafioEffect = true;
+            bgStyle = "rgba(245, 158, 11, 0.15)";
+            borderStyle = "rgba(245, 158, 11, 0.5)";
+            colorStyle = "#fbbf24";
+          } else {
+            icon = "🏆";
+          }
+        }
+
+        const linkEl = document.createElement("div");
+        linkEl.className = "menu-item-link" + (status === "completed" ? " completed" : "") + (isPulsing ? " pulse-active" : "") + (isDesafioEffect ? " desafio-active" : "");
+        linkEl.style.cssText = `
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.55rem 0.75rem;
+          border-radius: 8px;
+          font-size: 0.82rem;
+          font-weight: 600;
+          background: ${bgStyle};
+          border: 1px solid ${borderStyle};
+          color: ${colorStyle};
+          cursor: pointer;
+          transition: all 0.2s;
+          opacity: ${status === "locked" ? "0.55" : "1"};
+        `;
+
+        linkEl.addEventListener("mouseenter", () => {
+          if (status !== "locked") {
+            linkEl.style.background = "rgba(124, 58, 237, 0.2)";
+            linkEl.style.borderColor = "rgba(124, 58, 237, 0.6)";
+            linkEl.style.color = "#fff";
+          } else {
+            linkEl.style.background = "rgba(255, 255, 255, 0.05)";
+          }
+        });
+        
+        linkEl.addEventListener("mouseleave", () => {
+          linkEl.style.background = bgStyle;
+          linkEl.style.borderColor = borderStyle;
+          linkEl.style.color = colorStyle;
+        });
+
+        linkEl.addEventListener("click", () => {
+          if (status === "locked") {
+            abrirModalCuriosidade(aula);
+          } else {
+            if (aula.chapter) {
+              const chapterSlides = COURSE_CONTENT.map((s, idx) => ({ ...s, idx })).filter(s => s.chapter === aula.chapter);
+              if (chapterSlides.length > 0) {
+                const pendente = chapterSlides.find(s => !state.completedSlides[s.id]);
+                const targetIdx = pendente ? pendente.idx : chapterSlides[0].idx;
+                
+                document.getElementById("screen-landing") && document.getElementById("screen-landing").classList.add("screen-hidden");
+                document.getElementById("screen-hub") && document.getElementById("screen-hub").classList.add("screen-hidden");
+                document.getElementById("screen-app") && document.getElementById("screen-app").classList.remove("screen-hidden");
+                
+                loadSlide(targetIdx);
+              }
+            } else {
+              abrirModalAulaFutura(aula);
+            }
+          }
+        });
+
+        linkEl.innerHTML = `
+          <span style="display: flex; align-items: center; gap: 0.4rem;">
+            <span>${icon}</span>
+            <span title="${aula.title}">${aula.title}</span>
+          </span>
+        `;
+        li.appendChild(linkEl);
+        ul.appendChild(li);
+      });
+    }
+
     groupDiv.appendChild(ul);
     menuNav.appendChild(groupDiv);
-  }
+  });
 }
 
 // Toggle chapter collapse state
@@ -357,14 +1027,23 @@ function updateStatsUI() {
   document.getElementById("achievement-unlocked-count").textContent = count;
 }
 
-// Update course progress percentage
 function updateProgressUI() {
-  const totalSlides = COURSE_CONTENT.length;
-  const completedCount = Object.keys(state.completedSlides).length;
-  const percent = totalSlides > 0 ? Math.round((completedCount / totalSlides) * 100) : 0;
+  let flatLessons = [];
+  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+  const totalLessons = flatLessons.length;
   
-  document.getElementById("course-progress-percent").textContent = `${percent}%`;
-  document.getElementById("course-progress-bar").style.width = `${percent}%`;
+  let completedCount = 0;
+  flatLessons.forEach(l => {
+    if (isLessonCompleted(l)) completedCount++;
+  });
+
+  const percent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+  
+  const percentEl = document.getElementById("course-progress-percent");
+  const barEl = document.getElementById("course-progress-bar");
+  
+  if (percentEl) percentEl.textContent = `${percent}%`;
+  if (barEl) barEl.style.width = `${percent}%`;
 }
 
 /**
@@ -521,20 +1200,31 @@ function markSlideAsCompleted(slideId) {
   
   state.completedSlides[slideId] = true;
   
-  // Update sidebar check icons
   const slideObj = COURSE_CONTENT.find(c => c.id === slideId);
-  if (slideObj) {
-    const idx = COURSE_CONTENT.indexOf(slideObj);
-    const linkEl = document.getElementById(`menu-item-${idx}`);
-    if (linkEl) {
-      linkEl.classList.add("completed");
-      const checkEl = linkEl.querySelector(".menu-item-check");
-      if (checkEl) checkEl.textContent = "✓";
-    }
-  }
   
   addXP(10); // Standard read reward
   saveState();
+  
+  // Verifica se completou todos os slides da aula atual
+  if (slideObj && slideObj.chapter) {
+    const chapterName = slideObj.chapter;
+    const slidesDoCapitulo = COURSE_CONTENT.filter(s => s.chapter === chapterName);
+    const todosConcluidos = slidesDoCapitulo.every(s => state.completedSlides[s.id] === true);
+    
+    if (todosConcluidos) {
+      let flatLessons = [];
+      COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+      const aulaObj = flatLessons.find(l => l.chapter === chapterName);
+      
+      if (aulaObj && (!state.completedLessons || !state.completedLessons[aulaObj.id])) {
+        if (!state.completedLessons) state.completedLessons = {};
+        state.completedLessons[aulaObj.id] = true;
+        saveState();
+        triggerLessonUnlockNotification(aulaObj.id);
+      }
+    }
+  }
+  
   initSidebarMenu();
 }
 
@@ -7334,15 +8024,22 @@ function switchHubTab(tabName) {
 function renderStudentDashboardTab(container) {
   const schoolName = window.currentUserProfile.schools ? window.currentUserProfile.schools.name : "Estudo Individual";
   
-  // Progresso do Curso
-  const totalSlides = COURSE_CONTENT.length;
-  const completedCount = Object.keys(state.completedSlides || {}).length;
-  const progressPercent = totalSlides > 0 ? Math.round((completedCount / totalSlides) * 100) : 0;
+  // Progresso do Curso (Baseado nas 20 Aulas da Jornada)
+  let flatLessons = [];
+  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+  const totalLessons = flatLessons.length;
+  
+  let completedCount = 0;
+  flatLessons.forEach(l => {
+    if (isLessonCompleted(l)) completedCount++;
+  });
+  
+  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
   const achievementsCount = Object.keys(state.unlockedAchievements || {}).length;
 
   // Achar o título da última aula ativa para continuar
   const currentSlide = COURSE_CONTENT[state.currentSlideIndex] || COURSE_CONTENT[0];
-  const lastLessonTitle = currentSlide ? currentSlide.title : "Início do Curso";
+  const lastLessonTitle = currentSlide ? currentSlide.chapter + " — " + currentSlide.title : "Início do Curso";
 
   // Card do perfil da escola (se o aluno estiver vinculado a uma)
   let schoolCardHtml = "";
@@ -7406,7 +8103,7 @@ function renderStudentDashboardTab(container) {
         <div class="hub-stat-card">
           <span class="card-icon">🏆</span>
           <div class="card-info">
-            <span class="card-value">${achievementsCount} / 8</span>
+            <span class="card-value">${achievementsCount} / 10</span>
             <span class="card-label">Conquistas Desbloqueadas</span>
           </div>
         </div>
@@ -7415,8 +8112,8 @@ function renderStudentDashboardTab(container) {
       <div class="hub-progress-section">
         <div class="progress-details">
           <div style="display:flex; flex-direction:column; gap:0.2rem;">
-            <h4 style="margin: 0; font-size: 1.1rem;">Seu Progresso Total</h4>
-            <span style="font-size:0.8rem; color:var(--text-muted);">Aula Atual: <strong>${lastLessonTitle}</strong></span>
+            <h4 style="margin: 0; font-size: 1.1rem;">Seu Progresso de Jornada</h4>
+            <span style="font-size:0.8rem; color:var(--text-muted);">Última página estudada: <strong>${lastLessonTitle}</strong></span>
           </div>
           <span style="font-weight: 800; font-size: 1.4rem; color: var(--color-primary-light);">${progressPercent}%</span>
         </div>
@@ -7443,83 +8140,86 @@ function renderStudentDashboardTab(container) {
  * ABA 2: Módulos do Curso (Curriculum / Grade de Capítulos)
  */
 function renderStudentCurriculumTab(container) {
-  // 1. Agrupar slides por capítulo dinamicamente
-  const chapters = [];
-  const chapterMap = {};
+  let listHtml = `
+    <div style="margin-bottom: 1.5rem;">
+      <h3 style="margin-bottom: 0.2rem;">📚 Módulos e Minha Jornada</h3>
+      <p class="text-muted" style="font-size:0.9rem;">Veja a trilha completa do curso. Conclua as missões passo a passo para liberar novas aulas.</p>
+    </div>
+  `;
 
-  COURSE_CONTENT.forEach((slide, index) => {
-    const chName = slide.chapter || "AULA 1 – INTRODUÇÃO À INFORMÁTICA";
-    if (!chapterMap[chName]) {
-      chapterMap[chName] = {
-        name: chName,
-        slides: []
-      };
-      chapters.push(chapterMap[chName]);
-    }
-    chapterMap[chName].slides.push({
-      index: index,
-      id: slide.id,
-      title: slide.title,
-      type: slide.type
-    });
-  });
-
-  // 2. Construir HTML da lista de módulos
-  let listHtml = `<div style="margin-bottom: 1.5rem;">
-    <h3 style="margin-bottom: 0.2rem;">📚 Módulos Disponíveis</h3>
-    <p class="text-muted" style="font-size:0.9rem;">Explore as aulas e comece a estudar o módulo de sua preferência.</p>
-  </div>`;
-
-  chapters.forEach((chapter, chIdx) => {
-    // Calcular progresso do capítulo
-    const totalSlides = chapter.slides.length;
+  COURSE_JORNADA.forEach((modulo, modIdx) => {
+    const moduloStatus = getModuloStatus(modulo.id);
+    const isLocked = moduloStatus === "locked";
+    
+    // Contar aulas concluídas no módulo
     let completedCount = 0;
-    chapter.slides.forEach(s => {
-      if (state.completedSlides[s.id]) completedCount++;
+    modulo.lessons.forEach(l => {
+      if (isLessonCompleted(l)) completedCount++;
     });
-    const progressPercent = totalSlides > 0 ? Math.round((completedCount / totalSlides) * 100) : 0;
+    
+    const progressPercent = Math.round((completedCount / modulo.lessons.length) * 100);
 
     listHtml += `
-      <div class="curriculum-module-card ${chIdx === 0 ? 'active' : ''}" data-index="${chIdx}">
-        <div class="curriculum-module-header">
+      <div class="curriculum-module-card ${modIdx === 0 && !isLocked ? 'active' : ''} ${isLocked ? 'module-locked' : ''}" data-index="${modIdx}" style="${isLocked ? 'opacity: 0.55;' : ''}">
+        <div class="curriculum-module-header" style="display:flex; justify-content:space-between; align-items:center; cursor: pointer; padding: 1.2rem;">
           <div class="curriculum-module-title-group">
-            <h4 class="curriculum-module-title">${chapter.name}</h4>
-            <span class="curriculum-module-stats">${totalSlides} aulas • ${completedCount} concluídas</span>
+            <h4 class="curriculum-module-title" style="margin:0; font-size:1.1rem; font-weight:700; color: ${isLocked ? '#888' : 'var(--text-primary)'}">
+              ${modulo.icon} ${modulo.title} ${isLocked ? '🔒' : ''}
+            </h4>
+            <span class="curriculum-module-stats" style="font-size:0.8rem; color:var(--text-muted);">
+              ${isLocked ? (modulo.descMessage || 'Módulo bloqueado.') : `${modulo.lessons.length} aulas • ${completedCount} concluídas`}
+            </span>
           </div>
-          <div class="curriculum-module-progress-group">
-            <span class="curriculum-module-progress-text">${progressPercent}%</span>
-            <span class="curriculum-module-chevron">❯</span>
-          </div>
+          ${!isLocked ? `
+            <div class="curriculum-module-progress-group" style="display:flex; align-items:center; gap:0.5rem;">
+              <span class="curriculum-module-progress-text" style="font-weight:700; color: var(--color-primary-light);">${progressPercent}%</span>
+              <span class="curriculum-module-chevron">❯</span>
+            </div>
+          ` : ''}
         </div>
         
-        <ul class="curriculum-lessons-list">
-          ${chapter.slides.map(slide => {
-            const isCompleted = state.completedSlides[slide.id];
-            const isActive = state.currentSlideIndex === slide.index;
-            
-            let statusIcon = "⚪";
-            if (isCompleted) statusIcon = "✅";
-            else if (isActive) statusIcon = "👉";
+        ${!isLocked ? `
+          <ul class="curriculum-lessons-list" style="list-style:none; padding: 0 1.2rem 1.2rem 1.2rem; margin:0; border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap:0.5rem; padding-top:0.8rem;">
+            ${modulo.lessons.map(aula => {
+              const status = getLessonStatus(aula.id);
+              
+              let statusIcon = "🔒";
+              let color = "#555";
+              
+              if (status === "completed") {
+                statusIcon = "✅";
+                color = "#10b981";
+              } else if (status === "in_progress" || status === "available") {
+                statusIcon = "🟡";
+                color = "#a78bfa";
+              }
 
-            let iconClass = isCompleted ? "status-done" : (isActive ? "status-active" : "status-pending");
+              if (aula.isDesafio && status !== "locked") {
+                statusIcon = "🏆";
+              }
 
-            return `
-              <li class="curriculum-lesson-item ${isActive ? 'active-slide' : ''}">
-                <span class="curriculum-lesson-status">${statusIcon}</span>
-                <a class="curriculum-lesson-link" data-slide-index="${slide.index}">${slide.title}</a>
-              </li>
-            `;
-          }).join('')}
-        </ul>
+              return `
+                <li class="curriculum-lesson-item" style="display:flex; align-items:center; justify-content:space-between; padding: 0.5rem 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                  <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <span style="font-size:1rem;">${statusIcon}</span>
+                    <a class="curriculum-lesson-nav-link" data-lesson-id="${aula.id}" style="color: ${color}; font-weight:600; cursor:pointer; text-decoration:none; font-size:0.85rem; transition: color 0.15s;">
+                      ${aula.title}
+                    </a>
+                  </div>
+                  <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">${aula.isDesafio ? 'Avaliação' : 'Aula'}</span>
+                </li>
+              `;
+            }).join('')}
+          </ul>
+        ` : ''}
       </div>
     `;
   });
 
   container.innerHTML = listHtml;
 
-  // 3. Bind de Eventos
-  // Abertura/Fechamento do Accordion
-  const cards = container.querySelectorAll(".curriculum-module-card");
+  // Accordion toggle
+  const cards = container.querySelectorAll(".curriculum-module-card:not(.module-locked)");
   cards.forEach(card => {
     const header = card.querySelector(".curriculum-module-header");
     header.addEventListener("click", () => {
@@ -7529,14 +8229,46 @@ function renderStudentCurriculumTab(container) {
     });
   });
 
-  // Cliques nos links das aulas para abrir o curso direto
-  const lessonLinks = container.querySelectorAll(".curriculum-lesson-link");
-  lessonLinks.forEach(link => {
+  // Eventos de clique nas aulas do currículo
+  const links = container.querySelectorAll(".curriculum-lesson-nav-link");
+  links.forEach(link => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      const slideIndex = parseInt(link.getAttribute("data-slide-index"), 10);
-      loadSlide(slideIndex);
-      showScreen("course");
+      const lessonId = link.getAttribute("data-lesson-id");
+      
+      let flatLessons = [];
+      COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+      const aula = flatLessons.find(l => l.id === lessonId);
+      if (!aula) return;
+      
+      const status = getLessonStatus(lessonId);
+      
+      if (status === "locked") {
+        abrirModalCuriosidade(aula);
+      } else {
+        if (aula.chapter) {
+          const chapterSlides = COURSE_CONTENT.map((s, idx) => ({ ...s, idx })).filter(s => s.chapter === aula.chapter);
+          if (chapterSlides.length > 0) {
+            const pendente = chapterSlides.find(s => !state.completedSlides[s.id]);
+            const targetIdx = pendente ? pendente.idx : chapterSlides[0].idx;
+            loadSlide(targetIdx);
+            showScreen("course");
+          }
+        } else {
+          abrirModalAulaFutura(aula);
+        }
+      }
+    });
+    
+    link.addEventListener("mouseenter", () => {
+      link.style.color = "#fff";
+    });
+    link.addEventListener("mouseleave", () => {
+      const lessonId = link.getAttribute("data-lesson-id");
+      const status = getLessonStatus(lessonId);
+      if (status === "completed") link.style.color = "#10b981";
+      else if (status !== "locked") link.style.color = "#a78bfa";
+      else link.style.color = "#555";
     });
   });
 }
@@ -8276,9 +9008,23 @@ async function loadHubSchoolStudents() {
         completedSlides = studentState.completedSlides || {};
         currentSlide = studentState.currentSlideIndex || 0;
         
-        const totalSlides = COURSE_CONTENT.length;
-        const completedCount = Object.keys(completedSlides).length;
-        progressPercent = totalSlides > 0 ? Math.round((completedCount / totalSlides) * 100) : 0;
+        let completedLessons = studentState.completedLessons || {};
+        let flatLessons = [];
+        COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+        const totalLessons = flatLessons.length;
+        
+        let complCount = 0;
+        flatLessons.forEach(l => {
+          let c = false;
+          if (l.chapter) {
+            const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
+            c = slides.length > 0 && slides.every(s => completedSlides[s.id] === true);
+          } else {
+            c = completedLessons[l.id] === true;
+          }
+          if (c) complCount++;
+        });
+        progressPercent = totalLessons > 0 ? Math.round((complCount / totalLessons) * 100) : 0;
       }
 
       const currentLessonTitle = COURSE_CONTENT[currentSlide] ? COURSE_CONTENT[currentSlide].title : "—";
@@ -8335,27 +9081,48 @@ function abrirDetalheAluno(student, stats) {
   const existing = document.getElementById("detalhe-aluno-modal");
   if (existing) existing.remove();
 
-  const totalSlides = COURSE_CONTENT.length;
+  // Junta todas as 20 aulas do curso
+  let flatLessons = [];
+  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+  const totalLessons = flatLessons.length;
   
-  // Monta lista de aulas concluídas e pendentes usando slide.id
-  const aulaRows = COURSE_CONTENT.map((slide, idx) => {
-    const concluida = stats.completedSlides[slide.id] === true;
-    const atual = idx === stats.currentSlide;
+  if (!stats.completedLessons) stats.completedLessons = {};
+
+  // Monta lista de aulas concluídas e pendentes baseando-se na Jornada Geral
+  const aulaRows = flatLessons.map((aula, idx) => {
+    let concluida = false;
+    if (aula.chapter) {
+      const slides = COURSE_CONTENT.filter(s => s.chapter === aula.chapter);
+      concluida = slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true);
+    } else {
+      concluida = stats.completedLessons && stats.completedLessons[aula.id] === true;
+    }
+
     const status = concluida
       ? `<span style="color:#22c55e; font-weight:600;">✅ Concluída</span>`
-      : atual
-        ? `<span style="color:#f59e0b; font-weight:600;">▶ Aula Atual</span>`
-        : `<span style="color:#666;">⬜ Pendente</span>`;
+      : `<span style="color:#666;">⬜ Pendente</span>`;
+
     return `
       <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
         <td style="padding:0.4rem 0.5rem; font-size:0.82rem; color:#aaa;">${idx + 1}</td>
-        <td style="padding:0.4rem 0.5rem; font-size:0.85rem;">${slide.title}</td>
+        <td style="padding:0.4rem 0.5rem; font-size:0.85rem;">${aula.title}</td>
         <td style="padding:0.4rem 0.5rem; text-align:center;">${status}</td>
       </tr>
     `;
   }).join("");
 
-  const completedCount = Object.keys(stats.completedSlides).length;
+  // Conta quantas aulas estão concluídas
+  const completedCount = flatLessons.filter(l => {
+    if (l.chapter) {
+      const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
+      return slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true);
+    } else {
+      return stats.completedLessons && stats.completedLessons[l.id] === true;
+    }
+  }).length;
+
+  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+  stats.progressPercent = progressPercent;
 
   const overlay = document.createElement("div");
   overlay.id = "detalhe-aluno-modal";
@@ -8379,14 +9146,14 @@ function abrirDetalheAluno(student, stats) {
           <div style="font-size:0.8rem;color:#aaa;">XP Total</div>
         </div>
         <div style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:1rem;text-align:center;">
-          <div style="font-size:1.6rem;font-weight:800;">${completedCount}/${totalSlides}</div>
-          <div style="font-size:0.8rem;color:#aaa;">Aulas (${stats.progressPercent}%)</div>
+          <div style="font-size:1.6rem;font-weight:800;">${completedCount}/${totalLessons}</div>
+          <div style="font-size:0.8rem;color:#aaa;">Aulas (${progressPercent}%)</div>
         </div>
       </div>
 
       <!-- Barra de Progresso -->
       <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:10px;margin-bottom:1.5rem;overflow:hidden;">
-        <div style="background:linear-gradient(90deg,#7c3aed,#a78bfa);height:100%;width:${stats.progressPercent}%;border-radius:99px;transition:width 0.5s;"></div>
+        <div style="background:linear-gradient(90deg,#7c3aed,#a78bfa);height:100%;width:${progressPercent}%;border-radius:99px;transition:width 0.5s;"></div>
       </div>
 
       <!-- Ações de Conclusão Rápida -->
@@ -8397,7 +9164,7 @@ function abrirDetalheAluno(student, stats) {
         <p class="text-muted" style="margin: 0 0 0.8rem; font-size: 0.78rem; line-height: 1.45;">
           Marque ou desmarque a conclusão das aulas inteiras para este aluno. Isso poupará o tempo do aluno de revisar slides caso ele já tenha feito a aula fisicamente na escola.
         </p>
-        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;" id="tutor-quick-completion-actions"></div>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; max-height: 160px; overflow-y: auto; padding: 0.2rem;" id="tutor-quick-completion-actions"></div>
       </div>
 
       <!-- Tabela de Aulas -->
@@ -8426,25 +9193,31 @@ function abrirDetalheAluno(student, stats) {
     if (!quickActionsContainer) return;
     quickActionsContainer.innerHTML = "";
 
-    const aulas = ["AULA 1", "AULA 2", "AULA 3", "AULA 4"];
-    aulas.forEach(aulaName => {
-      const slidesDaAula = COURSE_CONTENT.filter(s => s.chapter === aulaName);
-      if (slidesDaAula.length === 0) return;
-      
-      const todosConcluidos = slidesDaAula.every(s => stats.completedSlides[s.id] === true);
+    flatLessons.forEach(aula => {
+      let concluida = false;
+      let slidesDaAula = [];
+
+      if (aula.chapter) {
+        slidesDaAula = COURSE_CONTENT.filter(s => s.chapter === aula.chapter);
+        concluida = slidesDaAula.length > 0 && slidesDaAula.every(s => stats.completedSlides[s.id] === true);
+      } else {
+        concluida = stats.completedLessons && stats.completedLessons[aula.id] === true;
+      }
       
       const btn = document.createElement("button");
-      btn.style.cssText = "padding: 0.4rem 0.8rem; font-size: 0.8rem; font-weight: 700; border-radius: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.12); transition: all 0.2s; display: flex; align-items: center; gap: 0.3rem;";
+      btn.style.cssText = "padding: 0.35rem 0.65rem; font-size: 0.75rem; font-weight: 700; border-radius: 6px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; display: flex; align-items: center; gap: 0.25rem; margin-bottom: 0.25rem;";
       
-      if (todosConcluidos) {
-        btn.innerHTML = `<span>↩️</span> Resetar ${aulaName}`;
-        btn.style.background = "rgba(239, 68, 68, 0.15)";
-        btn.style.borderColor = "rgba(239, 68, 68, 0.4)";
+      const shortName = aula.title.replace("Introdução à Informática", "Introdução").substring(0, 16);
+
+      if (concluida) {
+        btn.innerHTML = `<span>↩️</span> Reset ${shortName}`;
+        btn.style.background = "rgba(239, 68, 68, 0.12)";
+        btn.style.borderColor = "rgba(239, 68, 68, 0.3)";
         btn.style.color = "#ef4444";
       } else {
-        btn.innerHTML = `<span>✅</span> Concluir ${aulaName}`;
-        btn.style.background = "rgba(16, 185, 129, 0.15)";
-        btn.style.borderColor = "rgba(16, 185, 129, 0.4)";
+        btn.innerHTML = `<span>✅</span> Concluir ${shortName}`;
+        btn.style.background = "rgba(16, 185, 129, 0.12)";
+        btn.style.borderColor = "rgba(16, 185, 129, 0.3)";
         btn.style.color = "#10b981";
       }
 
@@ -8458,34 +9231,59 @@ function abrirDetalheAluno(student, stats) {
             studentState = {
               currentSlideIndex: 0,
               completedSlides: {},
+              completedLessons: {},
               unlockedAchievements: {},
               xp: 0,
               level: 1
             };
           }
+          if (!studentState.completedLessons) {
+            studentState.completedLessons = {};
+          }
 
-          // 2. Marca/desmarca slides daquela aula
-          slidesDaAula.forEach(s => {
-            if (todosConcluidos) {
-              delete studentState.completedSlides[s.id];
+          // 2. Marca/desmarca a aula
+          if (aula.chapter) {
+            slidesDaAula.forEach(s => {
+              if (concluida) {
+                delete studentState.completedSlides[s.id];
+              } else {
+                studentState.completedSlides[s.id] = true;
+              }
+            });
+            if (concluida) {
+              delete studentState.completedLessons[aula.id];
             } else {
-              studentState.completedSlides[s.id] = true;
+              studentState.completedLessons[aula.id] = true;
             }
-          });
+          } else {
+            if (concluida) {
+              delete studentState.completedLessons[aula.id];
+            } else {
+              studentState.completedLessons[aula.id] = true;
+            }
+          }
 
-          // 3. Atualiza as conquistas correspondentes
-          if (!todosConcluidos) {
-            if (aulaName === "AULA 3") studentState.unlockedAchievements["peripheral_master"] = true;
-            if (aulaName === "AULA 4") {
+          // 3. Atualiza as conquistas correspondentes de forma automática
+          if (!concluida) {
+            if (aula.id === "aula-3") studentState.unlockedAchievements["peripheral_master"] = true;
+            if (aula.id === "aula-4") {
               studentState.unlockedAchievements["windows_explorer"] = true;
               studentState.unlockedAchievements["windows_guardian"] = true;
             }
+            if (aula.id === "aula-8") studentState.unlockedAchievements["windows_explorer"] = true; // Medalha do Desafio do Módulo 1
+            if (aula.id === "aula-20") studentState.unlockedAchievements["graduated"] = true; // Certificado final
           } else {
-            if (aulaName === "AULA 3") delete studentState.unlockedAchievements["peripheral_master"];
-            if (aulaName === "AULA 4") {
+            if (aula.id === "aula-3") delete studentState.unlockedAchievements["peripheral_master"];
+            if (aula.id === "aula-4") {
               delete studentState.unlockedAchievements["windows_explorer"];
               delete studentState.unlockedAchievements["windows_guardian"];
             }
+            if (aula.id === "aula-8") {
+              if (!studentState.completedLessons["aula-4"]) {
+                delete studentState.unlockedAchievements["windows_explorer"];
+              }
+            }
+            if (aula.id === "aula-20") delete studentState.unlockedAchievements["graduated"];
           }
 
           // 4. Recalcula XP e Nível do Aluno
@@ -8497,6 +9295,12 @@ function abrirDetalheAluno(student, stats) {
               } else {
                 calculatedXp += 10;
               }
+            }
+          });
+
+          flatLessons.forEach(l => {
+            if (!l.chapter && studentState.completedLessons[l.id]) {
+              calculatedXp += 50; // Aulas virtuais dão 50 XP
             }
           });
 
@@ -8514,11 +9318,24 @@ function abrirDetalheAluno(student, stats) {
 
           // 6. Atualiza estado em cache na janela modal local
           stats.completedSlides = studentState.completedSlides;
+          stats.completedLessons = studentState.completedLessons;
           stats.xp = studentState.xp;
           stats.level = studentState.level;
 
-          const updatedCount = Object.keys(stats.completedSlides).length;
-          stats.progressPercent = totalSlides > 0 ? Math.round((updatedCount / totalSlides) * 100) : 0;
+          // Progresso total por aulas da jornada
+          let userCompletedCount = 0;
+          flatLessons.forEach(l => {
+            let compl = false;
+            if (l.chapter) {
+              const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
+              compl = slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true);
+            } else {
+              compl = stats.completedLessons && stats.completedLessons[l.id] === true;
+            }
+            if (compl) userCompletedCount++;
+          });
+
+          stats.progressPercent = totalLessons > 0 ? Math.round((userCompletedCount / totalLessons) * 100) : 0;
 
           // 7. Atualiza a UI do próprio modal
           const levelCard = overlay.querySelector("div[style*='rgba(124,58,237,0.15)'] div");
@@ -8528,23 +9345,28 @@ function abrirDetalheAluno(student, stats) {
 
           if (levelCard) levelCard.textContent = stats.level;
           if (xpCard) xpCard.textContent = stats.xp;
-          if (completedCard) completedCard.textContent = `${updatedCount}/${totalSlides}`;
+          if (completedCard) completedCard.textContent = `${userCompletedCount}/${totalLessons}`;
           if (progressBar) progressBar.style.width = `${stats.progressPercent}%`;
 
           // 8. Atualiza a lista de aulas na tabela no modal
-          const newAulaRows = COURSE_CONTENT.map((slide, idx) => {
-            const concluida = stats.completedSlides[slide.id] === true;
-            const atual = idx === stats.currentSlide;
-            const status = concluida
+          const newAulaRows = flatLessons.map((l, idx) => {
+            let compl = false;
+            if (l.chapter) {
+              const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
+              compl = slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true);
+            } else {
+              compl = stats.completedLessons && stats.completedLessons[l.id] === true;
+            }
+            
+            const statusStr = compl
               ? `<span style="color:#22c55e; font-weight:600;">✅ Concluída</span>`
-              : atual
-                ? `<span style="color:#f59e0b; font-weight:600;">▶ Aula Atual</span>`
-                : `<span style="color:#666;">⬜ Pendente</span>`;
+              : `<span style="color:#666;">⬜ Pendente</span>`;
+                
             return `
               <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
                 <td style="padding:0.4rem 0.5rem; font-size:0.82rem; color:#aaa;">${idx + 1}</td>
-                <td style="padding:0.4rem 0.5rem; font-size:0.85rem;">${slide.title}</td>
-                <td style="padding:0.4rem 0.5rem; text-align:center;">${status}</td>
+                <td style="padding:0.4rem 0.5rem; font-size:0.85rem;">${l.title}</td>
+                <td style="padding:0.4rem 0.5rem; text-align:center;">${statusStr}</td>
               </tr>
             `;
           }).join("");
@@ -8627,9 +9449,24 @@ async function loadHubAdminStudents() {
         xp = studentState.xp || 0;
         level = studentState.level || 1;
         
-        const totalSlides = COURSE_CONTENT.length;
-        const completedCount = Object.keys(studentState.completedSlides || {}).length;
-        progressPercent = totalSlides > 0 ? Math.round((completedCount / totalSlides) * 100) : 0;
+        let completedSlides = studentState.completedSlides || {};
+        let completedLessons = studentState.completedLessons || {};
+        let flatLessons = [];
+        COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+        const totalLessons = flatLessons.length;
+        
+        let complCount = 0;
+        flatLessons.forEach(l => {
+          let c = false;
+          if (l.chapter) {
+            const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
+            c = slides.length > 0 && slides.every(s => completedSlides[s.id] === true);
+          } else {
+            c = completedLessons[l.id] === true;
+          }
+          if (c) complCount++;
+        });
+        progressPercent = totalLessons > 0 ? Math.round((complCount / totalLessons) * 100) : 0;
       }
 
       const schoolName = student.schools ? student.schools.name : "Independente";

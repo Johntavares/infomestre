@@ -3276,3 +3276,47 @@ table tbody tr:hover {
 .school-card-contacts div:hover {
   color: var(--text-primary);
 }
+
+/* ==========================================================================
+   SISTEMA DE JORNADA - ANIMACÕES & EFEITOS
+   ========================================================================== */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+    border-color: rgba(124, 58, 237, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(124, 58, 237, 0);
+    border-color: rgba(124, 58, 237, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+    border-color: rgba(124, 58, 237, 0.4);
+  }
+}
+
+.pulse-active {
+  animation: pulse-glow 1.8s infinite;
+  font-weight: 800 !important;
+}
+
+@keyframes gold-shimmer {
+  0% {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 2px rgba(245, 158, 11, 0.2);
+  }
+  50% {
+    border-color: rgba(251, 191, 36, 0.8);
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+  }
+  100% {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 2px rgba(245, 158, 11, 0.2);
+  }
+}
+
+.desafio-active {
+  animation: gold-shimmer 2.2s infinite;
+  font-weight: 800 !important;
+}
+
