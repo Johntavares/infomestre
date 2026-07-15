@@ -7584,13 +7584,14 @@ function initWindowsMasterChallengeSimulator(container, isReset) {
     bar.appendChild(quickControls);
 
     desktop.appendChild(bar);
+
+    desktop.addEventListener("click", () => {
+      isStartVisible = false;
+      render();
+    });
+
     widget.appendChild(desktop);
   };
-
-  desktop.addEventListener("click", () => {
-    isStartVisible = false;
-    render();
-  });
 
   render();
   container.appendChild(widget);
