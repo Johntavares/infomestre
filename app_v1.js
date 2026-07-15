@@ -524,6 +524,15 @@ function getLessonStatus(lessonId) {
   const idx = flatLessons.findIndex(l => l.id === lessonId);
   if (idx === -1) return "locked";
 
+  const role = (window.currentUserProfile && window.currentUserProfile.role) ? window.currentUserProfile.role : 'student';
+  const isStudent = (role === 'student');
+
+  if (!isStudent) {
+    const atual = flatLessons[idx];
+    if (isLessonCompleted(atual)) return "completed";
+    return "available";
+  }
+
   if (idx === 0) {
     return isLessonCompleted(flatLessons[0]) ? "completed" : "in_progress";
   }
@@ -549,6 +558,9 @@ function getLessonStatus(lessonId) {
 }
 
 function getModuloStatus(moduloId) {
+  const role = (window.currentUserProfile && window.currentUserProfile.role) ? window.currentUserProfile.role : 'student';
+  if (role !== 'student') return "unlocked";
+
   if (moduloId === "modulo-1") return "unlocked";
   if (moduloId === "modulo-2") {
     return isLessonCompleted({ id: "aula-8" }) ? "unlocked" : "locked";
