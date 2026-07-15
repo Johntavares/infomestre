@@ -8446,6 +8446,33 @@ function renderSettingsTab(container) {
 
       </div>
     </form>
+
+    <!-- Redefinir Senha de Acesso (Próprio Aluno) -->
+    <div class="hub-card-box" style="display:flex; flex-direction:column; gap:1.2rem; margin-top: 1.5rem;">
+      <h4 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.4rem; color: #10b981;">
+        🔑 Segurança e Senha
+      </h4>
+      <p class="text-muted" style="margin: 0; font-size: 0.82rem; line-height: 1.45;">
+        Deseja alterar a sua senha de acesso? Escolha uma nova senha de no mínimo 6 caracteres.
+      </p>
+      
+      <form id="hub-change-password-form" style="margin-top: 0.5rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: flex-end;">
+          <div class="form-group-custom" style="margin-bottom:0;">
+            <label for="settings-new-password">Nova Senha</label>
+            <input type="password" id="settings-new-password" required minlength="6" placeholder="Nova senha (min. 6)">
+          </div>
+          <div class="form-group-custom" style="margin-bottom:0;">
+            <label for="settings-confirm-password">Confirmar Nova Senha</label>
+            <input type="password" id="settings-confirm-password" required minlength="6" placeholder="Confirme a nova senha">
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary" style="padding:0.7rem 1.5rem; width: 100%;">💾 Atualizar Senha</button>
+          </div>
+        </div>
+        <div id="settings-password-feedback" class="text-small mt-2" style="font-weight:bold; font-size:0.8rem; display:none;"></div>
+      </form>
+    </div>
   `;
 
   // --- Lógica Interativa de Seleção ---
@@ -8621,6 +8648,55 @@ function renderSettingsTab(container) {
       submitBtn.textContent = "Salvar Configurações";
     }
   });
+
+  // --- Submit do Formulário de Redefinição de Senha do Aluno ---
+  const passwordForm = document.getElementById("hub-change-password-form");
+  if (passwordForm) {
+    passwordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const newPass = document.getElementById("settings-new-password").value;
+      const confirmPass = document.getElementById("settings-confirm-password").value;
+      const submitBtn = passwordForm.querySelector("button[type='submit']");
+      const feedback = document.getElementById("settings-password-feedback");
+
+      if (newPass.length < 6) {
+        feedback.style.display = "block";
+        feedback.style.color = "#ef4444";
+        feedback.textContent = "❌ A senha deve conter pelo menos 6 caracteres.";
+        return;
+      }
+
+      if (newPass !== confirmPass) {
+        feedback.style.display = "block";
+        feedback.style.color = "#ef4444";
+        feedback.textContent = "❌ As senhas não conferem.";
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Salvando...";
+        feedback.style.display = "block";
+        feedback.style.color = "#fbbf24";
+        feedback.textContent = "⌛ Gravando nova senha no Supabase...";
+
+        await window.updateCurrentUserPassword(newPass);
+
+        feedback.style.color = "#10b981";
+        feedback.textContent = "✅ Senha atualizada com sucesso! Use a nova senha no próximo login.";
+        document.getElementById("settings-new-password").value = "";
+        document.getElementById("settings-confirm-password").value = "";
+        showToastNotification("🔑 Senha Atualizada!", "Sua senha de acesso foi modificada com sucesso.");
+      } catch (error) {
+        console.error("Erro ao atualizar senha:", error);
+        feedback.style.color = "#ef4444";
+        feedback.textContent = "❌ Falha ao alterar: " + (error.message || "Erro desconhecido.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "💾 Atualizar Senha";
+      }
+    });
+  }
 }
 
 /**

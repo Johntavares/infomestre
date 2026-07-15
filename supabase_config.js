@@ -85,6 +85,17 @@ window.resetStudentPassword = async function(studentId, newPassword) {
 };
 
 /**
+ * Altera a senha do próprio usuário logado de forma nativa e segura
+ */
+window.updateCurrentUserPassword = async function(newPassword) {
+  const { data, error } = await supabaseClient.auth.updateUser({
+    password: newPassword
+  });
+  if (error) throw error;
+  return data;
+};
+
+/**
  * Carrega o progresso de um aluno do banco de dados
  */
 window.loadProgressFromDb = async function(studentId) {
