@@ -73,6 +73,18 @@ window.getUserProfile = async function(userId) {
 };
 
 /**
+ * Altera de forma segura a senha de acesso de um aluno pela escola (via RPC)
+ */
+window.resetStudentPassword = async function(studentId, newPassword) {
+  const { data, error } = await supabaseClient.rpc("reset_student_password_by_school", {
+    p_student_id: studentId,
+    p_new_password: newPassword
+  });
+  if (error) throw error;
+  return data;
+};
+
+/**
  * Carrega o progresso de um aluno do banco de dados
  */
 window.loadProgressFromDb = async function(studentId) {

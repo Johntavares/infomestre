@@ -9211,6 +9211,21 @@ function abrirDetalheAluno(student, stats) {
         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; max-height: 160px; overflow-y: auto; padding: 0.2rem;" id="tutor-quick-completion-actions"></div>
       </div>
 
+      <!-- Redefinir Senha de Acesso -->
+      <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
+        <h4 style="margin: 0 0 0.5rem; font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem; color: #10b981;">
+          🔑 Segurança e Acesso
+        </h4>
+        <p class="text-muted" style="margin: 0 0 0.8rem; font-size: 0.78rem; line-height: 1.45;">
+          Altere a senha de acesso deste aluno de forma rápida. O e-mail do aluno também será confirmado automaticamente se houver alguma pendência de verificação.
+        </p>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <input type="text" id="tutor-reset-password-input" placeholder="Nova senha (mín. 6 caracteres)" style="flex:1; background: var(--bg-base); border: 1px solid var(--border-soft); border-radius: 6px; padding: 0.4rem 0.8rem; color: #fff; font-size: 0.85rem;" />
+          <button class="btn btn-primary btn-small" id="btn-tutor-reset-password" style="padding: 0.45rem 1rem; font-size: 0.8rem;">💾 Alterar Senha</button>
+        </div>
+        <div id="tutor-reset-password-feedback" class="text-small mt-1" style="font-weight:bold; font-size:0.78rem; display:none;"></div>
+      </div>
+
       <!-- Tabela de Aulas -->
       <h4 style="margin:0 0 0.75rem;font-size:0.95rem;">📋 Progresso por Aula</h4>
       <div style="overflow-x:auto;">
@@ -9230,6 +9245,40 @@ function abrirDetalheAluno(student, stats) {
 
   document.body.appendChild(overlay);
   overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+
+  // Lógica de Redefinição de Senha pelo Tutor
+  const resetBtn = overlay.querySelector("#btn-tutor-reset-password");
+  const resetInput = overlay.querySelector("#tutor-reset-password-input");
+  const resetFeedback = overlay.querySelector("#tutor-reset-password-feedback");
+
+  if (resetBtn && resetInput && resetFeedback) {
+    resetBtn.addEventListener("click", async () => {
+      const newPass = resetInput.value.trim();
+      if (newPass.length < 6) {
+        resetFeedback.style.display = "block";
+        resetFeedback.style.color = "#ef4444";
+        resetFeedback.textContent = "❌ A senha deve conter pelo menos 6 caracteres.";
+        return;
+      }
+      resetBtn.disabled = true;
+      resetFeedback.style.display = "block";
+      resetFeedback.style.color = "#fbbf24";
+      resetFeedback.textContent = "⌛ Gravando nova senha no Supabase...";
+      try {
+        await window.resetStudentPassword(student.id, newPass);
+        resetFeedback.style.color = "#10b981";
+        resetFeedback.textContent = `✅ Sucesso! A nova senha foi definida e o acesso do aluno foi ativado.`;
+        resetInput.value = "";
+        showToastNotification("🔑 Senha Alterada!", `Acesso de ${student.full_name || "aluno"} atualizado.`);
+      } catch (err) {
+        console.error(err);
+        resetFeedback.style.color = "#ef4444";
+        resetFeedback.textContent = `❌ Falha ao alterar: ${err.message || "Erro desconhecido"}`;
+      } finally {
+        resetBtn.disabled = false;
+      }
+    });
+  }
 
   // Renderiza botões de ação rápida e trata cliques
   const renderQuickActions = () => {
