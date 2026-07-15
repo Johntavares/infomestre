@@ -23,7 +23,8 @@ const ACHIEVEMENTS = [
   { id: "graduated", title: "Diplomado", desc: "Aprovado na Avaliação Final!", icon: "🎓" },
   { id: "peripheral_master", title: "Mestre dos Periféricos", desc: "Concluiu a Missão 3 — Periféricos e Conexões.", icon: "🔌" },
   { id: "windows_explorer", title: "Explorador do Windows", desc: "Concluiu a Missão 4 — Dominando o Windows.", icon: "🖥️" },
-  { id: "windows_guardian", title: "Guardião do Windows", desc: "Concluiu a expansão da Aula 4 e dominou os principais recursos do Windows.", icon: "🖥️" }
+  { id: "windows_guardian", title: "Guardião do Windows", desc: "Concluiu a expansão da Aula 4 e dominou os principais recursos do Windows.", icon: "🖥️" },
+  { id: "guardian_files", title: "Guardião dos Arquivos", desc: "Concluiu a Missão 5 — Organização Digital.", icon: "📂" }
 ];
 
 const COURSE_JORNADA = [
@@ -36,7 +37,7 @@ const COURSE_JORNADA = [
       { id: "aula-2", title: "Explorando o Hardware", chapter: "AULA 2", desc: "Abra a máquina e conheça placa-mãe, processador, RAM, disco e fonte." },
       { id: "aula-3", title: "Periféricos e Conexões", chapter: "AULA 3", desc: "Domine mouse, teclado, monitores, impressoras e as conexões traseiras." },
       { id: "aula-4", title: "Dominando o Windows", chapter: "AULA 4", desc: "Aprenda a usar a Área de Trabalho, Menu Iniciar, Lixeira e recursos avançados." },
-      { id: "aula-5", title: "Organização Digital", desc: "Aprenda a organizar arquivos, pastas, armazenamento digital e pendrives." },
+      { id: "aula-5", title: "Organização Digital", chapter: "AULA 5", desc: "Aprenda a organizar arquivos, pastas, armazenamento digital e pendrives." },
       { id: "aula-6", title: "Segurança e Cuidados", desc: "Conheça vírus, golpes, segurança física e digital no uso do computador." },
       { id: "aula-7", title: "Oficina Tecnológica", desc: "Simulações de manutenção preventiva e cuidados básicos essenciais." },
       { id: "aula-8", title: "Desafio Final do Módulo", isDesafio: true, desc: "A grande avaliação integrada do Módulo 1. Mostre que é um mestre!" }
@@ -1756,6 +1757,37 @@ function loadSimulator(simId, slideData, isReset = false) {
       break;
     case "aula4-reflexao-extra":
       initAula4ReflexaoExtra(renderArea, isReset);
+      break;
+    // ---- AULA 5 SIMULATORS ----
+    case "review-mission":
+      initReviewMissionSimulator(renderArea, isReset);
+      break;
+    case "digital-cleanup":
+      initDigitalCleanupSimulator(renderArea, isReset);
+      break;
+    case "folder-architect":
+      initFolderArchitectSimulator(renderArea, isReset);
+      break;
+    case "file-detective":
+      initFileDetectiveSimulator(renderArea, isReset);
+      break;
+    case "digital-mailman":
+      initDigitalMailmanSimulator(renderArea, isReset);
+      break;
+    case "backup-master":
+      initBackupMasterSimulator(renderArea, isReset);
+      break;
+    case "download-upload-challenge":
+      initDownloadUploadChallengeSimulator(renderArea, isReset);
+      break;
+    case "cloud-quest":
+      initCloudQuestSimulator(renderArea, isReset);
+      break;
+    case "office-adventure":
+      initOfficeAdventureSimulator(renderArea, isReset);
+      break;
+    case "aula5-reflexao":
+      initAula5Reflexao(renderArea, isReset);
       break;
     default:
       // If it has quiz in metadata (e.g. challenge pages 1.5, 32)
@@ -9543,5 +9575,1647 @@ function updateAuthUI(isLoggedIn, user = null, profile = null) {
     }
   }
 }
+
+
+// ==========================================================================
+// 12. SIMULADORES INTERATIVOS - AULA 5 (ORGANIZAÇÃO DIGITAL)
+// ==========================================================================
+
+// 1. Memória Digital (Review Mission)
+function initReviewMissionSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  const questions = [
+    {
+      q: "Onde ficam armazenados os arquivos que você apagou temporariamente no Windows?",
+      options: ["Meus Documentos", "Área de Trabalho", "Lixeira", "Explorador de Arquivos"],
+      correct: 2,
+      exp: "Os arquivos deletados vão para a Lixeira e podem ser restaurados se você mudar de ideia antes de esvaziá-la!"
+    },
+    {
+      q: "Qual dispositivo de hardware é usado principalmente para digitar e produzir textos?",
+      options: ["Mouse", "Teclado", "Monitor", "Impressora"],
+      correct: 1,
+      exp: "O Teclado é o periférico de entrada principal para digitação e entrada de caracteres textuais."
+    },
+    {
+      q: "Qual menu do Windows dá acesso à lista de todos os programas e aplicativos instalados?",
+      options: ["Menu Iniciar", "Lixeira", "Barra de Tarefas", "Explorador de Pastas"],
+      correct: 0,
+      exp: "O Menu Iniciar é o portal inicial que lista todos os aplicativos e configurações do Windows."
+    },
+    {
+      q: "Qual é a função básica de um Sistema Operacional?",
+      options: [
+        "Apenas permitir que você jogue mini games.",
+        "Gerenciar o hardware da máquina e rodar os outros programas com segurança.",
+        "Aumentar a velocidade da sua conexão de internet.",
+        "Excluir arquivos inúteis automaticamente a cada hora."
+      ],
+      correct: 1,
+      exp: "O Sistema Operacional (como o Windows) é a base de software que faz a ponte entre o hardware físico e você."
+    },
+    {
+      q: "Onde fica localizada por padrão a Barra de Tarefas no Windows?",
+      options: ["No topo da tela", "Na lateral esquerda", "Na parte inferior da tela", "Escondida no menu iniciar"],
+      correct: 2,
+      exp: "Por padrão do Windows, a barra de tarefas estende-se ao longo da margem inferior da tela."
+    }
+  ];
+
+  let currentIdx = 0;
+  let score = 0;
+
+  const renderQuestion = () => {
+    if (currentIdx >= questions.length) {
+      container.innerHTML = `
+        <div style="text-align:center; padding:1.5rem; background:rgba(255,255,255,0.02); border:1px solid rgba(16,185,129,0.3); border-radius:12px;">
+          <span style="font-size:3rem; display:block; margin-bottom:0.5rem;">🎉</span>
+          <h4 style="color:#10b981; margin:0 0 0.5rem; font-size:1.2rem;">Aquecimento Concluído!</h4>
+          <p style="font-size:0.88rem; color:#ccc; margin-bottom:1rem;">Você acertou ${score} de ${questions.length} perguntas de revisão.</p>
+          <button class="btn btn-primary" id="btn-finish-review-sim" style="width:100%;">🏁 Continuar Aula</button>
+        </div>
+      `;
+      document.getElementById("btn-finish-review-sim").addEventListener("click", () => {
+        addXP(30);
+        showToastNotification("🧠 Revisado!", "Você concluiu o aquecimento.");
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return;
+    }
+
+    const qItem = questions[currentIdx];
+    
+    container.innerHTML = `
+      <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem;">
+        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-bottom:0.8rem; font-weight:700;">
+          <span>🧠 QUESTÃO DE AQUECIMENTO</span>
+          <span>${currentIdx + 1} / ${questions.length}</span>
+        </div>
+        
+        <h4 style="margin:0 0 1.2rem; font-size:0.95rem; line-height:1.45; color:#fff;">${qItem.q}</h4>
+        
+        <div style="display:flex; flex-direction:column; gap:8px;" id="review-sim-options">
+          ${qItem.options.map((opt, i) => `
+            <button class="btn btn-outline" style="text-align:left; font-size:0.82rem; padding:0.6rem 0.8rem; justify-content:flex-start; font-weight:normal;" data-idx="${i}">
+              ${opt}
+            </button>
+          `).join("")}
+        </div>
+        
+        <div id="review-sim-feedback" style="margin-top:1.2rem; display:none; padding:0.8rem; border-radius:8px; font-size:0.8rem; line-height:1.4;"></div>
+      </div>
+    `;
+
+    const btns = container.querySelectorAll("#review-sim-options button");
+    const feed = container.querySelector("#review-sim-feedback");
+
+    btns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        btns.forEach(b => b.disabled = true);
+        const selected = parseInt(btn.getAttribute("data-idx"));
+        
+        feed.style.display = "block";
+        if (selected === qItem.correct) {
+          score++;
+          btn.style.background = "rgba(16, 185, 129, 0.15)";
+          btn.style.borderColor = "#10b981";
+          btn.style.color = "#10b981";
+          feed.style.background = "rgba(16, 185, 129, 0.05)";
+          feed.style.border = "1px solid rgba(16, 185, 129, 0.2)";
+          feed.style.color = "#22c55e";
+          feed.innerHTML = `<strong>✅ Correto!</strong> ${qItem.exp}`;
+        } else {
+          btn.style.background = "rgba(239, 68, 68, 0.15)";
+          btn.style.borderColor = "#ef4444";
+          btn.style.color = "#ef4444";
+          
+          const correctBtn = btns[qItem.correct];
+          correctBtn.style.background = "rgba(16, 185, 129, 0.15)";
+          correctBtn.style.borderColor = "#10b981";
+          correctBtn.style.color = "#10b981";
+          
+          feed.style.background = "rgba(239, 68, 68, 0.05)";
+          feed.style.border = "1px solid rgba(239, 68, 68, 0.2)";
+          feed.style.color = "#f87171";
+          feed.innerHTML = `<strong>❌ Errado!</strong> ${qItem.exp}`;
+        }
+
+        const nextQBtn = document.createElement("button");
+        nextQBtn.className = "btn btn-primary";
+        nextQBtn.style.cssText = "width:100%; margin-top:1rem; font-size:0.82rem;";
+        nextQBtn.textContent = currentIdx === questions.length - 1 ? "🏁 Finalizar Aquecimento" : "Próxima Pergunta ➔";
+        nextQBtn.addEventListener("click", () => {
+          currentIdx++;
+          renderQuestion();
+        });
+        feed.appendChild(nextQBtn);
+      });
+    });
+  };
+
+  renderQuestion();
+}
+
+// 2. Faxina Digital (Digital Cleanup)
+function initDigitalCleanupSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  let files = [
+    { name: "foto_familia.png", cat: "images", icon: "🖼️" },
+    { name: "trabalho_historia.pdf", cat: "docs", icon: "📄" },
+    { name: "video_aniversario.mp4", cat: "media", icon: "🎬" },
+    { name: "musica_indie.mp3", cat: "media", icon: "🎵" },
+    { name: "relatorio_financas.txt", cat: "docs", icon: "📄" },
+    { name: "fotos_viagem.zip", cat: "archives", icon: "📦" }
+  ];
+
+  let lives = 3;
+  let score = 0;
+  let timeLeft = 45;
+  let timerInterval;
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
+  container.appendChild(mainDiv);
+
+  const updateStatsHeader = () => {
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <span style="font-weight:700; color:#ef4444;">⏱️ Tempo: ${timeLeft}s</span>
+        <span style="font-weight:700; color:#10b981;">📋 Progresso: ${score}/6</span>
+      </div>
+      <div id="cleanup-desktop-area" style="min-height:280px; display:grid; grid-template-columns: 1fr; gap: 1rem;">
+        <!-- Zonas de Pastas -->
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;" id="folders-dropzones">
+          <div class="dropzone" data-cat="images" style="background:rgba(59,130,246,0.1); border:1px dashed #3b82f6; border-radius:8px; padding:0.6rem; text-align:center; transition: all 0.2s;">
+            <span style="font-size:1.8rem; display:block;">📁</span>
+            <span style="font-size:0.75rem; font-weight:700; color:#93c5fd;">Imagens</span>
+          </div>
+          <div class="dropzone" data-cat="docs" style="background:rgba(16,185,129,0.1); border:1px dashed #10b981; border-radius:8px; padding:0.6rem; text-align:center; transition: all 0.2s;">
+            <span style="font-size:1.8rem; display:block;">📁</span>
+            <span style="font-size:0.75rem; font-weight:700; color:#6ee7b7;">Documentos</span>
+          </div>
+          <div class="dropzone" data-cat="media" style="background:rgba(245,158,11,0.1); border:1px dashed #f59e0b; border-radius:8px; padding:0.6rem; text-align:center; transition: all 0.2s;">
+            <span style="font-size:1.8rem; display:block;">📁</span>
+            <span style="font-size:0.75rem; font-weight:700; color:#fde047;">Áudio/Vídeo</span>
+          </div>
+          <div class="dropzone" data-cat="archives" style="background:rgba(167,139,250,0.1); border:1px dashed #a78bfa; border-radius:8px; padding:0.6rem; text-align:center; transition: all 0.2s;">
+            <span style="font-size:1.8rem; display:block;">📁</span>
+            <span style="font-size:0.75rem; font-weight:700; color:#c084fc;">Compactados</span>
+          </div>
+        </div>
+
+        <!-- Arquivos Soltos -->
+        <div id="loose-files" style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center; align-items:center; background:rgba(255,255,255,0.02); border-radius:8px; padding:0.8rem; border:1px solid rgba(255,255,255,0.04);">
+          ${files.map((f, idx) => `
+            <div class="draggable-file" data-idx="${idx}" draggable="true" style="padding:0.4rem 0.6rem; background:#121226; border:1px solid rgba(255,255,255,0.12); border-radius:6px; font-size:0.76rem; display:flex; align-items:center; gap:0.3rem; cursor:grab; user-select:none; transition:transform 0.15s;">
+              <span>${f.icon}</span> <span>${f.name}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+
+    // Re-bind de eventos Drag and Drop
+    const draggables = mainDiv.querySelectorAll(".draggable-file");
+    const dropzones = mainDiv.querySelectorAll(".dropzone");
+
+    draggables.forEach(drag => {
+      drag.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("text/plain", drag.getAttribute("data-idx"));
+        drag.style.transform = "scale(0.92)";
+      });
+      drag.addEventListener("dragend", () => {
+        drag.style.transform = "";
+      });
+    });
+
+    dropzones.forEach(zone => {
+      zone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        zone.style.background = "rgba(255,255,255,0.08)";
+      });
+      zone.addEventListener("dragleave", () => {
+        zone.style.background = zone.style.background.replace("rgba(255,255,255,0.08)", "");
+      });
+      zone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const idx = parseInt(e.dataTransfer.getData("text/plain"));
+        const targetCat = zone.getAttribute("data-cat");
+        
+        const f = files[idx];
+        if (f) {
+          if (f.cat === targetCat) {
+            score++;
+            files.splice(idx, 1);
+            showToastNotification("✅ Organizado!", `O arquivo ${f.name} foi movido com sucesso.`);
+            if (files.length === 0) {
+              clearInterval(timerInterval);
+              addXP(50);
+              mainDiv.innerHTML = `
+                <div style="text-align:center; padding:2rem 0;">
+                  <span style="font-size:3rem; display:block;">🎉</span>
+                  <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Área de Trabalho Limpa!</h4>
+                  <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Excelente faxina digital! Todos os arquivos estão guardados.</p>
+                  <button class="btn btn-primary" id="btn-finish-cleanup-sim" style="width:100%;">Próxima Etapa ➔</button>
+                </div>
+              `;
+              document.getElementById("btn-finish-cleanup-sim").addEventListener("click", () => {
+                const nextBtn = document.getElementById("next-slide-btn");
+                if (nextBtn) nextBtn.click();
+              });
+            } else {
+              updateStatsHeader();
+            }
+          } else {
+            lives--;
+            if (lives <= 0) {
+              clearInterval(timerInterval);
+              mainDiv.innerHTML = `
+                <div style="text-align:center; padding:2rem 0;">
+                  <span style="font-size:3rem; display:block;">❌</span>
+                  <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Vidas Esgotadas!</h4>
+                  <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você colocou os arquivos na pasta errada muitas vezes.</p>
+                  <button class="btn btn-outline" id="btn-retry-cleanup-sim" style="width:100%;">Tentar Novamente 🔄</button>
+                </div>
+              `;
+              document.getElementById("btn-retry-cleanup-sim").addEventListener("click", () => {
+                initDigitalCleanupSimulator(container, true);
+              });
+            } else {
+              showToastNotification("❌ Pasta Incorreta!", "Tente organizar em outra categoria.");
+              updateStatsHeader();
+            }
+          }
+        }
+      });
+    });
+  };
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:3rem; display:block;">⏱️</span>
+          <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Tempo Esgotado!</h4>
+          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">O tempo limite de 45 segundos acabou.</p>
+          <button class="btn btn-outline" id="btn-retry-cleanup-time" style="width:100%;">Tentar Novamente 🔄</button>
+        </div>
+      `;
+      document.getElementById("btn-retry-cleanup-time").addEventListener("click", () => {
+        initDigitalCleanupSimulator(container, true);
+      });
+    } else {
+      const timeSpan = mainDiv.querySelector("span[style*='color:#ef4444']");
+      if (timeSpan) timeSpan.textContent = `⏱️ Tempo: ${timeLeft}s`;
+    }
+  }, 1000);
+
+  updateStatsHeader();
+}
+
+// 3. Arquiteto Digital (Folder Architect)
+function initFolderArchitectSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  let lives = 3;
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
+  container.appendChild(mainDiv);
+
+  const drawUI = () => {
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <strong style="color:var(--color-primary-light); font-size:0.85rem;">🛠️ Missão: Crie a estrutura Trabalho ➔ Relatorios ➔ Financeiro</strong>
+      </div>
+      
+      <div style="background:rgba(255,255,255,0.02); border-radius:10px; padding:1.2rem; border:1px solid rgba(255,255,255,0.05); margin-bottom:1.2rem; display:flex; flex-direction:column; gap:0.8rem;">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span style="font-size:1.3rem;">📂</span>
+          <span style="font-size:0.85rem; color:#ccc;">Pasta Principal (Nível 1):</span>
+          <select id="select-lvl-1" style="background:#121226; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.35rem; font-size:0.8rem; outline:none; font-weight:700;">
+            <option value="">-- Selecionar --</option>
+            <option value="Escola">📁 Escola</option>
+            <option value="Trabalho">📁 Trabalho</option>
+            <option value="Lixeira">📁 Lixeira</option>
+          </select>
+        </div>
+        
+        <div style="display:flex; align-items:center; gap:0.6rem; margin-left:1.5rem;">
+          <span style="font-size:1.3rem; transform: rotate(90deg); display:inline-block; color:#666;">↳</span>
+          <span style="font-size:1.3rem;">📂</span>
+          <span style="font-size:0.85rem; color:#ccc;">Subpasta (Nível 2):</span>
+          <select id="select-lvl-2" style="background:#121226; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.35rem; font-size:0.8rem; outline:none; font-weight:700;">
+            <option value="">-- Selecionar --</option>
+            <option value="Matematica">📁 Matematica</option>
+            <option value="Downloads">📁 Downloads</option>
+            <option value="Relatorios">📁 Relatorios</option>
+          </select>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:0.6rem; margin-left:3rem;">
+          <span style="font-size:1.3rem; transform: rotate(90deg); display:inline-block; color:#666;">↳</span>
+          <span style="font-size:1.3rem;">📂</span>
+          <span style="font-size:0.85rem; color:#ccc;">Sub-subpasta (Nível 3):</span>
+          <select id="select-lvl-3" style="background:#121226; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.35rem; font-size:0.8rem; outline:none; font-weight:700;">
+            <option value="">-- Selecionar --</option>
+            <option value="Financeiro">📁 Financeiro</option>
+            <option value="Fotos">📁 Fotos</option>
+            <option value="Jogos">📁 Jogos</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-validate-architecture" style="width:100%;">📐 Validar Estrutura de Pastas</button>
+      <div id="arch-feedback" style="margin-top:0.8rem; font-size:0.8rem; display:none; padding:0.65rem; border-radius:8px;"></div>
+    `;
+
+    document.getElementById("btn-validate-architecture").addEventListener("click", () => {
+      const lvl1 = document.getElementById("select-lvl-1").value;
+      const lvl2 = document.getElementById("select-lvl-2").value;
+      const lvl3 = document.getElementById("select-lvl-3").value;
+      const feedback = document.getElementById("arch-feedback");
+
+      feedback.style.display = "block";
+
+      if (lvl1 === "Trabalho" && lvl2 === "Relatorios" && lvl3 === "Financeiro") {
+        addXP(50);
+        mainDiv.innerHTML = `
+          <div style="text-align:center; padding:1.8rem 0;">
+            <span style="font-size:3rem; display:block;">🏆</span>
+            <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Arquiteto Digital Aprovado!</h4>
+            <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você montou a hierarquia Trabalho ➔ Relatorios ➔ Financeiro perfeitamente.</p>
+            <button class="btn btn-primary" id="btn-finish-arch-sim" style="width:100%;">Avançar Aula ➔</button>
+          </div>
+        `;
+        document.getElementById("btn-finish-arch-sim").addEventListener("click", () => {
+          const nextBtn = document.getElementById("next-slide-btn");
+          if (nextBtn) nextBtn.click();
+        });
+      } else {
+        lives--;
+        if (lives <= 0) {
+          mainDiv.innerHTML = `
+            <div style="text-align:center; padding:1.8rem 0;">
+              <span style="font-size:3rem; display:block;">❌</span>
+              <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Estrutura Corrompida!</h4>
+              <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você falhou em criar a árvore lógica de pastas de forma correta.</p>
+              <button class="btn btn-outline" id="btn-retry-arch" style="width:100%;">Tentar Novamente 🔄</button>
+            </div>
+          `;
+          document.getElementById("btn-retry-arch").addEventListener("click", () => {
+            initFolderArchitectSimulator(container, true);
+          });
+        } else {
+          feedback.style.background = "rgba(239,68,68,0.1)";
+          feedback.style.border = "1px solid rgba(239,68,68,0.3)";
+          feedback.style.color = "#ef4444";
+          
+          let tips = [];
+          if (lvl1 !== "Trabalho") tips.push("A pasta mãe deve ser Trabalho.");
+          if (lvl2 !== "Relatorios") tips.push("A subpasta de Trabalho deve ser Relatorios.");
+          if (lvl3 !== "Financeiro") tips.push("A pasta final de relatórios deve ser Financeiro.");
+
+          feedback.innerHTML = `<strong>❌ Estrutura errada!</strong><br>${tips.join("<br>")}`;
+          drawUI();
+        }
+      }
+    });
+  };
+
+  drawUI();
+}
+
+// 4. Detetive dos Arquivos (File Detective)
+function initFileDetectiveSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  const items = [
+    { name: "trabalho_escola.pdf", cat: "docs", exp: "O .pdf é um formato de documento protegido universal, ideal para trabalhos e livros." },
+    { name: "foto_perfil.png", cat: "images", exp: "O .png é uma extensão de imagem digital que preserva transparências no fundo." },
+    { name: "audio_aula.mp3", cat: "audio", exp: "O .mp3 é o formato de compressão de áudio digital mais conhecido do mundo." },
+    { name: "video_aula.mp4", cat: "video", exp: "O .mp4 é a extensão de contêiner de arquivos de vídeo e áudio integrados de alta definição." },
+    { name: "arquivos_antigos.zip", cat: "archives", exp: "O .zip é a extensão de pastas compactadas que agrupa e reduz o tamanho de arquivos." }
+  ];
+
+  let current = 0;
+  let lives = 3;
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
+  container.appendChild(mainDiv);
+
+  const drawRound = () => {
+    if (current >= items.length) {
+      addXP(50);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:1.8rem 0;">
+          <span style="font-size:3.5rem; display:block;">🔍</span>
+          <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Detetive Aprovado!</h4>
+          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você identificou todas as extensões de arquivos com maestria!</p>
+          <button class="btn btn-primary" id="btn-finish-detective-sim" style="width:100%;">Avançar Aula ➔</button>
+        </div>
+      `;
+      document.getElementById("btn-finish-detective-sim").addEventListener("click", () => {
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return;
+    }
+
+    const item = items[current];
+
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <span style="font-size:0.75rem; color:#aaa;">Etapa ${current + 1} / ${items.length}</span>
+      </div>
+      
+      <div style="text-align:center; background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:2rem; margin-bottom:1.2rem;">
+        <span style="font-size:4rem; display:block; margin-bottom:0.5rem;">📦</span>
+        <strong style="font-size:1.15rem; color:var(--color-primary-light); font-family:var(--font-code);">${item.name}</strong>
+        <p style="font-size:0.8rem; color:#aaa; margin:0.5rem 0 0 0;">Qual é a categoria deste arquivo?</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;" id="detective-actions">
+        <button class="btn btn-outline" data-cat="docs">📄 Documento</button>
+        <button class="btn btn-outline" data-cat="images">🖼️ Imagem</button>
+        <button class="btn btn-outline" data-cat="audio">🎵 Áudio / 🎬 Vídeo</button>
+        <button class="btn btn-outline" data-cat="archives">📦 Compactado</button>
+      </div>
+      
+      <div id="detective-feedback" style="margin-top:0.8rem; display:none; padding:0.8rem; border-radius:8px; font-size:0.8rem; line-height:1.45;"></div>
+    `;
+
+    const btns = mainDiv.querySelectorAll("#detective-actions button");
+    const feed = mainDiv.querySelector("#detective-feedback");
+
+    btns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        btns.forEach(b => b.disabled = true);
+        const sel = btn.getAttribute("data-cat");
+        
+        // Mapeia áudio/vídeo juntos
+        const isCorrect = (sel === item.cat) || (sel === "audio" && (item.cat === "audio" || item.cat === "video"));
+
+        feed.style.display = "block";
+        if (isCorrect) {
+          btn.style.background = "rgba(16, 185, 129, 0.15)";
+          btn.style.borderColor = "#10b981";
+          btn.style.color = "#10b981";
+          feed.style.background = "rgba(16, 185, 129, 0.05)";
+          feed.style.border = "1px solid rgba(16, 185, 129, 0.2)";
+          feed.style.color = "#22c55e";
+          feed.innerHTML = `<strong>✅ Correto!</strong> ${item.exp}`;
+        } else {
+          lives--;
+          btn.style.background = "rgba(239, 68, 68, 0.15)";
+          btn.style.borderColor = "#ef4444";
+          btn.style.color = "#ef4444";
+          
+          feed.style.background = "rgba(239, 68, 68, 0.05)";
+          feed.style.border = "1px solid rgba(239, 68, 68, 0.2)";
+          feed.style.color = "#f87171";
+          feed.innerHTML = `<strong>❌ Incorreto!</strong> ${item.exp}`;
+        }
+
+        if (lives <= 0) {
+          setTimeout(() => {
+            mainDiv.innerHTML = `
+              <div style="text-align:center; padding:1.8rem 0;">
+                <span style="font-size:3rem; display:block;">❌</span>
+                <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Vidas Esgotadas!</h4>
+                <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Estude melhor as extensões e tente novamente.</p>
+                <button class="btn btn-outline" id="btn-retry-detective" style="width:100%;">Tentar Novamente 🔄</button>
+              </div>
+            `;
+            document.getElementById("btn-retry-detective").addEventListener("click", () => {
+              initFileDetectiveSimulator(container, true);
+            });
+          }, 2000);
+        } else {
+          const nextQBtn = document.createElement("button");
+          nextQBtn.className = "btn btn-primary";
+          nextQBtn.style.cssText = "width:100%; margin-top:1rem; font-size:0.82rem;";
+          nextQBtn.textContent = current === items.length - 1 ? "🏁 Finalizar Desafio" : "Próximo Arquivo ➔";
+          nextQBtn.addEventListener("click", () => {
+            current++;
+            drawRound();
+          });
+          feed.appendChild(nextQBtn);
+        }
+      });
+    });
+  };
+
+  drawRound();
+}
+
+// 5. Correio Digital (Digital Mailman)
+function initDigitalMailmanSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  let lives = 3;
+  let step = 1; // 1: Copiar trabalho.docx, 2: Paste in Escola, 3: Delete imagem_antiga.png, 4: Restore from Lixeira
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
+  container.appendChild(mainDiv);
+
+  let clipboardFile = null;
+  let localFiles = [
+    { name: "trabalho.docx", type: "file", icon: "📄", location: "root" },
+    { name: "imagem_antiga.png", type: "file", icon: "🖼️", location: "root" },
+    { name: "Escola", type: "folder", icon: "📁", location: "root", children: [] },
+    { name: "Lixeira", type: "trash", icon: "🗑️", location: "root", children: [] }
+  ];
+
+  let currentPath = "root"; // "root", "Escola", "Lixeira"
+
+  const drawUI = () => {
+    let filesInPath = [];
+    if (currentPath === "root") {
+      filesInPath = localFiles.filter(f => f.location === "root");
+    } else if (currentPath === "Escola") {
+      const folder = localFiles.find(f => f.name === "Escola");
+      filesInPath = folder.children;
+    } else if (currentPath === "Lixeira") {
+      const trash = localFiles.find(f => f.name === "Lixeira");
+      filesInPath = trash.children;
+    }
+
+    let instruction = "";
+    if (step === 1) instruction = "📂 <strong>Passo 1:</strong> Selecione o arquivo <strong>trabalho.docx</strong> e clique em <strong>Copiar</strong>.";
+    else if (step === 2) instruction = "📂 <strong>Passo 2:</strong> Abra a pasta <strong>Escola</strong> e clique em <strong>Colar</strong>.";
+    else if (step === 3) instruction = "📂 <strong>Passo 3:</strong> Volte para a pasta inicial, selecione <strong>imagem_antiga.png</strong> e clique em <strong>Excluir</strong>.";
+    else if (step === 4) instruction = "📂 <strong>Passo 4:</strong> Entre na <strong>Lixeira</strong>, clique em <strong>imagem_antiga.png</strong> e selecione <strong>Restaurar</strong>.";
+
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <span style="font-size:0.75rem; color:#aaa;">Passo ${step} / 4</span>
+      </div>
+      
+      <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(124,58,237,0.25); border-radius:8px; padding:0.8rem; margin-bottom:1rem; font-size:0.8rem; color:#ccc;">
+        ${instruction}
+      </div>
+
+      <!-- Barra de Ações do Explorador -->
+      <div style="display:flex; gap:0.5rem; background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:0.4rem; margin-bottom:0.8rem; align-items:center;">
+        ${currentPath !== "root" ? `<button class="btn btn-outline btn-small" id="btn-back-explorer" style="padding:0.2rem 0.5rem; font-size:0.75rem;">⬅ Voltar</button>` : ""}
+        <span style="font-size:0.75rem; color:#888; font-family:var(--font-code); margin-right:auto;">C:\\${currentPath === "root" ? "" : currentPath}</span>
+        
+        <button class="btn btn-outline btn-small" id="btn-copy-explorer" style="padding:0.25rem 0.6rem; font-size:0.75rem; font-weight:700;">📋 Copiar</button>
+        <button class="btn btn-outline btn-small" id="btn-paste-explorer" style="padding:0.25rem 0.6rem; font-size:0.75rem; font-weight:700;">📋 Colar</button>
+        <button class="btn btn-outline btn-small" id="btn-delete-explorer" style="padding:0.25rem 0.6rem; font-size:0.75rem; font-weight:700; color:#ef4444; border-color:rgba(239,68,68,0.2);">❌ Excluir</button>
+        <button class="btn btn-outline btn-small" id="btn-restore-explorer" style="padding:0.25rem 0.6rem; font-size:0.75rem; font-weight:700; color:#10b981; border-color:rgba(16,185,129,0.2);">↩️ Restaurar</button>
+      </div>
+
+      <!-- Área de Arquivos -->
+      <div style="background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:8px; min-height:160px; padding:0.8rem; display:flex; flex-wrap:wrap; gap:0.8rem;" id="explorer-files-container">
+        ${filesInPath.map((file, idx) => `
+          <div class="explorer-item" data-name="${file.name}" style="padding:0.5rem; text-align:center; border:1px solid transparent; border-radius:6px; cursor:pointer; width:80px; user-select:none; transition:all 0.15s;">
+            <span style="font-size:2.2rem; display:block;">${file.icon}</span>
+            <span style="font-size:0.72rem; color:#ccc; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; margin-top:2px;">${file.name}</span>
+          </div>
+        `).join("")}
+      </div>
+    `;
+
+    // Lógica de Seleção de Arquivo
+    let selectedItemName = null;
+    const itemsEl = mainDiv.querySelectorAll(".explorer-item");
+    itemsEl.forEach(el => {
+      el.addEventListener("click", () => {
+        itemsEl.forEach(i => {
+          i.style.background = "";
+          i.style.borderColor = "transparent";
+        });
+        el.style.background = "rgba(124, 58, 237, 0.15)";
+        el.style.borderColor = "rgba(124, 58, 237, 0.4)";
+        selectedItemName = el.getAttribute("data-name");
+      });
+      
+      // Duplo clique abre pastas
+      el.addEventListener("dblclick", () => {
+        const name = el.getAttribute("data-name");
+        const file = localFiles.find(f => f.name === name);
+        if (file && (file.type === "folder" || file.type === "trash")) {
+          currentPath = name;
+          drawUI();
+        }
+      });
+    });
+
+    // Ações do Explorador
+    const backBtn = mainDiv.querySelector("#btn-back-explorer");
+    if (backBtn) {
+      backBtn.addEventListener("click", () => {
+        currentPath = "root";
+        drawUI();
+      });
+    }
+
+    // Botão de Copiar
+    mainDiv.querySelector("#btn-copy-explorer").addEventListener("click", () => {
+      if (step === 1 && selectedItemName === "trabalho.docx") {
+        clipboardFile = { name: "trabalho.docx", type: "file", icon: "📄" };
+        step = 2;
+        showToastNotification("📋 Copiado!", "O arquivo trabalho.docx foi copiado para a área de transferência.");
+        drawUI();
+      } else {
+        handleError("Selecione trabalho.docx e clique em Copiar.");
+      }
+    });
+
+    // Botão de Colar
+    mainDiv.querySelector("#btn-paste-explorer").addEventListener("click", () => {
+      if (step === 2 && currentPath === "Escola" && clipboardFile) {
+        const folder = localFiles.find(f => f.name === "Escola");
+        folder.children.push({ ...clipboardFile, location: "Escola" });
+        clipboardFile = null;
+        step = 3;
+        showToastNotification("📋 Colado!", "Arquivo colado com sucesso dentro da pasta Escola.");
+        currentPath = "root"; // Força volta
+        drawUI();
+      } else {
+        handleError("Entre na pasta Escola (duplo clique) e depois clique em Colar.");
+      }
+    });
+
+    // Botão de Deletar
+    mainDiv.querySelector("#btn-delete-explorer").addEventListener("click", () => {
+      if (step === 3 && selectedItemName === "imagem_antiga.png" && currentPath === "root") {
+        const idx = localFiles.findIndex(f => f.name === "imagem_antiga.png");
+        if (idx !== -1) {
+          const removed = localFiles.splice(idx, 1)[0];
+          const trash = localFiles.find(f => f.name === "Lixeira");
+          trash.children.push({ ...removed, location: "Lixeira" });
+        }
+        step = 4;
+        showToastNotification("🗑️ Excluído!", "Arquivo movido para a Lixeira.");
+        drawUI();
+      } else {
+        handleError("Selecione imagem_antiga.png na pasta principal e clique em Excluir.");
+      }
+    });
+
+    // Botão de Restaurar
+    mainDiv.querySelector("#btn-restore-explorer").addEventListener("click", () => {
+      if (step === 4 && selectedItemName === "imagem_antiga.png" && currentPath === "Lixeira") {
+        const trash = localFiles.find(f => f.name === "Lixeira");
+        const idx = trash.children.findIndex(f => f.name === "imagem_antiga.png");
+        if (idx !== -1) {
+          const file = trash.children.splice(idx, 1)[0];
+          localFiles.push({ ...file, location: "root" });
+        }
+        addXP(50);
+        mainDiv.innerHTML = `
+          <div style="text-align:center; padding:1.8rem 0;">
+            <span style="font-size:3rem; display:block;">🎉</span>
+            <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Correio Concluída!</h4>
+            <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você dominou a arte de duplicar, transferir, apagar e restaurar dados.</p>
+            <button class="btn btn-primary" id="btn-finish-mailman-sim" style="width:100%;">Avançar Aula ➔</button>
+          </div>
+        `;
+        document.getElementById("btn-finish-mailman-sim").addEventListener("click", () => {
+          const nextBtn = document.getElementById("next-slide-btn");
+          if (nextBtn) nextBtn.click();
+        });
+      } else {
+        handleError("Abra a Lixeira, selecione imagem_antiga.png e clique em Restaurar.");
+      }
+    });
+  };
+
+  const handleError = (msg) => {
+    lives--;
+    if (lives <= 0) {
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:1.8rem 0;">
+          <span style="font-size:3rem; display:block;">❌</span>
+          <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Vidas Esgotadas!</h4>
+          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Tente novamente prestando atenção nas instruções lógicas.</p>
+          <button class="btn btn-outline" id="btn-retry-mailman" style="width:100%;">Tentar Novamente 🔄</button>
+        </div>
+      `;
+      document.getElementById("btn-retry-mailman").addEventListener("click", () => {
+        initDigitalMailmanSimulator(container, true);
+      });
+    } else {
+      showToastNotification("❌ Ação Incorreta!", msg);
+      drawUI();
+    }
+  };
+
+  drawUI();
+}
+
+// 6. Missão Backup (Backup Master)
+function initBackupMasterSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  let lives = 3;
+  let status = "unconnected"; // "unconnected", "connected", "backed_up", "safe_ejected"
+  
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
+  container.appendChild(mainDiv);
+
+  const drawUI = () => {
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <strong style="color:var(--color-primary-light); font-size:0.85rem;">💾 Missão: Efetuar Backup seguro no Pendrive</strong>
+      </div>
+      
+      <!-- Interface do Computador Traseira / Pendrive -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem; align-items:center;">
+        <!-- Lado 1: Porta USB -->
+        <div style="background:#121226; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:1rem; text-align:center; min-height:120px; display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative;">
+          <strong style="font-size:0.75rem; color:#aaa; margin-bottom:0.5rem;">💻 PORTA USB DO COMPUTADOR</strong>
+          <div style="width:60px; height:15px; background:#000; border:2px solid #333; border-radius:2px; position:relative;">
+            ${status !== "unconnected" ? `<div style="width:50px; height:11px; background:#3b82f6; position:absolute; left:3px; top:0px; border-radius:1px; display:flex; align-items:center; justify-content:center; font-size:0.55rem; font-weight:800; color:#fff;">USB DRIVE</div>` : ""}
+          </div>
+        </div>
+
+        <!-- Lado 2: O Pendrive Físico -->
+        <div style="text-align:center;">
+          ${status === "unconnected" ? `
+            <div id="physical-pendrive" style="display:inline-block; padding:0.6rem 1rem; background:#3b82f6; border-radius:6px; cursor:pointer; font-weight:800; border:1px solid rgba(255,255,255,0.15); transition:transform 0.15s;" title="Clique para conectar">
+              📟 CONECTAR PENDRIVE
+            </div>
+            <p style="font-size:0.75rem; color:#888; margin-top:0.4rem;">Clique no pendrive para inseri-lo.</p>
+          ` : `
+            <button class="btn btn-outline" id="btn-pull-usb-directly" style="border-color:rgba(239,68,68,0.3); color:#ef4444; width:100%;">
+              ⚠️ Puxar Pendrive Diretamente
+            </button>
+            <p style="font-size:0.72rem; color:#888; margin-top:0.4rem;">Desconectar sem ejetar antes pode queimar os arquivos!</p>
+          `}
+        </div>
+      </div>
+
+      <!-- Lógica Interna do S.O. virtual -->
+      <div style="background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:0.8rem; min-height:140px; display:flex; flex-direction:column; justify-content:center;">
+        ${status === "unconnected" ? `
+          <div style="text-align:center; color:#666; font-style:italic; font-size:0.8rem;">
+            Aguardando conexão de hardware externo...
+          </div>
+        ` : status === "connected" ? `
+          <div style="text-align:center;">
+            <p style="font-size:0.82rem; color:#ccc; margin-bottom:0.8rem;">Dispositivo USB detectado. Copie o arquivo para o backup:</p>
+            <button class="btn btn-primary btn-small" id="btn-copy-backup" style="margin:0 auto; display:block;">
+              💾 Fazer Backup da pasta 'Documentos Importantes'
+            </button>
+          </div>
+        ` : status === "backed_up" ? `
+          <div style="text-align:center;">
+            <p style="font-size:0.82rem; color:#22c55e; font-weight:700; margin-bottom:0.6rem;">✅ Backup efetuado com sucesso no USB Drive!</p>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:0.8rem;">Agora ejete o dispositivo por software na barra abaixo:</p>
+            
+            <div style="display:flex; justify-content:center; gap:0.5rem; background:rgba(0,0,0,0.3); padding:0.4rem; border-radius:6px; align-items:center;">
+              <span style="font-size:0.72rem; color:#888;">Remoção de Hardware:</span>
+              <button class="btn btn-outline btn-small" id="btn-eject-usb" style="padding:0.2rem 0.5rem; font-size:0.72rem; color:#10b981; border-color:rgba(16,185,129,0.3);">
+                🎛️ Ejetar Mass Storage 
+              </button>
+            </div>
+          </div>
+        ` : `
+          <div style="text-align:center;">
+            <p style="font-size:0.82rem; color:#10b981; font-weight:700; margin-bottom:0.6rem;">✅ Ejetado com segurança!</p>
+            <p style="font-size:0.75rem; color:#aaa; margin-bottom:0.8rem;">Você já pode remover o dispositivo com total segurança física.</p>
+            <button class="btn btn-primary" id="btn-disconnect-safely" style="width:100%;">🏁 Remover Pendrive Físico</button>
+          </div>
+        `}
+      </div>
+    `;
+
+    // Evento de conexão de hardware
+    const pendrive = mainDiv.querySelector("#physical-pendrive");
+    if (pendrive) {
+      pendrive.addEventListener("click", () => {
+        status = "connected";
+        showToastNotification("📟 USB Conectado!", "Explorador detectou dispositivo externo.");
+        drawUI();
+      });
+    }
+
+    // Evento de puxar cabo diretamente
+    const pullDirect = mainDiv.querySelector("#btn-pull-usb-directly");
+    if (pullDirect) {
+      pullDirect.addEventListener("click", () => {
+        if (status !== "safe_ejected") {
+          lives--;
+          if (lives <= 0) {
+            mainDiv.innerHTML = `
+              <div style="text-align:center; padding:1.8rem 0;">
+                <span style="font-size:3rem; display:block;">❌</span>
+                <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Pendrive Queimado!</h4>
+                <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você removeu o dispositivo enquanto ele gravava dados, inutilizando os arquivos.</p>
+                <button class="btn btn-outline" id="btn-retry-backup" style="width:100%;">Tentar Novamente 🔄</button>
+              </div>
+            `;
+            document.getElementById("btn-retry-backup").addEventListener("click", () => {
+              initBackupMasterSimulator(container, true);
+            });
+          } else {
+            showToastNotification("❌ Remoção Perigosa!", "Sempre ejete por software na barra de tarefas antes.");
+            status = "unconnected";
+            drawUI();
+          }
+        }
+      });
+    }
+
+    // Evento de Fazer Backup
+    const copyBtn = mainDiv.querySelector("#btn-copy-backup");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", () => {
+        status = "backed_up";
+        showToastNotification("📂 Copiado!", "Arquivos copiados para o USB Drive.");
+        drawUI();
+      });
+    }
+
+    // Evento de Ejetar USB
+    const ejectBtn = mainDiv.querySelector("#btn-eject-usb");
+    if (ejectBtn) {
+      ejectBtn.addEventListener("click", () => {
+        status = "safe_ejected";
+        showToastNotification("✅ Seguro para Remover!", "O Windows fechou todas as conexões USB.");
+        drawUI();
+      });
+    }
+
+    // Evento de Desconexão Segura
+    const disconnectBtn = mainDiv.querySelector("#btn-disconnect-safely");
+    if (disconnectBtn) {
+      disconnectBtn.addEventListener("click", () => {
+        addXP(50);
+        mainDiv.innerHTML = `
+          <div style="text-align:center; padding:1.8rem 0;">
+            <span style="font-size:3rem; display:block;">🏆</span>
+            <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Backup Concluída!</h4>
+            <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você compreendeu a ejetagem segura de memórias portáteis.</p>
+            <button class="btn btn-primary" id="btn-finish-backup-sim" style="width:100%;">Avançar Aula ➔</button>
+          </div>
+        `;
+        document.getElementById("btn-finish-backup-sim").addEventListener("click", () => {
+          const nextBtn = document.getElementById("next-slide-btn");
+          if (nextBtn) nextBtn.click();
+        });
+      });
+    }
+  };
+
+  drawUI();
+}
+
+// 7. Missão Internet (Download & Upload Challenge)
+function initDownloadUploadChallengeSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  const scenarios = [
+    { text: "Você clica em 'Baixar Boleto' no portal da faculdade para salvar o PDF no computador.", ans: "down", exp: "Download: Você baixou um arquivo do servidor da internet para a máquina local." },
+    { text: "Você anexa e envia uma foto sua do computador para a sua conta do Gmail.", ans: "up", exp: "Upload: Você enviou um arquivo da máquina local para a nuvem/rede." },
+    { text: "Você baixa uma música do site oficial da banda para ouvi-la no pendrive.", ans: "down", exp: "Download: Transferência do servidor online para a sua máquina física." },
+    { text: "Você faz upload do seu currículo em formato PDF no formulário da vaga de emprego no LinkedIn.", ans: "up", exp: "Upload: Envio de um arquivo do computador local para o sistema remoto." }
+  ];
+
+  let current = 0;
+  let score = 0;
+  let lives = 3;
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
+  container.appendChild(mainDiv);
+
+  const drawUI = () => {
+    if (current >= scenarios.length) {
+      addXP(50);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:1.8rem 0;">
+          <span style="font-size:3rem; display:block;">🚀</span>
+          <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Internet Concluída!</h4>
+          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você domina a diferença entre download e upload de dados.</p>
+          <button class="btn btn-primary" id="btn-finish-network-sim" style="width:100%;">Avançar Aula ➔</button>
+        </div>
+      `;
+      document.getElementById("btn-finish-network-sim").addEventListener("click", () => {
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return;
+    }
+
+    const item = scenarios[current];
+
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <span style="font-size:0.75rem; color:#aaa;">Cenário ${current + 1} / ${scenarios.length}</span>
+      </div>
+      
+      <div style="background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:1.5rem; margin-bottom:1.2rem; font-size:0.88rem; line-height:1.5; color:#ccc;">
+        "${item.text}"
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;" id="net-actions">
+        <button class="btn btn-outline" data-ans="down" style="padding:0.75rem; font-size:0.9rem; font-weight:700;">⬇️ Download (Baixar)</button>
+        <button class="btn btn-outline" data-ans="up" style="padding:0.75rem; font-size:0.9rem; font-weight:700;">⬆️ Upload (Enviar)</button>
+      </div>
+
+      <div id="net-feedback" style="margin-top:0.8rem; display:none; padding:0.8rem; border-radius:8px; font-size:0.8rem; line-height:1.45;"></div>
+    `;
+
+    const btns = mainDiv.querySelectorAll("#net-actions button");
+    const feed = mainDiv.querySelector("#net-feedback");
+
+    btns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        btns.forEach(b => b.disabled = true);
+        const ans = btn.getAttribute("data-ans");
+        
+        feed.style.display = "block";
+        if (ans === item.ans) {
+          score++;
+          btn.style.background = "rgba(16, 185, 129, 0.15)";
+          btn.style.borderColor = "#10b981";
+          btn.style.color = "#10b981";
+          feed.style.background = "rgba(16, 185, 129, 0.05)";
+          feed.style.border = "1px solid rgba(16, 185, 129, 0.2)";
+          feed.style.color = "#22c55e";
+          feed.innerHTML = `<strong>✅ Correto!</strong> ${item.exp}`;
+        } else {
+          lives--;
+          btn.style.background = "rgba(239, 68, 68, 0.15)";
+          btn.style.borderColor = "#ef4444";
+          btn.style.color = "#ef4444";
+          
+          feed.style.background = "rgba(239, 68, 68, 0.05)";
+          feed.style.border = "1px solid rgba(239, 68, 68, 0.2)";
+          feed.style.color = "#f87171";
+          feed.innerHTML = `<strong>❌ Errado!</strong> ${item.exp}`;
+        }
+
+        if (lives <= 0) {
+          setTimeout(() => {
+            mainDiv.innerHTML = `
+              <div style="text-align:center; padding:1.8rem 0;">
+                <span style="font-size:3rem; display:block;">❌</span>
+                <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Vidas Esgotadas!</h4>
+                <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Revise o sentido de Download/Upload e tente novamente.</p>
+                <button class="btn btn-outline" id="btn-retry-network" style="width:100%;">Tentar Novamente 🔄</button>
+              </div>
+            `;
+            document.getElementById("btn-retry-network").addEventListener("click", () => {
+              initDownloadUploadChallengeSimulator(container, true);
+            });
+          }, 2000);
+        } else {
+          const nextBtn = document.createElement("button");
+          nextBtn.className = "btn btn-primary";
+          nextBtn.style.cssText = "width:100%; margin-top:1rem; font-size:0.82rem;";
+          nextBtn.textContent = current === scenarios.length - 1 ? "🏁 Finalizar Missão" : "Próximo Caso ➔";
+          nextBtn.addEventListener("click", () => {
+            current++;
+            drawUI();
+          });
+          feed.appendChild(nextBtn);
+        }
+      });
+    });
+  };
+
+  drawUI();
+}
+
+// 8. Onde Salvar? (Cloud Quest)
+function initCloudQuestSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  const questions = [
+    {
+      case: "Você quer guardar seus arquivos de escola de forma que consiga trabalhar neles tanto no celular quanto no computador da escola e no de casa.",
+      ans: "cloud",
+      exp: "Armazenamento em Nuvem: Garante acesso instantâneo em múltiplos dispositivos via internet."
+    },
+    {
+      case: "Você deseja fazer um backup físico offline rápido para transferir arquivos de fotos para o notebook de um amigo que mora em área rural sem sinal de rede.",
+      ans: "pendrive",
+      exp: "Pendrive / HD Externo: Permite transporte físico rápido sem precisar de conexão de internet."
+    },
+    {
+      case: "Você quer instalar um software pesado de edição gráfica e quer que os dados rodem com a velocidade de acesso mais alta local.",
+      ans: "local",
+      exp: "Computador Local: O disco rígido interno (SSD/HD) oferece a menor latência e maior taxa de leitura local de dados."
+    }
+  ];
+
+  let current = 0;
+  let lives = 3;
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
+  container.appendChild(mainDiv);
+
+  const drawUI = () => {
+    if (current >= questions.length) {
+      addXP(50);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:1.8rem 0;">
+          <span style="font-size:3rem; display:block;">☁️</span>
+          <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Nuvem Concluída!</h4>
+          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você compreende as melhores mídias de armazenamento para cada caso.</p>
+          <button class="btn btn-primary" id="btn-finish-cloud-sim" style="width:100%;">Avançar Aula ➔</button>
+        </div>
+      `;
+      document.getElementById("btn-finish-cloud-sim").addEventListener("click", () => {
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return;
+    }
+
+    const item = questions[current];
+
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <span style="font-size:0.75rem; color:#aaa;">Caso ${current + 1} / ${questions.length}</span>
+      </div>
+      
+      <p style="font-size:0.82rem; color:#aaa; margin:0 0 0.5rem; font-weight:700;">💡 SELECIONE A MELHOR MÍDIA:</p>
+      <div style="background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:1.2rem; margin-bottom:1.2rem; font-size:0.85rem; line-height:1.45; color:#ccc;">
+        "${item.case}"
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:0.5rem;" id="cloud-actions">
+        <button class="btn btn-outline" data-ans="local" style="text-align:left; font-size:0.82rem; padding:0.6rem 0.8rem;">🖥️ Computador Local (SSD/HD)</button>
+        <button class="btn btn-outline" data-ans="pendrive" style="text-align:left; font-size:0.82rem; padding:0.6rem 0.8rem;">📟 Pendrive / HD Externo</button>
+        <button class="btn btn-outline" data-ans="cloud" style="text-align:left; font-size:0.82rem; padding:0.6rem 0.8rem;">☁️ Armazenamento em Nuvem</button>
+      </div>
+
+      <div id="cloud-feedback" style="margin-top:0.8rem; display:none; padding:0.8rem; border-radius:8px; font-size:0.8rem; line-height:1.45;"></div>
+    `;
+
+    const btns = mainDiv.querySelectorAll("#cloud-actions button");
+    const feed = mainDiv.querySelector("#cloud-feedback");
+
+    btns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        btns.forEach(b => b.disabled = true);
+        const ans = btn.getAttribute("data-ans");
+        
+        feed.style.display = "block";
+        if (ans === item.ans) {
+          btn.style.background = "rgba(16, 185, 129, 0.15)";
+          btn.style.borderColor = "#10b981";
+          btn.style.color = "#10b981";
+          feed.style.background = "rgba(16, 185, 129, 0.05)";
+          feed.style.border = "1px solid rgba(16, 185, 129, 0.2)";
+          feed.style.color = "#22c55e";
+          feed.innerHTML = `<strong>✅ Correto!</strong> ${item.exp}`;
+        } else {
+          lives--;
+          btn.style.background = "rgba(239, 68, 68, 0.15)";
+          btn.style.borderColor = "#ef4444";
+          btn.style.color = "#ef4444";
+          
+          feed.style.background = "rgba(239, 68, 68, 0.05)";
+          feed.style.border = "1px solid rgba(239, 68, 68, 0.2)";
+          feed.style.color = "#f87171";
+          feed.innerHTML = `<strong>❌ Incorreto!</strong> ${item.exp}`;
+        }
+
+        if (lives <= 0) {
+          setTimeout(() => {
+            mainDiv.innerHTML = `
+              <div style="text-align:center; padding:1.8rem 0;">
+                <span style="font-size:3rem; display:block;">❌</span>
+                <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Vidas Esgotadas!</h4>
+                <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Tente novamente avaliando com calma as mídias de salvamento.</p>
+                <button class="btn btn-outline" id="btn-retry-cloud" style="width:100%;">Tentar Novamente 🔄</button>
+              </div>
+            `;
+            document.getElementById("btn-retry-cloud").addEventListener("click", () => {
+              initCloudQuestSimulator(container, true);
+            });
+          }, 2000);
+        } else {
+          const nextBtn = document.createElement("button");
+          nextBtn.className = "btn btn-primary";
+          nextBtn.style.cssText = "width:100%; margin-top:1rem; font-size:0.82rem;";
+          nextBtn.textContent = current === questions.length - 1 ? "🏁 Finalizar Missão" : "Próximo Caso ➔";
+          nextBtn.addEventListener("click", () => {
+            current++;
+            drawUI();
+          });
+          feed.appendChild(nextBtn);
+        }
+      });
+    });
+  };
+
+  drawUI();
+}
+
+// 9. Grande Missão do Escritório (Office Adventure)
+function initOfficeAdventureSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  let lives = 3;
+  let timeLeft = 90;
+  let timerInterval;
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
+  container.appendChild(mainDiv);
+
+  // Metas do aluno
+  let goals = {
+    usbConnected: false,
+    folderCreated: false,
+    subfolderCreated: false,
+    fileMoved: false,
+    downloadDone: false,
+    fileCopiedToUsb: false,
+    usbEjectedSafely: false
+  };
+
+  let localFiles = [
+    { name: "relatorio_mensal.docx", type: "file", icon: "📄", location: "desktop" }
+  ];
+  let usbFiles = [];
+
+  let isUsbInserted = false;
+  let isUsbEjected = false;
+  let activeWindow = "desktop"; // "desktop", "explorer", "internet"
+  let explorerCurrentPath = "root"; // "root", "Trabalho", "Relatorios", "Downloads", "USB"
+
+  const checkCompletion = () => {
+    if (goals.usbConnected && goals.folderCreated && goals.subfolderCreated && goals.fileMoved && goals.downloadDone && goals.fileCopiedToUsb && goals.usbEjectedSafely) {
+      clearInterval(timerInterval);
+      addXP(150);
+      
+      let stars = "⭐";
+      if (timeLeft > 50) stars = "⭐⭐⭐";
+      else if (timeLeft > 25) stars = "⭐⭐";
+
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:1.5rem 0;">
+          <span style="font-size:3.5rem; display:block;">🏆</span>
+          <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Escritório 100% Organizado!</h4>
+          <p style="font-size:0.82rem; color:#ccc; margin-bottom:0.6rem;">Pontuação: ${stars}</p>
+          <p style="font-size:0.78rem; color:#aaa; margin-bottom:1.2rem;">Tempo restante: ${timeLeft}s. O backup foi feito com segurança.</p>
+          <button class="btn btn-primary" id="btn-finish-office-adv" style="width:100%;">Avançar Aula ➔</button>
+        </div>
+      `;
+      document.getElementById("btn-finish-office-adv").addEventListener("click", () => {
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return true;
+    }
+    return false;
+  };
+
+  const handleActionError = (msg) => {
+    lives--;
+    if (lives <= 0) {
+      clearInterval(timerInterval);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:1.8rem 0;">
+          <span style="font-size:3rem; display:block;">❌</span>
+          <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Falhou!</h4>
+          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Suas vidas acabaram ou você cometeu um erro crítico de hardware.</p>
+          <button class="btn btn-outline" id="btn-retry-office-adv" style="width:100%;">Tentar Novamente 🔄</button>
+        </div>
+      `;
+      document.getElementById("btn-retry-office-adv").addEventListener("click", () => {
+        initOfficeAdventureSimulator(container, true);
+      });
+    } else {
+      showToastNotification("❌ Ação Inválida!", msg);
+      drawUI();
+    }
+  };
+
+  const drawUI = () => {
+    if (checkCompletion()) return;
+
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.5rem;">
+        <span style="font-weight:700; color:#fbbf24; font-size:0.8rem;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <span style="font-weight:700; color:#ef4444; font-size:0.8rem;">⏱️ Cronômetro: ${timeLeft}s</span>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 200px 1fr; gap: 10px; min-height: 310px;">
+        <!-- Painel de Metas à Esquerda -->
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:0.6rem; font-size:0.75rem; line-height:1.4;">
+          <strong style="display:block; color:var(--color-primary-light); margin-bottom:0.4rem; border-bottom:1px solid rgba(255,255,255,0.05);">📋 LISTA DE METAS:</strong>
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <div>${goals.usbConnected ? "✅" : "⬜"} Conectar Pendrive</div>
+            <div>${goals.folderCreated ? "✅" : "⬜"} Criar pasta 'Trabalho'</div>
+            <div>${goals.subfolderCreated ? "✅" : "⬜"} Criar 'Relatorios'</div>
+            <div>${goals.fileMoved ? "✅" : "⬜"} Mover relatorio_mensal</div>
+            <div>${goals.downloadDone ? "✅" : "⬜"} Baixar metas da internet</div>
+            <div>${goals.fileCopiedToUsb ? "✅" : "⬜"} Backup no Pendrive</div>
+            <div>${goals.usbEjectedSafely ? "✅" : "⬜"} Ejetar USB seguro</div>
+          </div>
+        </div>
+
+        <!-- Área de Simulação do Computador à Direita -->
+        <div style="background:#121226; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.6rem; display:flex; flex-direction:column; position:relative;">
+          <!-- Barra Superior do Monitor Virtual -->
+          <div style="display:flex; gap:0.4rem; background:rgba(255,255,255,0.02); padding:0.3rem 0.5rem; border-radius:6px; font-size:0.72rem; align-items:center; margin-bottom:0.6rem;">
+            <button class="btn btn-outline btn-small" id="btn-win-desktop" style="padding:2px 6px; font-size:0.7rem; border-color:transparent; background:${activeWindow === "desktop" ? "rgba(255,255,255,0.08)" : "none"};">🖥️ Desktop</button>
+            <button class="btn btn-outline btn-small" id="btn-win-explorer" style="padding:2px 6px; font-size:0.7rem; border-color:transparent; background:${activeWindow === "explorer" ? "rgba(255,255,255,0.08)" : "none"};">📂 Pastas</button>
+            <button class="btn btn-outline btn-small" id="btn-win-internet" style="padding:2px 6px; font-size:0.7rem; border-color:transparent; background:${activeWindow === "internet" ? "rgba(255,255,255,0.08)" : "none"};">🌐 Internet</button>
+            
+            <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+              ${isUsbInserted && !isUsbEjected ? `
+                <div id="tray-eject-btn" style="cursor:pointer; color:#10b981; font-weight:bold; font-size:0.7rem;" title="Ejetar Pendrive com segurança">
+                  📟 Ejetar
+                </div>
+              ` : ""}
+            </div>
+          </div>
+
+          <!-- Conteúdo da Janela Ativa -->
+          <div style="flex:1; display:flex; flex-direction:column;">
+            ${activeWindow === "desktop" ? `
+              <!-- Desktop do Windows -->
+              <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between; position:relative;">
+                <div style="display:flex; flex-wrap:wrap; gap:0.8rem; padding:0.4rem;">
+                  <!-- Arquivos no Desktop -->
+                  ${localFiles.filter(f => f.location === "desktop").map(file => `
+                    <div class="desktop-icon-item" data-name="${file.name}" style="width:60px; text-align:center; cursor:pointer;">
+                      <span style="font-size:1.8rem; display:block;">${file.icon}</span>
+                      <span style="font-size:0.65rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${file.name}</span>
+                    </div>
+                  `).join("")}
+
+                  ${goals.folderCreated ? `
+                    <div class="desktop-icon-item" data-name="Trabalho" style="width:60px; text-align:center; cursor:pointer;">
+                      <span style="font-size:1.8rem; display:block;">📁</span>
+                      <span style="font-size:0.65rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">Trabalho</span>
+                    </div>
+                  ` : ""}
+                </div>
+
+                <!-- Parte Inferior do Desktop: Onde Conectar USB ou Ejetar -->
+                <div style="display:flex; justify-content:space-between; align-items:center; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.04);">
+                  ${!isUsbInserted ? `
+                    <button class="btn btn-outline btn-small" id="btn-desktop-insert-usb" style="background:#3b82f6; border-color:#2563eb; color:#fff; font-size:0.7rem; padding:0.25rem 0.5rem;">
+                      📟 Conectar Pendrive USB
+                    </button>
+                  ` : `
+                    <button class="btn btn-outline btn-small" id="btn-desktop-pull-usb" style="background:#ef4444; border-color:#dc2626; color:#fff; font-size:0.7rem; padding:0.25rem 0.5rem;">
+                      ⚠️ Puxar Pendrive USB
+                    </button>
+                  `}
+                </div>
+              </div>
+            ` : activeWindow === "explorer" ? `
+              <!-- Explorador de Arquivos -->
+              <div style="flex:1; display:flex; flex-direction:column;">
+                <!-- Barra de Navegação Interna -->
+                <div style="display:flex; gap:4px; padding:2px; background:rgba(0,0,0,0.2); border-radius:4px; margin-bottom:0.4rem; align-items:center; font-size:0.7rem;">
+                  ${explorerCurrentPath !== "root" ? `<button id="btn-explorer-back-adv" style="background:none; border:none; color:#fff; cursor:pointer;">⬅ Voltar</button>` : ""}
+                  <span style="color:#888; font-family:var(--font-code);">C:\\${explorerCurrentPath === "root" ? "" : explorerCurrentPath}</span>
+                  
+                  <div style="margin-left:auto; display:flex; gap:0.25rem;">
+                    <button class="btn btn-outline btn-small" id="btn-explorer-newfolder" style="font-size:0.65rem; padding:1px 4px;">📁 Nova Pasta</button>
+                    <button class="btn btn-outline btn-small" id="btn-explorer-cut" style="font-size:0.65rem; padding:1px 4px;">✂️ Recortar</button>
+                    <button class="btn btn-outline btn-small" id="btn-explorer-paste" style="font-size:0.65rem; padding:1px 4px;">📋 Colar</button>
+                  </div>
+                </div>
+
+                <div style="flex:1; background:rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.04); border-radius:6px; padding:0.4rem; display:flex; flex-wrap:wrap; gap:0.6rem;" id="adv-explorer-files">
+                  <!-- Exibe arquivos de acordo com o path do explorer -->
+                  ${getExplorerFilesMarkup()}
+                </div>
+              </div>
+            ` : `
+              <!-- Internet / Nuvem -->
+              <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:1rem; text-align:center;">
+                <span style="font-size:2.5rem; display:block; margin-bottom:0.4rem;">🌐</span>
+                <strong style="font-size:0.8rem; display:block; margin-bottom:0.2rem;">Portal da Escola (Nuvem)</strong>
+                <p style="font-size:0.7rem; color:#aaa; margin:0 0 0.8rem 0; max-width:240px;">Faça download das metas e envie seu relatório final organizando o backup.</p>
+                
+                <div style="display:flex; flex-direction:column; gap:0.4rem; width:100%; max-width:200px;">
+                  <button class="btn btn-outline btn-small" id="btn-internet-download" style="font-size:0.72rem;">⬇️ Baixar arquivo 'metas.pdf'</button>
+                  <button class="btn btn-outline btn-small" id="btn-internet-upload" style="font-size:0.72rem;">⬆️ Upload de Backup do Pendrive</button>
+                </div>
+              </div>
+            `}
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Bind das abas superiores
+    const setWin = (win) => {
+      activeWindow = win;
+      drawUI();
+    };
+    mainDiv.querySelector("#btn-win-desktop").addEventListener("click", () => setWin("desktop"));
+    mainDiv.querySelector("#btn-win-explorer").addEventListener("click", () => setWin("explorer"));
+    mainDiv.querySelector("#btn-win-internet").addEventListener("click", () => setWin("internet"));
+
+    // Conectar USB
+    const insertUsb = mainDiv.querySelector("#btn-desktop-insert-usb");
+    if (insertUsb) {
+      insertUsb.addEventListener("click", () => {
+        isUsbInserted = true;
+        goals.usbConnected = true;
+        showToastNotification("📟 USB Conectado!", "Dispositivo Mass Storage pronto.");
+        drawUI();
+      });
+    }
+
+    // Puxar USB diretamente
+    const pullUsb = mainDiv.querySelector("#btn-desktop-pull-usb");
+    if (pullUsb) {
+      pullUsb.addEventListener("click", () => {
+        if (!isUsbEjected) {
+          handleActionError("Você removeu o pendrive ativo sem ejetá-lo por software! Arquivos corrompidos.");
+          isUsbInserted = false;
+          goals.usbConnected = false;
+        } else {
+          isUsbInserted = false;
+          showToastNotification("✅ Removido!", "Pendrive removido com segurança.");
+          drawUI();
+        }
+      });
+    }
+
+    // Ejetar USB por software
+    const ejectUsb = mainDiv.querySelector("#tray-eject-btn");
+    if (ejectUsb) {
+      ejectUsb.addEventListener("click", () => {
+        isUsbEjected = true;
+        goals.usbEjectedSafely = true;
+        showToastNotification("✅ Seguro para Remover!", "Você pode desconectar o USB fisicamente.");
+        drawUI();
+      });
+    }
+
+    // Botões do Explorador
+    if (activeWindow === "explorer") {
+      const backExp = mainDiv.querySelector("#btn-explorer-back-adv");
+      if (backExp) {
+        backExp.addEventListener("click", () => {
+          if (explorerCurrentPath === "Relatorios") explorerCurrentPath = "Trabalho";
+          else explorerCurrentPath = "root";
+          drawUI();
+        });
+      }
+
+      // Nova Pasta
+      mainDiv.querySelector("#btn-explorer-newfolder").addEventListener("click", () => {
+        if (explorerCurrentPath === "root" && !goals.folderCreated) {
+          goals.folderCreated = true;
+          showToastNotification("📁 Criado!", "Pasta Trabalho criada.");
+          drawUI();
+        } else if (explorerCurrentPath === "Trabalho" && !goals.subfolderCreated) {
+          goals.subfolderCreated = true;
+          showToastNotification("📁 Criado!", "Subpasta Relatorios criada.");
+          drawUI();
+        } else {
+          handleActionError("Você só pode criar pastas no destino correto solicitado pela meta.");
+        }
+      });
+
+      // Recortar & Colar Simplificado
+      let selectedName = null;
+      const expItems = mainDiv.querySelectorAll(".explorer-item-adv");
+      expItems.forEach(item => {
+        item.addEventListener("click", () => {
+          expItems.forEach(i => i.style.background = "");
+          item.style.background = "rgba(124,58,237,0.15)";
+          selectedName = item.getAttribute("data-name");
+        });
+        item.addEventListener("dblclick", () => {
+          const name = item.getAttribute("data-name");
+          if (name === "Trabalho" || name === "Relatorios" || name === "Downloads" || name === "USB") {
+            explorerCurrentPath = name;
+            drawUI();
+          }
+        });
+      });
+
+      let clipItem = null;
+      mainDiv.querySelector("#btn-explorer-cut").addEventListener("click", () => {
+        if (selectedName) {
+          clipItem = selectedName;
+          showToastNotification("✂️ Recortado!", `${selectedName} recortado.`);
+        }
+      });
+
+      mainDiv.querySelector("#btn-explorer-paste").addEventListener("click", () => {
+        if (clipItem === "relatorio_mensal.docx" && explorerCurrentPath === "Relatorios") {
+          // Remove do desktop e põe em Relatorios
+          const idx = localFiles.findIndex(f => f.name === "relatorio_mensal.docx");
+          if (idx !== -1) {
+            localFiles[idx].location = "Relatorios";
+          }
+          goals.fileMoved = true;
+          clipItem = null;
+          showToastNotification("📋 Movido!", "relatorio_mensal.docx movido para Relatorios.");
+          drawUI();
+        } else if (clipItem === "metas.pdf" && explorerCurrentPath === "USB") {
+          // Copia para o pendrive
+          usbFiles.push({ name: "metas.pdf", type: "file", icon: "📄" });
+          goals.fileCopiedToUsb = true;
+          clipItem = null;
+          showToastNotification("📋 Copiado!", "metas.pdf copiado para o Pendrive.");
+          drawUI();
+        } else {
+          handleActionError("Mova ou copie arquivos para os destinos adequados exigidos pelas metas.");
+        }
+      });
+    }
+
+    // Ações da Internet
+    if (activeWindow === "internet") {
+      mainDiv.querySelector("#btn-internet-download").addEventListener("click", () => {
+        if (!goals.downloadDone) {
+          goals.downloadDone = true;
+          localFiles.push({ name: "metas.pdf", type: "file", icon: "📄", location: "Downloads" });
+          showToastNotification("⬇️ Download Concluído!", "Arquivo metas.pdf salvo na pasta Downloads.");
+          drawUI();
+        }
+      });
+
+      mainDiv.querySelector("#btn-internet-upload").addEventListener("click", () => {
+        if (goals.fileCopiedToUsb) {
+          showToastNotification("⬆️ Upload Concluído!", "Backup enviado com sucesso para os servidores.");
+          drawUI();
+        } else {
+          handleActionError("Você precisa ter a cópia de metas.pdf dentro do USB antes de fazer o upload.");
+        }
+      });
+    }
+  };
+
+  const getExplorerFilesMarkup = () => {
+    if (explorerCurrentPath === "root") {
+      let rootItems = [];
+      if (goals.folderCreated) rootItems.push({ name: "Trabalho", icon: "📁" });
+      if (goals.downloadDone) rootItems.push({ name: "Downloads", icon: "📁" });
+      if (isUsbInserted) rootItems.push({ name: "USB", icon: "📁" });
+
+      if (rootItems.length === 0) return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">Diretório vazio.</div>`;
+      return rootItems.map(item => `
+        <div class="explorer-item-adv" data-name="${item.name}" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
+          <span style="font-size:1.8rem; display:block;">${item.icon}</span>
+          <span style="font-size:0.6rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; margin-top:1px;">${item.name}</span>
+        </div>
+      `).join("");
+    }
+
+    if (explorerCurrentPath === "Trabalho") {
+      if (goals.subfolderCreated) {
+        return `
+          <div class="explorer-item-adv" data-name="Relatorios" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
+            <span style="font-size:1.8rem; display:block;">📁</span>
+            <span style="font-size:0.65rem; color:#fff; display:block;">Relatorios</span>
+          </div>
+        `;
+      }
+      return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">Trabalho está vazio.</div>`;
+    }
+
+    if (explorerCurrentPath === "Relatorios") {
+      const files = localFiles.filter(f => f.location === "Relatorios");
+      if (files.length === 0) return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">Relatorios está vazio.</div>`;
+      return files.map(item => `
+        <div class="explorer-item-adv" data-name="${item.name}" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
+          <span style="font-size:1.8rem; display:block;">${item.icon}</span>
+          <span style="font-size:0.65rem; color:#fff; display:block;">${item.name}</span>
+        </div>
+      `).join("");
+    }
+
+    if (explorerCurrentPath === "Downloads") {
+      const files = localFiles.filter(f => f.location === "Downloads");
+      if (files.length === 0) return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">Downloads está vazio.</div>`;
+      return files.map(item => `
+        <div class="explorer-item-adv" data-name="${item.name}" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
+          <span style="font-size:1.8rem; display:block;">${item.icon}</span>
+          <span style="font-size:0.65rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${item.name}</span>
+        </div>
+      `).join("");
+    }
+
+    if (explorerCurrentPath === "USB") {
+      if (usbFiles.length === 0) return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">O Pendrive está vazio.</div>`;
+      return usbFiles.map(item => `
+        <div class="explorer-item-adv" data-name="${item.name}" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
+          <span style="font-size:1.8rem; display:block;">${item.icon}</span>
+          <span style="font-size:0.65rem; color:#fff; display:block;">${item.name}</span>
+        </div>
+      `).join("");
+    }
+  };
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:1.8rem 0;">
+          <span style="font-size:3rem; display:block;">⏱️</span>
+          <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Tempo Limite Esgotado!</h4>
+          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você levou mais de 90 segundos para realizar as tarefas organizacionais.</p>
+          <button class="btn btn-outline" id="btn-retry-office-time" style="width:100%;">Tentar Novamente 🔄</button>
+        </div>
+      `;
+      document.getElementById("btn-retry-office-time").addEventListener("click", () => {
+        initOfficeAdventureSimulator(container, true);
+      });
+    } else {
+      const timeSpan = mainDiv.querySelector("span[style*='color:#ef4444']");
+      if (timeSpan) timeSpan.textContent = `⏱️ Cronômetro: ${timeLeft}s`;
+    }
+  }, 1000);
+
+  drawUI();
+}
+
+// 10. Atividade Reflexiva com gravação de notas (Aula 5)
+async function initAula5Reflexao(container, isReset = false) {
+  container.innerHTML = "";
+  const slideId = "aula5-cap11-conclusao";
+  const saved = state.notes[slideId] || "";
+  
+  container.innerHTML = `
+    <div style="background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:16px;">
+      <h4 style="margin:0 0 8px;">✍️ Atividade Reflexiva da Missão 5</h4>
+      <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Desafio Prático:</strong> Imagine que você tem fotos pessoais, trabalhos da escola, recibos de contas e vídeos de viagens. Descreva detalhadamente abaixo como você organizaria essas pastas, que nomes daria para as subpastas e onde faria o backup de segurança para nunca perder nada. Suas notas serão gravadas no seu bloco de anotações.</p>
+      <textarea id="aula5-reflexao-textarea-local" style="width:100%; min-height:120px; background:var(--bg-base); border:1px solid var(--border-soft); border-radius:10px; padding:12px; color:var(--text-primary); font-size:0.9rem; resize:vertical; line-height:1.6;" placeholder="Escreva sua resposta de forma organizada..."></textarea>
+      <button class="btn btn-primary mt-1" id="aula5-save-btn-local" style="width:100%;">💾 Salvar Minhas Estruturas Organizadas</button>
+      <div id="aula5-save-feedback-local" class="text-small mt-1" style="font-weight:bold;"></div>
+    </div>
+  `;
+  
+  const btn = document.getElementById("aula5-save-btn-local");
+  const textarea = document.getElementById("aula5-reflexao-textarea-local");
+  const feedback = document.getElementById("aula5-save-feedback-local");
+  
+  if (textarea) textarea.value = saved;
+  
+  btn.addEventListener("click", async () => {
+    const val = textarea.value.trim();
+    if (val.length < 30) {
+      feedback.style.color = "#ef4444";
+      feedback.textContent = "❌ Reflexão muito curta! Escreva pelo menos 30 caracteres.";
+      return;
+    }
+    btn.disabled = true;
+    feedback.style.color = "#fbbf24";
+    feedback.textContent = "⌛ Salvando anotações...";
+    try {
+      state.notes[slideId] = val;
+      
+      if (!state.completedLessons) state.completedLessons = {};
+      state.completedLessons["aula-5"] = true;
+      
+      addXP(100);
+      unlockAchievement("guardian_files");
+      markSlideAsCompleted(slideId);
+      
+      saveState();
+      initSidebarMenu();
+      
+      feedback.style.color = "#10b981";
+      feedback.textContent = "✅ Sucesso! Suas anotações foram gravadas no seu bloco de notas e a lição 5 foi concluída!";
+      showToastNotification("📂 Guardião dos Arquivos!", "Medalha conquistada e aula concluída.");
+      
+      // Sincroniza também no DOM caso o textarea do slide didático esteja ativo
+      const domTextarea = document.getElementById("aula5-reflexao-textarea");
+      const domFeedback = document.getElementById("aula5-save-feedback");
+      if (domTextarea) domTextarea.value = val;
+      if (domFeedback) {
+        domFeedback.style.color = "#10b981";
+        domFeedback.textContent = "✅ Sucesso! Medalha desbloqueada!";
+      }
+    } catch (error) {
+      feedback.style.color = "#ef4444";
+      feedback.textContent = "❌ Erro ao salvar: " + error.message;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+}
+
 
 

@@ -2771,6 +2771,483 @@ const COURSE_CONTENT = [
         <div id="exp-save-feedback" class="text-small mt-1" style="font-weight:bold;"></div>
       </div>
     `
+  },
+  {
+    id: "aula5-intro",
+    title: "📂 Missão 5 — Introdução",
+    page: 74,
+    type: "theory",
+    chapter: "AULA 5",
+    content: `
+      <div class="conclusaoExp-hero" style="text-align:center; padding:1.5rem 1rem;">
+        <span style="font-size:5rem; display:block; animation: floatExp 3s ease-in-out infinite;">📂</span>
+        <h2 style="font-family:var(--font-display); font-size:2.2rem; font-weight:900; background:linear-gradient(90deg,#3b82f6,#60a5fa,#a78bfa,#3b82f6); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:shimmerExp 3s linear infinite; margin:0.5rem 0;">Missão 5 — Guardião dos Arquivos</h2>
+        <p style="font-style:italic; color:#a78bfa; font-size:1.1rem; margin-bottom:1.5rem;">"Um bom profissional não apenas sabe usar um computador. Ele sabe organizar suas informações."</p>
+        
+        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(124,58,237,0.2); border-radius:16px; padding:1.5rem; text-align:left; max-width:560px; margin:0 auto; line-height:1.6;">
+          <h4 style="margin:0 0 10px; color:#fff; display:flex; align-items:center; gap:8px;">🎯 Seus Objetivos de Aprendizado:</h4>
+          <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; font-size:0.9rem; color:#ccc;">
+            <li>📁 <strong>Criar Pastas e Subpastas</strong> organizadas logicamente.</li>
+            <li>✂️ Dominar a diferença crucial entre <strong>Copiar e Mover</strong> arquivos.</li>
+            <li>📦 Reconhecer extensões comuns (PDF, JPG, MP3, MP4, ZIP).</li>
+            <li>💾 Aprender sobre <strong>Backup, Pendrives</strong> e segurança.</li>
+            <li>☁️ Diferenciar <strong>Download vs Upload</strong> e explorar a Nuvem.</li>
+          </ul>
+        </div>
+
+        <div class="conquistasExp-grid" style="max-width:560px; margin:1.5rem auto 0 auto; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="conquistaExp-card">
+            <span class="conquistaExp-icon">⚡</span>
+            <span class="conquistaExp-label">XP Disponível</span>
+            <div class="conquistaExp-desc">+750 XP no Total</div>
+          </div>
+          <div class="conquistaExp-card">
+            <span class="conquistaExp-icon">📂</span>
+            <span class="conquistaExp-label">Medalha Rara</span>
+            <div class="conquistaExp-desc">🏆 Guardião dos Arquivos</div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap1-revisao",
+    title: "Capítulo 1 — Revisão da Aula 4",
+    page: 75,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "review-mission",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">🧠 Aquecimento: Revisão do Windows</h3>
+        <p style="line-height:1.6; margin-bottom:1.5rem;">Antes de mergulharmos em arquivos, vamos recordar o que aprendemos sobre o Windows e o Sistema Operacional na aula anterior.</p>
+        
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-bottom:1.5rem;">
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:1rem; border-radius:10px;">
+            <strong style="color:var(--color-primary-light);">🖥️ Área de Trabalho e Iniciar</strong>
+            <p style="font-size:0.82rem; color:#aaa; margin:4px 0 0 0; line-height:1.4;">A tela principal (Desktop) e o menu iniciar organizam seus atalhos e aplicativos favoritos de acesso rápido.</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:1rem; border-radius:10px;">
+            <strong style="color:var(--color-primary-light);">📂 Diretórios e Lixeira</strong>
+            <p style="font-size:0.82rem; color:#aaa; margin:4px 0 0 0; line-height:1.4;">Pastas guardam seus arquivos temporários ou finais. Arquivos deletados vão para a Lixeira e podem ser restaurados.</p>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.01); border:1px dashed rgba(255,255,255,0.1); border-radius:10px; padding:12px; text-align:center;">
+          💡 <strong>Simulação Interativa:</strong> Responda o quiz rápido abaixo para aquecer as engrenagens de memória!
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap2-faxina",
+    title: "Capítulo 2 — O Poder da Organização",
+    page: 76,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "digital-cleanup",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">🧹 Faxina Digital: Organizar para Produzir</h3>
+        <p style="line-height:1.6;">Imagine trabalhar em uma mesa onde papéis de trabalho, fotos de família, brinquedos e lixo estão todos misturados. É impossível ser produtivo! No computador, o conceito é idêntico.</p>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:1.5rem 0;">
+          <div style="background:rgba(239, 68, 68, 0.05); border:1px solid rgba(239,68,68,0.2); border-radius:12px; padding:1.2rem; text-align:center;">
+            <span style="font-size:2rem; display:block;">❌</span>
+            <strong style="color:#ef4444; display:block; margin:6px 0;">Desktop Bagunçado</strong>
+            <p style="font-size:0.8rem; color:#aaa; margin:0; line-height:1.45;">Perda de tempo procurando arquivos, lentidão mental e risco de deletar arquivos importantes por engano.</p>
+          </div>
+          <div style="background:rgba(16, 185, 129, 0.05); border:1px solid rgba(16,185,129,0.2); border-radius:12px; padding:1.2rem; text-align:center;">
+            <span style="font-size:2rem; display:block;">✅</span>
+            <strong style="color:#10b981; display:block; margin:6px 0;">Desktop Limpo</strong>
+            <p style="font-size:0.8rem; color:#aaa; margin:0; line-height:1.45;">Encontra qualquer documento em segundos. Organização lógica empresarial que melhora a rotina diária.</p>
+          </div>
+        </div>
+
+        <p style="line-height:1.6; margin-bottom:1.5rem;">As empresas e profissionais separam seus dados em categorias bem definidas: <strong>Fotos, Trabalhos, Vídeos, Músicas e Documentos</strong>.</p>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap3-pastas",
+    title: "Capítulo 3 — Criando Pastas Inteligentes",
+    page: 77,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "folder-architect",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">📁 Pastas e Subpastas: A Árvore de Diretórios</h3>
+        <p style="line-height:1.6;">Para organizar dados, criamos uma estrutura hierárquica. Uma pasta principal (como "Escola") pode conter subpastas (como "Matemática", "Português") para refinar a busca.</p>
+        
+        <div style="background:rgba(124,58,237,0.05); border:1px solid rgba(124,58,237,0.2); border-radius:12px; padding:1.2rem; margin-bottom:1.5rem; line-height:1.5;">
+          <strong style="color:var(--color-primary-light); display:block; margin-bottom:0.5rem;">⚙️ Boas Práticas ao Nomear Pastas:</strong>
+          <ul style="padding-left:1.2rem; margin:0; font-size:0.85rem; color:#ccc; display:flex; flex-direction:column; gap:4px;">
+            <li>Nomes claros e curtos (ex: "Trabalhos_2026" em vez de "coisas").</li>
+            <li>Evite caracteres especiais (\, /, :, *, ?, ", <, >, |) pois o sistema os bloqueia.</li>
+            <li>Separe por categorias principais (Escola, Trabalho, Pessoal).</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap4-extensoes",
+    title: "Capítulo 4 — Tipos de Arquivos",
+    page: 78,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "file-detective",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">📦 Identificando Arquivos por suas Extensões</h3>
+        <p style="line-height:1.6;">Todo arquivo possui um nome seguido de um ponto e sua **extensão** (ex: <code>relatorio.pdf</code>). A extensão diz ao Windows qual programa usar para ler aquele dado.</p>
+        
+        <div style="overflow-x:auto; margin-bottom:1.5rem;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.82rem; background:rgba(255,255,255,0.02); border-radius:10px; overflow:hidden;">
+            <thead>
+              <tr style="background:rgba(124,58,237,0.15); border-bottom:1px solid rgba(255,255,255,0.1);">
+                <th style="padding:8px; text-align:left; color:#fff;">Tipo</th>
+                <th style="padding:8px; text-align:left; color:#fff;">Extensão</th>
+                <th style="padding:8px; text-align:left; color:#fff;">Para que serve</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px; font-weight:700;">📄 Documento</td>
+                <td style="padding:8px; color:var(--color-primary-light);">.pdf / .txt</td>
+                <td style="padding:8px; color:#aaa;">Textos oficiais legíveis ou anotações limpas.</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px; font-weight:700;">🖼️ Imagem</td>
+                <td style="padding:8px; color:var(--color-primary-light);">${".jpg / .png"}</td>
+                <td style="padding:8px; color:#aaa;">Fotografias e designs gráficos compactados.</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:8px; font-weight:700;">🎵 Áudio / 🎬 Vídeo</td>
+                <td style="padding:8px; color:var(--color-primary-light);">.mp3 / .mp4</td>
+                <td style="padding:8px; color:#aaa;">Músicas e gravações audiovisuais de alta qualidade.</td>
+              </tr>
+              <tr>
+                <td style="padding:8px; font-weight:700;">📦 Compactado</td>
+                <td style="padding:8px; color:var(--color-primary-light);">.zip</td>
+                <td style="padding:8px; color:#aaa;">Agrupa e reduz o tamanho de vários arquivos juntos.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap5-copiar-mover",
+    title: "Capítulo 5 — Copiar, Mover e Excluir",
+    page: 79,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "digital-mailman",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">✂️ A Diferença entre Copiar e Mover</h3>
+        <p style="line-height:1.6;">Duas operações essenciais que confundem iniciantes. Entenda a diferença:</p>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:1.5rem 0;">
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem; text-align:center;">
+            <span style="font-size:2.2rem; display:block; margin-bottom:6px;">📋</span>
+            <strong style="color:var(--color-primary-light); display:block; margin-bottom:4px;">Copiar (Duplicar)</strong>
+            <p style="font-size:0.8rem; color:#aaa; margin:0; line-height:1.45;">Cria uma cópia idêntica no destino, mantendo o arquivo original no mesmo lugar. Útil para backups.</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem; text-align:center;">
+            <span style="font-size:2.2rem; display:block; margin-bottom:6px;">✂️</span>
+            <strong style="color:var(--color-primary-light); display:block; margin-bottom:4px;">Mover (Recortar)</strong>
+            <p style="font-size:0.8rem; color:#aaa; margin:0; line-height:1.45;">Transfere o arquivo para o novo destino e apaga o original da pasta antiga. Útil para organizar.</p>
+          </div>
+        </div>
+
+        <p style="line-height:1.6; margin-bottom:1.5rem;"><strong>Exclusão:</strong> Ao deletar um arquivo, ele vai para a <strong>Lixeira</strong>. Se esvaziar a lixeira, os arquivos são apagados definitivamente!</p>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap6-backup",
+    title: "Capítulo 6 — Pendrive e Backup",
+    page: 80,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "backup-master",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">💾 Backup e Dispositivos de Armazenamento Físico</h3>
+        <p style="line-height:1.6;">Computadores podem quebrar ou pegar vírus. Para evitar a perda irreparável de seus arquivos preciosos, fazemos **Backup** (cópias de segurança externas).</p>
+        
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin:1.2rem 0; text-align:center;">
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:12px; border-radius:8px;">
+            <span style="font-size:1.8rem; display:block; margin-bottom:4px;">📟</span>
+            <strong style="font-size:0.82rem; display:block;">Pendrive</strong>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:12px; border-radius:8px;">
+            <span style="font-size:1.8rem; display:block; margin-bottom:4px;">💽</span>
+            <strong style="font-size:0.82rem; display:block;">HD Externo</strong>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:12px; border-radius:8px;">
+            <span style="font-size:1.8rem; display:block; margin-bottom:4px;">💾</span>
+            <strong style="font-size:0.82rem; display:block;">MicroSD</strong>
+          </div>
+        </div>
+
+        <div style="background:rgba(245, 158, 11, 0.08); border:1px solid rgba(245, 158, 11, 0.25); border-radius:12px; padding:1.2rem; line-height:1.5;">
+          <strong style="color:#fbbf24; display:block; margin-bottom:4.5px;">⚠️ Regra de Ouro da Remoção Segura:</strong>
+          Nunca desconecte um pendrive do computador diretamente! Sempre clique no ícone da barra de tarefas do Windows e selecione <strong>"Ejetar com Segurança"</strong> para evitar corromper e queimar a memória de arquivos.
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap7-down-up",
+    title: "Capítulo 7 — Download e Upload",
+    page: 81,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "download-upload-challenge",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">⬇️ Download vs ⬆️ Upload: A Direção dos Dados</h3>
+        <p style="line-height:1.6;">Navegar na internet envolve transferir arquivos entre seu computador local e computadores remotos chamados servidores. O sentido dessa transferência muda o nome da ação:</p>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:1.5rem 0;">
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem; text-align:center;">
+            <span style="font-size:2.2rem; display:block; margin-bottom:6px;">⬇️</span>
+            <strong style="color:var(--color-primary-light); display:block; margin-bottom:4px;">Download (Baixar)</strong>
+            <p style="font-size:0.8rem; color:#aaa; margin:0; line-height:1.45;">Puxa um arquivo da internet para dentro do seu computador. Ex: Salvar uma foto enviada ou baixar um programa.</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem; text-align:center;">
+            <span style="font-size:2.2rem; display:block; margin-bottom:6px;">⬆️</span>
+            <strong style="color:var(--color-primary-light); display:block; margin-bottom:4px;">Upload (Enviar)</strong>
+            <p style="font-size:0.8rem; color:#aaa; margin:0; line-height:1.45;">Envia um arquivo local do seu computador para um servidor online. Ex: Postar uma foto ou enviar currículo por e-mail.</p>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap8-nuvem",
+    title: "Capítulo 8 — Conhecendo a Nuvem",
+    page: 82,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "cloud-quest",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">☁️ Armazenamento em Nuvem: Arquivos na Rede</h3>
+        <p style="line-height:1.6;">Em vez de salvar arquivos apenas no seu computador ou pendrives físicos, você pode armazená-los na <strong>Nuvem</strong> — servidores gigantescos conectados à internet.</p>
+        
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin:1.5rem 0; text-align:center;">
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:1rem 0.5rem; border-radius:10px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <span style="font-size:2rem; margin-bottom:4px;">📁</span>
+            <strong style="font-size:0.75rem;">Google Drive</strong>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:1rem 0.5rem; border-radius:10px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <span style="font-size:2rem; margin-bottom:4px;">☁️</span>
+            <strong style="font-size:0.75rem;">OneDrive</strong>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:1rem 0.5rem; border-radius:10px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <span style="font-size:2rem; margin-bottom:4px;">📦</span>
+            <strong style="font-size:0.75rem;">Dropbox</strong>
+          </div>
+        </div>
+
+        <div style="background:rgba(16, 185, 129, 0.06); border:1px solid rgba(16, 185, 129, 0.2); border-radius:12px; padding:1.2rem; line-height:1.5; font-size:0.85rem; color:#ccc;">
+          🚀 <strong>Vantagens da Nuvem:</strong>
+          Acesso de qualquer lugar (computador, celular ou tablet), compartilhamento rápido de links com outras pessoas e proteção automática contra danos de hardware locais.
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap9-grande-missao",
+    title: "Capítulo 9 — Grande Missão do Escritório",
+    page: 83,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "office-adventure",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">📂 Grande Missão: O Arquiteto do Escritório</h3>
+        <p style="line-height:1.6; margin-bottom:1.5rem;">Chegou o momento do desafio real! Você foi contratado como assistente de escritório virtual. Sua missão é estruturar pastas, limpar o Desktop bagunçado, transferir arquivos via download/upload e fazer um backup seguro no pendrive.</p>
+        
+        <div style="background:rgba(124,58,237,0.1); border:1px solid rgba(124,58,237,0.3); border-radius:12px; padding:1rem; font-size:0.85rem; color:#ccc;">
+          🏁 <strong>Objetivos do Simulador:</strong>
+          <ol style="margin:4px 0 0 0; padding-left:1.2rem; display:flex; flex-direction:column; gap:4px;">
+            <li>Criar a pasta "Trabalho" e a subpasta "Relatorios".</li>
+            <li>Classificar e mover arquivos do Desktop para as pastas corretas.</li>
+            <li>Efetuar o download do arquivo de metas e fazer upload do backup.</li>
+            <li>Ejetar o pendrive com segurança após transferir os dados.</li>
+          </ol>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula5-cap10-quiz",
+    title: "Capítulo 10 — Quiz Final",
+    page: 84,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "organization-final-quiz",
+    content: `
+      <div style="padding:1rem;">
+        <h3 style="margin-top:0;">🏁 Avaliação Teórica: Organização Digital</h3>
+        <p style="line-height:1.6; margin-bottom:1.5rem;">Responda às 10 questões objetivas abaixo para certificar seus conhecimentos em organização digital, backups, upload/download e extensões.</p>
+      </div>
+    `,
+    quiz: [
+      {
+        question: "O que é Download na internet?",
+        options: [
+          "Enviar um arquivo do computador local para um servidor online.",
+          "Baixar um arquivo de um servidor da internet para o seu computador local.",
+          "Excluir definitivamente um arquivo da lixeira do Windows.",
+          "Organizar seus arquivos locais em subpastas."
+        ],
+        correct: 1,
+        explanation: "Download é o ato de puxar ou transferir um dado que está na rede para a memória local do seu dispositivo."
+      },
+      {
+        question: "O que é Upload?",
+        options: [
+          "Baixar um vídeo da nuvem para o computador local.",
+          "Excluir arquivos duplicados de um pendrive.",
+          "Transferir ou enviar um arquivo local do seu computador para um servidor na internet.",
+          "Conectar um pendrive físico na porta USB."
+        ],
+        correct: 2,
+        explanation: "Upload é o sentido oposto do download: você envia um arquivo local do computador ou celular para a rede."
+      },
+      {
+        question: "Qual a diferença fundamental entre Copiar e Mover um arquivo?",
+        options: [
+          "Copiar cria uma cópia idêntica no destino mantendo o original; Mover transfere o arquivo para o destino e apaga o original.",
+          "Mover cria uma cópia e apaga o destino; Copiar transfere sem deixar cópias.",
+          "Nenhuma, ambas fazem o mesmo processo duplicando os dados.",
+          "Copiar serve apenas para pendrives e Mover serve apenas para nuvem."
+        ],
+        correct: 0,
+        explanation: "Copiar duplica o dado; Mover transfere o arquivo, o que significa que o arquivo original deixa de existir na pasta antiga."
+      },
+      {
+        question: "O que é um Backup e por que é vital realizá-lo?",
+        options: [
+          "É o processo de desinstalar programas inúteis do computador.",
+          "É uma cópia de segurança de seus arquivos salvos em mídias externas ou na nuvem para evitar a perda permanente de dados.",
+          "É renomear pastas antigas usando a data do dia.",
+          "É compactar arquivos em formato ZIP."
+        ],
+        correct: 1,
+        explanation: "Backup é sua garantia de segurança. Se o seu computador quebrar, for roubado ou infectado, você não perde seus dados cruciais."
+      },
+      {
+        question: "Para que serve a extensão de arquivo '.zip'?",
+        options: [
+          "Para rodar áudio e música de alta fidelidade.",
+          "Para compactar vários arquivos juntos em uma única pasta compactada, reduzindo o espaço de armazenamento.",
+          "Para reproduzir vídeos em resolução Ultra HD.",
+          "Para desenhar projetos gráficos em 3D."
+        ],
+        correct: 1,
+        explanation: "O formato .zip compacta e reúne múltiplos arquivos em uma única pasta leve, facilitando seu envio e economizando espaço."
+      },
+      {
+        question: "Qual a extensão padrão para documentos em formato PDF?",
+        options: [
+          ".png",
+          ".mp3",
+          ".pdf",
+          ".zip"
+        ],
+        correct: 2,
+        explanation: "A extensão padrão de documentos portáteis universais é .pdf."
+      },
+      {
+        question: "Como se deve ejetar um pendrive conectado ao Windows de forma totalmente segura?",
+        options: [
+          "Puxar o pendrive diretamente da porta USB a qualquer momento.",
+          "Clicar no ícone de remoção segura na bandeja da barra de tarefas do Windows e selecionar 'Ejetar' antes de desconectar.",
+          "Desligar o computador por completo sempre que precisar tirar o pendrive.",
+          "Arrastar o ícone do pendrive diretamente para a Lixeira da área de trabalho."
+        ],
+        correct: 1,
+        explanation: "Ejetar por software primeiro garante que o Windows finalize qualquer gravação em andamento, impedindo arquivos corrompidos."
+      },
+      {
+        question: "Qual das seguintes alternativas é uma grande vantagem do armazenamento em nuvem?",
+        options: [
+          "O acesso a arquivos de qualquer lugar com internet sem depender de um pendrive físico.",
+          "Aumentar fisicamente a memória RAM interna do computador local.",
+          "Poder funcionar 100% do tempo sem nenhuma conexão com a internet.",
+          "Deixar o processamento de jogos locais mais veloz."
+        ],
+        correct: 0,
+        explanation: "A nuvem permite centralizar seus backups e acessá-los do celular, notebook ou de qualquer navegador do mundo conectando-se à internet."
+      },
+      {
+        question: "Qual das seguintes extensões indica um arquivo de imagem?",
+        options: [
+          ".mp3",
+          ".png",
+          ".mp4",
+          ".txt"
+        ],
+        correct: 1,
+        explanation: "A extensão .png (Portable Network Graphics) indica um formato de imagem digital de alta qualidade com canal alfa (transparência)."
+      },
+      {
+        question: "Por padrão, em qual diretório o Windows salva os arquivos baixados de navegadores da internet?",
+        options: [
+          "Documentos",
+          "Lixeira",
+          "Downloads",
+          "Área de Trabalho"
+        ],
+        correct: 2,
+        explanation: "O diretório nativo pré-configurado no Windows e navegadores para salvar arquivos oriundos da internet é o diretório Downloads."
+      }
+    ]
+  },
+  {
+    id: "aula5-cap11-conclusao",
+    title: "🏆 Guardião dos Arquivos",
+    page: 85,
+    type: "challenge",
+    chapter: "AULA 5",
+    interactiveId: "aula5-reflexao",
+    content: `
+      <div class="conclusaoExp-hero" style="text-align:center; padding:2.5rem 1.5rem 1.5rem;">
+        <span class="conclusaoExp-trophy">🛡️</span>
+        <div class="conclusaoExp-title">Missão Concluída!</div>
+        <p class="conclusaoExp-sub">Parabéns! Você concluiu a Aula 5 e conquistou a medalha de <strong>Guardião dos Arquivos</strong>.<br>Sua organização digital agora é profissional! 🌟</p>
+      </div>
+
+      <div style="background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-top:1.5rem;">
+        <h4 style="margin:0 0 8px;">✍️ Atividade Reflexiva da Missão 5</h4>
+        <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Desafio Prático:</strong> Imagine que você tem fotos pessoais, trabalhos da escola, recibos de contas e vídeos de viagens. Descreva detalhadamente abaixo como você organizaria essas pastas, que nomes daria para as subpastas e onde faria o backup de segurança para nunca perder nada. Suas notas serão gravadas no seu bloco de anotações.</p>
+        <textarea id="aula5-reflexao-textarea" style="width:100%; min-height:120px; background:var(--bg-base); border:1px solid var(--border-soft); border-radius:10px; padding:12px; color:var(--text-primary); font-size:0.9rem; resize:vertical; line-height:1.6;" placeholder="Escreva sua resposta de forma organizada..."></textarea>
+        <button class="btn btn-primary mt-1" id="aula5-save-btn" style="width:100%;">💾 Salvar Minhas Estruturas Organizadas</button>
+        <div id="aula5-save-feedback" class="text-small mt-1" style="font-weight:bold;"></div>
+      </div>
+
+      <div class="proximasExp-aulas" style="background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(59,130,246,0.1)); border:1px solid rgba(16,185,129,0.3); border-radius:16px; padding:18px; margin-top:1.5rem; text-align:left;">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:1rem;color:var(--text-primary);margin-bottom:10px;">🗺️ Próxima Etapa do Curso</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(124,58,237,0.1);border-radius:10px;border:1px solid rgba(124,58,237,0.2);">
+            <span style="font-size:1.5rem;">🔒</span>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Aula 6 — Segurança e Cuidados <span class="badgeExp-aula">Bloqueada</span></div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">Aprenda sobre antivírus, cuidados físicos com o hardware e a proteção contra golpes online na próxima aula.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
   }
 ];
 
@@ -2778,4 +3255,5 @@ const COURSE_CONTENT = [
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { COURSE_CONTENT };
 }
+
 
