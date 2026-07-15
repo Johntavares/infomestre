@@ -150,7 +150,22 @@ window.getSchoolStudents = async function(schoolId) {
   if (profileError) throw profileError;
   if (!profiles || profiles.length === 0) return [];
 
-  // 2. Busca progresso para cada um desses perfis
+  // 2. Busca e-mails dos alunos de forma segura via RPC
+  let emailMap = {};
+  try {
+    const { data: emails, error: emailError } = await supabaseClient.rpc("get_school_students_emails", {
+      p_school_id: schoolId
+    });
+    if (!emailError && emails) {
+      emails.forEach(e => {
+        emailMap[e.student_id] = e.email;
+      });
+    }
+  } catch (err) {
+    console.warn("Aviso ao carregar e-mails dos alunos:", err);
+  }
+
+  // 3. Busca progresso para cada um desses perfis
   const studentIds = profiles.map(p => p.id);
   const { data: progressList, error: progressError } = await supabaseClient
     .from("student_progress")
@@ -159,7 +174,7 @@ window.getSchoolStudents = async function(schoolId) {
 
   if (progressError) throw progressError;
 
-  // 3. Mapeia e junta perfil com progresso
+  // 4. Mapeia e junta perfil com progresso e e-mail
   const progressMap = {};
   if (progressList) {
     progressList.forEach(p => {
@@ -169,6 +184,7 @@ window.getSchoolStudents = async function(schoolId) {
 
   return profiles.map(profile => ({
     ...profile,
+    email: emailMap[profile.id] || "",
     progress: progressMap[profile.id] || null
   }));
 };
