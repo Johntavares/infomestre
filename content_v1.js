@@ -3248,10 +3248,266 @@ const COURSE_CONTENT = [
         </div>
       </div>
     `
+  },
+  {
+    id: "aula6-intro",
+    title: "Objetivos e Manutenção Básica",
+    page: 86,
+    type: "intro",
+    chapter: "AULA 6",
+    content: `
+      <div class="welcome-container text-center" style="padding: 1.5rem 1rem;">
+        <div class="welcome-badge">⚙️ AULA 6</div>
+        <h1 class="welcome-title">Configurações e Manutenção Básica</h1>
+        <p class="welcome-subtitle">Aprenda a moldar o Windows para o seu trabalho e a cuidar do computador como um profissional.</p>
+        
+        <div class="grid grid-2 gap-2 mt-2" style="text-align: left;">
+          <div class="card bg-surface border-soft">
+            <h4>🔧 Controle do Sistema</h4>
+            <p>Ajuste o brilho, a resolução do monitor, configure os dispositivos de áudio corretos e personalize o ambiente de trabalho para melhor legibilidade.</p>
+          </div>
+          <div class="card bg-surface border-soft">
+            <h4>🛡️ Saúde e Postura</h4>
+            <p>Organize a sua estação de trabalho (cadeira, monitor e periféricos) seguindo regras rígidas de ergonomia para evitar lesões musculares.</p>
+          </div>
+        </div>
+
+        <div class="tip-box mt-2" style="text-align: left;">
+          <h4>🎯 Suas Metas nesta Aula:</h4>
+          <ul>
+            <li>Resolver 3 cenários práticos dentro do simulador do Explorador de Arquivos do Windows.</li>
+            <li>Identificar e solucionar falhas de hardware, driver e memória na Central de Manutenção.</li>
+            <li>Ajustar o setup ergonômico virtual com a postura profissional de digitação.</li>
+          </ul>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula6-1-resolucao",
+    title: "6.1 Tela, Brilho e Resolução",
+    page: 87,
+    type: "lesson",
+    chapter: "AULA 6",
+    content: `
+      <h2>6.1 Tela, Brilho e Resolução</h2>
+      <p>A tela é o principal canal de comunicação do computador com você. Ajustar as configurações visuais de forma correta previne fadiga ocular e aumenta o conforto.</p>
+      
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="icon">🖥️</div>
+          <div>
+            <h4>Resolução de Tela</h4>
+            <p>É a quantidade de pontos (pixels) que formam a imagem na tela. Quanto maior a resolução (ex: <strong>1920x1080 Full HD</strong>), mais nítida será a imagem e mais espaço você terá na área de trabalho para organizar suas janelas.</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="icon">🔆</div>
+          <div>
+            <h4>Brilho e Contraste</h4>
+            <p>O brilho deve ser regulado de acordo com a iluminação do ambiente. Em salas escuras, brilho muito alto causa dor de cabeça. Em ambientes claros, brilho baixo dificulta a leitura.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box mt-2">
+        <h4>💡 Recomendação Técnica</h4>
+        <p>Utilize sempre a <strong>resolução recomendada</strong> pelo fabricante do monitor para evitar imagens esticadas ou embaçadas no Windows.</p>
+      </div>
+    `
+  },
+  {
+    id: "aula6-2-som",
+    title: "6.2 Som e Dispositivos de Áudio",
+    page: 88,
+    type: "lesson",
+    chapter: "AULA 6",
+    content: `
+      <h2>6.2 Som e Dispositivos de Áudio</h2>
+      <p>O Windows permite gerenciar múltiplos dispositivos de entrada (microfones) e saída (caixas de som, fones de ouvido) conectados ao computador.</p>
+      
+      <div class="features-guide">
+        <div class="guide-item">
+          <div class="guide-icon">🔊</div>
+          <div class="guide-text">
+            <strong>Dispositivos de Saída:</strong> Se você plugar uma caixa de som na parte de trás e um fone na frente, clique no ícone de som na barra de tarefas para selecionar por qual dispositivo o áudio deve sair.
+          </div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-icon">🎙️</div>
+          <div class="guide-text">
+            <strong>Dispositivos de Entrada (Microfone):</strong> Essencial para reuniões e chamadas de voz. O Windows permite testar o volume do microfone nas configurações para checar se ele está captando sua voz.
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info mt-2">
+        <strong>Dica de Suporte:</strong> Quando o som sumir, o primeiro passo do técnico é verificar se o dispositivo correto está marcado como "Dispositivo Padrão" no Windows.
+      </div>
+    `
+  },
+  {
+    id: "aula6-3-data-hora",
+    title: "6.3 Data, Hora e Idioma",
+    page: 89,
+    type: "lesson",
+    chapter: "AULA 6",
+    content: `
+      <h2>6.3 Ajustando Data, Hora e Idioma</h2>
+      <p>A data e a hora do computador não servem apenas para você ver o horário; elas são fundamentais para a segurança e autenticidade da navegação na internet.</p>
+      
+      <div class="concept-grid">
+        <div class="concept-card">
+          <div class="icon">⏰</div>
+          <div>
+            <h4>Sincronização de Rede</h4>
+            <p>O Windows se conecta a servidores de hora da internet (como o <strong>time.windows.com</strong>) para manter os segundos sempre exatos. Se a data estiver muito errada (exemplo: anos atrás), navegadores bloquearão sites exibindo "Erro de Conexão Segura (SSL)".</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="icon">🌐</div>
+          <div>
+            <h4>Idioma e Teclado</h4>
+            <p>Configurar o layout de teclado correto (ABNT2 para teclados brasileiros com a tecla <strong>Ç</strong>) é vital para conseguir acentuar palavras e usar caracteres especiais sem dor de cabeça.</p>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula6-4-personalizacao",
+    title: "6.4 Personalizando a Interface",
+    page: 90,
+    type: "lesson",
+    chapter: "AULA 6",
+    content: `
+      <h2>6.4 Personalizando a Interface do Windows</h2>
+      <p>A personalização ajuda a tornar a interface de trabalho do sistema operacional mais produtiva e adaptada ao seu estilo de uso.</p>
+      
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>🖼️ Papel de Parede (Fundo)</h4>
+          <p>Mude a imagem de fundo para temas neutros e escuros se você trabalha muitas horas consecutivas, reduzindo a fadiga visual causada por fundos brancos e claros.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>⚙️ Barra de Tarefas</h4>
+          <p>Você pode fixar os atalhos dos programas que mais utiliza (como navegadores e pastas de trabalho) na barra de tarefas para abri-los com apenas 1 clique.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula6-5-perifericos",
+    title: "6.5 Gerenciamento de Periféricos",
+    page: 91,
+    type: "lesson",
+    chapter: "AULA 6",
+    content: `
+      <h2>6.5 Gerenciamento de Periféricos e Drivers</h2>
+      <p>Quando você conecta um novo dispositivo (impressora, webcam, fone USB) ao computador, o sistema operacional realiza duas etapas automáticas:</p>
+      
+      <div class="features-guide">
+        <div class="guide-item">
+          <div class="guide-icon">🔌</div>
+          <div class="guide-text">
+            <strong>1. Detecção (Plug and Play):</strong> O Windows reconhece fisicamente o conector USB e identifica qual é o fabricante e modelo da peça.
+          </div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-icon">💿</div>
+          <div class="guide-text">
+            <strong>2. Instalação do Driver:</strong> O <strong>Driver</strong> é o software/tradutor que ensina o sistema operacional a operar o hardware físico. Sem o driver correto, o periférico não funciona ou exibe erro no Gerenciador de Dispositivos.
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: "aula6-6-ergonomia",
+    title: "6.6 Ergonomia e Saúde no Computador",
+    page: 92,
+    type: "lesson",
+    chapter: "AULA 6",
+    content: `
+      <h2>6.6 Ergonomia e Postura Profissional</h2>
+      <p>Ergonomia é a ciência que estuda a relação entre o ser humano e seu ambiente de trabalho. Ajustar a postura correta previne dores crônicas, lesões por esforço repetitivo (LER) e fadiga física.</p>
+      
+      <div class="tip-box text-left" style="margin-top: 1rem;">
+        <h4>📐 Regras de Ouro da Postura Saudável:</h4>
+        <ul style="padding-left: 20px; line-height: 1.6;">
+          <li><strong>Linha de Visão</strong>: O topo da tela do monitor deve estar na altura dos seus olhos, com inclinação de 10 a 20 graus. Evite dobrar o pescoço.</li>
+          <li><strong>Distância da Tela</strong>: Mantenha o monitor a uma distância de 50 a 70 cm dos olhos (aproximadamente o comprimento do seu braço estendido).</li>
+          <li><strong>Ângulo dos Braços</strong>: Teclado e mouse devem estar posicionados de forma que os cotovelos formem um ângulo de 90 graus. Mantenha os punhos retos.</li>
+          <li><strong>Pés Apoiados</strong>: Os pés devem tocar inteiramente o chão ou um apoiador de pés apropriado, mantendo os joelhos em um ângulo reto de 90 graus.</li>
+        </ul>
+      </div>
+    `
+  },
+  {
+    id: "aula6-cap12-explorer",
+    title: "📂 Explorador de Arquivos Virtual",
+    page: 93,
+    type: "challenge",
+    chapter: "AULA 6",
+    interactiveId: "explorer-simulator",
+    content: `
+      <div style="margin-bottom:1rem;">
+        <h3>📁 Laboratório Virtual: Explorador de Arquivos</h3>
+        <p class="text-muted text-small" style="margin-top:0.2rem;">Complete as três missões propostas no Explorador de Arquivos abaixo para avançar no laboratório:</p>
+      </div>
+      <div id="explorer-lab-instructions" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); padding:10px 14px; border-radius:8px; margin-bottom:12px; font-size:0.78rem;">
+        <strong>📋 Suas Missões Ativas:</strong>
+        <div id="expl-mission-1" style="margin-top: 4px; color:#aaa;">⬜ 1. Encontrar o arquivo <strong>contrato_importante.docx</strong> na Lixeira e clicar em <strong>Restaurar</strong>.</div>
+        <div id="expl-mission-2" style="margin-top: 4px; color:#aaa;">⬜ 2. Ir em Este Computador ➔ Disco Local (C:) ➔ pasta <strong>Logs_Temporarios</strong> e clicar em <strong>Excluir</strong> no arquivo <strong>temp_log_gigante.txt</strong> para liberar o armazenamento.</div>
+        <div id="expl-mission-3" style="margin-top: 4px; color:#aaa;">⬜ 3. Usar a barra de pesquisa para buscar por <strong>relatorio_financeiro.xlsx</strong>, selecioná-lo e clicar em <strong>Mover</strong> e depois <strong>Colar</strong> dentro do diretório <strong>Documentos</strong>.</div>
+      </div>
+    `
+  },
+  {
+    id: "aula6-cap13-manutencao",
+    title: "🔧 Central de Manutenção Técnica",
+    page: 94,
+    type: "challenge",
+    chapter: "AULA 6",
+    interactiveId: "windows-control-center",
+    content: `
+      <div style="margin-bottom:1rem;">
+        <h3>🔧 Central de Manutenção e Hardware</h3>
+        <p class="text-muted text-small" style="margin-top:0.2rem;">Analise os indicadores em tempo real e resolva as 3 falhas de sistema listadas no painel técnico:</p>
+      </div>
+      <div id="maint-lab-instructions" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); padding:10px 14px; border-radius:8px; margin-bottom:12px; font-size:0.78rem;">
+        <strong>📋 Pendências do Painel Técnico:</strong>
+        <div id="maint-task-1" style="margin-top: 4px; color:#aaa;">⬜ 1. O consumo de memória RAM está perigosamente alto (95%). Encontre o processo pesado e finalize-o.</div>
+        <div id="maint-task-2" style="margin-top: 4px; color:#aaa;">⬜ 2. O driver do adaptador de rede Wi-Fi está com falha física. Clique no botão de reinstalar o driver.</div>
+        <div id="maint-task-3" style="margin-top: 4px; color:#aaa;">⬜ 3. O mouse USB externo foi desligado da porta traseira do gabinete. Clique no cabo para reconectá-lo.</div>
+      </div>
+    `
+  },
+  {
+    id: "aula6-cap14-conclusao",
+    title: "🥈 Assistente Técnico",
+    page: 95,
+    type: "challenge",
+    chapter: "AULA 6",
+    interactiveId: "aula5-reflexao",
+    content: `
+      <div class="conclusaoExp-hero" style="text-align:center; padding:2rem 1.5rem 1.2rem;">
+        <span class="conclusaoExp-trophy">🥈</span>
+        <div class="conclusaoExp-title">Aula 6 Concluída!</div>
+        <p class="conclusaoExp-sub">Parabéns! Você dominou o painel de configurações do Windows e a manutenção preventiva.<br>Medalha de <strong>Assistente Técnico</strong> conquistada com sucesso! 🌟</p>
+      </div>
+
+      <div style="background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:16px; margin-top:1.5rem;">
+        <h4 style="margin:0 0 8px;">✍️ Atividade Reflexiva da Aula 6</h4>
+        <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Desafio Prático:</strong> Descreva detalhadamente abaixo como você configuraria a mesa, cadeira e monitor na sua empresa para trabalhar de forma confortável sem lesionar seus braços ou colunas e que procedimentos básicos de manutenção preventiva (como limpeza física e de arquivos temporários) você faria mensalmente para manter seu computador sempre rápido e estável. Suas notas serão gravadas no seu bloco.</p>
+        <textarea id="aula6-reflexao-textarea" style="width:100%; min-height:120px; background:var(--bg-base); border:1px solid var(--border-soft); border-radius:10px; padding:12px; color:var(--text-primary); font-size:0.9rem; resize:vertical; line-height:1.6;" placeholder="Escreva suas metas de postura e manutenção preventiva..."></textarea>
+        <button class="btn btn-primary mt-1" id="aula6-save-btn" style="width:100%;">💾 Salvar Minhas Notas Técnicas</button>
+        <div id="aula6-save-feedback" class="text-small mt-1" style="font-weight:bold;"></div>
+      </div>
+    `
   }
 ];
 
-// Export standard for client side usage
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { COURSE_CONTENT };
 }

@@ -10,7 +10,16 @@ let state = {
   unlockedAchievements: {}, // { achievementId: true }
   notes: {}, // { slideId: "text notes" }
   quizProgress: {}, // { slideId: { currentQuestionIndex: 0, answers: [], completed: false } }
-  collapsedChapters: {} // { "Chapter Name": true (collapsed) or false (expanded) }
+  collapsedChapters: {}, // { "Chapter Name": true (collapsed) or false (expanded) }
+  pedagogicalProfile: {
+    hardwareScore: 0,
+    windowsScore: 0,
+    diagnosticsScore: 0,
+    organizationScore: 0,
+    totalTimeStudied: 0,
+    completedSimulations: [],
+    certificates: []
+  }
 };
 
 const ACHIEVEMENTS = [
@@ -24,7 +33,11 @@ const ACHIEVEMENTS = [
   { id: "peripheral_master", title: "Mestre dos Periféricos", desc: "Concluiu a Missão 3 — Periféricos e Conexões.", icon: "🔌" },
   { id: "windows_explorer", title: "Explorador do Windows", desc: "Concluiu a Missão 4 — Dominando o Windows.", icon: "🖥️" },
   { id: "windows_guardian", title: "Guardião do Windows", desc: "Concluiu a expansão da Aula 4 e dominou os principais recursos do Windows.", icon: "🖥️" },
-  { id: "guardian_files", title: "Guardião dos Arquivos", desc: "Concluiu a Missão 5 — Organização Digital.", icon: "📂" }
+  { id: "guardian_files", title: "Guardião dos Arquivos", desc: "Concluiu a Missão 5 — Organização Digital.", icon: "📂" },
+  { id: "operador_digital", title: "Operador Digital", desc: "Inicializou os sistemas do Módulo 1.", icon: "🥉" },
+  { id: "assistente_tecnico", title: "Assistente Técnico", desc: "Concluiu a Aula 6 e dominou as configurações do Windows.", icon: "🥈" },
+  { id: "especialista_informatica", title: "Especialista em Informática", desc: "Concluiu a Aula 7 e aprendeu a dar suporte técnico.", icon: "🥇" },
+  { id: "mestre_modulo1", title: "Mestre do Módulo 1", desc: "Concluiu a Avaliação Integrada e concluiu o Módulo 1.", icon: "🏆" }
 ];
 
 const COURSE_JORNADA = [
@@ -38,7 +51,7 @@ const COURSE_JORNADA = [
       { id: "aula-3", title: "Periféricos e Conexões", chapter: "AULA 3", desc: "Domine mouse, teclado, monitores, impressoras e as conexões traseiras." },
       { id: "aula-4", title: "Dominando o Windows", chapter: "AULA 4", desc: "Aprenda a usar a Área de Trabalho, Menu Iniciar, Lixeira e recursos avançados." },
       { id: "aula-5", title: "Organização Digital", chapter: "AULA 5", desc: "Aprenda a organizar arquivos, pastas, armazenamento digital e pendrives." },
-      { id: "aula-6", title: "Segurança e Cuidados", desc: "Conheça vírus, golpes, segurança física e digital no uso do computador." },
+      { id: "aula-6", title: "Configurações e Manutenção", chapter: "AULA 6", desc: "Aprenda a configurar periféricos, som, vídeo, data/hora, ergonomia e gerenciar arquivos de forma avançada." },
       { id: "aula-7", title: "Oficina Tecnológica", desc: "Simulações de manutenção preventiva e cuidados básicos essenciais." },
       { id: "aula-8", title: "Desafio Final do Módulo", isDesafio: true, desc: "A grande avaliação integrada do Módulo 1. Mostre que é um mestre!" }
     ]
@@ -74,17 +87,50 @@ const COURSE_JORNADA = [
 ];
 
 
+let teacherMode = false;
+
 // Load State from LocalStorage
 function loadState() {
   const saved = localStorage.getItem("informestre_state");
   if (saved) {
     try {
       state = { ...state, ...JSON.parse(saved) };
+      if (!state.pedagogicalProfile) {
+        state.pedagogicalProfile = {
+          hardwareScore: 0,
+          windowsScore: 0,
+          diagnosticsScore: 0,
+          organizationScore: 0,
+          totalTimeStudied: 0,
+          completedSimulations: [],
+          certificates: []
+        };
+      } else {
+        // Garante que todas as propriedades da ficha técnica estejam presentes
+        state.pedagogicalProfile.hardwareScore = state.pedagogicalProfile.hardwareScore || 0;
+        state.pedagogicalProfile.windowsScore = state.pedagogicalProfile.windowsScore || 0;
+        state.pedagogicalProfile.diagnosticsScore = state.pedagogicalProfile.diagnosticsScore || 0;
+        state.pedagogicalProfile.organizationScore = state.pedagogicalProfile.organizationScore || 0;
+        state.pedagogicalProfile.totalTimeStudied = state.pedagogicalProfile.totalTimeStudied || 0;
+        state.pedagogicalProfile.completedSimulations = state.pedagogicalProfile.completedSimulations || [];
+        state.pedagogicalProfile.certificates = state.pedagogicalProfile.certificates || [];
+      }
     } catch (e) {
       console.error("Erro ao carregar estado do localStorage", e);
     }
   }
 }
+
+// Temporizador de Tempo Estudado (Minutos)
+setInterval(() => {
+  if (window.currentUser && window.currentUserProfile) {
+    if (!state.pedagogicalProfile) {
+      state.pedagogicalProfile = { hardwareScore: 0, windowsScore: 0, diagnosticsScore: 0, organizationScore: 0, totalTimeStudied: 0, completedSimulations: [], certificates: [] };
+    }
+    state.pedagogicalProfile.totalTimeStudied = (state.pedagogicalProfile.totalTimeStudied || 0) + 1;
+    saveState();
+  }
+}, 60000);
 
 // Save State to LocalStorage (e sincroniza com Supabase)
 let dbSyncTimeout;
@@ -134,6 +180,21 @@ function unlockAchievement(id) {
   }
   saveState();
 }
+
+/**
+ * Exibe dicas graduais baseadas no número de tentativas/erros de um simulador
+ */
+window.showPedagogicalHint = function(simId, attemptCount, dica1, dica2) {
+  if (teacherMode) {
+    window.showModernAlert("💡 Modo Demonstração (Resposta)", `Dica Detalhada: ${dica2}`);
+    return;
+  }
+  if (attemptCount === 1) {
+    showToastNotification("💡 Dica Simples", dica1);
+  } else if (attemptCount >= 2) {
+    window.showModernAlert("💡 Assistente Técnico (Dica)", dica2);
+  }
+};
 
 // Show Toast Alert
 function showToastNotification(title, message) {
@@ -7734,6 +7795,7 @@ function initSupabaseIntegration() {
         // Busca o perfil detalhado no banco de dados
         const profile = await window.getUserProfile(session.user.id);
         window.currentUserProfile = profile;
+        teacherMode = (profile && (profile.role === 'school' || profile.role === 'admin'));
         
         // Se for um aluno, carrega o progresso do banco
         if (profile && profile.role === 'student') {
@@ -7741,15 +7803,17 @@ function initSupabaseIntegration() {
           if (dbState) {
             // Mescla progresso atual com o do banco de dados (prioriza o banco)
             state = { ...state, ...dbState };
-            updateProgressUI();
-            updateStatsUI();
-            initSidebarMenu();
-            loadSlide(state.currentSlideIndex);
           } else {
             // Se não houver progresso no banco, salva o atual lá
             await window.saveProgressToDb(session.user.id, state);
           }
         }
+
+        // Inicializa a UI do Curso e barra lateral para todos os papéis (estudantes, tutores e admins)
+        updateProgressUI();
+        updateStatsUI();
+        initSidebarMenu();
+        loadSlide(state.currentSlideIndex);
 
         // Renderiza o cabeçalho e conteúdo do Portal Hub
         renderHubHeader();
@@ -7758,6 +7822,7 @@ function initSupabaseIntegration() {
       } else {
         window.currentUser = null;
         window.currentUserProfile = null;
+        teacherMode = false;
         updateAuthUI(false);
         showScreen("landing");
       }
@@ -11341,6 +11406,1268 @@ async function initAula5Reflexao(container, isReset = false) {
       btn.disabled = false;
     }
   });
+}
+
+// Injeta dinamicamente os estilos do Laboratório Virtual de Informática
+(function injectVirtualOSStyles() {
+  const css = `
+    .virtual-desktop {
+      position: relative;
+      width: 100%;
+      height: 440px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      background: linear-gradient(135deg, #110d24, #1a0b36);
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+    .virtual-desktop-icons {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 16px;
+      position: relative;
+    }
+    .desktop-icon-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .desktop-icon-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(1.05);
+    }
+    .desktop-icon-item span.icon-display {
+      font-size: 2.2rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .desktop-icon-item span.icon-label {
+      font-size: 0.72rem;
+      color: #fff;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+      line-height: 1.2;
+    }
+    .virtual-window {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      background: rgba(15, 11, 28, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow: hidden;
+      min-width: 280px;
+      min-height: 180px;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .virtual-window.minimized {
+      display: none !important;
+    }
+    .virtual-window.maximized {
+      left: 0 !important;
+      top: 0 !important;
+      width: 100% !important;
+      height: calc(100% - 40px) !important;
+      border-radius: 0;
+    }
+    .window-titlebar {
+      height: 36px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      user-select: none;
+    }
+    .window-title-text {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .window-controls {
+      display: flex;
+      gap: 8px;
+    }
+    .win-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: filter 0.1s;
+    }
+    .win-btn:hover {
+      filter: brightness(0.85);
+    }
+    .win-close { background: #ff5f56; }
+    .win-minimize { background: #ffbd2e; }
+    .win-maximize { background: #27c93f; }
+    
+    .window-content {
+      flex: 1;
+      padding: 12px;
+      overflow: auto;
+      color: #fff;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Barra de tarefas */
+    .virtual-taskbar {
+      height: 40px;
+      background: #090612;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      box-sizing: border-box;
+      z-index: 100;
+      position: relative;
+    }
+    .taskbar-start-btn {
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.76rem;
+      padding: 5px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .taskbar-start-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    }
+    .taskbar-running-apps {
+      flex: 1;
+      margin-left: 16px;
+      display: flex;
+      gap: 8px;
+    }
+    .taskbar-app-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 5px;
+      color: #ccc;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.15s;
+    }
+    .taskbar-app-item.active {
+      background: rgba(124, 58, 237, 0.2);
+      border-color: rgba(124, 58, 237, 0.4);
+      color: #fff;
+    }
+    .taskbar-app-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    
+    .taskbar-system-tray {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #aaa;
+      font-size: 0.72rem;
+      font-weight: 600;
+      user-select: none;
+    }
+    
+    /* Menu Iniciar */
+    .virtual-start-menu {
+      position: absolute;
+      bottom: 44px;
+      left: 12px;
+      width: 280px;
+      background: rgba(13, 9, 24, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      z-index: 110;
+      padding: 12px;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .virtual-start-menu.active {
+      display: flex;
+    }
+    .start-menu-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 10px;
+    }
+    .start-menu-user-avatar {
+      font-size: 1.8rem;
+    }
+    .start-menu-user-name {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .start-menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .start-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #ccc;
+      font-size: 0.76rem;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .start-menu-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+  `;
+  const styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+})();
+
+// ==========================================================================
+// VIRTUAL OS WINDOW MANAGER AND TASKBAR SYSTEM
+// ==========================================================================
+
+const activeWindows = {};
+
+window.createVirtualWindow = function(desktopEl, options) {
+  const winId = options.id;
+  
+  if (activeWindows[winId]) {
+    const el = activeWindows[winId];
+    el.classList.remove("minimized");
+    bringToFront(el);
+    updateTaskbarUI(desktopEl);
+    return el;
+  }
+  
+  const win = document.createElement("div");
+  win.className = "virtual-window";
+  win.id = `win-${winId}`;
+  win.style.width = (options.width || 560) + "px";
+  win.style.height = (options.height || 360) + "px";
+  win.style.left = (options.left || 40) + "px";
+  win.style.top = (options.top || 40) + "px";
+  win.style.zIndex = "20";
+  
+  win.innerHTML = `
+    <div class="window-titlebar">
+      <span class="window-title-text">${options.icon || "📄"} ${options.title}</span>
+      <div class="window-controls">
+        <button class="win-btn win-minimize" title="Minimizar"></button>
+        <button class="win-btn win-maximize" title="Maximizar"></button>
+        <button class="win-btn win-close" title="Fechar"></button>
+      </div>
+    </div>
+    <div class="window-content"></div>
+  `;
+  
+  desktopEl.appendChild(win);
+  activeWindows[winId] = win;
+  
+  const titlebar = win.querySelector(".window-titlebar");
+  makeDraggable(win, titlebar, desktopEl);
+  
+  win.querySelector(".win-minimize").addEventListener("click", (e) => {
+    e.stopPropagation();
+    win.classList.add("minimized");
+    updateTaskbarUI(desktopEl);
+  });
+  
+  win.querySelector(".win-maximize").addEventListener("click", (e) => {
+    e.stopPropagation();
+    win.classList.toggle("maximized");
+  });
+  
+  win.querySelector(".win-close").addEventListener("click", (e) => {
+    e.stopPropagation();
+    win.remove();
+    delete activeWindows[winId];
+    updateTaskbarUI(desktopEl);
+    if (options.onClose) options.onClose();
+  });
+  
+  win.addEventListener("mousedown", () => {
+    bringToFront(win);
+  });
+  
+  updateTaskbarUI(desktopEl);
+  return win;
+};
+
+function makeDraggable(winEl, dragEl, boundsEl) {
+  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  dragEl.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    if (e.target.classList.contains("win-btn")) return;
+    e = e || window.event;
+    e.preventDefault();
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+    bringToFront(winEl);
+  }
+
+  function elementDrag(e) {
+    if (winEl.classList.contains("maximized")) return;
+    e = e || window.event;
+    e.preventDefault();
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+
+    let newTop = winEl.offsetTop - pos2;
+    let newLeft = winEl.offsetLeft - pos1;
+
+    const maxLeft = boundsEl.clientWidth - winEl.clientWidth;
+    const maxTop = boundsEl.clientHeight - 40 - winEl.clientHeight;
+    newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+    newTop = Math.max(0, Math.min(newTop, maxTop));
+
+    winEl.style.top = newTop + "px";
+    winEl.style.left = newLeft + "px";
+  }
+
+  function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+function bringToFront(winEl) {
+  const windows = document.querySelectorAll(".virtual-window");
+  windows.forEach(w => w.style.zIndex = "10");
+  winEl.style.zIndex = "20";
+}
+
+function updateTaskbarUI(desktopEl) {
+  const taskbarApps = desktopEl.querySelector(".taskbar-running-apps");
+  if (!taskbarApps) return;
+  taskbarApps.innerHTML = "";
+  
+  Object.keys(activeWindows).forEach(winId => {
+    const win = activeWindows[winId];
+    const isMinimized = win.classList.contains("minimized");
+    const titleText = win.querySelector(".window-title-text").textContent;
+    
+    const appBtn = document.createElement("div");
+    appBtn.className = "taskbar-app-item" + (win.style.zIndex === "20" && !isMinimized ? " active" : "");
+    appBtn.textContent = titleText;
+    appBtn.addEventListener("click", () => {
+      if (isMinimized) {
+        win.classList.remove("minimized");
+        bringToFront(win);
+      } else if (win.style.zIndex === "20") {
+        win.classList.add("minimized");
+      } else {
+        bringToFront(win);
+      }
+      updateTaskbarUI(desktopEl);
+    });
+    taskbarApps.appendChild(appBtn);
+  });
+}
+
+// ==========================================================================
+// AULA 6 SIMULATOR 1: WINDOWS EXPLORER LAB
+// ==========================================================================
+
+function initExplorerSimulator(container, isReset = false) {
+  container.innerHTML = "";
+  
+  // Variáveis de Estado Interno da Simulação de Arquivos
+  let currentFolder = "Desktop"; // Pasta atual exibida
+  let selectedFileId = null;
+  let clipboardFile = null; // Arquivo recortado para colar
+  let errorsCount = 0;
+  
+  // Ficha técnica local das missões
+  let m1Done = false; // Restaurar contrato da Lixeira
+  let m2Done = false; // Excluir log gigante do Disco Local C:/Logs_Temporarios
+  let m3Done = false; // Mover relatorio_financeiro do Desktop para Documentos
+  
+  // Banco de Dados virtual de arquivos
+  const fileSystem = {
+    "Desktop": [
+      { id: "file-relatorio", name: "relatorio_financeiro.xlsx", type: "Planilha", size: 120, date: "2026-07-16 11:45" }
+    ],
+    "Documentos": [],
+    "Downloads": [
+      { id: "file-setup", name: "setup_chrome.exe", type: "Instalador", size: 85200, date: "2026-07-15 09:15" }
+    ],
+    "Imagens": [
+      { id: "file-foto", name: "foto_perfil.png", type: "Imagem PNG", size: 2048, date: "2026-07-14 16:30" }
+    ],
+    "Videos": [],
+    "Lixeira": [
+      { id: "file-contrato", name: "contrato_importante.docx", type: "Documento de Texto", size: 45, date: "2026-07-15 10:30", originalLoc: "Documentos" }
+    ],
+    "C": [
+      { id: "folder-logs", name: "Logs_Temporarios", type: "Pasta", size: 0, date: "2026-07-10 14:00", isFolder: true }
+    ],
+    "Logs_Temporarios": [
+      { id: "file-log", name: "temp_log_gigante.txt", type: "Documento de Texto", size: 13002342, date: "2026-07-16 08:12" }
+    ]
+  };
+
+  // Cria a Área de Trabalho Virtual (Desktop)
+  const desktop = document.createElement("div");
+  desktop.className = "virtual-desktop";
+  desktop.style.height = "450px";
+  
+  // Icones do Desktop
+  const iconsArea = document.createElement("div");
+  iconsArea.className = "virtual-desktop-icons";
+  
+  const iconExplorer = document.createElement("div");
+  iconExplorer.className = "desktop-icon-item";
+  iconExplorer.innerHTML = `
+    <span class="icon-display">📂</span>
+    <span class="icon-label">Explorador de Arquivos</span>
+  `;
+  iconExplorer.addEventListener("click", () => {
+    openExplorerWindow();
+  });
+  
+  const iconMaint = document.createElement("div");
+  iconMaint.className = "desktop-icon-item";
+  iconMaint.innerHTML = `
+    <span class="icon-display">🔧</span>
+    <span class="icon-label">Central de Manutenção</span>
+  `;
+  iconMaint.addEventListener("click", () => {
+    // Caso o aluno tente abrir a Central de Manutenção no slide do Explorer
+    window.showModernAlert("🔒 Central Bloqueada", "Essa ferramenta será habilitada na próxima lição prática!");
+  });
+  
+  iconsArea.appendChild(iconExplorer);
+  iconsArea.appendChild(iconMaint);
+  desktop.appendChild(iconsArea);
+  
+  // Taskbar do Desktop
+  const taskbar = document.createElement("div");
+  taskbar.className = "virtual-taskbar";
+  
+  const startBtn = document.createElement("button");
+  startBtn.className = "taskbar-start-btn";
+  startBtn.innerHTML = `🏁 Iniciar`;
+  startBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    window.showModernAlert("💡 Menu Iniciar", "Use os ícones de atalho na Área de Trabalho para abrir os programas necessários para a sua missão.");
+  });
+  
+  const runningApps = document.createElement("div");
+  runningApps.className = "taskbar-running-apps";
+  
+  const systemTray = document.createElement("div");
+  systemTray.className = "taskbar-system-tray";
+  systemTray.innerHTML = `
+    <span style="font-size:0.8rem;">📶 🔊</span>
+    <span id="expl-clock-tray" style="margin-left: 6px;">12:00</span>
+  `;
+  
+  taskbar.appendChild(startBtn);
+  taskbar.appendChild(runningApps);
+  taskbar.appendChild(systemTray);
+  desktop.appendChild(taskbar);
+  
+  container.appendChild(desktop);
+  
+  // Atualiza o relógio da barra de tarefas
+  const clockTray = desktop.querySelector("#expl-clock-tray");
+  const updateTrayClock = () => {
+    const now = new Date();
+    clockTray.textContent = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  };
+  updateTrayClock();
+  setInterval(updateTrayClock, 30000);
+
+  // Auto-abre a janela do Explorer para facilitar para o aluno
+  setTimeout(() => openExplorerWindow(), 100);
+
+  function openExplorerWindow() {
+    const win = window.createVirtualWindow(desktop, {
+      id: "explorer",
+      title: "Explorador de Arquivos",
+      icon: "📂",
+      width: 610,
+      height: 380,
+      left: 10,
+      top: 10
+    });
+    
+    renderExplorerContent(win.querySelector(".window-content"));
+  }
+
+  function renderExplorerContent(winContent) {
+    winContent.innerHTML = `
+      <!-- Barra Superior de Controle -->
+      <div class="explorer-toolbar" style="display:flex; align-items:center; justify-content:space-between; gap:6px; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.01); margin-bottom:8px;">
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-outline btn-small btn-exp-action" id="btn-exp-newfolder" style="padding:4px 8px; font-size:0.7rem;">📁 Nova Pasta</button>
+          <button class="btn btn-outline btn-small btn-exp-action" id="btn-exp-cut" style="padding:4px 8px; font-size:0.7rem;">✂️ Mover (Recortar)</button>
+          <button class="btn btn-outline btn-small btn-exp-action" id="btn-exp-paste" style="padding:4px 8px; font-size:0.7rem;" disabled>📋 Colar</button>
+          <button class="btn btn-outline btn-small btn-exp-action" id="btn-exp-rename" style="padding:4px 8px; font-size:0.7rem;">✏️ Renomear</button>
+          <button class="btn btn-outline btn-small btn-exp-action" id="btn-exp-delete" style="padding:4px 8px; font-size:0.7rem; background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.3); color:#ef4444;">🗑️ Excluir</button>
+          <button class="btn btn-outline btn-small btn-exp-action" id="btn-exp-restore" style="padding:4px 8px; font-size:0.7rem; background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.3); color:#10b981; display:none;">↩️ Restaurar</button>
+        </div>
+        <div>
+          <input type="text" id="exp-search-input" placeholder="🔍 Pesquisar..." style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:4px; padding:3px 8px; font-size:0.7rem; color:#fff; width:120px;">
+        </div>
+      </div>
+      
+      <!-- Corpo Principal: Painel Duplo -->
+      <div style="display:flex; flex:1; overflow:hidden; min-height:0;">
+        <!-- Painel Esquerdo: Atalhos -->
+        <div class="explorer-sidebar" style="width:130px; background:rgba(255,255,255,0.02); border-right:1px solid rgba(255,255,255,0.08); padding-right:8px; display:flex; flex-direction:column; gap:4px; overflow-y:auto; user-select:none;">
+          <div class="exp-side-item" data-folder="Desktop" style="padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.72rem; display:flex; align-items:center; gap:6px; color:#fff;">🖥️ Desktop</div>
+          <div class="exp-side-item" data-folder="Downloads" style="padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.72rem; display:flex; align-items:center; gap:6px; color:#fff;">📥 Downloads</div>
+          <div class="exp-side-item" data-folder="Documentos" style="padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.72rem; display:flex; align-items:center; gap:6px; color:#fff;">📄 Documentos</div>
+          <div class="exp-side-item" data-folder="Imagens" style="padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.72rem; display:flex; align-items:center; gap:6px; color:#fff;">🖼️ Imagens</div>
+          <div class="exp-side-item" data-folder="Videos" style="padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.72rem; display:flex; align-items:center; gap:6px; color:#fff;">🎥 Vídeos</div>
+          <div class="exp-side-item" data-folder="C" style="padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.72rem; display:flex; align-items:center; gap:6px; color:#fff;">💽 Disco Local (C:)</div>
+          <div class="exp-side-item" data-folder="Lixeira" style="padding:5px 8px; border-radius:4px; cursor:pointer; font-size:0.72rem; display:flex; align-items:center; gap:6px; color:#fff;">🗑️ Lixeira</div>
+        </div>
+        
+        <!-- Painel Central: Grid/Tabela de Arquivos -->
+        <div class="explorer-main" style="flex:1; padding-left:10px; display:flex; flex-direction:column; overflow-y:auto; min-height:0;">
+          <div style="font-size:0.65rem; color:#888; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+            <span id="exp-current-path">Caminho: Este Computador > Desktop</span>
+            <span id="exp-storage-bar" style="display:none; color:var(--color-danger); font-weight:bold;">⚠️ SSD C: Cheio (12.4 GB Livres / 120 GB)</span>
+          </div>
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.7rem; color:#ccc;">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,0.08); user-select:none; color:#888;">
+                <th class="exp-sort-header" data-sort="name" style="padding:4px; cursor:pointer;">Nome ↕️</th>
+                <th style="padding:4px;">Tipo</th>
+                <th class="exp-sort-header" data-sort="size" style="padding:4px; cursor:pointer;">Tamanho ↕️</th>
+                <th class="exp-sort-header" data-sort="date" style="padding:4px; cursor:pointer;">Data de Modificação ↕️</th>
+              </tr>
+            </thead>
+            <tbody id="explorer-files-list">
+              <!-- Arquivos renderizados via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    // --- Lógica Interativa ---
+    const sideItems = winContent.querySelectorAll(".exp-side-item");
+    const filesList = winContent.querySelector("#explorer-files-list");
+    const pathText = winContent.querySelector("#exp-current-path");
+    const searchInput = winContent.querySelector("#exp-search-input");
+    const storageBar = winContent.querySelector("#exp-storage-bar");
+
+    // Botões Superior
+    const btnNewFolder = winContent.querySelector("#btn-exp-newfolder");
+    const btnCut = winContent.querySelector("#btn-exp-cut");
+    const btnPaste = winContent.querySelector("#btn-exp-paste");
+    const btnRename = winContent.querySelector("#btn-exp-rename");
+    const btnDelete = winContent.querySelector("#btn-exp-delete");
+    const btnRestore = winContent.querySelector("#btn-exp-restore");
+
+    // Ativa/Desativa o botão colar se tiver algo no clipboard
+    const refreshPasteButton = () => {
+      btnPaste.disabled = !clipboardFile;
+    };
+
+    // Ordenação
+    let sortKey = "name";
+    let sortAsc = true;
+
+    // Renderização dos Arquivos
+    const renderFiles = () => {
+      filesList.innerHTML = "";
+      selectedFileId = null;
+      
+      // Oculta/Exibe botão Restaurar e Lixeira
+      if (currentFolder === "Lixeira") {
+        btnRestore.style.display = "inline-block";
+        btnDelete.style.background = "rgba(239,68,68,0.3)";
+        btnDelete.textContent = "🗑️ Esvaziar/Apagar";
+      } else {
+        btnRestore.style.display = "none";
+        btnDelete.style.background = "rgba(239,68,68,0.15)";
+        btnDelete.textContent = "🗑️ Excluir";
+      }
+
+      // Se estiver no drive C:, exibe alerta de SSD Cheio
+      if (currentFolder === "C" || currentFolder === "Logs_Temporarios") {
+        storageBar.style.display = "inline";
+        // Se já concluiu a missão 2, atualiza para armazenamento livre
+        if (m2Done) {
+          storageBar.textContent = "✅ SSD C: Livre (124 GB Livres / 120 GB)";
+          storageBar.style.color = "var(--color-success)";
+        } else {
+          storageBar.textContent = "⚠️ SSD C: Cheio (12.4 GB Livres / 120 GB)";
+          storageBar.style.color = "var(--color-danger)";
+        }
+      } else {
+        storageBar.style.display = "none";
+      }
+
+      let files = [...(fileSystem[currentFolder] || [])];
+
+      // Busca na barra superior
+      const query = searchInput.value.trim().toLowerCase();
+      if (query) {
+        files = files.filter(f => f.name.toLowerCase().includes(query));
+      }
+
+      // Ordenar arquivos
+      files.sort((a, b) => {
+        let valA = a[sortKey];
+        let valB = b[sortKey];
+        
+        // Conversão de tamanho para ordenação numérica
+        if (sortKey === "size") {
+          valA = Number(valA) || 0;
+          valB = Number(valB) || 0;
+        }
+
+        if (valA < valB) return sortAsc ? -1 : 1;
+        if (valA > valB) return sortAsc ? 1 : -1;
+        return 0;
+      });
+
+      if (files.length === 0) {
+        filesList.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px; color:#666; font-style:italic;">Esta pasta está vazia.</td></tr>`;
+        return;
+      }
+
+      files.forEach(file => {
+        const tr = document.createElement("tr");
+        tr.style.cssText = "border-bottom:1px solid rgba(255,255,255,0.03); cursor:pointer;";
+        if (selectedFileId === file.id) {
+          tr.style.background = "rgba(124, 58, 237, 0.15)";
+        }
+
+        tr.addEventListener("click", (e) => {
+          e.stopPropagation();
+          selectedFileId = file.id;
+          renderFiles();
+        });
+
+        // Duplo clique abre pastas virtuais
+        if (file.isFolder) {
+          tr.addEventListener("dblclick", () => {
+            currentFolder = file.name;
+            pathText.textContent = `Caminho: Este Computador > Disco Local (C:) > ${file.name}`;
+            renderFiles();
+          });
+        }
+
+        let sizeText = `${file.size} KB`;
+        if (file.size === 0) sizeText = "--";
+        else if (file.size >= 1024 * 1024) sizeText = `${(file.size / (1024 * 1024)).toFixed(1)} GB`;
+        else if (file.size >= 1024) sizeText = `${(file.size / 1024).toFixed(1)} MB`;
+
+        let icon = "📄";
+        if (file.isFolder) icon = "📁";
+        else if (file.type === "Planilha") icon = "📊";
+        else if (file.type === "Imagem PNG") icon = "🖼️";
+        else if (file.type === "Instalador") icon = "⚙️";
+
+        tr.innerHTML = `
+          <td style="padding:6px 4px; display:flex; align-items:center; gap:6px;">
+            <span>${icon}</span>
+            <span style="font-weight:600; color:#fff;">${file.name}</span>
+          </td>
+          <td style="padding:6px 4px; color:#aaa;">${file.type}</td>
+          <td style="padding:6px 4px; color:#aaa;">${sizeText}</td>
+          <td style="padding:6px 4px; color:#aaa;">${file.date}</td>
+        `;
+        filesList.appendChild(tr);
+      });
+
+      refreshPasteButton();
+    };
+
+    // Navegação Lateral
+    const switchFolder = (folderId, label) => {
+      currentFolder = folderId;
+      pathText.textContent = `Caminho: Este Computador > ${label}`;
+      sideItems.forEach(i => {
+        i.style.background = "transparent";
+        if (i.getAttribute("data-folder") === folderId) {
+          i.style.background = "rgba(124, 58, 237, 0.2)";
+        }
+      });
+      renderFiles();
+    };
+
+    sideItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const folder = item.getAttribute("data-folder");
+        const label = item.textContent.replace(/[🖥️📥📄🖼️🎥💽🗑️]\s*/g, "");
+        switchFolder(folder, label);
+      });
+    });
+
+    searchInput.addEventListener("input", renderFiles);
+
+    winContent.querySelectorAll(".exp-sort-header").forEach(header => {
+      header.addEventListener("click", () => {
+        const key = header.getAttribute("data-sort");
+        if (sortKey === key) {
+          sortAsc = !sortAsc;
+        } else {
+          sortKey = key;
+          sortAsc = true;
+        }
+        renderFiles();
+      });
+    });
+
+    btnNewFolder.addEventListener("click", () => {
+      const name = prompt("Digite o nome da nova pasta:", "Nova Pasta");
+      if (name && name.trim()) {
+        const newFolderObj = {
+          id: `folder-${Date.now()}`,
+          name: name.trim(),
+          type: "Pasta",
+          size: 0,
+          date: new Date().toISOString().slice(0, 16).replace("T", " "),
+          isFolder: true
+        };
+        fileSystem[currentFolder].push(newFolderObj);
+        renderFiles();
+      }
+    });
+
+    btnCut.addEventListener("click", () => {
+      if (!selectedFileId) {
+        errorsCount++;
+        window.showPedagogicalHint("explorer", errorsCount, 
+          "Selecione o arquivo clicando na tabela antes de clicar em Mover.",
+          "Clique sobre o arquivo 'relatorio_financeiro.xlsx' na tabela, clique no botão 'Mover (Recortar)' no topo, mude para a pasta 'Documentos' no menu esquerdo e clique no botão 'Colar'."
+        );
+        return;
+      }
+      
+      const fileIdx = fileSystem[currentFolder].findIndex(f => f.id === selectedFileId);
+      if (fileIdx !== -1) {
+        clipboardFile = {
+          file: fileSystem[currentFolder][fileIdx],
+          originFolder: currentFolder
+        };
+        fileSystem[currentFolder].splice(fileIdx, 1);
+        selectedFileId = null;
+        renderFiles();
+        showToastNotification("✂️ Arquivo Recortado", "Vá para a pasta destino e clique em Colar.");
+      }
+    });
+
+    btnPaste.addEventListener("click", () => {
+      if (!clipboardFile) return;
+      
+      fileSystem[currentFolder].push(clipboardFile.file);
+      
+      if (currentFolder === "Documentos" && clipboardFile.file.id === "file-relatorio") {
+        m3Done = true;
+        const taskEl = document.getElementById("expl-mission-3");
+        if (taskEl) {
+          taskEl.innerHTML = "✅ 3. Usar a barra de pesquisa para buscar por <strong>relatorio_financeiro.xlsx</strong>, selecioná-lo e clicar em <strong>Mover</strong> e depois <strong>Colar</strong> dentro do diretório <strong>Documentos</strong>.";
+          taskEl.style.color = "var(--color-success)";
+        }
+        showToastNotification("📊 Relatório Movido!", "Arquivo financeiro colado na pasta Documentos.");
+        checkAllMissionsCompleted();
+      }
+
+      clipboardFile = null;
+      renderFiles();
+    });
+
+    btnRename.addEventListener("click", () => {
+      if (!selectedFileId) {
+        errorsCount++;
+        window.showPedagogicalHint("explorer", errorsCount, "Selecione o arquivo primeiro.", "Selecione o arquivo da lista e clique em Renomear.");
+        return;
+      }
+      
+      const file = fileSystem[currentFolder].find(f => f.id === selectedFileId);
+      if (file) {
+        const newName = prompt("Digite o novo nome para o arquivo:", file.name);
+        if (newName && newName.trim()) {
+          file.name = newName.trim();
+          renderFiles();
+        }
+      }
+    });
+
+    btnDelete.addEventListener("click", () => {
+      if (!selectedFileId) {
+        errorsCount++;
+        window.showPedagogicalHint("explorer", errorsCount, 
+          "Selecione o arquivo que deseja excluir.",
+          "Vá em Este Computador ➔ Disco Local (C:) ➔ pasta 'Logs_Temporarios' dando duplo clique. Selecione o arquivo 'temp_log_gigante.txt' e clique no botão vermelho 'Excluir'."
+        );
+        return;
+      }
+
+      const fileIdx = fileSystem[currentFolder].findIndex(f => f.id === selectedFileId);
+      if (fileIdx !== -1) {
+        const deletedFile = fileSystem[currentFolder][fileIdx];
+        
+        if (currentFolder === "Lixeira") {
+          fileSystem[currentFolder].splice(fileIdx, 1);
+          selectedFileId = null;
+          showToastNotification("🗑️ Excluído Permanente", "Arquivo apagado definitivamente.");
+        } else {
+          fileSystem[currentFolder].splice(fileIdx, 1);
+          deletedFile.originalLoc = currentFolder;
+          fileSystem["Lixeira"].push(deletedFile);
+          
+          if (deletedFile.id === "file-log") {
+            m2Done = true;
+            const taskEl = document.getElementById("expl-mission-2");
+            if (taskEl) {
+              taskEl.innerHTML = "✅ 2. Ir em Este Computador ➔ Disco Local (C:) ➔ pasta <strong>Logs_Temporarios</strong> e clicar em <strong>Excluir</strong> no arquivo <strong>temp_log_gigante.txt</strong> para liberar o armazenamento.";
+              taskEl.style.color = "var(--color-success)";
+            }
+            showToastNotification("💽 Armazenamento Liberado!", "SSD limpo com sucesso!");
+            checkAllMissionsCompleted();
+          }
+        }
+        
+        renderFiles();
+      }
+    });
+
+    btnRestore.addEventListener("click", () => {
+      if (currentFolder !== "Lixeira" || !selectedFileId) return;
+      
+      const fileIdx = fileSystem["Lixeira"].findIndex(f => f.id === selectedFileId);
+      if (fileIdx !== -1) {
+        const file = fileSystem["Lixeira"][fileIdx];
+        const dest = file.originalLoc || "Documentos";
+        
+        fileSystem["Lixeira"].splice(fileIdx, 1);
+        fileSystem[dest].push(file);
+        selectedFileId = null;
+
+        if (file.id === "file-contrato") {
+          m1Done = true;
+          const taskEl = document.getElementById("expl-mission-1");
+          if (taskEl) {
+            taskEl.innerHTML = "✅ 1. Encontrar o arquivo <strong>contrato_importante.docx</strong> na Lixeira e clicar em <strong>Restaurar</strong>.";
+            taskEl.style.color = "var(--color-success)";
+          }
+          showToastNotification("↩️ Documento Restaurado!", "Contrato movido de volta para a pasta Documentos.");
+          checkAllMissionsCompleted();
+        }
+
+        renderFiles();
+      }
+    });
+
+    const checkAllMissionsCompleted = () => {
+      if (m1Done && m2Done && m3Done) {
+        setTimeout(() => {
+          state.pedagogicalProfile.organizationScore = 100;
+          if (!state.pedagogicalProfile.completedSimulations.includes("explorer-simulator")) {
+            state.pedagogicalProfile.completedSimulations.push("explorer-simulator");
+          }
+          
+          addXP(50);
+          markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+          window.showModernAlert("🏆 Mestre dos Arquivos!", "Você concluiu com sucesso todas as missões de organização de pastas e arquivos no Windows!");
+        }, 800);
+      }
+    };
+
+  }
+}
+
+// ==========================================================================
+// AULA 6 SIMULATOR 2: CENTRAL DE MANUTENÇÃO (WINDOWS CONTROL CENTER)
+// ==========================================================================
+
+function initWindowsControlCenterSimulator(container, isReset = false) {
+  container.innerHTML = "";
+
+  // Estado Interno da Manutenção
+  let ramUsage = 95; // Inicializa crítico
+  let cpuTemp = 75;  // Inicializa alta
+  let isMouseConnected = false;
+  let wifiDriverStatus = "failed"; // "failed" ou "ok"
+  let errorsCount = 0;
+
+  // Checklist de Conclusão local
+  let m1Done = false; // Finalizar processo pesado na RAM
+  let m2Done = false; // Reinstalar driver de Wi-Fi
+  let m3Done = false; // Reconectar mouse USB
+
+  // Banco de processos ativos
+  let processes = [
+    { name: "Sistema (kernel)", ram: 8, id: "proc-sys", isKillable: false },
+    { name: "Navegador Web (Chrome)", ram: 14, id: "proc-browser", isKillable: true },
+    { name: "minerador_inutil.exe", ram: 62, id: "proc-miner", isKillable: true },
+    { name: "Antivírus Ativo", ram: 6, id: "proc-av", isKillable: false },
+    { name: "Áudio do Windows", ram: 5, id: "proc-audio", isKillable: false }
+  ];
+
+  // Cria a Área de Trabalho Virtual (Desktop)
+  const desktop = document.createElement("div");
+  desktop.className = "virtual-desktop";
+  desktop.style.height = "450px";
+
+  // Icones do Desktop
+  const iconsArea = document.createElement("div");
+  iconsArea.className = "virtual-desktop-icons";
+
+  const iconExplorer = document.createElement("div");
+  iconExplorer.className = "desktop-icon-item";
+  iconExplorer.innerHTML = `
+    <span class="icon-display">📂</span>
+    <span class="icon-label">Explorador de Arquivos</span>
+  `;
+  iconExplorer.addEventListener("click", () => {
+    window.showModernAlert("🔒 Explorador Bloqueado", "Foque na manutenção do sistema nesta lição!");
+  });
+
+  const iconMaint = document.createElement("div");
+  iconMaint.className = "desktop-icon-item";
+  iconMaint.innerHTML = `
+    <span class="icon-display">🔧</span>
+    <span class="icon-label">Central de Manutenção</span>
+  `;
+  iconMaint.addEventListener("click", () => {
+    openMaintenanceWindow();
+  });
+
+  iconsArea.appendChild(iconExplorer);
+  iconsArea.appendChild(iconMaint);
+  desktop.appendChild(iconsArea);
+
+  // Taskbar do Desktop
+  const taskbar = document.createElement("div");
+  taskbar.className = "virtual-taskbar";
+
+  const startBtn = document.createElement("button");
+  startBtn.className = "taskbar-start-btn";
+  startBtn.innerHTML = `🏁 Iniciar`;
+  startBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    window.showModernAlert("💡 Central de Manutenção", "Abra a Central de Manutenção clicando no ícone do Desktop para reparar o computador.");
+  });
+
+  const runningApps = document.createElement("div");
+  runningApps.className = "taskbar-running-apps";
+
+  const systemTray = document.createElement("div");
+  systemTray.className = "taskbar-system-tray";
+  systemTray.innerHTML = `
+    <span style="font-size:0.8rem;">📶 🔊</span>
+    <span id="maint-clock-tray" style="margin-left: 6px;">12:00</span>
+  `;
+
+  taskbar.appendChild(startBtn);
+  taskbar.appendChild(runningApps);
+  taskbar.appendChild(systemTray);
+  desktop.appendChild(taskbar);
+
+  container.appendChild(desktop);
+
+  // Relógio do Sistema
+  const clockTray = desktop.querySelector("#maint-clock-tray");
+  const updateTrayClock = () => {
+    const now = new Date();
+    clockTray.textContent = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+  };
+  updateTrayClock();
+  setInterval(updateTrayClock, 30000);
+
+  // Auto-abre a janela da Central de Manutenção
+  setTimeout(() => openMaintenanceWindow(), 100);
+
+  function openMaintenanceWindow() {
+    const win = window.createVirtualWindow(desktop, {
+      id: "maintenance",
+      title: "Painel de Controle ➔ Diagnóstico Técnico",
+      icon: "🔧",
+      width: 610,
+      height: 380,
+      left: 10,
+      top: 10
+    });
+
+    renderMaintenanceContent(win.querySelector(".window-content"));
+  }
+
+  function renderMaintenanceContent(winContent) {
+    winContent.innerHTML = `
+      <!-- Cabeçalho de Status -->
+      <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:10px; border-radius:8px; display:flex; justify-content:space-around; align-items:center; margin-bottom:12px;">
+        <div style="text-align:center;">
+          <div style="font-size:0.65rem; color:#888; text-transform:uppercase; font-weight:700;">Uso de RAM</div>
+          <div id="maint-ram-text" style="font-size:1.4rem; font-weight:bold; color:#ef4444;">95%</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:0.65rem; color:#888; text-transform:uppercase; font-weight:700;">Temperatura da CPU</div>
+          <div id="maint-temp-text" style="font-size:1.4rem; font-weight:bold; color:#ef4444;">75°C</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:0.65rem; color:#888; text-transform:uppercase; font-weight:700;">Espaço SSD (C:)</div>
+          <div style="font-size:1.4rem; font-weight:bold; color:#10b981;">124 GB / 120 GB</div>
+        </div>
+      </div>
+
+      <!-- Grid de Ações -->
+      <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px; flex:1; min-height:0; overflow:hidden;">
+        
+        <!-- Coluna Esquerda: Gerenciador de Tarefas -->
+        <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:6px; padding:10px; display:flex; flex-direction:column; overflow:hidden;">
+          <h4 style="margin:0 0 8px; font-size:0.75rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:4px; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+            <span>💾 Processos na Memória RAM</span>
+            <span style="font-size:0.6rem; color:#888; font-style:italic;">Selecione e finalize processos pesados</span>
+          </h4>
+          <div style="flex:1; overflow-y:auto; margin-bottom:8px;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.7rem; text-align:left; color:#ccc;">
+              <thead>
+                <tr style="color:#555; border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <th style="padding:4px 0;">Nome do Processo</th>
+                  <th style="padding:4px 0; text-align:right;">Uso de RAM</th>
+                </tr>
+              </thead>
+              <tbody id="maint-proc-list">
+                <!-- Injetado por JS -->
+              </tbody>
+            </table>
+          </div>
+          <button class="btn btn-primary btn-small" id="btn-kill-process" style="width:100%; padding:6px; font-size:0.7rem;" disabled>✂️ Finalizar Processo Selecionado</button>
+        </div>
+
+        <!-- Coluna Direita: Dispositivos & Drivers -->
+        <div style="display:flex; flex-direction:column; gap:12px; overflow-y:auto;">
+          
+          <!-- Card de Portas e Mouse USB -->
+          <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:6px; padding:10px;">
+            <h4 style="margin:0 0 6px; font-size:0.75rem; color:#fff; display:flex; align-items:center; gap:6px;">🖱️ Periféricos Externos</h4>
+            <div id="maint-mouse-card" style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; color:#ccc;">
+              <div>
+                <div>Status: <span id="maint-mouse-status" style="color:#ef4444; font-weight:bold;">🔌 Desconectado</span></div>
+                <div style="font-size:0.62rem; color:#888; margin-top:2px;">Mouse óptico USB na porta traseira.</div>
+              </div>
+              <button class="btn btn-outline btn-small" id="btn-connect-mouse" style="padding:4px 8px; font-size:0.65rem;">🔌 Conectar Cabo</button>
+            </div>
+          </div>
+
+          <!-- Card de Rede & Drivers -->
+          <div style="background:rgba(0,0,0,0.2); border:1px solid rgba(255,255,255,0.05); border-radius:6px; padding:10px;">
+            <h4 style="margin:0 0 6px; font-size:0.75rem; color:#fff; display:flex; align-items:center; gap:6px;">📶 Adaptador de Rede Wi-Fi</h4>
+            <div id="maint-wifi-card" style="display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; color:#ccc;">
+              <div>
+                <div>Driver: <span id="maint-wifi-status" style="color:#ef4444; font-weight:bold;">⚠️ Falha (Código 43)</span></div>
+                <div style="font-size:0.62rem; color:#888; margin-top:2px;">Intel Wireless-AC 9560.</div>
+              </div>
+              <button class="btn btn-outline btn-small" id="btn-reinstall-wifi" style="padding:4px 8px; font-size:0.65rem;">💿 Reinstalar Driver</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    `;
+
+    const ramText = winContent.querySelector("#maint-ram-text");
+    const tempText = winContent.querySelector("#maint-temp-text");
+    const procList = winContent.querySelector("#maint-proc-list");
+    const btnKill = winContent.querySelector("#btn-kill-process");
+
+    const mouseStatus = winContent.querySelector("#maint-mouse-status");
+    const btnConnectMouse = winContent.querySelector("#btn-connect-mouse");
+
+    const wifiStatus = winContent.querySelector("#maint-wifi-status");
+    const btnReinstallWifi = winContent.querySelector("#btn-reinstall-wifi");
+
+    let selectedProcId = null;
+
+    const refreshMetricsUI = () => {
+      ramText.textContent = `${ramUsage}%`;
+      if (ramUsage <= 40) {
+        ramText.style.color = "var(--color-success)";
+      } else {
+        ramText.style.color = "#ef4444";
+      }
+
+      tempText.textContent = `${cpuTemp}°C`;
+      if (cpuTemp <= 45) {
+        tempText.style.color = "var(--color-success)";
+      } else {
+        tempText.style.color = "#ef4444";
+      }
+    };
+
+    const renderProcesses = () => {
+      procList.innerHTML = "";
+      processes.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.style.cssText = "border-bottom:1px solid rgba(255,255,255,0.03); cursor:pointer;";
+        if (selectedProcId === p.id) {
+          tr.style.background = "rgba(124, 58, 237, 0.15)";
+        }
+
+        tr.addEventListener("click", () => {
+          if (p.isKillable) {
+            selectedProcId = p.id;
+            btnKill.disabled = false;
+          } else {
+            selectedProcId = null;
+            btnKill.disabled = true;
+          }
+          renderProcesses();
+        });
+
+        tr.innerHTML = `
+          <td style="padding:6px 0; font-weight:600; color:#fff; display:flex; align-items:center; gap:4px;">
+            <span>${p.isKillable ? "⚙️" : "🔒"}</span>
+            <span>${p.name}</span>
+          </td>
+          <td style="padding:6px 0; text-align:right; font-weight:bold; ${p.ram > 20 ? "color:#ef4444;" : "color:#aaa;"}">${p.ram}%</td>
+        `;
+        procList.appendChild(tr);
+      });
+    };
+
+    btnKill.addEventListener("click", () => {
+      if (selectedProcId === "proc-miner") {
+        processes = processes.filter(p => p.id !== "proc-miner");
+        ramUsage = 33;
+        cpuTemp = 42;
+        m1Done = true;
+        btnKill.disabled = true;
+        selectedProcId = null;
+        renderProcesses();
+        refreshMetricsUI();
+        
+        const taskEl = document.getElementById("maint-task-1");
+        if (taskEl) {
+          taskEl.innerHTML = "✅ 1. O consumo de memória RAM está perigosamente alto (95%). Encontre o processo pesado e finalize-o.";
+          taskEl.style.color = "var(--color-success)";
+        }
+        showToastNotification("💥 Processo Finalizado!", "minerador_inutil.exe fechado com sucesso. RAM e temperatura caíram!");
+        checkAllMaintenanceCompleted();
+      } else {
+        errorsCount++;
+        window.showPedagogicalHint("maintenance", errorsCount, 
+          "Selecione um processo que ocupe muito desempenho e que possa ser finalizado (⚙️).",
+          "Selecione o processo 'minerador_inutil.exe' que está ocupando 62% da memória RAM e clique no botão 'Finalizar Processo'."
+        );
+      }
+    });
+
+    btnConnectMouse.addEventListener("click", () => {
+      isMouseConnected = true;
+      m3Done = true;
+      mouseStatus.textContent = "✅ Conectado (USB)";
+      mouseStatus.style.color = "var(--color-success)";
+      btnConnectMouse.disabled = true;
+      btnConnectMouse.textContent = "🔌 Conectado";
+      
+      const taskEl = document.getElementById("maint-task-3");
+      if (taskEl) {
+        taskEl.innerHTML = "✅ 3. O mouse USB externo foi desligado da porta traseira do gabinete. Clique no cabo para reconectá-lo.";
+        taskEl.style.color = "var(--color-success)";
+      }
+      showToastNotification("🖱️ Mouse Reconectado!", "Cabo USB plugado e periférico ativo.");
+      checkAllMaintenanceCompleted();
+    });
+
+    btnReinstallWifi.addEventListener("click", () => {
+      wifiDriverStatus = "ok";
+      m2Done = true;
+      wifiStatus.textContent = "✅ Funcionando (Wi-Fi)";
+      wifiStatus.style.color = "var(--color-success)";
+      btnReinstallWifi.disabled = true;
+      btnReinstallWifi.textContent = "💿 Reinstalado";
+      
+      const taskEl = document.getElementById("maint-task-2");
+      if (taskEl) {
+        taskEl.innerHTML = "✅ 2. O driver do adaptador de rede Wi-Fi está com falha física. Clique no botão de reinstalar o driver.";
+        taskEl.style.color = "var(--color-success)";
+      }
+      showToastNotification("📶 Wi-Fi Reinstalado!", "Driver configurado. Adaptador de rede operando!");
+      checkAllMaintenanceCompleted();
+    });
+
+    const checkAllMaintenanceCompleted = () => {
+      if (m1Done && m2Done && m3Done) {
+        setTimeout(() => {
+          state.pedagogicalProfile.hardwareScore = 100;
+          state.pedagogicalProfile.windowsScore = 100;
+          if (!state.pedagogicalProfile.completedSimulations.includes("windows-control-center")) {
+            state.pedagogicalProfile.completedSimulations.push("windows-control-center");
+          }
+
+          addXP(50);
+          unlockAchievement("assistente_tecnico");
+          markSlideAsCompleted(COURSE_CONTENT[state.currentSlideIndex].id);
+          window.showModernAlert("🏆 Assistente Técnico Concluído!", "Você concluiu com sucesso todas as tarefas de manutenção corretiva da Central! Parabéns, Assistente Técnico!");
+        }, 800);
+      }
+    };
+
+    renderProcesses();
+    refreshMetricsUI();
+  }
 }
 
 
