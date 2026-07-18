@@ -936,16 +936,29 @@ function initSidebarMenu() {
     
     const moduloStatus = getModuloStatus(modulo.id);
     const isLocked = moduloStatus === "locked";
+    const isCollapsed = state.collapsedChapters[modulo.title] === true;
     
     const header = document.createElement("div");
     header.className = "chapter-title-header";
-    header.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.8rem; border-radius: 8px; font-weight: 800; font-size: 0.88rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 0.6rem; user-select: none;";
+    header.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.8rem; border-radius: 8px; font-weight: 800; font-size: 0.88rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 0.6rem; user-select: none; cursor: pointer; transition: background 0.2s;";
     if (isLocked) {
       header.style.opacity = "0.45";
     }
     
+    header.addEventListener("click", () => {
+      toggleChapter(modulo.title);
+    });
+
+    header.addEventListener("mouseenter", () => {
+      header.style.background = "rgba(255,255,255,0.08)";
+    });
+    header.addEventListener("mouseleave", () => {
+      header.style.background = "rgba(255,255,255,0.03)";
+    });
+    
     header.innerHTML = `
       <span style="display: flex; align-items: center; gap: 0.4rem;">
+        <span style="font-size: 0.7rem; color: #888; transition: transform 0.2s; display: inline-block; transform: ${isCollapsed ? 'rotate(-90deg)' : 'none'};">▼</span>
         <span>${modulo.icon}</span>
         <span>${modulo.title}</span>
       </span>
@@ -958,6 +971,9 @@ function initSidebarMenu() {
     ul.style.listStyle = "none";
     ul.style.padding = "0";
     ul.style.margin = "0";
+    if (isCollapsed) {
+      ul.style.display = "none";
+    }
 
     if (isLocked) {
       const li = document.createElement("li");
@@ -8289,7 +8305,7 @@ function renderStudentCurriculumTab(container) {
         </div>
         
         ${!isLocked ? `
-          <ul class="curriculum-lessons-list" style="list-style:none; padding: 0 1.2rem 1.2rem 1.2rem; margin:0; border-top: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap:0.5rem; padding-top:0.8rem;">
+          <ul class="curriculum-lessons-list" style="list-style:none; padding: 0 1.2rem 1.2rem 1.2rem; margin:0; border-top: 1px solid rgba(255,255,255,0.05); gap:0.5rem; padding-top:0.8rem;">
             ${modulo.lessons.map(aula => {
               const status = getLessonStatus(aula.id);
               
