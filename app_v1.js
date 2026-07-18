@@ -1866,6 +1866,9 @@ function loadSimulator(simId, slideData, isReset = false) {
     case "aula5-reflexao":
       initAula5Reflexao(renderArea, isReset);
       break;
+    case "aula6-reflexao":
+      initAula6Reflexao(renderArea, isReset);
+      break;
     default:
       // If it has quiz in metadata (e.g. challenge pages 1.5, 32)
       if (slideData.quiz) {
@@ -11423,6 +11426,73 @@ async function initAula5Reflexao(container, isReset = false) {
     }
   });
 }
+
+// 11. Atividade Reflexiva com gravação de notas (Aula 6)
+async function initAula6Reflexao(container, isReset = false) {
+  container.innerHTML = "";
+  const slideId = "aula6-cap14-conclusao";
+  const saved = state.notes[slideId] || "";
+  
+  container.innerHTML = `
+    <div style="background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:16px;">
+      <h4 style="margin:0 0 8px;">✍️ Atividade Reflexiva da Aula 6</h4>
+      <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Desafio Prático:</strong> Descreva detalhadamente abaixo como você configuraria a mesa, cadeira e monitor na sua empresa para trabalhar de forma confortável sem lesionar seus braços ou colunas e que procedimentos básicos de manutenção preventiva (como limpeza física e de arquivos temporários) você faria mensalmente para manter seu computador sempre rápido e estável. Suas notas serão gravadas no seu bloco.</p>
+      <textarea id="aula6-reflexao-textarea-local" style="width:100%; min-height:120px; background:var(--bg-base); border:1px solid var(--border-soft); border-radius:10px; padding:12px; color:var(--text-primary); font-size:0.9rem; resize:vertical; line-height:1.6;" placeholder="Escreva suas metas de postura e manutenção preventiva..."></textarea>
+      <button class="btn btn-primary mt-1" id="aula6-save-btn-local" style="width:100%;">💾 Salvar Minhas Notas Técnicas</button>
+      <div id="aula6-save-feedback-local" class="text-small mt-1" style="font-weight:bold;"></div>
+    </div>
+  `;
+  
+  const btn = document.getElementById("aula6-save-btn-local");
+  const textarea = document.getElementById("aula6-reflexao-textarea-local");
+  const feedback = document.getElementById("aula6-save-feedback-local");
+  
+  if (textarea) textarea.value = saved;
+  
+  btn.addEventListener("click", async () => {
+    const val = textarea.value.trim();
+    if (val.length < 30) {
+      feedback.style.color = "#ef4444";
+      feedback.textContent = "❌ Reflexão muito curta! Escreva pelo menos 30 caracteres.";
+      return;
+    }
+    btn.disabled = true;
+    feedback.style.color = "#fbbf24";
+    feedback.textContent = "⌛ Salvando anotações...";
+    try {
+      state.notes[slideId] = val;
+      
+      if (!state.completedLessons) state.completedLessons = {};
+      state.completedLessons["aula-6"] = true;
+      
+      addXP(100);
+      unlockAchievement("assistente_tecnico");
+      markSlideAsCompleted(slideId);
+      
+      saveState();
+      initSidebarMenu();
+      
+      feedback.style.color = "#10b981";
+      feedback.textContent = "✅ Sucesso! Suas anotações foram gravadas no seu bloco de notas e a lição 6 foi concluída!";
+      showToastNotification("🥈 Assistente Técnico!", "Medalha conquistada e aula concluída.");
+      
+      // Sincroniza também no DOM caso o textarea do slide didático esteja ativo
+      const domTextarea = document.getElementById("aula6-reflexao-textarea");
+      const domFeedback = document.getElementById("aula6-save-feedback");
+      if (domTextarea) domTextarea.value = val;
+      if (domFeedback) {
+        domFeedback.style.color = "#10b981";
+        domFeedback.textContent = "✅ Sucesso! Medalha desbloqueada!";
+      }
+    } catch (error) {
+      feedback.style.color = "#ef4444";
+      feedback.textContent = "❌ Erro ao salvar: " + error.message;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+}
+
 
 // Injeta dinamicamente os estilos do Laboratório Virtual de Informática
 (function injectVirtualOSStyles() {

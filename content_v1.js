@@ -3489,7 +3489,7 @@ const COURSE_CONTENT = [
     page: 95,
     type: "challenge",
     chapter: "AULA 6",
-    interactiveId: "aula5-reflexao",
+    interactiveId: "aula6-reflexao",
     content: `
       <div class="conclusaoExp-hero" style="text-align:center; padding:2rem 1.5rem 1.2rem;">
         <span class="conclusaoExp-trophy">🥈</span>
