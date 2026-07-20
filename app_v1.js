@@ -1,3 +1,4 @@
+
 // ==========================================================================
 // STATE MANAGEMENT & LOCAL STORAGE
 // ==========================================================================
@@ -11,6 +12,14 @@ let state = {
   notes: {}, // { slideId: "text notes" }
   quizProgress: {}, // { slideId: { currentQuestionIndex: 0, answers: [], completed: false } }
   collapsedChapters: {}, // { "Chapter Name": true (collapsed) or false (expanded) }
+  module1Skills: {
+    hardware: false,
+    peripherals: false,
+    windows: false,
+    files: false,
+    maintenance: false,
+    support: false
+  },
   pedagogicalProfile: {
     hardwareScore: 0,
     windowsScore: 0,
@@ -34,7 +43,7 @@ const ACHIEVEMENTS = [
   { id: "windows_explorer", title: "Explorador do Windows", desc: "Concluiu a Missão 4 — Dominando o Windows.", icon: "🖥️" },
   { id: "windows_guardian", title: "Guardião do Windows", desc: "Concluiu a expansão da Aula 4 e dominou os principais recursos do Windows.", icon: "🖥️" },
   { id: "guardian_files", title: "Guardião dos Arquivos", desc: "Concluiu a Missão 5 — Organização Digital.", icon: "📂" },
-  { id: "operador_digital", title: "Operador Digital", desc: "Inicializou os sistemas do Módulo 1.", icon: "🥉" },
+  { id: "operador_digital", title: "Operador Digital", desc: "Concluiu a Aula 5 — Organização e Gerenciamento de Arquivos.", icon: "🏅" },
   { id: "assistente_tecnico", title: "Assistente Técnico", desc: "Concluiu a Aula 6 e dominou as configurações do Windows.", icon: "🥈" },
   { id: "especialista_informatica", title: "Especialista em Informática", desc: "Concluiu a Aula 7 e aprendeu a dar suporte técnico.", icon: "🥇" },
   { id: "mestre_modulo1", title: "Mestre do Módulo 1", desc: "Concluiu a Avaliação Integrada e concluiu o Módulo 1.", icon: "🏆" }
@@ -46,14 +55,14 @@ const COURSE_JORNADA = [
     title: "Explorador Digital",
     icon: "🥉",
     lessons: [
-      { id: "aula-1", title: "Introdução à Informática", chapter: "AULA 1", desc: "Aprenda o básico de computadores, história e funcionamento inicial." },
-      { id: "aula-2", title: "Explorando o Hardware", chapter: "AULA 2", desc: "Abra a máquina e conheça placa-mãe, processador, RAM, disco e fonte." },
-      { id: "aula-3", title: "Periféricos e Conexões", chapter: "AULA 3", desc: "Domine mouse, teclado, monitores, impressoras e as conexões traseiras." },
-      { id: "aula-4", title: "Dominando o Windows", chapter: "AULA 4", desc: "Aprenda a usar a Área de Trabalho, Menu Iniciar, Lixeira e recursos avançados." },
-      { id: "aula-5", title: "Organização Digital", chapter: "AULA 5", desc: "Aprenda a organizar arquivos, pastas, armazenamento digital e pendrives." },
-      { id: "aula-6", title: "Configurações e Manutenção", chapter: "AULA 6", desc: "Aprenda a configurar periféricos, som, vídeo, data/hora, ergonomia e gerenciar arquivos de forma avançada." },
-      { id: "aula-7", title: "Oficina Tecnológica", desc: "Simulações de manutenção preventiva e cuidados básicos essenciais." },
-      { id: "aula-8", title: "Desafio Final do Módulo", isDesafio: true, desc: "A grande avaliação integrada do Módulo 1. Mostre que é um mestre!" }
+      { id: "aula-1", title: "Aula 1 — Introdução à Informática", chapter: "AULA 1", desc: "Aprenda o básico de computadores, história e funcionamento inicial." },
+      { id: "aula-2", title: "Aula 2 — Explorando o Hardware", chapter: "AULA 2", desc: "Abra a máquina e conheça placa-mãe, processador, RAM, disco e fonte." },
+      { id: "aula-3", title: "Aula 3 — Periféricos e Conexões", chapter: "AULA 3", desc: "Domine mouse, teclado, monitores, impressoras e as conexões traseiras." },
+      { id: "aula-4", title: "Aula 4 — Dominando o Windows", chapter: "AULA 4", desc: "Aprenda a usar a Área de Trabalho, Menu Iniciar, Lixeira e recursos avançados." },
+      { id: "aula-5", title: "Aula 5 — Organização e Gerenciamento de Arquivos", chapter: "AULA 5", desc: "Aprenda a organizar arquivos e pastas, diferenciar cópias e atalhos, lixeira e extensões de arquivos." },
+      { id: "aula-6", title: "Aula 6 — Manutenção e Segurança Física", chapter: "AULA 6", desc: "Aprenda sobre limpeza do computador, superaquecimento, proteção elétrica, diagnóstico físico e ergonomia." },
+      { id: "aula-7", title: "Aula 7 — Técnico por um Dia", chapter: "AULA 7", desc: "Simulações de diagnóstico básico e raciocínio técnico de suporte." },
+      { id: "aula-8", title: "Aula 8 — Missão Final", chapter: "AULA 8", isDesafio: true, desc: "O grande projeto final e avaliação integrada do Módulo 1." }
     ]
   },
   {
@@ -115,6 +124,26 @@ function loadState() {
         state.pedagogicalProfile.completedSimulations = state.pedagogicalProfile.completedSimulations || [];
         state.pedagogicalProfile.certificates = state.pedagogicalProfile.certificates || [];
       }
+      
+      // Inicializa e sincroniza retrocompativelmente as competências com base nas aulas concluídas
+      if (!state.module1Skills) {
+        state.module1Skills = {
+          hardware: false,
+          peripherals: false,
+          windows: false,
+          files: false,
+          maintenance: false,
+          support: false
+        };
+      }
+      if (state.completedLessons) {
+        if (state.completedLessons["aula-2"]) state.module1Skills.hardware = true;
+        if (state.completedLessons["aula-3"]) state.module1Skills.peripherals = true;
+        if (state.completedLessons["aula-4"]) state.module1Skills.windows = true;
+        if (state.completedLessons["aula-5"]) state.module1Skills.files = true;
+        if (state.completedLessons["aula-6"]) state.module1Skills.maintenance = true;
+        if (state.completedLessons["aula-7"]) state.module1Skills.support = true;
+      }
     } catch (e) {
       console.error("Erro ao carregar estado do localStorage", e);
     }
@@ -153,15 +182,29 @@ function saveState() {
 }
 
 
+// Helper para obter dados de nível e título com base no XP total do aluno
+function getUserLevelInfo(xp) {
+  if (xp < 500) {
+    return { levelNum: 1, title: "Iniciante Digital", minXp: 0, maxXp: 500 };
+  } else if (xp < 1000) {
+    return { levelNum: 2, title: "Explorador", minXp: 500, maxXp: 1000 };
+  } else if (xp < 1500) {
+    return { levelNum: 3, title: "Operador", minXp: 1000, maxXp: 1500 };
+  } else if (xp < 2000) {
+    return { levelNum: 4, title: "Assistente Técnico", minXp: 1500, maxXp: 2000 };
+  } else {
+    return { levelNum: 5, title: "Especialista", minXp: 2000, maxXp: 99999 }; // Máximo virtual
+  }
+}
+
 // Add XP and check Level Up
 function addXP(amount) {
   state.xp += amount;
   
-  // Level up formula: 100 XP per level
-  const newLevel = Math.floor(state.xp / 100) + 1;
-  if (newLevel > state.level) {
-    state.level = newLevel;
-    showToastNotification("📈 Nível Subiu!", `Você alcançou o Nível ${state.level}! Continue assim.`);
+  const currentLevelInfo = getUserLevelInfo(state.xp);
+  if (currentLevelInfo.levelNum > state.level) {
+    state.level = currentLevelInfo.levelNum;
+    showToastNotification("📈 Nível Subiu!", `Você agora é Nível ${state.level} — ${currentLevelInfo.title}! Continue assim.`);
   }
   
   saveState();
@@ -393,14 +436,15 @@ const LESSON_CURIOSITIES = {
     ]
   },
   "aula-6": {
-    titulo: "Aula 6 — Segurança e Cuidados",
-    proxima: "Aula 6 — Segurança e Cuidados",
-    prev: "Saiba como proteger seu computador contra vírus, golpes e entender os cuidados físicos essenciais com a máquina.",
+    titulo: "Aula 6 — Manutenção e Segurança Física",
+    proxima: "Aula 6 — Manutenção e Segurança Física",
+    prev: "Aprenda a cuidar fisicamente do seu computador: limpeza correta, controle de temperatura, proteção elétrica, diagnóstico de problemas e ergonomia profissional.",
     bulletPoints: [
-      "O que são vírus, cavalos de troia e ransomware",
-      "Como usar e manter o antivírus atualizado",
-      "Cuidados físicos: limpeza correta, poeira e superaquecimento",
-      "Criação de senhas fortes e seguras"
+      "🧹 Limpeza física: ferramentas corretas, ordem de limpeza e periodicidade",
+      "🌡️ Temperatura e superaquecimento: pasta térmica, coolers e thermal throttling",
+      "⚡ Estabilizador vs Nobreak: proteção contra surtos e quedas de energia",
+      "🩺 Diagnóstico de problemas físicos: beep codes, LEDs e sinais visuais",
+      "🪑 Ergonomia profissional: postura, altura do monitor e pausas saudáveis"
     ]
   },
   "aula-7": {
@@ -586,7 +630,7 @@ function getLessonStatus(lessonId) {
   const idx = flatLessons.findIndex(l => l.id === lessonId);
   if (idx === -1) return "locked";
 
-  const role = (window.currentUserProfile && window.currentUserProfile.role) ? window.currentUserProfile.role : 'student';
+  const role = (window.currentUserProfile && window.currentUserProfile.role) ? window.currentUserProfile.role : 'tutor';
   const isStudent = (role === 'student');
 
   if (!isStudent) {
@@ -620,7 +664,7 @@ function getLessonStatus(lessonId) {
 }
 
 function getModuloStatus(moduloId) {
-  const role = (window.currentUserProfile && window.currentUserProfile.role) ? window.currentUserProfile.role : 'student';
+  const role = (window.currentUserProfile && window.currentUserProfile.role) ? window.currentUserProfile.role : 'tutor';
   if (role !== 'student') return "unlocked";
 
   if (moduloId === "modulo-1") return "unlocked";
@@ -766,44 +810,16 @@ function abrirModalAulaFutura(lesson) {
     
   const desc = curiosidade ? curiosidade.prev : "Esta aula estará disponível em breve com simuladores práticos integrados.";
 
+  // Aula 8 now has real slides — allow normal navigation
   if (lesson.id === "aula-8") {
-    window.showModernAlert(
-      "🏆 Desafio Final do Módulo 1",
-      `
-      <div style="text-align: center; padding: 0.5rem 0;">
-        <span style="font-size: 3rem; display: block; margin-bottom: 0.8rem;">🏆</span>
-        <h4 style="margin: 0 0 0.5rem; color: #f59e0b; font-size: 1.15rem;">Desafio Final do Módulo 1</h4>
-        <p style="font-size: 0.85rem; color: #ccc; margin: 0 0 1.5rem;">
-          Você provou ser capaz! O Desafio Final é uma avaliação virtual do Módulo 1. Clique abaixo para concluir o Módulo 1 e liberar as medalhas correspondentes.
-        </p>
-        
-        <button id="btn-complete-desafio-final" class="btn" style="background: linear-gradient(135deg, #7c3aed, #a78bfa); color: #fff; font-weight: 700; width: 100%; padding: 0.75rem; border-radius: 10px; border: none; cursor: pointer;">
-          🏁 Finalizar Módulo 1
-        </button>
-      </div>
-      `
-    );
-    
-    setTimeout(() => {
-      const btn = document.getElementById("btn-complete-desafio-final");
-      if (btn) {
-        btn.addEventListener("click", async () => {
-          const overlay = document.getElementById("modern-alert-modal");
-          if (overlay) overlay.remove();
-          
-          if (!state.completedLessons) state.completedLessons = {};
-          state.completedLessons["aula-8"] = true;
-          unlockAchievement("windows_explorer");
-          unlockAchievement("windows_guardian");
-          addXP(100);
-          saveState();
-          initSidebarMenu();
-          
-          triggerLessonUnlockNotification("aula-8");
-        });
-      }
-    }, 100);
-    return;
+    const chapterSlides = COURSE_CONTENT.map((s, idx) => ({ ...s, idx })).filter(s => s.chapter === "AULA 8");
+    if (chapterSlides.length > 0) {
+      const targetIdx = chapterSlides[0].idx;
+      loadSlide(targetIdx);
+      const overlay = document.getElementById("modern-alert-modal");
+      if (overlay) overlay.remove();
+      return;
+    }
   }
 
   if (lesson.id === "aula-14") {
@@ -1067,8 +1083,7 @@ function initSidebarMenu() {
             if (aula.chapter) {
               const chapterSlides = COURSE_CONTENT.map((s, idx) => ({ ...s, idx })).filter(s => s.chapter === aula.chapter);
               if (chapterSlides.length > 0) {
-                const pendente = chapterSlides.find(s => !state.completedSlides[s.id]);
-                const targetIdx = pendente ? pendente.idx : chapterSlides[0].idx;
+                const targetIdx = chapterSlides[0].idx;
                 
                 document.getElementById("screen-landing") && document.getElementById("screen-landing").classList.add("screen-hidden");
                 document.getElementById("screen-hub") && document.getElementById("screen-hub").classList.add("screen-hidden");
@@ -1109,12 +1124,21 @@ function toggleChapter(chapterTitle) {
 
 // Update stats (XP Counter & Level Badge)
 function updateStatsUI() {
-  document.getElementById("user-xp-counter").textContent = state.xp;
-  document.getElementById("user-level-badge").textContent = `Nível ${state.level}`;
+  const levelInfo = getUserLevelInfo(state.xp);
+  state.level = levelInfo.levelNum;
+  
+  const xpEl = document.getElementById("user-xp-counter");
+  if (xpEl) xpEl.textContent = state.xp;
+  
+  const badgeEl = document.getElementById("user-level-badge");
+  if (badgeEl) badgeEl.textContent = `Nível ${state.level} — ${levelInfo.title}`;
   
   // Total achievements unlocked
-  const count = Object.keys(state.unlockedAchievements).length;
-  document.getElementById("achievement-unlocked-count").textContent = count;
+  const count = Object.keys(state.unlockedAchievements || {}).length;
+  const countEl = document.getElementById("achievement-unlocked-count");
+  if (countEl) countEl.textContent = count;
+  
+  updateModuleProgressBar();
 }
 
 function updateProgressUI() {
@@ -1134,6 +1158,72 @@ function updateProgressUI() {
   
   if (percentEl) percentEl.textContent = `${percent}%`;
   if (barEl) barEl.style.width = `${percent}%`;
+  
+  updateModuleProgressBar();
+}
+
+// Renderiza a barra superior fixa de progresso do módulo
+function updateModuleProgressBar() {
+  const container = document.getElementById("module-progress-bar-top");
+  if (!container) return;
+
+  const landingScreen = document.getElementById("screen-landing");
+  const isUserLoggedIn = landingScreen && landingScreen.classList.contains("screen-hidden");
+  
+  if (!isUserLoggedIn || !window.currentUser) {
+    container.style.display = "none";
+    document.body.classList.remove("has-top-bar");
+    return;
+  }
+
+  container.style.display = "flex";
+  document.body.classList.add("has-top-bar");
+
+  // Calcular progresso do Módulo 1 (Aulas 1 a 8)
+  const modulo1 = COURSE_JORNADA.find(m => m.id === "modulo-1");
+  const modulo1Lessons = modulo1 ? modulo1.lessons : [];
+  const total = modulo1Lessons.length;
+  let completed = 0;
+  
+  modulo1Lessons.forEach(lesson => {
+    if (state.completedLessons && state.completedLessons[lesson.id]) {
+      completed++;
+    }
+  });
+
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+  
+  // Encontrar o título da próxima missão
+  let nextMissionTitle = "Módulo 1 Concluído";
+  const proxima = modulo1Lessons.find(l => !state.completedLessons || !state.completedLessons[l.id]);
+  if (proxima) {
+    nextMissionTitle = proxima.title.replace(/^Aula \d+\s*—\s*/, "");
+  }
+
+  // Montar barra visual baseada em blocos (████████░░░░)
+  const blockCount = 10;
+  const filledBlocks = Math.round((percent / 100) * blockCount);
+  const emptyBlocks = blockCount - filledBlocks;
+  const barText = "█".repeat(filledBlocks) + "░".repeat(emptyBlocks);
+
+  container.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; width:100%; color:#fff; font-size:0.8rem; gap:1.5rem;">
+      <div style="font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--color-primary-light); display:flex; align-items:center; gap:0.4rem;">
+        <span>🥉</span> MÓDULO 1 — INTRODUÇÃO À INFORMÁTICA
+      </div>
+      
+      <div style="display:flex; align-items:center; gap:0.6rem; flex:1; max-width:480px; justify-content:center;">
+        <span style="font-family:'JetBrains Mono', monospace; letter-spacing:1px; color:#fbbf24; font-weight:bold; font-size: 0.9rem;">${barText}</span>
+        <span style="font-weight:700; color:#fff;">${percent}%</span>
+      </div>
+      
+      <div style="display:flex; align-items:center; gap:0.8rem;">
+        <span>Aulas concluídas: <strong style="color:#10b981;">${completed}/${total}</strong></span>
+        <span style="color:rgba(255,255,255,0.15)">|</span>
+        <span>Próxima missão: <strong style="color:var(--color-primary-light);">${nextMissionTitle}</strong></span>
+      </div>
+    </div>
+  `;
 }
 
 /**
@@ -1222,6 +1312,125 @@ window.showModernConfirm = function(title, message, onConfirm, onCancel) {
 // ==========================================================================
 function loadSlide(index) {
   if (index < 0 || index >= COURSE_CONTENT.length) return;
+  
+  const slide = COURSE_CONTENT[index];
+  const aula = COURSE_JORNADA.find(mod => mod.lessons.some(l => l.chapter === slide.chapter))
+    ?.lessons.find(l => l.chapter === slide.chapter);
+    
+  state.viewedSummaries = state.viewedSummaries || {};
+  
+  if (aula && !state.viewedSummaries[aula.id]) {
+    showLessonSummaryPanel(aula, () => {
+      state.viewedSummaries[aula.id] = true;
+      saveState();
+      proceedLoadingSlide(index);
+    });
+    return;
+  }
+  
+  proceedLoadingSlide(index);
+}
+
+// Painel de Resumo Conceitual Obrigatório ("O que você aprendeu até aqui")
+function showLessonSummaryPanel(aula, onConfirmCallback) {
+  const existing = document.getElementById("lesson-summary-overlay-panel");
+  if (existing) existing.remove();
+
+  // Medalhas conquistadas pelo aluno
+  const achievements = [
+    { key: "welcome", title: "Primeiros Passos", icon: "🚀" },
+    { key: "hardware", title: "Explorador de Hardware", icon: "🔧" },
+    { key: "peripherals", title: "Mestre dos Periféricos", icon: "🔌" },
+    { key: "windows", title: "Usuário do Windows", icon: "🖥️" },
+    { key: "operador_digital", title: "Operador Digital", icon: "🥉" }
+  ];
+  
+  const unlockedMedals = achievements.filter(ach => state.unlockedAchievements && state.unlockedAchievements[ach.key]);
+  let medalsHtml = unlockedMedals.map(ach => `
+    <li>${ach.icon} <span>${ach.title}</span></li>
+  `).join("");
+  
+  if (medalsHtml === "") {
+    medalsHtml = `<li>🌱 Iniciante na Jornada</li>`;
+  }
+
+  // Estatísticas do aluno
+  const xp = state.xp;
+  const hours = Math.round((state.pedagogicalProfile.totalTimeStudied || 0) / 60) || 0;
+  const timeText = hours >= 1 ? `${hours} horas` : `${state.pedagogicalProfile.totalTimeStudied || 0} minutos`;
+  
+  let flatLessons = [];
+  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+  let completedCount = 0;
+  flatLessons.forEach(l => {
+    if (state.completedLessons && state.completedLessons[l.id]) completedCount++;
+  });
+
+  const overlay = document.createElement("div");
+  overlay.id = "lesson-summary-overlay-panel";
+  overlay.className = "lesson-summary-overlay";
+  
+  overlay.innerHTML = `
+    <div class="lesson-summary-modal">
+      <div style="text-align: center;">
+        <span style="font-size: 2.5rem;">📋</span>
+        <h3 class="lesson-summary-title-main">O que você aprendeu até aqui</h3>
+        <p style="color: #888; font-size: 0.85rem; margin-top: 4px;">Sua ficha de progresso no portal InforMestre</p>
+      </div>
+
+      <div class="lesson-summary-row">
+        <!-- Card 1: Medalhas -->
+        <div class="lesson-summary-card">
+          <h4>🏆 Medalhas Conquistadas</h4>
+          <ul>
+            ${medalsHtml}
+          </ul>
+        </div>
+        
+        <!-- Card 2: Estatísticas -->
+        <div class="lesson-summary-card">
+          <h4>📊 Minhas Estatísticas</h4>
+          <ul>
+            <li>⭐ <strong>XP acumulado:</strong> ${xp} XP</li>
+            <li>⏱️ <strong>Tempo estudado:</strong> ${timeText}</li>
+            <li>📚 <strong>Aulas concluídas:</strong> ${completedCount} / ${flatLessons.length}</li>
+            <li>✅ <strong>Habilidades validadas:</strong> ${Object.values(state.module1Skills || {}).filter(Boolean).length} / 6</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Próxima Missão -->
+      <div style="background: rgba(131, 82, 255, 0.06); border: 1px solid rgba(131, 82, 255, 0.2); border-radius: var(--border-radius-md); padding: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem;">
+        <h4 style="margin:0; font-size: 1rem; color: var(--color-primary-light); display: flex; align-items: center; gap: 0.4rem;">
+          🎯 Nova Missão: ${aula.title}
+        </h4>
+        <p style="margin:0; font-size:0.85rem; color:#ccc; line-height:1.45;">
+          ${aula.desc || "Aprender conceitos fundamentais e simuladores integrados."}
+        </p>
+      </div>
+
+      <!-- Botão para Iniciar -->
+      <div style="text-align: center; margin-top: 0.5rem;">
+        <button class="btn btn-primary" id="btn-lesson-summary-start" style="padding: 0.8rem 3rem; font-size: 1.05rem; font-weight: 700; width: 100%;">
+          Iniciar missão
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  document.getElementById("btn-lesson-summary-start").addEventListener("click", () => {
+    overlay.style.transition = "opacity 0.25s ease";
+    overlay.style.opacity = "0";
+    setTimeout(() => {
+      overlay.remove();
+      if (onConfirmCallback) onConfirmCallback();
+    }, 250);
+  });
+}
+
+function proceedLoadingSlide(index) {
   
   // Save previous slide text area notes
   saveCurrentNotepadText();
@@ -1836,38 +2045,64 @@ function loadSimulator(simId, slideData, isReset = false) {
       initAula4ReflexaoExtra(renderArea, isReset);
       break;
     // ---- AULA 5 SIMULATORS ----
-    case "review-mission":
-      initReviewMissionSimulator(renderArea, isReset);
+    case "aula5-cap2-game":
+      initFileClassificationGame(renderArea, isReset);
       break;
-    case "digital-cleanup":
-      initDigitalCleanupSimulator(renderArea, isReset);
+    case "aula5-cap3-explorer":
+      initWindowsExplorerLab(renderArea, isReset);
       break;
-    case "folder-architect":
-      initFolderArchitectSimulator(renderArea, isReset);
-      break;
-    case "file-detective":
-      initFileDetectiveSimulator(renderArea, isReset);
-      break;
-    case "digital-mailman":
-      initDigitalMailmanSimulator(renderArea, isReset);
-      break;
-    case "backup-master":
-      initBackupMasterSimulator(renderArea, isReset);
-      break;
-    case "download-upload-challenge":
-      initDownloadUploadChallengeSimulator(renderArea, isReset);
-      break;
-    case "cloud-quest":
-      initCloudQuestSimulator(renderArea, isReset);
-      break;
-    case "office-adventure":
-      initOfficeAdventureSimulator(renderArea, isReset);
+    case "aula5-cap4-desktop":
+      initOfficeDesktopLab(renderArea, isReset);
       break;
     case "aula5-reflexao":
       initAula5Reflexao(renderArea, isReset);
       break;
+    // ---- AULA 6 SIMULATORS ----
+    case "aula6-cleaning-sim":
+      initAula6CleaningSim(renderArea, isReset);
+      break;
+    case "aula6-temp-monitor":
+      initAula6TempMonitor(renderArea, isReset);
+      break;
+    case "aula6-diagnostico-sim":
+      initAula6DiagnosticoSim(renderArea, isReset);
+      break;
+    case "aula6-ergonomia-sim":
+      initAula6ErgonomiaSim(renderArea, isReset);
+      break;
     case "aula6-reflexao":
       initAula6Reflexao(renderArea, isReset);
+      break;
+    case "aula7-windows-lab":
+      initAula7WindowsLab(renderArea, isReset);
+      break;
+    // ---- AULA 8 SIMULATORS ----
+    case "aula8-revisao-cards":
+      initAula8RevisaoCards(renderArea, isReset);
+      break;
+    case "aula8-puzzle":
+      initAula8Puzzle(renderArea, isReset);
+      break;
+    case "aula8-pc-assembly":
+      initPcAssemblyLab(renderArea, isReset);
+      break;
+    case "aula8-boot-lab":
+      initBootLab(renderArea, isReset);
+      break;
+    case "aula8-win-install":
+      initWindowsInstallerLab(renderArea, isReset);
+      break;
+    case "aula8-win-setup":
+      initWindowsSetupLab(renderArea, isReset);
+      break;
+    case "aula8-software-center":
+      initSoftwareCenterLab(renderArea, isReset);
+      break;
+    case "aula8-surpresa":
+      initAula8Surpresa(renderArea, isReset);
+      break;
+    case "aula8-certificado":
+      initAula8Certificado(renderArea, isReset);
       break;
     default:
       // If it has quiz in metadata (e.g. challenge pages 1.5, 32)
@@ -8207,7 +8442,9 @@ function renderStudentDashboardTab(container) {
     `;
   }
 
-  container.innerHTML = `
+      const levelInfo = getUserLevelInfo(state.xp);
+
+      container.innerHTML = `
     <div class="student-hub-layout" style="display: flex; flex-direction: column; gap: 2rem;">
       <div class="hub-welcome-banner">
         <h3 style="margin-bottom: 0.4rem;">👋 Bem-vindo de volta, <span>${window.currentUserProfile.full_name || "Estudante"}</span>!</h3>
@@ -8215,22 +8452,33 @@ function renderStudentDashboardTab(container) {
       </div>
       
       <div class="hub-stats-grid">
-        <div class="hub-stat-card">
-          <span class="card-icon">🎖️</span>
-          <div class="card-info">
-            <span class="card-value">Nível ${state.level}</span>
-            <span class="card-label">Seu Nível Atual</span>
+        <div class="hub-stat-card" style="display:flex; flex-direction:column; gap:0.5rem; align-items:flex-start; min-height: 100px; justify-content: space-between; padding: 1.2rem;">
+          <div style="display:flex; align-items:center; gap:0.6rem;">
+            <span class="card-icon" style="margin:0; font-size: 1.8rem;">🎖️</span>
+            <div class="card-info">
+              <span class="card-value" style="font-size: 1.1rem; line-height: 1.2;">Nível ${state.level}</span>
+              <span class="card-label" style="font-size:0.75rem; font-weight:700; color:var(--color-primary-light); text-transform:uppercase; margin-top:2px;">${levelInfo.title}</span>
+            </div>
+          </div>
+          <div style="width:100%;">
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#aaa; margin-bottom:4px;">
+              <span>${state.xp - levelInfo.minXp} / ${levelInfo.maxXp - levelInfo.minXp} XP</span>
+              <span>Prox: ${levelInfo.levelNum < 5 ? `Nível ${levelInfo.levelNum + 1}` : 'Max'}</span>
+            </div>
+            <div class="xp-bar-container-premium">
+              <div class="xp-bar-fill-premium" style="width: ${levelInfo.levelNum < 5 ? Math.round(((state.xp - levelInfo.minXp) / (levelInfo.maxXp - levelInfo.minXp)) * 100) : 100}%;"></div>
+            </div>
           </div>
         </div>
-        <div class="hub-stat-card">
-          <span class="card-icon">⚡</span>
+        <div class="hub-stat-card" style="padding: 1.2rem; min-height: 100px; display: flex; align-items: center; gap: 1rem;">
+          <span class="card-icon" style="font-size: 2rem;">⚡</span>
           <div class="card-info">
             <span class="card-value">${state.xp} XP</span>
             <span class="card-label">Experiência Acumulada</span>
           </div>
         </div>
-        <div class="hub-stat-card">
-          <span class="card-icon">🏆</span>
+        <div class="hub-stat-card" style="padding: 1.2rem; min-height: 100px; display: flex; align-items: center; gap: 1rem;">
+          <span class="card-icon" style="font-size: 2rem;">🏆</span>
           <div class="card-info">
             <span class="card-value">${achievementsCount} / 10</span>
             <span class="card-label">Conquistas Desbloqueadas</span>
@@ -10089,1290 +10337,942 @@ function initDigitalCleanupSimulator(container, isReset = false) {
   updateStatsHeader();
 }
 
-// 3. Arquiteto Digital (Folder Architect)
-function initFolderArchitectSimulator(container, isReset = false) {
+
+// ==========================================================================
+// AULA 5 - SIMULADORES E ATIVIDADES
+// ==========================================================================
+
+// 1. Jogo de Classificação de Arquivos (Drag-and-Drop / Cliques)
+function initFileClassificationGame(container, isReset = false) {
   container.innerHTML = "";
-  
   let lives = 3;
-  const mainDiv = document.createElement("div");
-  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
-  container.appendChild(mainDiv);
-
-  const drawUI = () => {
-    mainDiv.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
-        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
-        <strong style="color:var(--color-primary-light); font-size:0.85rem;">🛠️ Missão: Crie a estrutura Trabalho ➔ Relatorios ➔ Financeiro</strong>
-      </div>
-      
-      <div style="background:rgba(255,255,255,0.02); border-radius:10px; padding:1.2rem; border:1px solid rgba(255,255,255,0.05); margin-bottom:1.2rem; display:flex; flex-direction:column; gap:0.8rem;">
-        <div style="display:flex; align-items:center; gap:0.6rem;">
-          <span style="font-size:1.3rem;">📂</span>
-          <span style="font-size:0.85rem; color:#ccc;">Pasta Principal (Nível 1):</span>
-          <select id="select-lvl-1" style="background:#121226; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.35rem; font-size:0.8rem; outline:none; font-weight:700;">
-            <option value="">-- Selecionar --</option>
-            <option value="Escola">📁 Escola</option>
-            <option value="Trabalho">📁 Trabalho</option>
-            <option value="Lixeira">📁 Lixeira</option>
-          </select>
-        </div>
-        
-        <div style="display:flex; align-items:center; gap:0.6rem; margin-left:1.5rem;">
-          <span style="font-size:1.3rem; transform: rotate(90deg); display:inline-block; color:#666;">↳</span>
-          <span style="font-size:1.3rem;">📂</span>
-          <span style="font-size:0.85rem; color:#ccc;">Subpasta (Nível 2):</span>
-          <select id="select-lvl-2" style="background:#121226; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.35rem; font-size:0.8rem; outline:none; font-weight:700;">
-            <option value="">-- Selecionar --</option>
-            <option value="Matematica">📁 Matematica</option>
-            <option value="Downloads">📁 Downloads</option>
-            <option value="Relatorios">📁 Relatorios</option>
-          </select>
-        </div>
-
-        <div style="display:flex; align-items:center; gap:0.6rem; margin-left:3rem;">
-          <span style="font-size:1.3rem; transform: rotate(90deg); display:inline-block; color:#666;">↳</span>
-          <span style="font-size:1.3rem;">📂</span>
-          <span style="font-size:0.85rem; color:#ccc;">Sub-subpasta (Nível 3):</span>
-          <select id="select-lvl-3" style="background:#121226; color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:0.35rem; font-size:0.8rem; outline:none; font-weight:700;">
-            <option value="">-- Selecionar --</option>
-            <option value="Financeiro">📁 Financeiro</option>
-            <option value="Fotos">📁 Fotos</option>
-            <option value="Jogos">📁 Jogos</option>
-          </select>
-        </div>
-      </div>
-
-      <button class="btn btn-primary" id="btn-validate-architecture" style="width:100%;">📐 Validar Estrutura de Pastas</button>
-      <div id="arch-feedback" style="margin-top:0.8rem; font-size:0.8rem; display:none; padding:0.65rem; border-radius:8px;"></div>
-    `;
-
-    document.getElementById("btn-validate-architecture").addEventListener("click", () => {
-      const lvl1 = document.getElementById("select-lvl-1").value;
-      const lvl2 = document.getElementById("select-lvl-2").value;
-      const lvl3 = document.getElementById("select-lvl-3").value;
-      const feedback = document.getElementById("arch-feedback");
-
-      feedback.style.display = "block";
-
-      if (lvl1 === "Trabalho" && lvl2 === "Relatorios" && lvl3 === "Financeiro") {
-        addXP(50);
-        mainDiv.innerHTML = `
-          <div style="text-align:center; padding:1.8rem 0;">
-            <span style="font-size:3rem; display:block;">🏆</span>
-            <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Arquiteto Digital Aprovado!</h4>
-            <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você montou a hierarquia Trabalho ➔ Relatorios ➔ Financeiro perfeitamente.</p>
-            <button class="btn btn-primary" id="btn-finish-arch-sim" style="width:100%;">Avançar Aula ➔</button>
-          </div>
-        `;
-        document.getElementById("btn-finish-arch-sim").addEventListener("click", () => {
-          const nextBtn = document.getElementById("next-slide-btn");
-          if (nextBtn) nextBtn.click();
-        });
-      } else {
-        lives--;
-        if (lives <= 0) {
-          mainDiv.innerHTML = `
-            <div style="text-align:center; padding:1.8rem 0;">
-              <span style="font-size:3rem; display:block;">❌</span>
-              <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Estrutura Corrompida!</h4>
-              <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você falhou em criar a árvore lógica de pastas de forma correta.</p>
-              <button class="btn btn-outline" id="btn-retry-arch" style="width:100%;">Tentar Novamente 🔄</button>
-            </div>
-          `;
-          document.getElementById("btn-retry-arch").addEventListener("click", () => {
-            initFolderArchitectSimulator(container, true);
-          });
-        } else {
-          feedback.style.background = "rgba(239,68,68,0.1)";
-          feedback.style.border = "1px solid rgba(239,68,68,0.3)";
-          feedback.style.color = "#ef4444";
-          
-          let tips = [];
-          if (lvl1 !== "Trabalho") tips.push("A pasta mãe deve ser Trabalho.");
-          if (lvl2 !== "Relatorios") tips.push("A subpasta de Trabalho deve ser Relatorios.");
-          if (lvl3 !== "Financeiro") tips.push("A pasta final de relatórios deve ser Financeiro.");
-
-          feedback.innerHTML = `<strong>❌ Estrutura errada!</strong><br>${tips.join("<br>")}`;
-          drawUI();
-        }
-      }
-    });
-  };
-
-  drawUI();
-}
-
-// 4. Detetive dos Arquivos (File Detective)
-function initFileDetectiveSimulator(container, isReset = false) {
-  container.innerHTML = "";
-  
-  const items = [
-    { name: "trabalho_escola.pdf", cat: "docs", exp: "O .pdf é um formato de documento protegido universal, ideal para trabalhos e livros." },
-    { name: "foto_perfil.png", cat: "images", exp: "O .png é uma extensão de imagem digital que preserva transparências no fundo." },
-    { name: "audio_aula.mp3", cat: "audio", exp: "O .mp3 é o formato de compressão de áudio digital mais conhecido do mundo." },
-    { name: "video_aula.mp4", cat: "video", exp: "O .mp4 é a extensão de contêiner de arquivos de vídeo e áudio integrados de alta definição." },
-    { name: "arquivos_antigos.zip", cat: "archives", exp: "O .zip é a extensão de pastas compactadas que agrupa e reduz o tamanho de arquivos." }
-  ];
-
-  let current = 0;
-  let lives = 3;
-
-  const mainDiv = document.createElement("div");
-  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
-  container.appendChild(mainDiv);
-
-  const drawRound = () => {
-    if (current >= items.length) {
-      addXP(50);
-      mainDiv.innerHTML = `
-        <div style="text-align:center; padding:1.8rem 0;">
-          <span style="font-size:3.5rem; display:block;">🔍</span>
-          <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Detetive Aprovado!</h4>
-          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você identificou todas as extensões de arquivos com maestria!</p>
-          <button class="btn btn-primary" id="btn-finish-detective-sim" style="width:100%;">Avançar Aula ➔</button>
-        </div>
-      `;
-      document.getElementById("btn-finish-detective-sim").addEventListener("click", () => {
-        const nextBtn = document.getElementById("next-slide-btn");
-        if (nextBtn) nextBtn.click();
-      });
-      return;
-    }
-
-    const item = items[current];
-
-    mainDiv.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
-        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
-        <span style="font-size:0.75rem; color:#aaa;">Etapa ${current + 1} / ${items.length}</span>
-      </div>
-      
-      <div style="text-align:center; background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:2rem; margin-bottom:1.2rem;">
-        <span style="font-size:4rem; display:block; margin-bottom:0.5rem;">📦</span>
-        <strong style="font-size:1.15rem; color:var(--color-primary-light); font-family:var(--font-code);">${item.name}</strong>
-        <p style="font-size:0.8rem; color:#aaa; margin:0.5rem 0 0 0;">Qual é a categoria deste arquivo?</p>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;" id="detective-actions">
-        <button class="btn btn-outline" data-cat="docs">📄 Documento</button>
-        <button class="btn btn-outline" data-cat="images">🖼️ Imagem</button>
-        <button class="btn btn-outline" data-cat="audio">🎵 Áudio / 🎬 Vídeo</button>
-        <button class="btn btn-outline" data-cat="archives">📦 Compactado</button>
-      </div>
-      
-      <div id="detective-feedback" style="margin-top:0.8rem; display:none; padding:0.8rem; border-radius:8px; font-size:0.8rem; line-height:1.45;"></div>
-    `;
-
-    const btns = mainDiv.querySelectorAll("#detective-actions button");
-    const feed = mainDiv.querySelector("#detective-feedback");
-
-    btns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        btns.forEach(b => b.disabled = true);
-        const sel = btn.getAttribute("data-cat");
-        
-        // Mapeia áudio/vídeo juntos
-        const isCorrect = (sel === item.cat) || (sel === "audio" && (item.cat === "audio" || item.cat === "video"));
-
-        feed.style.display = "block";
-        if (isCorrect) {
-          btn.style.background = "rgba(16, 185, 129, 0.15)";
-          btn.style.borderColor = "#10b981";
-          btn.style.color = "#10b981";
-          feed.style.background = "rgba(16, 185, 129, 0.05)";
-          feed.style.border = "1px solid rgba(16, 185, 129, 0.2)";
-          feed.style.color = "#22c55e";
-          feed.innerHTML = `<strong>✅ Correto!</strong> ${item.exp}`;
-        } else {
-          lives--;
-          btn.style.background = "rgba(239, 68, 68, 0.15)";
-          btn.style.borderColor = "#ef4444";
-          btn.style.color = "#ef4444";
-          
-          feed.style.background = "rgba(239, 68, 68, 0.05)";
-          feed.style.border = "1px solid rgba(239, 68, 68, 0.2)";
-          feed.style.color = "#f87171";
-          feed.innerHTML = `<strong>❌ Incorreto!</strong> ${item.exp}`;
-        }
-
-        if (lives <= 0) {
-          setTimeout(() => {
-            mainDiv.innerHTML = `
-              <div style="text-align:center; padding:1.8rem 0;">
-                <span style="font-size:3rem; display:block;">❌</span>
-                <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Vidas Esgotadas!</h4>
-                <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Estude melhor as extensões e tente novamente.</p>
-                <button class="btn btn-outline" id="btn-retry-detective" style="width:100%;">Tentar Novamente 🔄</button>
-              </div>
-            `;
-            document.getElementById("btn-retry-detective").addEventListener("click", () => {
-              initFileDetectiveSimulator(container, true);
-            });
-          }, 2000);
-        } else {
-          const nextQBtn = document.createElement("button");
-          nextQBtn.className = "btn btn-primary";
-          nextQBtn.style.cssText = "width:100%; margin-top:1rem; font-size:0.82rem;";
-          nextQBtn.textContent = current === items.length - 1 ? "🏁 Finalizar Desafio" : "Próximo Arquivo ➔";
-          nextQBtn.addEventListener("click", () => {
-            current++;
-            drawRound();
-          });
-          feed.appendChild(nextQBtn);
-        }
-      });
-    });
-  };
-
-  drawRound();
-}
-
-// 5. Correio Digital (Digital Mailman)
-function initDigitalMailmanSimulator(container, isReset = false) {
-  container.innerHTML = "";
-  
-  let lives = 3;
-  let step = 1; // 1: Copiar trabalho.docx, 2: Paste in Escola, 3: Delete imagem_antiga.png, 4: Restore from Lixeira
-
-  const mainDiv = document.createElement("div");
-  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
-  container.appendChild(mainDiv);
-
-  let clipboardFile = null;
-  let localFiles = [
-    { name: "trabalho.docx", type: "file", icon: "📄", location: "root" },
-    { name: "imagem_antiga.png", type: "file", icon: "🖼️", location: "root" },
-    { name: "Escola", type: "folder", icon: "📁", location: "root", children: [] },
-    { name: "Lixeira", type: "trash", icon: "🗑️", location: "root", children: [] }
-  ];
-
-  let currentPath = "root"; // "root", "Escola", "Lixeira"
-
-  const drawUI = () => {
-    let filesInPath = [];
-    if (currentPath === "root") {
-      filesInPath = localFiles.filter(f => f.location === "root");
-    } else if (currentPath === "Escola") {
-      const folder = localFiles.find(f => f.name === "Escola");
-      filesInPath = folder.children;
-    } else if (currentPath === "Lixeira") {
-      const trash = localFiles.find(f => f.name === "Lixeira");
-      filesInPath = trash.children;
-    }
-
-    let instruction = "";
-    if (step === 1) instruction = "📂 <strong>Passo 1:</strong> Selecione o arquivo <strong>trabalho.docx</strong> e clique em <strong>Copiar</strong>.";
-    else if (step === 2) instruction = "📂 <strong>Passo 2:</strong> Abra a pasta <strong>Escola</strong> e clique em <strong>Colar</strong>.";
-    else if (step === 3) instruction = "📂 <strong>Passo 3:</strong> Volte para a pasta inicial, selecione <strong>imagem_antiga.png</strong> e clique em <strong>Excluir</strong>.";
-    else if (step === 4) instruction = "📂 <strong>Passo 4:</strong> Entre na <strong>Lixeira</strong>, clique em <strong>imagem_antiga.png</strong> e selecione <strong>Restaurar</strong>.";
-
-    mainDiv.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
-        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
-        <span style="font-size:0.75rem; color:#aaa;">Passo ${step} / 4</span>
-      </div>
-      
-      <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(124,58,237,0.25); border-radius:8px; padding:0.8rem; margin-bottom:1rem; font-size:0.8rem; color:#ccc;">
-        ${instruction}
-      </div>
-
-      <!-- Barra de Ações do Explorador -->
-      <div style="display:flex; gap:0.5rem; background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:0.4rem; margin-bottom:0.8rem; align-items:center;">
-        ${currentPath !== "root" ? `<button class="btn btn-outline btn-small" id="btn-back-explorer" style="padding:0.2rem 0.5rem; font-size:0.75rem;">⬅ Voltar</button>` : ""}
-        <span style="font-size:0.75rem; color:#888; font-family:var(--font-code); margin-right:auto;">C:\\${currentPath === "root" ? "" : currentPath}</span>
-        
-        <button class="btn btn-outline btn-small" id="btn-copy-explorer" style="padding:0.25rem 0.6rem; font-size:0.75rem; font-weight:700;">📋 Copiar</button>
-        <button class="btn btn-outline btn-small" id="btn-paste-explorer" style="padding:0.25rem 0.6rem; font-size:0.75rem; font-weight:700;">📋 Colar</button>
-        <button class="btn btn-outline btn-small" id="btn-delete-explorer" style="padding:0.25rem 0.6rem; font-size:0.75rem; font-weight:700; color:#ef4444; border-color:rgba(239,68,68,0.2);">❌ Excluir</button>
-        <button class="btn btn-outline btn-small" id="btn-restore-explorer" style="padding:0.25rem 0.6rem; font-size:0.75rem; font-weight:700; color:#10b981; border-color:rgba(16,185,129,0.2);">↩️ Restaurar</button>
-      </div>
-
-      <!-- Área de Arquivos -->
-      <div style="background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:8px; min-height:160px; padding:0.8rem; display:flex; flex-wrap:wrap; gap:0.8rem;" id="explorer-files-container">
-        ${filesInPath.map((file, idx) => `
-          <div class="explorer-item" data-name="${file.name}" style="padding:0.5rem; text-align:center; border:1px solid transparent; border-radius:6px; cursor:pointer; width:80px; user-select:none; transition:all 0.15s;">
-            <span style="font-size:2.2rem; display:block;">${file.icon}</span>
-            <span style="font-size:0.72rem; color:#ccc; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; margin-top:2px;">${file.name}</span>
-          </div>
-        `).join("")}
-      </div>
-    `;
-
-    // Lógica de Seleção de Arquivo
-    let selectedItemName = null;
-    const itemsEl = mainDiv.querySelectorAll(".explorer-item");
-    itemsEl.forEach(el => {
-      el.addEventListener("click", () => {
-        itemsEl.forEach(i => {
-          i.style.background = "";
-          i.style.borderColor = "transparent";
-        });
-        el.style.background = "rgba(124, 58, 237, 0.15)";
-        el.style.borderColor = "rgba(124, 58, 237, 0.4)";
-        selectedItemName = el.getAttribute("data-name");
-      });
-      
-      // Duplo clique abre pastas
-      el.addEventListener("dblclick", () => {
-        const name = el.getAttribute("data-name");
-        const file = localFiles.find(f => f.name === name);
-        if (file && (file.type === "folder" || file.type === "trash")) {
-          currentPath = name;
-          drawUI();
-        }
-      });
-    });
-
-    // Ações do Explorador
-    const backBtn = mainDiv.querySelector("#btn-back-explorer");
-    if (backBtn) {
-      backBtn.addEventListener("click", () => {
-        currentPath = "root";
-        drawUI();
-      });
-    }
-
-    // Botão de Copiar
-    mainDiv.querySelector("#btn-copy-explorer").addEventListener("click", () => {
-      if (step === 1 && selectedItemName === "trabalho.docx") {
-        clipboardFile = { name: "trabalho.docx", type: "file", icon: "📄" };
-        step = 2;
-        showToastNotification("📋 Copiado!", "O arquivo trabalho.docx foi copiado para a área de transferência.");
-        drawUI();
-      } else {
-        handleError("Selecione trabalho.docx e clique em Copiar.");
-      }
-    });
-
-    // Botão de Colar
-    mainDiv.querySelector("#btn-paste-explorer").addEventListener("click", () => {
-      if (step === 2 && currentPath === "Escola" && clipboardFile) {
-        const folder = localFiles.find(f => f.name === "Escola");
-        folder.children.push({ ...clipboardFile, location: "Escola" });
-        clipboardFile = null;
-        step = 3;
-        showToastNotification("📋 Colado!", "Arquivo colado com sucesso dentro da pasta Escola.");
-        currentPath = "root"; // Força volta
-        drawUI();
-      } else {
-        handleError("Entre na pasta Escola (duplo clique) e depois clique em Colar.");
-      }
-    });
-
-    // Botão de Deletar
-    mainDiv.querySelector("#btn-delete-explorer").addEventListener("click", () => {
-      if (step === 3 && selectedItemName === "imagem_antiga.png" && currentPath === "root") {
-        const idx = localFiles.findIndex(f => f.name === "imagem_antiga.png");
-        if (idx !== -1) {
-          const removed = localFiles.splice(idx, 1)[0];
-          const trash = localFiles.find(f => f.name === "Lixeira");
-          trash.children.push({ ...removed, location: "Lixeira" });
-        }
-        step = 4;
-        showToastNotification("🗑️ Excluído!", "Arquivo movido para a Lixeira.");
-        drawUI();
-      } else {
-        handleError("Selecione imagem_antiga.png na pasta principal e clique em Excluir.");
-      }
-    });
-
-    // Botão de Restaurar
-    mainDiv.querySelector("#btn-restore-explorer").addEventListener("click", () => {
-      if (step === 4 && selectedItemName === "imagem_antiga.png" && currentPath === "Lixeira") {
-        const trash = localFiles.find(f => f.name === "Lixeira");
-        const idx = trash.children.findIndex(f => f.name === "imagem_antiga.png");
-        if (idx !== -1) {
-          const file = trash.children.splice(idx, 1)[0];
-          localFiles.push({ ...file, location: "root" });
-        }
-        addXP(50);
-        mainDiv.innerHTML = `
-          <div style="text-align:center; padding:1.8rem 0;">
-            <span style="font-size:3rem; display:block;">🎉</span>
-            <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Correio Concluída!</h4>
-            <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você dominou a arte de duplicar, transferir, apagar e restaurar dados.</p>
-            <button class="btn btn-primary" id="btn-finish-mailman-sim" style="width:100%;">Avançar Aula ➔</button>
-          </div>
-        `;
-        document.getElementById("btn-finish-mailman-sim").addEventListener("click", () => {
-          const nextBtn = document.getElementById("next-slide-btn");
-          if (nextBtn) nextBtn.click();
-        });
-      } else {
-        handleError("Abra a Lixeira, selecione imagem_antiga.png e clique em Restaurar.");
-      }
-    });
-  };
-
-  const handleError = (msg) => {
-    lives--;
-    if (lives <= 0) {
-      mainDiv.innerHTML = `
-        <div style="text-align:center; padding:1.8rem 0;">
-          <span style="font-size:3rem; display:block;">❌</span>
-          <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Vidas Esgotadas!</h4>
-          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Tente novamente prestando atenção nas instruções lógicas.</p>
-          <button class="btn btn-outline" id="btn-retry-mailman" style="width:100%;">Tentar Novamente 🔄</button>
-        </div>
-      `;
-      document.getElementById("btn-retry-mailman").addEventListener("click", () => {
-        initDigitalMailmanSimulator(container, true);
-      });
-    } else {
-      showToastNotification("❌ Ação Incorreta!", msg);
-      drawUI();
-    }
-  };
-
-  drawUI();
-}
-
-// 6. Missão Backup (Backup Master)
-function initBackupMasterSimulator(container, isReset = false) {
-  container.innerHTML = "";
-  
-  let lives = 3;
-  let status = "unconnected"; // "unconnected", "connected", "backed_up", "safe_ejected"
-  
-  const mainDiv = document.createElement("div");
-  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
-  container.appendChild(mainDiv);
-
-  const drawUI = () => {
-    mainDiv.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
-        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
-        <strong style="color:var(--color-primary-light); font-size:0.85rem;">💾 Missão: Efetuar Backup seguro no Pendrive</strong>
-      </div>
-      
-      <!-- Interface do Computador Traseira / Pendrive -->
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem; align-items:center;">
-        <!-- Lado 1: Porta USB -->
-        <div style="background:#121226; border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:1rem; text-align:center; min-height:120px; display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative;">
-          <strong style="font-size:0.75rem; color:#aaa; margin-bottom:0.5rem;">💻 PORTA USB DO COMPUTADOR</strong>
-          <div style="width:60px; height:15px; background:#000; border:2px solid #333; border-radius:2px; position:relative;">
-            ${status !== "unconnected" ? `<div style="width:50px; height:11px; background:#3b82f6; position:absolute; left:3px; top:0px; border-radius:1px; display:flex; align-items:center; justify-content:center; font-size:0.55rem; font-weight:800; color:#fff;">USB DRIVE</div>` : ""}
-          </div>
-        </div>
-
-        <!-- Lado 2: O Pendrive Físico -->
-        <div style="text-align:center;">
-          ${status === "unconnected" ? `
-            <div id="physical-pendrive" style="display:inline-block; padding:0.6rem 1rem; background:#3b82f6; border-radius:6px; cursor:pointer; font-weight:800; border:1px solid rgba(255,255,255,0.15); transition:transform 0.15s;" title="Clique para conectar">
-              📟 CONECTAR PENDRIVE
-            </div>
-            <p style="font-size:0.75rem; color:#888; margin-top:0.4rem;">Clique no pendrive para inseri-lo.</p>
-          ` : `
-            <button class="btn btn-outline" id="btn-pull-usb-directly" style="border-color:rgba(239,68,68,0.3); color:#ef4444; width:100%;">
-              ⚠️ Puxar Pendrive Diretamente
-            </button>
-            <p style="font-size:0.72rem; color:#888; margin-top:0.4rem;">Desconectar sem ejetar antes pode queimar os arquivos!</p>
-          `}
-        </div>
-      </div>
-
-      <!-- Lógica Interna do S.O. virtual -->
-      <div style="background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:0.8rem; min-height:140px; display:flex; flex-direction:column; justify-content:center;">
-        ${status === "unconnected" ? `
-          <div style="text-align:center; color:#666; font-style:italic; font-size:0.8rem;">
-            Aguardando conexão de hardware externo...
-          </div>
-        ` : status === "connected" ? `
-          <div style="text-align:center;">
-            <p style="font-size:0.82rem; color:#ccc; margin-bottom:0.8rem;">Dispositivo USB detectado. Copie o arquivo para o backup:</p>
-            <button class="btn btn-primary btn-small" id="btn-copy-backup" style="margin:0 auto; display:block;">
-              💾 Fazer Backup da pasta 'Documentos Importantes'
-            </button>
-          </div>
-        ` : status === "backed_up" ? `
-          <div style="text-align:center;">
-            <p style="font-size:0.82rem; color:#22c55e; font-weight:700; margin-bottom:0.6rem;">✅ Backup efetuado com sucesso no USB Drive!</p>
-            <p style="font-size:0.75rem; color:#aaa; margin-bottom:0.8rem;">Agora ejete o dispositivo por software na barra abaixo:</p>
-            
-            <div style="display:flex; justify-content:center; gap:0.5rem; background:rgba(0,0,0,0.3); padding:0.4rem; border-radius:6px; align-items:center;">
-              <span style="font-size:0.72rem; color:#888;">Remoção de Hardware:</span>
-              <button class="btn btn-outline btn-small" id="btn-eject-usb" style="padding:0.2rem 0.5rem; font-size:0.72rem; color:#10b981; border-color:rgba(16,185,129,0.3);">
-                🎛️ Ejetar Mass Storage 
-              </button>
-            </div>
-          </div>
-        ` : `
-          <div style="text-align:center;">
-            <p style="font-size:0.82rem; color:#10b981; font-weight:700; margin-bottom:0.6rem;">✅ Ejetado com segurança!</p>
-            <p style="font-size:0.75rem; color:#aaa; margin-bottom:0.8rem;">Você já pode remover o dispositivo com total segurança física.</p>
-            <button class="btn btn-primary" id="btn-disconnect-safely" style="width:100%;">🏁 Remover Pendrive Físico</button>
-          </div>
-        `}
-      </div>
-    `;
-
-    // Evento de conexão de hardware
-    const pendrive = mainDiv.querySelector("#physical-pendrive");
-    if (pendrive) {
-      pendrive.addEventListener("click", () => {
-        status = "connected";
-        showToastNotification("📟 USB Conectado!", "Explorador detectou dispositivo externo.");
-        drawUI();
-      });
-    }
-
-    // Evento de puxar cabo diretamente
-    const pullDirect = mainDiv.querySelector("#btn-pull-usb-directly");
-    if (pullDirect) {
-      pullDirect.addEventListener("click", () => {
-        if (status !== "safe_ejected") {
-          lives--;
-          if (lives <= 0) {
-            mainDiv.innerHTML = `
-              <div style="text-align:center; padding:1.8rem 0;">
-                <span style="font-size:3rem; display:block;">❌</span>
-                <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Pendrive Queimado!</h4>
-                <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você removeu o dispositivo enquanto ele gravava dados, inutilizando os arquivos.</p>
-                <button class="btn btn-outline" id="btn-retry-backup" style="width:100%;">Tentar Novamente 🔄</button>
-              </div>
-            `;
-            document.getElementById("btn-retry-backup").addEventListener("click", () => {
-              initBackupMasterSimulator(container, true);
-            });
-          } else {
-            showToastNotification("❌ Remoção Perigosa!", "Sempre ejete por software na barra de tarefas antes.");
-            status = "unconnected";
-            drawUI();
-          }
-        }
-      });
-    }
-
-    // Evento de Fazer Backup
-    const copyBtn = mainDiv.querySelector("#btn-copy-backup");
-    if (copyBtn) {
-      copyBtn.addEventListener("click", () => {
-        status = "backed_up";
-        showToastNotification("📂 Copiado!", "Arquivos copiados para o USB Drive.");
-        drawUI();
-      });
-    }
-
-    // Evento de Ejetar USB
-    const ejectBtn = mainDiv.querySelector("#btn-eject-usb");
-    if (ejectBtn) {
-      ejectBtn.addEventListener("click", () => {
-        status = "safe_ejected";
-        showToastNotification("✅ Seguro para Remover!", "O Windows fechou todas as conexões USB.");
-        drawUI();
-      });
-    }
-
-    // Evento de Desconexão Segura
-    const disconnectBtn = mainDiv.querySelector("#btn-disconnect-safely");
-    if (disconnectBtn) {
-      disconnectBtn.addEventListener("click", () => {
-        addXP(50);
-        mainDiv.innerHTML = `
-          <div style="text-align:center; padding:1.8rem 0;">
-            <span style="font-size:3rem; display:block;">🏆</span>
-            <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Backup Concluída!</h4>
-            <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você compreendeu a ejetagem segura de memórias portáteis.</p>
-            <button class="btn btn-primary" id="btn-finish-backup-sim" style="width:100%;">Avançar Aula ➔</button>
-          </div>
-        `;
-        document.getElementById("btn-finish-backup-sim").addEventListener("click", () => {
-          const nextBtn = document.getElementById("next-slide-btn");
-          if (nextBtn) nextBtn.click();
-        });
-      });
-    }
-  };
-
-  drawUI();
-}
-
-// 7. Missão Internet (Download & Upload Challenge)
-function initDownloadUploadChallengeSimulator(container, isReset = false) {
-  container.innerHTML = "";
-  
-  const scenarios = [
-    { text: "Você clica em 'Baixar Boleto' no portal da faculdade para salvar o PDF no computador.", ans: "down", exp: "Download: Você baixou um arquivo do servidor da internet para a máquina local." },
-    { text: "Você anexa e envia uma foto sua do computador para a sua conta do Gmail.", ans: "up", exp: "Upload: Você enviou um arquivo da máquina local para a nuvem/rede." },
-    { text: "Você baixa uma música do site oficial da banda para ouvi-la no pendrive.", ans: "down", exp: "Download: Transferência do servidor online para a sua máquina física." },
-    { text: "Você faz upload do seu currículo em formato PDF no formulário da vaga de emprego no LinkedIn.", ans: "up", exp: "Upload: Envio de um arquivo do computador local para o sistema remoto." }
-  ];
-
-  let current = 0;
   let score = 0;
-  let lives = 3;
+  
+  const fileItems = [
+    { name: "faturamento_junho.xlsx", type: "documentos", desc: "Planilha eletrônica do Excel com relatórios contábeis." },
+    { name: "manual_usuario.pdf", type: "documentos", desc: "Manual oficial portátil em formato universal de leitura." },
+    { name: "carta_proposta.docx", type: "documentos", desc: "Documento oficial de proposta comercial do Word." },
+    { name: "slide_treinamento.pptx", type: "documentos", desc: "Apresentação corporativa em slides do PowerPoint." },
+    { name: "anotacao_reuniao.txt", type: "documentos", desc: "Texto simples sem formatação para anotações rápidas." },
+    { name: "foto_produto.jpg", type: "imagens", desc: "Imagem comprimida ideal para fotografias de catálogo." },
+    { name: "icone_suporte.png", type: "imagens", desc: "Imagem com fundo transparente ideal para web design." },
+    { name: "desenho_vetorial.svg", type: "imagens", desc: "Ilustração vetorial escalável de alta qualidade." },
+    { name: "gif_carregando.gif", type: "imagens", desc: "Pequena imagem de carregamento animada de poucos quadros." },
+    { name: "video_institucional.mp4", type: "videos", desc: "Vídeo corporativo em alta definição universal." },
+    { name: "palestra_gravada.mkv", type: "videos", desc: "Vídeo de alta fidelidade contendo faixas adicionais de áudio." },
+    { name: "campanha_marketing.avi", type: "videos", desc: "Vídeo em formato tradicional com boa compatibilidade." },
+    { name: "audio_mensagem.mp3", type: "audios", desc: "Áudio comprimido ideal para mensagens e chamados." },
+    { name: "efeito_alerta.wav", type: "audios", desc: "Som digital nativo de alta qualidade de amostra sem perdas." },
+    { name: "musica_fundo.flac", type: "audios", desc: "Áudio compactado sem qualquer tipo de perda de qualidade." },
+    { name: "backup_faturamento.zip", type: "compactados", desc: "Compactador nativo que une e comprime arquivos." },
+    { name: "projetos_empacotados.rar", type: "compactados", desc: "Formato compactado com alta taxa de otimização de espaço." },
+    { name: "instalador_suporte.exe", type: "programas", desc: "Programa executável de instalação. Cuidado extremo de segurança!" },
+    { name: "pacote_sistema.msi", type: "programas", desc: "Instalador de software nativo para a plataforma Windows." },
+    { name: "rotina_limpeza.bat", type: "programas", desc: "Arquivo de lote para automação de tarefas do terminal. Perigo!" }
+  ];
+  
+  if (!isReset) {
+    fileItems.sort(() => Math.random() - 0.5);
+  }
 
   const mainDiv = document.createElement("div");
-  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff; font-family:var(--font-sans);";
   container.appendChild(mainDiv);
 
   const drawUI = () => {
-    if (current >= scenarios.length) {
-      addXP(50);
-      mainDiv.innerHTML = `
-        <div style="text-align:center; padding:1.8rem 0;">
-          <span style="font-size:3rem; display:block;">🚀</span>
-          <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Internet Concluída!</h4>
-          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você domina a diferença entre download e upload de dados.</p>
-          <button class="btn btn-primary" id="btn-finish-network-sim" style="width:100%;">Avançar Aula ➔</button>
-        </div>
-      `;
-      document.getElementById("btn-finish-network-sim").addEventListener("click", () => {
-        const nextBtn = document.getElementById("next-slide-btn");
-        if (nextBtn) nextBtn.click();
-      });
-      return;
-    }
-
-    const item = scenarios[current];
-
-    mainDiv.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
-        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
-        <span style="font-size:0.75rem; color:#aaa;">Cenário ${current + 1} / ${scenarios.length}</span>
-      </div>
-      
-      <div style="background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:1.5rem; margin-bottom:1.2rem; font-size:0.88rem; line-height:1.5; color:#ccc;">
-        "${item.text}"
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;" id="net-actions">
-        <button class="btn btn-outline" data-ans="down" style="padding:0.75rem; font-size:0.9rem; font-weight:700;">⬇️ Download (Baixar)</button>
-        <button class="btn btn-outline" data-ans="up" style="padding:0.75rem; font-size:0.9rem; font-weight:700;">⬆️ Upload (Enviar)</button>
-      </div>
-
-      <div id="net-feedback" style="margin-top:0.8rem; display:none; padding:0.8rem; border-radius:8px; font-size:0.8rem; line-height:1.45;"></div>
-    `;
-
-    const btns = mainDiv.querySelectorAll("#net-actions button");
-    const feed = mainDiv.querySelector("#net-feedback");
-
-    btns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        btns.forEach(b => b.disabled = true);
-        const ans = btn.getAttribute("data-ans");
-        
-        feed.style.display = "block";
-        if (ans === item.ans) {
-          score++;
-          btn.style.background = "rgba(16, 185, 129, 0.15)";
-          btn.style.borderColor = "#10b981";
-          btn.style.color = "#10b981";
-          feed.style.background = "rgba(16, 185, 129, 0.05)";
-          feed.style.border = "1px solid rgba(16, 185, 129, 0.2)";
-          feed.style.color = "#22c55e";
-          feed.innerHTML = `<strong>✅ Correto!</strong> ${item.exp}`;
-        } else {
-          lives--;
-          btn.style.background = "rgba(239, 68, 68, 0.15)";
-          btn.style.borderColor = "#ef4444";
-          btn.style.color = "#ef4444";
-          
-          feed.style.background = "rgba(239, 68, 68, 0.05)";
-          feed.style.border = "1px solid rgba(239, 68, 68, 0.2)";
-          feed.style.color = "#f87171";
-          feed.innerHTML = `<strong>❌ Errado!</strong> ${item.exp}`;
-        }
-
-        if (lives <= 0) {
-          setTimeout(() => {
-            mainDiv.innerHTML = `
-              <div style="text-align:center; padding:1.8rem 0;">
-                <span style="font-size:3rem; display:block;">❌</span>
-                <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Vidas Esgotadas!</h4>
-                <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Revise o sentido de Download/Upload e tente novamente.</p>
-                <button class="btn btn-outline" id="btn-retry-network" style="width:100%;">Tentar Novamente 🔄</button>
-              </div>
-            `;
-            document.getElementById("btn-retry-network").addEventListener("click", () => {
-              initDownloadUploadChallengeSimulator(container, true);
-            });
-          }, 2000);
-        } else {
-          const nextBtn = document.createElement("button");
-          nextBtn.className = "btn btn-primary";
-          nextBtn.style.cssText = "width:100%; margin-top:1rem; font-size:0.82rem;";
-          nextBtn.textContent = current === scenarios.length - 1 ? "🏁 Finalizar Missão" : "Próximo Caso ➔";
-          nextBtn.addEventListener("click", () => {
-            current++;
-            drawUI();
-          });
-          feed.appendChild(nextBtn);
-        }
-      });
-    });
-  };
-
-  drawUI();
-}
-
-// 8. Onde Salvar? (Cloud Quest)
-function initCloudQuestSimulator(container, isReset = false) {
-  container.innerHTML = "";
-  
-  const questions = [
-    {
-      case: "Você quer guardar seus arquivos de escola de forma que consiga trabalhar neles tanto no celular quanto no computador da escola e no de casa.",
-      ans: "cloud",
-      exp: "Armazenamento em Nuvem: Garante acesso instantâneo em múltiplos dispositivos via internet."
-    },
-    {
-      case: "Você deseja fazer um backup físico offline rápido para transferir arquivos de fotos para o notebook de um amigo que mora em área rural sem sinal de rede.",
-      ans: "pendrive",
-      exp: "Pendrive / HD Externo: Permite transporte físico rápido sem precisar de conexão de internet."
-    },
-    {
-      case: "Você quer instalar um software pesado de edição gráfica e quer que os dados rodem com a velocidade de acesso mais alta local.",
-      ans: "local",
-      exp: "Computador Local: O disco rígido interno (SSD/HD) oferece a menor latência e maior taxa de leitura local de dados."
-    }
-  ];
-
-  let current = 0;
-  let lives = 3;
-
-  const mainDiv = document.createElement("div");
-  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
-  container.appendChild(mainDiv);
-
-  const drawUI = () => {
-    if (current >= questions.length) {
-      addXP(50);
-      mainDiv.innerHTML = `
-        <div style="text-align:center; padding:1.8rem 0;">
-          <span style="font-size:3rem; display:block;">☁️</span>
-          <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Nuvem Concluída!</h4>
-          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você compreende as melhores mídias de armazenamento para cada caso.</p>
-          <button class="btn btn-primary" id="btn-finish-cloud-sim" style="width:100%;">Avançar Aula ➔</button>
-        </div>
-      `;
-      document.getElementById("btn-finish-cloud-sim").addEventListener("click", () => {
-        const nextBtn = document.getElementById("next-slide-btn");
-        if (nextBtn) nextBtn.click();
-      });
-      return;
-    }
-
-    const item = questions[current];
-
-    mainDiv.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
-        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
-        <span style="font-size:0.75rem; color:#aaa;">Caso ${current + 1} / ${questions.length}</span>
-      </div>
-      
-      <p style="font-size:0.82rem; color:#aaa; margin:0 0 0.5rem; font-weight:700;">💡 SELECIONE A MELHOR MÍDIA:</p>
-      <div style="background:#121226; border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:1.2rem; margin-bottom:1.2rem; font-size:0.85rem; line-height:1.45; color:#ccc;">
-        "${item.case}"
-      </div>
-
-      <div style="display:flex; flex-direction:column; gap:0.5rem;" id="cloud-actions">
-        <button class="btn btn-outline" data-ans="local" style="text-align:left; font-size:0.82rem; padding:0.6rem 0.8rem;">🖥️ Computador Local (SSD/HD)</button>
-        <button class="btn btn-outline" data-ans="pendrive" style="text-align:left; font-size:0.82rem; padding:0.6rem 0.8rem;">📟 Pendrive / HD Externo</button>
-        <button class="btn btn-outline" data-ans="cloud" style="text-align:left; font-size:0.82rem; padding:0.6rem 0.8rem;">☁️ Armazenamento em Nuvem</button>
-      </div>
-
-      <div id="cloud-feedback" style="margin-top:0.8rem; display:none; padding:0.8rem; border-radius:8px; font-size:0.8rem; line-height:1.45;"></div>
-    `;
-
-    const btns = mainDiv.querySelectorAll("#cloud-actions button");
-    const feed = mainDiv.querySelector("#cloud-feedback");
-
-    btns.forEach(btn => {
-      btn.addEventListener("click", () => {
-        btns.forEach(b => b.disabled = true);
-        const ans = btn.getAttribute("data-ans");
-        
-        feed.style.display = "block";
-        if (ans === item.ans) {
-          btn.style.background = "rgba(16, 185, 129, 0.15)";
-          btn.style.borderColor = "#10b981";
-          btn.style.color = "#10b981";
-          feed.style.background = "rgba(16, 185, 129, 0.05)";
-          feed.style.border = "1px solid rgba(16, 185, 129, 0.2)";
-          feed.style.color = "#22c55e";
-          feed.innerHTML = `<strong>✅ Correto!</strong> ${item.exp}`;
-        } else {
-          lives--;
-          btn.style.background = "rgba(239, 68, 68, 0.15)";
-          btn.style.borderColor = "#ef4444";
-          btn.style.color = "#ef4444";
-          
-          feed.style.background = "rgba(239, 68, 68, 0.05)";
-          feed.style.border = "1px solid rgba(239, 68, 68, 0.2)";
-          feed.style.color = "#f87171";
-          feed.innerHTML = `<strong>❌ Incorreto!</strong> ${item.exp}`;
-        }
-
-        if (lives <= 0) {
-          setTimeout(() => {
-            mainDiv.innerHTML = `
-              <div style="text-align:center; padding:1.8rem 0;">
-                <span style="font-size:3rem; display:block;">❌</span>
-                <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Vidas Esgotadas!</h4>
-                <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Tente novamente avaliando com calma as mídias de salvamento.</p>
-                <button class="btn btn-outline" id="btn-retry-cloud" style="width:100%;">Tentar Novamente 🔄</button>
-              </div>
-            `;
-            document.getElementById("btn-retry-cloud").addEventListener("click", () => {
-              initCloudQuestSimulator(container, true);
-            });
-          }, 2000);
-        } else {
-          const nextBtn = document.createElement("button");
-          nextBtn.className = "btn btn-primary";
-          nextBtn.style.cssText = "width:100%; margin-top:1rem; font-size:0.82rem;";
-          nextBtn.textContent = current === questions.length - 1 ? "🏁 Finalizar Missão" : "Próximo Caso ➔";
-          nextBtn.addEventListener("click", () => {
-            current++;
-            drawUI();
-          });
-          feed.appendChild(nextBtn);
-        }
-      });
-    });
-  };
-
-  drawUI();
-}
-
-// 9. Grande Missão do Escritório (Office Adventure)
-function initOfficeAdventureSimulator(container, isReset = false) {
-  container.innerHTML = "";
-  
-  let lives = 3;
-  let timeLeft = 90;
-  let timerInterval;
-
-  const mainDiv = document.createElement("div");
-  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff;";
-  container.appendChild(mainDiv);
-
-  // Metas do aluno
-  let goals = {
-    usbConnected: false,
-    folderCreated: false,
-    subfolderCreated: false,
-    fileMoved: false,
-    downloadDone: false,
-    fileCopiedToUsb: false,
-    usbEjectedSafely: false
-  };
-
-  let localFiles = [
-    { name: "relatorio_mensal.docx", type: "file", icon: "📄", location: "desktop" }
-  ];
-  let usbFiles = [];
-
-  let isUsbInserted = false;
-  let isUsbEjected = false;
-  let activeWindow = "desktop"; // "desktop", "explorer", "internet"
-  let explorerCurrentPath = "root"; // "root", "Trabalho", "Relatorios", "Downloads", "USB"
-
-  const checkCompletion = () => {
-    if (goals.usbConnected && goals.folderCreated && goals.subfolderCreated && goals.fileMoved && goals.downloadDone && goals.fileCopiedToUsb && goals.usbEjectedSafely) {
-      clearInterval(timerInterval);
-      addXP(150);
-      
-      let stars = "⭐";
-      if (timeLeft > 50) stars = "⭐⭐⭐";
-      else if (timeLeft > 25) stars = "⭐⭐";
-
-      mainDiv.innerHTML = `
-        <div style="text-align:center; padding:1.5rem 0;">
-          <span style="font-size:3.5rem; display:block;">🏆</span>
-          <h4 style="color:#10b981; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Escritório 100% Organizado!</h4>
-          <p style="font-size:0.82rem; color:#ccc; margin-bottom:0.6rem;">Pontuação: ${stars}</p>
-          <p style="font-size:0.78rem; color:#aaa; margin-bottom:1.2rem;">Tempo restante: ${timeLeft}s. O backup foi feito com segurança.</p>
-          <button class="btn btn-primary" id="btn-finish-office-adv" style="width:100%;">Avançar Aula ➔</button>
-        </div>
-      `;
-      document.getElementById("btn-finish-office-adv").addEventListener("click", () => {
-        const nextBtn = document.getElementById("next-slide-btn");
-        if (nextBtn) nextBtn.click();
-      });
-      return true;
-    }
-    return false;
-  };
-
-  const handleActionError = (msg) => {
-    lives--;
     if (lives <= 0) {
-      clearInterval(timerInterval);
       mainDiv.innerHTML = `
-        <div style="text-align:center; padding:1.8rem 0;">
-          <span style="font-size:3rem; display:block;">❌</span>
-          <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Missão Falhou!</h4>
-          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Suas vidas acabaram ou você cometeu um erro crítico de hardware.</p>
-          <button class="btn btn-outline" id="btn-retry-office-adv" style="width:100%;">Tentar Novamente 🔄</button>
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:4rem; display:block; margin-bottom:1rem;">💔</span>
+          <h3 style="color:#ef4444; margin:0 0 8px;">Acesso Negado!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">Você falhou em 3 classificações. Executáveis em locais errados ou desorganização causam falhas técnicas.</p>
+          <button class="btn btn-primary" id="retry-game" style="width:100%;">Tentar Novamente 🔄</button>
         </div>
       `;
-      document.getElementById("btn-retry-office-adv").addEventListener("click", () => {
-        initOfficeAdventureSimulator(container, true);
+      mainDiv.querySelector("#retry-game").addEventListener("click", () => {
+        initFileClassificationGame(container, true);
       });
-    } else {
-      showToastNotification("❌ Ação Inválida!", msg);
-      drawUI();
+      return;
+    }
+
+    if (score >= fileItems.length) {
+      addXP(100);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:4rem; display:block; margin-bottom:1rem;">🏆</span>
+          <h3 style="color:#10b981; margin:0 0 8px;">Classificador Aprovado!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">Você organizou com sucesso os 20 arquivos em suas pastas conceituais.</p>
+          <button class="btn btn-primary" id="next-step-game" style="width:100%;">Avançar Lição ➔</button>
+        </div>
+      `;
+      mainDiv.querySelector("#next-step-game").addEventListener("click", () => {
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return;
+    }
+
+    const currentFile = fileItems[score];
+
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <strong style="color:var(--color-primary-light); font-size:0.82rem;">Progresso: ${score}/${fileItems.length}</strong>
+      </div>
+      
+      <p style="font-size:0.82rem; color:#aaa; margin-bottom:1rem;">Identifique o formato e classifique o arquivo abaixo clicando na pasta correspondente:</p>
+      
+      <div style="background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.1); border-radius:10px; padding:1.2rem; text-align:center; margin-bottom:1.2rem;">
+        <span id="active-file-title" style="display:inline-block; font-family:'JetBrains Mono', monospace; font-size:1.15rem; font-weight:700; background:#121226; padding:0.6rem 1.2rem; border-radius:8px; border:1px solid var(--color-primary-light);">
+          📄 ${currentFile.name}
+        </span>
+        <div style="font-size:0.75rem; color:#aaa; margin-top:8px; font-style:italic;">"${currentFile.desc}"</div>
+      </div>
+      
+      <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:1rem;">
+        <button class="btn-game-folder" data-type="documentos" style="background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); padding:0.8rem 0.5rem; border-radius:8px; text-align:center; color:#fff; cursor:pointer;">
+          <span style="font-size:1.8rem; display:block;">📁</span>
+          <span style="font-size:0.75rem; font-weight:700;">Documentos</span>
+        </button>
+        <button class="btn-game-folder" data-type="imagens" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:0.8rem 0.5rem; border-radius:8px; text-align:center; color:#fff; cursor:pointer;">
+          <span style="font-size:1.8rem; display:block;">🖼️</span>
+          <span style="font-size:0.75rem; font-weight:700;">Imagens</span>
+        </button>
+        <button class="btn-game-folder" data-type="videos" style="background:rgba(236,72,153,0.15); border:1px solid rgba(236,72,153,0.3); padding:0.8rem 0.5rem; border-radius:8px; text-align:center; color:#fff; cursor:pointer;">
+          <span style="font-size:1.8rem; display:block;">🎬</span>
+          <span style="font-size:0.75rem; font-weight:700;">Vídeos</span>
+        </button>
+        <button class="btn-game-folder" data-type="audios" style="background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.3); padding:0.8rem 0.5rem; border-radius:8px; text-align:center; color:#fff; cursor:pointer;">
+          <span style="font-size:1.8rem; display:block;">🎵</span>
+          <span style="font-size:0.75rem; font-weight:700;">Áudios</span>
+        </button>
+        <button class="btn-game-folder" data-type="compactados" style="background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.3); padding:0.8rem 0.5rem; border-radius:8px; text-align:center; color:#fff; cursor:pointer;">
+          <span style="font-size:1.8rem; display:block;">📦</span>
+          <span style="font-size:0.75rem; font-weight:700;">Compactados</span>
+        </button>
+        <button class="btn-game-folder" data-type="programas" style="background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); padding:0.8rem 0.5rem; border-radius:8px; text-align:center; color:#fff; cursor:pointer;">
+          <span style="font-size:1.8rem; display:block;">⚙️</span>
+          <span style="font-size:0.75rem; font-weight:700;">Programas</span>
+        </button>
+      </div>
+      
+      <div id="game-feedback" style="margin-top:10px; font-size:0.8rem; font-weight:700; text-align:center; display:none; padding:8px; border-radius:6px;"></div>
+    `;
+
+    mainDiv.querySelectorAll(".btn-game-folder").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const type = btn.getAttribute("data-type");
+        const feedback = mainDiv.querySelector("#game-feedback");
+        feedback.style.display = "block";
+        
+        if (type === currentFile.type) {
+          score++;
+          feedback.style.background = "rgba(16,185,129,0.12)";
+          feedback.style.color = "#10b981";
+          feedback.style.border = "1px solid rgba(16,185,129,0.3)";
+          feedback.innerHTML = `✅ Correto! "${currentFile.name}" é classificado como ${type.toUpperCase()}.`;
+          setTimeout(drawUI, 800);
+        } else {
+          lives--;
+          feedback.style.background = "rgba(239,68,68,0.12)";
+          feedback.style.color = "#ef4444";
+          feedback.style.border = "1px solid rgba(239,68,68,0.3)";
+          if (currentFile.type === "programas") {
+            feedback.innerHTML = `⚠️ Alerta de Segurança! O arquivo executável "${currentFile.name}" oferece riscos se aberto ou classificado incorretamente!`;
+          } else {
+            feedback.innerHTML = `❌ Errado! "${currentFile.name}" pertence à categoria ${currentFile.type.toUpperCase()}.`;
+          }
+          setTimeout(drawUI, 1600);
+        }
+      });
+    });
+  };
+
+  drawUI();
+}
+
+// 2. Laboratório do Explorador de Pastas do Windows
+function initWindowsExplorerLab(container, isReset = false) {
+  container.innerHTML = "";
+  
+  // Estado local do explorador
+  let stateLab = {
+    currentDir: "C:",
+    searchQuery: "",
+    filesystem: {
+      "C:": [
+        { name: "Downloads", type: "folder" },
+        { name: "Documentos", type: "folder" },
+        { name: "Area_de_Trabalho", type: "folder" },
+        { name: "Lixeira", type: "folder" }
+      ],
+      "C:\\Downloads": [
+        { name: "orcamento_bruto.xlsx", type: "file" },
+        { name: "manual_antigo.pdf", type: "file" }
+      ],
+      "C:\\Documentos": [],
+      "C:\\Area_de_Trabalho": [
+        { name: "foto_baguncada.jpg", type: "file" }
+      ],
+      "C:\\Lixeira": [
+        { name: "relatorio_faturamento_final.xlsx", type: "file", origin: "C:\\Documentos" }
+      ]
+    },
+    clipboard: null, // { file: {}, action: 'cut'|'copy' }
+    missions: {
+      createTrabalho: false,
+      createFinanceiro: false,
+      moveOrcamento: false,
+      deleteFoto: false,
+      restoreFaturamento: false
     }
   };
 
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff; display:flex; flex-direction:column; gap:12px; font-family:var(--font-sans);";
+  container.appendChild(mainDiv);
+
   const drawUI = () => {
-    if (checkCompletion()) return;
+    // Verifica conclusao
+    const finished = stateLab.missions.createTrabalho &&
+                     stateLab.missions.createFinanceiro &&
+                     stateLab.missions.moveOrcamento &&
+                     stateLab.missions.deleteFoto &&
+                     stateLab.missions.restoreFaturamento;
+
+    if (finished) {
+      addXP(150);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:4rem; display:block; margin-bottom:1rem;">🏆</span>
+          <h3 style="color:#10b981; margin:0 0 8px;">Missões Concluídas!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">Você operou com total maestria o Explorador de Arquivos do Windows e resolveu as demandas corporativas.</p>
+          <button class="btn btn-primary" id="finish-expl-lab" style="width:100%;">Avançar Lição ➔</button>
+        </div>
+      `;
+      mainDiv.querySelector("#finish-expl-lab").addEventListener("click", () => {
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return;
+    }
+
+    const items = stateLab.filesystem["C:\\" + stateLab.currentDir] || stateLab.filesystem[stateLab.currentDir] || [];
+    
+    // Filtro por pesquisa se houver query
+    let filteredItems = items;
+    if (stateLab.searchQuery) {
+      filteredItems = [];
+      Object.keys(stateLab.filesystem).forEach(key => {
+        stateLab.filesystem[key].forEach(f => {
+          if (f.name.toLowerCase().includes(stateLab.searchQuery.toLowerCase())) {
+            filteredItems.push({ ...f, pathFromSearch: key });
+          }
+        });
+      });
+    }
 
     mainDiv.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.8rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.5rem;">
-        <span style="font-weight:700; color:#fbbf24; font-size:0.8rem;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
-        <span style="font-weight:700; color:#ef4444; font-size:0.8rem;">⏱️ Cronômetro: ${timeLeft}s</span>
+      <!-- Cabeçalho de Missões -->
+      <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:10px; border-radius:8px; font-size:0.76rem; display:flex; flex-direction:column; gap:4px;">
+        <strong style="color:#fbbf24; margin-bottom:2px;">📋 Suas Missões Ativas no Explorador:</strong>
+        <div style="color:${stateLab.missions.createTrabalho ? "#10b981" : "#aaa"}; font-weight:${stateLab.missions.createTrabalho ? "bold" : "normal"};">
+          ${stateLab.missions.createTrabalho ? "✅" : "⬜"} 1. Criar pasta <strong>Trabalho</strong> no <strong>Disco Local (C:)</strong>
+        </div>
+        <div style="color:${stateLab.missions.createFinanceiro ? "#10b981" : "#aaa"}; font-weight:${stateLab.missions.createFinanceiro ? "bold" : "normal"};">
+          ${stateLab.missions.createFinanceiro ? "✅" : "⬜"} 2. Criar subpasta <strong>Financeiro</strong> dentro da pasta Trabalho
+        </div>
+        <div style="color:${stateLab.missions.moveOrcamento ? "#10b981" : "#aaa"}; font-weight:${stateLab.missions.moveOrcamento ? "bold" : "normal"};">
+          ${stateLab.missions.moveOrcamento ? "✅" : "⬜"} 3. Mover (Ctrl+X) <strong>orcamento_bruto.xlsx</strong> de Downloads para Trabalho/Financeiro
+        </div>
+        <div style="color:${stateLab.missions.deleteFoto ? "#10b981" : "#aaa"}; font-weight:${stateLab.missions.deleteFoto ? "bold" : "normal"};">
+          ${stateLab.missions.deleteFoto ? "✅" : "⬜"} 4. Excluir (deletar) o arquivo <strong>foto_baguncada.jpg</strong> da Area_de_Trabalho
+        </div>
+        <div style="color:${stateLab.missions.restoreFaturamento ? "#10b981" : "#aaa"}; font-weight:${stateLab.missions.restoreFaturamento ? "bold" : "normal"};">
+          ${stateLab.missions.restoreFaturamento ? "✅" : "⬜"} 5. Encontrar e <strong>Restaurar</strong> o arquivo <strong>relatorio_faturamento_final.xlsx</strong> da Lixeira para Documentos
+        </div>
       </div>
 
-      <div style="display:grid; grid-template-columns: 200px 1fr; gap: 10px; min-height: 310px;">
-        <!-- Painel de Metas à Esquerda -->
-        <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:0.6rem; font-size:0.75rem; line-height:1.4;">
-          <strong style="display:block; color:var(--color-primary-light); margin-bottom:0.4rem; border-bottom:1px solid rgba(255,255,255,0.05);">📋 LISTA DE METAS:</strong>
-          <div style="display:flex; flex-direction:column; gap:4px;">
-            <div>${goals.usbConnected ? "✅" : "⬜"} Conectar Pendrive</div>
-            <div>${goals.folderCreated ? "✅" : "⬜"} Criar pasta 'Trabalho'</div>
-            <div>${goals.subfolderCreated ? "✅" : "⬜"} Criar 'Relatorios'</div>
-            <div>${goals.fileMoved ? "✅" : "⬜"} Mover relatorio_mensal</div>
-            <div>${goals.downloadDone ? "✅" : "⬜"} Baixar metas da internet</div>
-            <div>${goals.fileCopiedToUsb ? "✅" : "⬜"} Backup no Pendrive</div>
-            <div>${goals.usbEjectedSafely ? "✅" : "⬜"} Ejetar USB seguro</div>
+      <!-- Barra de Ferramentas / Caminho / Busca -->
+      <div style="display:flex; flex-direction:column; gap:6px; background:#121226; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <div style="display:flex; gap:4px;">
+            <button class="btn btn-outline" id="btn-back" style="padding:0.3rem 0.6rem; font-size:0.8rem; height:auto;">⬅️ Voltar</button>
+            <button class="btn btn-outline" id="btn-new-folder" style="padding:0.3rem 0.6rem; font-size:0.8rem; height:auto;">📁 Nova Pasta</button>
           </div>
+          <input type="text" id="input-search" placeholder="🔍 Pesquisar em C:..." value="${stateLab.searchQuery}" style="background:#1e1e38; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:6px; padding:4px 8px; font-size:0.78rem; width:130px; outline:none;" />
+        </div>
+        <div style="font-family:'JetBrains Mono', monospace; font-size:0.75rem; color:#aaa; overflow-x:auto; white-space:nowrap; padding:2px;">
+          📍 Caminho: <span style="color:#fbbf24;">C:\\${stateLab.currentDir === "C:" ? "" : stateLab.currentDir}</span>
+        </div>
+      </div>
+
+      <!-- Corpo do Explorador (Painel Lateral e Painel de Conteúdo) -->
+      <div style="display:grid; grid-template-columns:100px 1fr; gap:10px; background:#121226; border-radius:8px; padding:8px; min-height:180px; border:1px solid rgba(255,255,255,0.06);">
+        <!-- Painel Lateral -->
+        <div style="display:flex; flex-direction:column; gap:6px; border-right:1px solid rgba(255,255,255,0.08); padding-right:6px; font-size:0.72rem;">
+          <strong style="color:#888;">Navegação</strong>
+          <div class="sidebar-item-lab" data-path="C:" style="cursor:pointer; color:#fbbf24; padding:4px; border-radius:4px; font-weight:bold;">💾 Disco C:</div>
+          <div class="sidebar-item-lab" data-path="Downloads" style="cursor:pointer; padding:4px; border-radius:4px;">📥 Downloads</div>
+          <div class="sidebar-item-lab" data-path="Documentos" style="cursor:pointer; padding:4px; border-radius:4px;">📄 Docs</div>
+          <div class="sidebar-item-lab" data-path="Area_de_Trabalho" style="cursor:pointer; padding:4px; border-radius:4px;">🖥️ Desktop</div>
+          <div class="sidebar-item-lab" data-path="Lixeira" style="cursor:pointer; padding:4px; border-radius:4px;">🗑️ Lixeira</div>
         </div>
 
-        <!-- Área de Simulação do Computador à Direita -->
-        <div style="background:#121226; border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.6rem; display:flex; flex-direction:column; position:relative;">
-          <!-- Barra Superior do Monitor Virtual -->
-          <div style="display:flex; gap:0.4rem; background:rgba(255,255,255,0.02); padding:0.3rem 0.5rem; border-radius:6px; font-size:0.72rem; align-items:center; margin-bottom:0.6rem;">
-            <button class="btn btn-outline btn-small" id="btn-win-desktop" style="padding:2px 6px; font-size:0.7rem; border-color:transparent; background:${activeWindow === "desktop" ? "rgba(255,255,255,0.08)" : "none"};">🖥️ Desktop</button>
-            <button class="btn btn-outline btn-small" id="btn-win-explorer" style="padding:2px 6px; font-size:0.7rem; border-color:transparent; background:${activeWindow === "explorer" ? "rgba(255,255,255,0.08)" : "none"};">📂 Pastas</button>
-            <button class="btn btn-outline btn-small" id="btn-win-internet" style="padding:2px 6px; font-size:0.7rem; border-color:transparent; background:${activeWindow === "internet" ? "rgba(255,255,255,0.08)" : "none"};">🌐 Internet</button>
-            
-            <div style="margin-left:auto; display:flex; align-items:center; gap:8px;">
-              ${isUsbInserted && !isUsbEjected ? `
-                <div id="tray-eject-btn" style="cursor:pointer; color:#10b981; font-weight:bold; font-size:0.7rem;" title="Ejetar Pendrive com segurança">
-                  📟 Ejetar
-                </div>
-              ` : ""}
+        <!-- Painel de Conteúdo -->
+        <div style="display:flex; flex-direction:column; gap:6px; overflow-y:auto; max-height:180px;">
+          ${filteredItems.length === 0 ? `
+            <div style="text-align:center; color:#666; font-size:0.8rem; padding:2rem 0;">Esta pasta está vazia.</div>
+          ` : filteredItems.map((item, idx) => `
+            <div class="file-row" style="display:flex; justify-content:space-between; align-items:center; padding:6px; border-radius:6px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); font-size:0.78rem;">
+              <span class="file-row-title" data-idx="${idx}" style="cursor:pointer; font-weight:${item.type === "folder" ? "bold" : "normal"}; color:${item.type === "folder" ? "#fbbf24" : "#fff"}; display:flex; align-items:center; gap:6px;">
+                <span>${item.type === "folder" ? "📁" : "📄"}</span>
+                <span>${item.name}</span>
+              </span>
+              <div style="display:flex; gap:4px;">
+                ${item.type === "file" ? `
+                  <button class="btn-file-action" data-action="cut" data-idx="${idx}" style="padding:2px 6px; font-size:0.68rem; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.15); border-radius:4px; cursor:pointer;">✂️ Recortar</button>
+                  <button class="btn-file-action" data-action="delete" data-idx="${idx}" style="padding:2px 6px; font-size:0.68rem; background:rgba(239,68,68,0.1); color:#ef4444; border:1px solid rgba(239,68,68,0.25); border-radius:4px; cursor:pointer;">🗑️ Excluir</button>
+                ` : ""}
+                ${stateLab.currentDir === "Lixeira" && item.name === "relatorio_faturamento_final.xlsx" ? `
+                  <button class="btn-file-action" data-action="restore" data-idx="${idx}" style="padding:2px 6px; font-size:0.68rem; background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:4px; cursor:pointer;">🔄 Restaurar</button>
+                ` : ""}
+              </div>
+            </div>
+          `).join("")}
+          
+          ${stateLab.clipboard ? `
+            <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); padding:6px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; font-size:0.7rem; margin-top:8px;">
+              <span>📋 Na área de transferência: <strong>${stateLab.clipboard.file.name}</strong></span>
+              <button id="btn-paste" style="padding:2px 8px; font-size:0.7rem; background:#fbbf24; border:none; border-radius:4px; color:#121226; font-weight:bold; cursor:pointer;">📋 Colar</button>
+            </div>
+          ` : ""}
+        </div>
+      </div>
+    `;
+
+    // Eventos de clique nas pastas laterais
+    mainDiv.querySelectorAll(".sidebar-item-lab").forEach(item => {
+      item.addEventListener("click", () => {
+        const path = item.getAttribute("data-path");
+        stateLab.searchQuery = "";
+        stateLab.currentDir = path;
+        drawUI();
+      });
+    });
+
+    // Eventos de clique nas linhas de arquivo/pasta
+    mainDiv.querySelectorAll(".file-row-title").forEach(row => {
+      row.addEventListener("click", () => {
+        const idx = row.getAttribute("data-idx");
+        const item = filteredItems[idx];
+        if (item && item.type === "folder") {
+          // Se for clique em pasta, navega para ela
+          stateLab.searchQuery = "";
+          if (stateLab.currentDir === "C:") {
+            stateLab.currentDir = item.name;
+          } else {
+            stateLab.currentDir = stateLab.currentDir + "\\" + item.name;
+          }
+          drawUI();
+        }
+      });
+    });
+
+    // Evento de voltar
+    mainDiv.querySelector("#btn-back").addEventListener("click", () => {
+      stateLab.searchQuery = "";
+      if (stateLab.currentDir.includes("\\")) {
+        const idx = stateLab.currentDir.lastIndexOf("\\");
+        stateLab.currentDir = stateLab.currentDir.substring(0, idx);
+      } else {
+        stateLab.currentDir = "C:";
+      }
+      drawUI();
+    });
+
+    // Novo Input de Pesquisa
+    const sInput = mainDiv.querySelector("#input-search");
+    sInput.addEventListener("input", (e) => {
+      stateLab.searchQuery = e.target.value.trim();
+      drawUI();
+    });
+
+    // Criar Nova Pasta
+    mainDiv.querySelector("#btn-new-folder").addEventListener("click", () => {
+      const folderName = prompt("Digite o nome da nova pasta:");
+      if (!folderName) return;
+      
+      // Valida caracteres proscritos do Windows
+      const banned = /[\/\\:*?"<>|]/;
+      if (banned.test(folderName)) {
+        alert("O nome da pasta não pode conter os seguintes caracteres especiais: \\ / : * ? \" < > |");
+        return;
+      }
+
+      const activeKey = stateLab.currentDir === "C:" ? "C:" : "C:\\" + stateLab.currentDir;
+      if (!stateLab.filesystem[activeKey]) {
+        stateLab.filesystem[activeKey] = [];
+      }
+
+      // Evita duplicados
+      const exists = stateLab.filesystem[activeKey].some(f => f.name.toLowerCase() === folderName.toLowerCase());
+      if (exists) {
+        alert("Já existe uma pasta ou arquivo com este nome no diretório.");
+        return;
+      }
+
+      stateLab.filesystem[activeKey].push({ name: folderName, type: "folder" });
+      
+      // Inicializa chave de subpasta vazia
+      const newKey = activeKey + "\\" + folderName;
+      stateLab.filesystem[newKey] = [];
+
+      // Validação das missões de criação
+      if (activeKey === "C:" && folderName === "Trabalho") {
+        stateLab.missions.createTrabalho = true;
+      }
+      if (activeKey === "C:\\Trabalho" && folderName === "Financeiro") {
+        stateLab.missions.createFinanceiro = true;
+      }
+
+      drawUI();
+    });
+
+    // Ações nos arquivos (Recortar, Deletar, Restaurar)
+    mainDiv.querySelectorAll(".btn-file-action").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const action = btn.getAttribute("data-action");
+        const idx = btn.getAttribute("data-idx");
+        const file = filteredItems[idx];
+        const activeKey = stateLab.currentDir === "C:" ? "C:" : "C:\\" + stateLab.currentDir;
+
+        if (action === "cut") {
+          stateLab.clipboard = { file, action: "cut", originKey: activeKey, idx };
+          drawUI();
+        } else if (action === "delete") {
+          // Remove da pasta atual
+          stateLab.filesystem[activeKey] = stateLab.filesystem[activeKey].filter(f => f.name !== file.name);
+          
+          // Manda para Lixeira se não for executável
+          if (stateLab.currentDir !== "Lixeira") {
+            stateLab.filesystem["C:\\Lixeira"].push({ ...file, origin: activeKey });
+          }
+
+          // Validação da missão de exclusão
+          if (activeKey === "C:\\Area_de_Trabalho" && file.name === "foto_baguncada.jpg") {
+            stateLab.missions.deleteFoto = true;
+          }
+          drawUI();
+        } else if (action === "restore") {
+          // Remove da lixeira
+          stateLab.filesystem["C:\\Lixeira"] = stateLab.filesystem["C:\\Lixeira"].filter(f => f.name !== file.name);
+          
+          // Devolve para o diretório de origem ou padrão
+          const dest = file.origin || "C:\\Documentos";
+          if (!stateLab.filesystem[dest]) stateLab.filesystem[dest] = [];
+          stateLab.filesystem[dest].push({ name: file.name, type: "file" });
+
+          // Validação da missão de restauração
+          if (file.name === "relatorio_faturamento_final.xlsx" && dest === "C:\\Documentos") {
+            stateLab.missions.restoreFaturamento = true;
+          }
+          drawUI();
+        }
+      });
+    });
+
+    // Colar arquivo da Clipboard
+    const pasteBtn = mainDiv.querySelector("#btn-paste");
+    if (pasteBtn) {
+      pasteBtn.addEventListener("click", () => {
+        const { file, action, originKey } = stateLab.clipboard;
+        const activeKey = stateLab.currentDir === "C:" ? "C:" : "C:\\" + stateLab.currentDir;
+
+        // Tira o arquivo da origem
+        stateLab.filesystem[originKey] = stateLab.filesystem[originKey].filter(f => f.name !== file.name);
+        
+        // Coloca no destino
+        if (!stateLab.filesystem[activeKey]) stateLab.filesystem[activeKey] = [];
+        stateLab.filesystem[activeKey].push({ name: file.name, type: "file" });
+
+        // Validação da missão de mover
+        if (file.name === "orcamento_bruto.xlsx" && originKey === "C:\\Downloads" && activeKey === "C:\\Trabalho\\Financeiro") {
+          stateLab.missions.moveOrcamento = true;
+        }
+
+        stateLab.clipboard = null;
+        drawUI();
+      });
+    }
+  };
+
+  drawUI();
+}
+
+// 3. Simulador de Escritório Virtual Completo da InforTech
+function initOfficeDesktopLab(container, isReset = false) {
+  container.innerHTML = "";
+  
+  // Variáveis internas
+  let screenBrightness = 100;
+  let audioVolume = 50;
+  let menuStartOpen = false;
+  let notepadText = "";
+  let notepadSavedName = "";
+  
+  // Estrutura de pastas virtuais do Desktop Lab
+  let systemFS = {
+    "Documentos": [],
+    "Lixeira": [
+      { name: "faturamento_corporativo.xlsx", size: "45 KB", type: "Planilha Excel" }
+    ],
+    "Computador": [
+      { name: "Disco Local (C:)", type: "disk" }
+    ]
+  };
+
+  // Metas da Missão do Escritório Virtual
+  let desktopMissions = {
+    notepadText: false,     // Texto "Backup concluído com sucesso." escrito
+    saveNotepad: false,      // Salvo como notas_backup.txt na pasta Documentos
+    configSettings: false,   // Brilho para 70% e volume para 80%
+    restoreFaturamento: false // faturamento_corporativo.xlsx restaurado da lixeira
+  };
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "position:relative; width:100%; height:420px; background:linear-gradient(135deg, #1e1e38, #3b2866); border-radius:12px; overflow:hidden; border:2px solid rgba(255,255,255,0.15); font-family:var(--font-sans); display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 12px 24px rgba(0,0,0,0.3);";
+  container.appendChild(mainDiv);
+
+  // Overlay visual de Brilho
+  const brightnessOverlay = document.createElement("div");
+  brightnessOverlay.style.cssText = "position:absolute; top:0; left:0; width:100%; height:100%; background:black; opacity:0; pointer-events:none; z-index:99999; transition:opacity 0.2s;";
+  mainDiv.appendChild(brightnessOverlay);
+
+  // Atualiza brilho visual
+  const updateBrightnessUI = () => {
+    const opacity = (100 - screenBrightness) / 100 * 0.6; // limita o escurecimento a 60%
+    brightnessOverlay.style.opacity = opacity;
+    
+    if (screenBrightness === 70 && audioVolume === 80) {
+      desktopMissions.configSettings = true;
+      checkMissionsStatus();
+    }
+  };
+
+  // Gerenciador de Janelas do Escritório Virtual
+  const activeWindows = {};
+
+  const createVirtualWindow = (title, windowId, renderContentFn) => {
+    // Evita duplicados
+    if (activeWindows[windowId]) {
+      // traz para a frente (z-index)
+      mainDiv.querySelectorAll(".virtual-window").forEach(w => w.style.zIndex = "100");
+      activeWindows[windowId].style.zIndex = "200";
+      return;
+    }
+
+    const wDiv = document.createElement("div");
+    wDiv.className = "virtual-window";
+    wDiv.style.cssText = "position:absolute; top:40px; left:40px; width:260px; height:180px; background:#121226; border:1px solid rgba(255,255,255,0.15); border-radius:8px; display:flex; flex-direction:column; box-shadow:0 8px 20px rgba(0,0,0,0.4); z-index:200; overflow:hidden;";
+    
+    // Deixa arrastável
+    let isDragging = false;
+    let startX, startY, startLeft, startTop;
+    
+    const header = document.createElement("div");
+    header.style.cssText = "background:#1e1e38; border-bottom:1px solid rgba(255,255,255,0.08); padding:6px 10px; display:flex; justify-content:space-between; align-items:center; cursor:move; user-select:none; font-size:0.75rem; font-weight:700;";
+    header.innerHTML = `
+      <span>${title}</span>
+      <div style="display:flex; gap:6px;">
+        <span class="win-btn-min" style="cursor:pointer; color:#fbbf24; font-size:0.8rem;">➖</span>
+        <span class="win-btn-close" style="cursor:pointer; color:#ef4444; font-size:0.8rem;">❌</span>
+      </div>
+    `;
+    wDiv.appendChild(header);
+
+    // Corpo do App
+    const body = document.createElement("div");
+    body.style.cssText = "flex:1; padding:8px; overflow-y:auto; font-size:0.75rem; display:flex; flex-direction:column; gap:6px;";
+    wDiv.appendChild(body);
+
+    mainDiv.appendChild(wDiv);
+    activeWindows[windowId] = wDiv;
+
+    // Arrastar
+    header.addEventListener("mousedown", (e) => {
+      // traz para frente ao clicar
+      mainDiv.querySelectorAll(".virtual-window").forEach(w => w.style.zIndex = "100");
+      wDiv.style.zIndex = "200";
+      
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = parseInt(window.getComputedStyle(wDiv).left, 10);
+      startTop = parseInt(window.getComputedStyle(wDiv).top, 10);
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      wDiv.style.left = (startLeft + dx) + "px";
+      wDiv.style.top = (startTop + dy) + "px";
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+
+    // Botoes da janela
+    header.querySelector(".win-btn-close").addEventListener("click", () => {
+      wDiv.remove();
+      delete activeWindows[windowId];
+    });
+
+    header.querySelector(".win-btn-min").addEventListener("click", () => {
+      wDiv.style.display = "none";
+      setTimeout(() => {
+        wDiv.style.display = "flex";
+      }, 3000); // restaura após 3 segundos para demonstração simples
+    });
+
+    renderContentFn(body);
+  };
+
+  // Renderiza aplicativos virtuais
+  const openExplorador = () => {
+    createVirtualWindow("📂 Explorador de Arquivos", "explorador", (body) => {
+      const renderFS = () => {
+        body.innerHTML = `
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; height:100%;">
+            <div style="border-right:1px solid rgba(255,255,255,0.06); padding-right:4px; display:flex; flex-direction:column; gap:4px;">
+              <strong style="color:#aaa; font-size:0.68rem;">Acesso Rápido</strong>
+              <span id="nav-docs" style="cursor:pointer; color:#fbbf24; font-weight:bold;">📄 Documentos</span>
+              <span id="nav-trash" style="cursor:pointer; color:#ef4444; font-weight:bold;">🗑️ Lixeira</span>
+            </div>
+            <div id="fs-files-content" style="display:flex; flex-direction:column; gap:4px; overflow-y:auto;">
+              <!-- arquivos dinâmicos -->
             </div>
           </div>
+        `;
 
-          <!-- Conteúdo da Janela Ativa -->
-          <div style="flex:1; display:flex; flex-direction:column;">
-            ${activeWindow === "desktop" ? `
-              <!-- Desktop do Windows -->
-              <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between; position:relative;">
-                <div style="display:flex; flex-wrap:wrap; gap:0.8rem; padding:0.4rem;">
-                  <!-- Arquivos no Desktop -->
-                  ${localFiles.filter(f => f.location === "desktop").map(file => `
-                    <div class="desktop-icon-item" data-name="${file.name}" style="width:60px; text-align:center; cursor:pointer;">
-                      <span style="font-size:1.8rem; display:block;">${file.icon}</span>
-                      <span style="font-size:0.65rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${file.name}</span>
-                    </div>
-                  `).join("")}
+        const filesPane = body.querySelector("#fs-files-content");
+        
+        // Docs click
+        body.querySelector("#nav-docs").addEventListener("click", () => {
+          filesPane.innerHTML = `
+            <strong style="font-size:0.65rem; color:#888; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:2px;">Documentos</strong>
+            ${systemFS["Documentos"].length === 0 ? `<div style="color:#555; text-align:center; padding:12px 0;">Vazio</div>` : systemFS["Documentos"].map((f, idx) => `
+              <div style="font-size:0.7rem; color:#ccc;">📄 ${f.name}</div>
+            `).join("")}
+          `;
+        });
 
-                  ${goals.folderCreated ? `
-                    <div class="desktop-icon-item" data-name="Trabalho" style="width:60px; text-align:center; cursor:pointer;">
-                      <span style="font-size:1.8rem; display:block;">📁</span>
-                      <span style="font-size:0.65rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">Trabalho</span>
-                    </div>
-                  ` : ""}
-                </div>
-
-                <!-- Parte Inferior do Desktop: Onde Conectar USB ou Ejetar -->
-                <div style="display:flex; justify-content:space-between; align-items:center; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.04);">
-                  ${!isUsbInserted ? `
-                    <button class="btn btn-outline btn-small" id="btn-desktop-insert-usb" style="background:#3b82f6; border-color:#2563eb; color:#fff; font-size:0.7rem; padding:0.25rem 0.5rem;">
-                      📟 Conectar Pendrive USB
-                    </button>
-                  ` : `
-                    <button class="btn btn-outline btn-small" id="btn-desktop-pull-usb" style="background:#ef4444; border-color:#dc2626; color:#fff; font-size:0.7rem; padding:0.25rem 0.5rem;">
-                      ⚠️ Puxar Pendrive USB
-                    </button>
-                  `}
-                </div>
+        // Lixeira click
+        body.querySelector("#nav-trash").addEventListener("click", () => {
+          filesPane.innerHTML = `
+            <strong style="font-size:0.65rem; color:#888; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:2px;">Lixeira</strong>
+            ${systemFS["Lixeira"].length === 0 ? `<div style="color:#555; text-align:center; padding:12px 0;">Vazio</div>` : systemFS["Lixeira"].map((f, idx) => `
+              <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.02); padding:4px; border-radius:4px; margin-top:2px;">
+                <span style="font-size:0.68rem; color:#ccc;">📊 ${f.name}</span>
+                <button class="restore-trash-btn" data-idx="${idx}" style="background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.3); border-radius:4px; color:#10b981; font-size:0.6rem; cursor:pointer; padding:2px 4px;">Restaurar</button>
               </div>
-            ` : activeWindow === "explorer" ? `
-              <!-- Explorador de Arquivos -->
-              <div style="flex:1; display:flex; flex-direction:column;">
-                <!-- Barra de Navegação Interna -->
-                <div style="display:flex; gap:4px; padding:2px; background:rgba(0,0,0,0.2); border-radius:4px; margin-bottom:0.4rem; align-items:center; font-size:0.7rem;">
-                  ${explorerCurrentPath !== "root" ? `<button id="btn-explorer-back-adv" style="background:none; border:none; color:#fff; cursor:pointer;">⬅ Voltar</button>` : ""}
-                  <span style="color:#888; font-family:var(--font-code);">C:\\${explorerCurrentPath === "root" ? "" : explorerCurrentPath}</span>
-                  
-                  <div style="margin-left:auto; display:flex; gap:0.25rem;">
-                    <button class="btn btn-outline btn-small" id="btn-explorer-newfolder" style="font-size:0.65rem; padding:1px 4px;">📁 Nova Pasta</button>
-                    <button class="btn btn-outline btn-small" id="btn-explorer-cut" style="font-size:0.65rem; padding:1px 4px;">✂️ Recortar</button>
-                    <button class="btn btn-outline btn-small" id="btn-explorer-paste" style="font-size:0.65rem; padding:1px 4px;">📋 Colar</button>
-                  </div>
-                </div>
+            `).join("")}
+          `;
 
-                <div style="flex:1; background:rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.04); border-radius:6px; padding:0.4rem; display:flex; flex-wrap:wrap; gap:0.6rem;" id="adv-explorer-files">
-                  <!-- Exibe arquivos de acordo com o path do explorer -->
-                  ${getExplorerFilesMarkup()}
-                </div>
-              </div>
-            ` : `
-              <!-- Internet / Nuvem -->
-              <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:1rem; text-align:center;">
-                <span style="font-size:2.5rem; display:block; margin-bottom:0.4rem;">🌐</span>
-                <strong style="font-size:0.8rem; display:block; margin-bottom:0.2rem;">Portal da Escola (Nuvem)</strong>
-                <p style="font-size:0.7rem; color:#aaa; margin:0 0 0.8rem 0; max-width:240px;">Faça download das metas e envie seu relatório final organizando o backup.</p>
-                
-                <div style="display:flex; flex-direction:column; gap:0.4rem; width:100%; max-width:200px;">
-                  <button class="btn btn-outline btn-small" id="btn-internet-download" style="font-size:0.72rem;">⬇️ Baixar arquivo 'metas.pdf'</button>
-                  <button class="btn btn-outline btn-small" id="btn-internet-upload" style="font-size:0.72rem;">⬆️ Upload de Backup do Pendrive</button>
-                </div>
-              </div>
-            `}
+          filesPane.querySelectorAll(".restore-trash-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const idx = btn.getAttribute("data-idx");
+              const f = systemFS["Lixeira"][idx];
+              systemFS["Lixeira"].splice(idx, 1);
+              systemFS["Documentos"].push(f);
+              
+              if (f.name === "faturamento_corporativo.xlsx") {
+                desktopMissions.restoreFaturamento = true;
+                checkMissionsStatus();
+              }
+              renderFS();
+            });
+          });
+        });
+
+        // Abre na pasta documentos por padrão
+        body.querySelector("#nav-docs").click();
+      };
+      
+      renderFS();
+    });
+  };
+
+  const openNotepad = () => {
+    createVirtualWindow("📝 Bloco de Notas", "notepad", (body) => {
+      body.innerHTML = `
+        <textarea id="np-textarea" style="flex:1; background:#0f0f1c; border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:#fff; padding:6px; outline:none; resize:none; font-family:monospace; font-size:0.75rem; line-height:1.4;" placeholder="Digite seu texto...">${notepadText}</textarea>
+        <div style="display:flex; gap:6px;">
+          <input type="text" id="np-filename" placeholder="nome_arquivo.txt" value="${notepadSavedName}" style="background:#1e1e38; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:4px; padding:3px 6px; font-size:0.7rem; flex:1;" />
+          <button id="np-save-btn" style="background:#fbbf24; border:none; color:#0f0f1c; font-weight:bold; border-radius:4px; font-size:0.7rem; padding:3px 8px; cursor:pointer;">💾 Salvar</button>
+        </div>
+      `;
+
+      const tArea = body.querySelector("#np-textarea");
+      const fInput = body.querySelector("#np-filename");
+      const saveBtn = body.querySelector("#np-save-btn");
+
+      tArea.addEventListener("input", (e) => {
+        notepadText = e.target.value;
+        if (notepadText.trim() === "Backup concluído com sucesso.") {
+          desktopMissions.notepadText = true;
+          checkMissionsStatus();
+        }
+      });
+
+      saveBtn.addEventListener("click", () => {
+        const filename = fInput.value.trim();
+        notepadSavedName = filename;
+
+        if (!filename) {
+          alert("Digite um nome de arquivo válido.");
+          return;
+        }
+
+        if (!filename.endsWith(".txt")) {
+          alert("Utilize a extensão .txt para salvar documentos do Bloco de Notas.");
+          return;
+        }
+
+        // Salva na pasta Documentos do sistema virtual
+        const exists = systemFS["Documentos"].some(f => f.name === filename);
+        if (!exists) {
+          systemFS["Documentos"].push({ name: filename, type: "file" });
+        }
+
+        if (filename === "notas_backup.txt" && desktopMissions.notepadText) {
+          desktopMissions.saveNotepad = true;
+          checkMissionsStatus();
+        }
+
+        alert(`Arquivo "${filename}" salvo com sucesso na pasta Documentos!`);
+      });
+    });
+  };
+
+  const openConfiguracoes = () => {
+    createVirtualWindow("⚙️ Painel de Configurações", "settings", (body) => {
+      body.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px; padding:4px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span>☀️ Brilho do Monitor</span>
+              <strong id="brightness-val">${screenBrightness}%</strong>
+            </div>
+            <input type="range" id="brightness-slider" min="10" max="100" step="5" value="${screenBrightness}" style="width:100%; cursor:pointer;" />
+          </div>
+          <div style="margin-top:4px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span>🔊 Volume Geral</span>
+              <strong id="volume-val">${audioVolume}%</strong>
+            </div>
+            <input type="range" id="volume-slider" min="0" max="100" step="5" value="${audioVolume}" style="width:100%; cursor:pointer;" />
           </div>
         </div>
+      `;
+
+      const brSlider = body.querySelector("#brightness-slider");
+      const brVal = body.querySelector("#brightness-val");
+      const volSlider = body.querySelector("#volume-slider");
+      const volVal = body.querySelector("#volume-val");
+
+      brSlider.addEventListener("input", (e) => {
+        screenBrightness = parseInt(e.target.value, 10);
+        brVal.textContent = `${screenBrightness}%`;
+        updateBrightnessUI();
+      });
+
+      volSlider.addEventListener("input", (e) => {
+        audioVolume = parseInt(e.target.value, 10);
+        volVal.textContent = `${audioVolume}%`;
+        
+        if (screenBrightness === 70 && audioVolume === 80) {
+          desktopMissions.configSettings = true;
+          checkMissionsStatus();
+        }
+      });
+    });
+  };
+
+  // Verifica missões concluídas do Desktop
+  const checkMissionsStatus = () => {
+    const renderArea = document.getElementById("expl-mission-status-panel");
+    if (!renderArea) return;
+    
+    renderArea.innerHTML = `
+      <div style="color:${desktopMissions.notepadText ? "#10b981" : "#aaa"}; font-weight:${desktopMissions.notepadText ? "bold" : "normal"};">
+        ${desktopMissions.notepadText ? "✅" : "⬜"} 1. Escrever no bloco de notas: "Backup concluído com sucesso."
+      </div>
+      <div style="color:${desktopMissions.saveNotepad ? "#10b981" : "#aaa"}; font-weight:${desktopMissions.saveNotepad ? "bold" : "normal"};">
+        ${desktopMissions.saveNotepad ? "✅" : "⬜"} 2. Salvar como <strong>notas_backup.txt</strong> na pasta Documentos
+      </div>
+      <div style="color:${desktopMissions.configSettings ? "#10b981" : "#aaa"}; font-weight:${desktopMissions.configSettings ? "bold" : "normal"};">
+        ${desktopMissions.configSettings ? "✅" : "⬜"} 3. Ajustar brilho para <strong>70%</strong> e volume de som para <strong>80%</strong>
+      </div>
+      <div style="color:${desktopMissions.restoreFaturamento ? "#10b981" : "#aaa"}; font-weight:${desktopMissions.restoreFaturamento ? "bold" : "normal"};">
+        ${desktopMissions.restoreFaturamento ? "✅" : "⬜"} 4. Recuperar o relatório <strong>faturamento_corporativo.xlsx</strong> da Lixeira
       </div>
     `;
 
-    // Bind das abas superiores
-    const setWin = (win) => {
-      activeWindow = win;
-      drawUI();
-    };
-    mainDiv.querySelector("#btn-win-desktop").addEventListener("click", () => setWin("desktop"));
-    mainDiv.querySelector("#btn-win-explorer").addEventListener("click", () => setWin("explorer"));
-    mainDiv.querySelector("#btn-win-internet").addEventListener("click", () => setWin("internet"));
+    const allCompleted = desktopMissions.notepadText &&
+                         desktopMissions.saveNotepad &&
+                         desktopMissions.configSettings &&
+                         desktopMissions.restoreFaturamento;
 
-    // Conectar USB
-    const insertUsb = mainDiv.querySelector("#btn-desktop-insert-usb");
-    if (insertUsb) {
-      insertUsb.addEventListener("click", () => {
-        isUsbInserted = true;
-        goals.usbConnected = true;
-        showToastNotification("📟 USB Conectado!", "Dispositivo Mass Storage pronto.");
-        drawUI();
-      });
-    }
-
-    // Puxar USB diretamente
-    const pullUsb = mainDiv.querySelector("#btn-desktop-pull-usb");
-    if (pullUsb) {
-      pullUsb.addEventListener("click", () => {
-        if (!isUsbEjected) {
-          handleActionError("Você removeu o pendrive ativo sem ejetá-lo por software! Arquivos corrompidos.");
-          isUsbInserted = false;
-          goals.usbConnected = false;
-        } else {
-          isUsbInserted = false;
-          showToastNotification("✅ Removido!", "Pendrive removido com segurança.");
-          drawUI();
-        }
-      });
-    }
-
-    // Ejetar USB por software
-    const ejectUsb = mainDiv.querySelector("#tray-eject-btn");
-    if (ejectUsb) {
-      ejectUsb.addEventListener("click", () => {
-        isUsbEjected = true;
-        goals.usbEjectedSafely = true;
-        showToastNotification("✅ Seguro para Remover!", "Você pode desconectar o USB fisicamente.");
-        drawUI();
-      });
-    }
-
-    // Botões do Explorador
-    if (activeWindow === "explorer") {
-      const backExp = mainDiv.querySelector("#btn-explorer-back-adv");
-      if (backExp) {
-        backExp.addEventListener("click", () => {
-          if (explorerCurrentPath === "Relatorios") explorerCurrentPath = "Trabalho";
-          else explorerCurrentPath = "root";
-          drawUI();
-        });
-      }
-
-      // Nova Pasta
-      mainDiv.querySelector("#btn-explorer-newfolder").addEventListener("click", () => {
-        if (explorerCurrentPath === "root" && !goals.folderCreated) {
-          goals.folderCreated = true;
-          showToastNotification("📁 Criado!", "Pasta Trabalho criada.");
-          drawUI();
-        } else if (explorerCurrentPath === "Trabalho" && !goals.subfolderCreated) {
-          goals.subfolderCreated = true;
-          showToastNotification("📁 Criado!", "Subpasta Relatorios criada.");
-          drawUI();
-        } else {
-          handleActionError("Você só pode criar pastas no destino correto solicitado pela meta.");
-        }
-      });
-
-      // Recortar & Colar Simplificado
-      let selectedName = null;
-      const expItems = mainDiv.querySelectorAll(".explorer-item-adv");
-      expItems.forEach(item => {
-        item.addEventListener("click", () => {
-          expItems.forEach(i => i.style.background = "");
-          item.style.background = "rgba(124,58,237,0.15)";
-          selectedName = item.getAttribute("data-name");
-        });
-        item.addEventListener("dblclick", () => {
-          const name = item.getAttribute("data-name");
-          if (name === "Trabalho" || name === "Relatorios" || name === "Downloads" || name === "USB") {
-            explorerCurrentPath = name;
-            drawUI();
-          }
-        });
-      });
-
-      let clipItem = null;
-      mainDiv.querySelector("#btn-explorer-cut").addEventListener("click", () => {
-        if (selectedName) {
-          clipItem = selectedName;
-          showToastNotification("✂️ Recortado!", `${selectedName} recortado.`);
-        }
-      });
-
-      mainDiv.querySelector("#btn-explorer-paste").addEventListener("click", () => {
-        if (clipItem === "relatorio_mensal.docx" && explorerCurrentPath === "Relatorios") {
-          // Remove do desktop e põe em Relatorios
-          const idx = localFiles.findIndex(f => f.name === "relatorio_mensal.docx");
-          if (idx !== -1) {
-            localFiles[idx].location = "Relatorios";
-          }
-          goals.fileMoved = true;
-          clipItem = null;
-          showToastNotification("📋 Movido!", "relatorio_mensal.docx movido para Relatorios.");
-          drawUI();
-        } else if (clipItem === "metas.pdf" && explorerCurrentPath === "USB") {
-          // Copia para o pendrive
-          usbFiles.push({ name: "metas.pdf", type: "file", icon: "📄" });
-          goals.fileCopiedToUsb = true;
-          clipItem = null;
-          showToastNotification("📋 Copiado!", "metas.pdf copiado para o Pendrive.");
-          drawUI();
-        } else {
-          handleActionError("Mova ou copie arquivos para os destinos adequados exigidos pelas metas.");
-        }
-      });
-    }
-
-    // Ações da Internet
-    if (activeWindow === "internet") {
-      mainDiv.querySelector("#btn-internet-download").addEventListener("click", () => {
-        if (!goals.downloadDone) {
-          goals.downloadDone = true;
-          localFiles.push({ name: "metas.pdf", type: "file", icon: "📄", location: "Downloads" });
-          showToastNotification("⬇️ Download Concluído!", "Arquivo metas.pdf salvo na pasta Downloads.");
-          drawUI();
-        }
-      });
-
-      mainDiv.querySelector("#btn-internet-upload").addEventListener("click", () => {
-        if (goals.fileCopiedToUsb) {
-          showToastNotification("⬆️ Upload Concluído!", "Backup enviado com sucesso para os servidores.");
-          drawUI();
-        } else {
-          handleActionError("Você precisa ter a cópia de metas.pdf dentro do USB antes de fazer o upload.");
-        }
-      });
-    }
-  };
-
-  const getExplorerFilesMarkup = () => {
-    if (explorerCurrentPath === "root") {
-      let rootItems = [];
-      if (goals.folderCreated) rootItems.push({ name: "Trabalho", icon: "📁" });
-      if (goals.downloadDone) rootItems.push({ name: "Downloads", icon: "📁" });
-      if (isUsbInserted) rootItems.push({ name: "USB", icon: "📁" });
-
-      if (rootItems.length === 0) return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">Diretório vazio.</div>`;
-      return rootItems.map(item => `
-        <div class="explorer-item-adv" data-name="${item.name}" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
-          <span style="font-size:1.8rem; display:block;">${item.icon}</span>
-          <span style="font-size:0.6rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; margin-top:1px;">${item.name}</span>
-        </div>
-      `).join("");
-    }
-
-    if (explorerCurrentPath === "Trabalho") {
-      if (goals.subfolderCreated) {
-        return `
-          <div class="explorer-item-adv" data-name="Relatorios" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
-            <span style="font-size:1.8rem; display:block;">📁</span>
-            <span style="font-size:0.65rem; color:#fff; display:block;">Relatorios</span>
+    if (allCompleted) {
+      setTimeout(() => {
+        addXP(250);
+        mainDiv.innerHTML = `
+          <div style="text-align:center; padding:5rem 2rem; color:#fff; background:rgba(18,18,38,0.95); width:100%; height:100%; position:absolute; top:0; left:0; z-index:999999; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:12px;">
+            <span style="font-size:4rem; animation: floatExp 3s ease-in-out infinite;">🏆</span>
+            <h3 style="color:#10b981; margin:0;">Missão do Escritório Virtual Completa!</h3>
+            <p style="font-size:0.85rem; color:#ccc; max-width:400px; line-height:1.5;">Você dominou com perfeição a operação técnica do S.O. com janelas arrastáveis, configurações físicas e de backup.</p>
+            <button class="btn btn-primary" id="finish-desktop-lab" style="padding:0.6rem 2.5rem;">Avançar Oficina ➔</button>
           </div>
         `;
-      }
-      return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">Trabalho está vazio.</div>`;
-    }
-
-    if (explorerCurrentPath === "Relatorios") {
-      const files = localFiles.filter(f => f.location === "Relatorios");
-      if (files.length === 0) return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">Relatorios está vazio.</div>`;
-      return files.map(item => `
-        <div class="explorer-item-adv" data-name="${item.name}" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
-          <span style="font-size:1.8rem; display:block;">${item.icon}</span>
-          <span style="font-size:0.65rem; color:#fff; display:block;">${item.name}</span>
-        </div>
-      `).join("");
-    }
-
-    if (explorerCurrentPath === "Downloads") {
-      const files = localFiles.filter(f => f.location === "Downloads");
-      if (files.length === 0) return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">Downloads está vazio.</div>`;
-      return files.map(item => `
-        <div class="explorer-item-adv" data-name="${item.name}" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
-          <span style="font-size:1.8rem; display:block;">${item.icon}</span>
-          <span style="font-size:0.65rem; color:#fff; display:block; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${item.name}</span>
-        </div>
-      `).join("");
-    }
-
-    if (explorerCurrentPath === "USB") {
-      if (usbFiles.length === 0) return `<div style="font-style:italic; color:#666; font-size:0.75rem; text-align:center; width:100%; padding-top:2rem;">O Pendrive está vazio.</div>`;
-      return usbFiles.map(item => `
-        <div class="explorer-item-adv" data-name="${item.name}" style="padding:0.4rem; text-align:center; border-radius:6px; cursor:pointer; width:65px; transition:all 0.15s;">
-          <span style="font-size:1.8rem; display:block;">${item.icon}</span>
-          <span style="font-size:0.65rem; color:#fff; display:block;">${item.name}</span>
-        </div>
-      `).join("");
+        mainDiv.querySelector("#finish-desktop-lab").addEventListener("click", () => {
+          const nextBtn = document.getElementById("next-slide-btn");
+          if (nextBtn) nextBtn.click();
+        });
+      }, 1000);
     }
   };
 
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      mainDiv.innerHTML = `
-        <div style="text-align:center; padding:1.8rem 0;">
-          <span style="font-size:3rem; display:block;">⏱️</span>
-          <h4 style="color:#ef4444; margin:0.8rem 0 0.4rem; font-size:1.15rem;">Tempo Limite Esgotado!</h4>
-          <p style="font-size:0.82rem; color:#ccc; margin-bottom:1.2rem;">Você levou mais de 90 segundos para realizar as tarefas organizacionais.</p>
-          <button class="btn btn-outline" id="btn-retry-office-time" style="width:100%;">Tentar Novamente 🔄</button>
-        </div>
-      `;
-      document.getElementById("btn-retry-office-time").addEventListener("click", () => {
-        initOfficeAdventureSimulator(container, true);
-      });
-    } else {
-      const timeSpan = mainDiv.querySelector("span[style*='color:#ef4444']");
-      if (timeSpan) timeSpan.textContent = `⏱️ Cronômetro: ${timeLeft}s`;
-    }
-  }, 1000);
+  // Render do Desktop (Área principal, atalhos, barra de tarefas)
+  const drawDesktop = () => {
+    mainDiv.innerHTML = "";
+    mainDiv.appendChild(brightnessOverlay); // reinjeta o overlay
+    
+    // Área de atalhos e lista lateral de status
+    const desktopGrid = document.createElement("div");
+    desktopGrid.style.cssText = "flex:1; width:100%; padding:15px; display:grid; grid-template-columns:repeat(6, 60px) 1fr; grid-template-rows:repeat(4, 60px); gap:12px; position:relative;";
+    mainDiv.appendChild(desktopGrid);
 
-  drawUI();
+    // Painel lateral flutuante transparente de instruções da Missão
+    const instructionsPane = document.createElement("div");
+    instructionsPane.style.cssText = "grid-column:7; grid-row:1/span 4; background:rgba(18,18,38,0.85); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; font-size:0.7rem; display:flex; flex-direction:column; gap:4px; max-width:240px; justify-self:end; align-self:start; margin-right:4px;";
+    instructionsPane.innerHTML = `
+      <strong style="color:#fbbf24; font-size:0.75rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:3px; margin-bottom:2px;">📋 Pendências de Organização:</strong>
+      <div id="expl-mission-status-panel" style="display:flex; flex-direction:column; gap:4px;"></div>
+    `;
+    desktopGrid.appendChild(instructionsPane);
+
+    // Atalhos
+    const shortcuts = [
+      { name: "Lixeira", icon: "🗑️", onClick: openExplorador },
+      { name: "Este Computador", icon: "🖥️", onClick: openExplorador },
+      { name: "Documentos", icon: "📂", onClick: openExplorador },
+      { name: "Bloco de Notas", icon: "📝", onClick: openNotepad },
+      { name: "Configurações", icon: "⚙️", onClick: openConfiguracoes }
+    ];
+
+    shortcuts.forEach((sc, idx) => {
+      const btn = document.createElement("div");
+      btn.style.cssText = "display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; color:#fff; text-shadow:1px 1px 3px rgba(0,0,0,0.8); user-select:none; text-align:center; transition:transform 0.1s;";
+      btn.innerHTML = `
+        <span style="font-size:1.6rem; display:block; margin-bottom:2px;">${sc.icon}</span>
+        <span style="font-size:0.62rem; font-weight:700; line-height:1.2; word-break:break-all;">${sc.name}</span>
+      `;
+      btn.addEventListener("click", sc.onClick);
+      btn.addEventListener("mouseenter", () => btn.style.transform = "scale(1.08)");
+      btn.addEventListener("mouseleave", () => btn.style.transform = "scale(1)");
+      
+      // distribui na grid
+      btn.style.gridColumn = "1";
+      btn.style.gridRow = (idx + 1).toString();
+      desktopGrid.appendChild(btn);
+    });
+
+    // Barra de tarefas inferior
+    const taskbar = document.createElement("div");
+    taskbar.style.cssText = "height:34px; background:rgba(18,18,38,0.9); border-top:1px solid rgba(255,255,255,0.1); width:100%; display:flex; justify-content:space-between; align-items:center; padding:0 10px; font-size:0.75rem; position:relative; z-index:99999;";
+    
+    // Iniciar
+    const startBtn = document.createElement("button");
+    startBtn.style.cssText = "background:#fbbf24; border:none; border-radius:4px; padding:3px 10px; font-weight:800; font-size:0.75rem; color:#121226; cursor:pointer; display:flex; align-items:center; gap:4px;";
+    startBtn.innerHTML = "<span>🏁</span><span>Iniciar</span>";
+    taskbar.appendChild(startBtn);
+
+    // Relogio e notificações
+    const rightSide = document.createElement("div");
+    rightSide.style.cssText = "display:flex; align-items:center; gap:10px; color:#fff; font-weight:700;";
+    
+    // Relógio dinâmico
+    const timeSpan = document.createElement("span");
+    timeSpan.style.fontFamily = "monospace";
+    const updateTime = () => {
+      const now = new Date();
+      timeSpan.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    rightSide.appendChild(timeSpan);
+    taskbar.appendChild(rightSide);
+
+    mainDiv.appendChild(taskbar);
+
+    // Menu Iniciar Flutuante
+    const startMenu = document.createElement("div");
+    startMenu.style.cssText = "position:absolute; bottom:36px; left:10px; width:160px; background:#121226; border:1px solid rgba(255,255,255,0.15); border-radius:6px; display:none; flex-direction:column; gap:2px; padding:6px; box-shadow:0 8px 24px rgba(0,0,0,0.5); z-index:999999;";
+    startMenu.innerHTML = `
+      <div style="font-size:0.65rem; color:#888; padding:4px; border-bottom:1px solid rgba(255,255,255,0.06); margin-bottom:4px;">InforTech OS</div>
+      <button class="sm-btn" id="sm-notepad" style="background:transparent; border:none; color:#fff; text-align:left; padding:6px; font-size:0.72rem; cursor:pointer; border-radius:4px; display:flex; align-items:center; gap:6px; width:100%;"><span>📝</span><span>Bloco de Notas</span></button>
+      <button class="sm-btn" id="sm-settings" style="background:transparent; border:none; color:#fff; text-align:left; padding:6px; font-size:0.72rem; cursor:pointer; border-radius:4px; display:flex; align-items:center; gap:6px; width:100%;"><span>⚙️</span><span>Configurações</span></button>
+      <button class="sm-btn" id="sm-shutdown" style="background:rgba(239,68,68,0.1); border:none; color:#ef4444; text-align:left; padding:6px; font-size:0.72rem; cursor:pointer; border-radius:4px; display:flex; align-items:center; gap:6px; margin-top:4px; width:100%;"><span>❌</span><span>Desligar PC</span></button>
+    `;
+    mainDiv.appendChild(startMenu);
+
+    // Evento do botão Iniciar
+    startBtn.addEventListener("click", () => {
+      menuStartOpen = !menuStartOpen;
+      startMenu.style.display = menuStartOpen ? "flex" : "none";
+    });
+
+    startMenu.querySelector("#sm-notepad").addEventListener("click", () => {
+      openNotepad();
+      startMenu.style.display = "none";
+      menuStartOpen = false;
+    });
+
+    startMenu.querySelector("#sm-settings").addEventListener("click", () => {
+      openConfiguracoes();
+      startMenu.style.display = "none";
+      menuStartOpen = false;
+    });
+
+    startMenu.querySelector("#sm-shutdown").addEventListener("click", () => {
+      alert("Aviso: O computador de trabalho não deve ser desligado durante o fechamento de metas! Conclua suas pendências primeiro.");
+      startMenu.style.display = "none";
+      menuStartOpen = false;
+    });
+
+    checkMissionsStatus();
+  };
+
+  drawDesktop();
 }
+
 
 // 10. Atividade Reflexiva com gravação de notas (Aula 5)
 async function initAula5Reflexao(container, isReset = false) {
   container.innerHTML = "";
-  const slideId = "aula5-cap11-conclusao";
+  const slideId = "aula5-conclusao";
   const saved = state.notes[slideId] || "";
   
   container.innerHTML = `
     <div style="background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:16px;">
-      <h4 style="margin:0 0 8px;">✍️ Atividade Reflexiva da Missão 5</h4>
-      <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Desafio Prático:</strong> Imagine que você tem fotos pessoais, trabalhos da escola, recibos de contas e vídeos de viagens. Descreva detalhadamente abaixo como você organizaria essas pastas, que nomes daria para as subpastas e onde faria o backup de segurança para nunca perder nada. Suas notas serão gravadas no seu bloco de anotações.</p>
+      <h4 style="margin:0 0 8px;">✍️ Atividade Reflexiva da Aula 5</h4>
+      <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Desafio Prático:</strong> Descreva detalhadamente abaixo como você organizaria as pastas do seu computador pessoal e quais erros de nomenclatura ou cópias você percebeu que cometia antes da aula. Suas anotações reflexivas serão salvas permanentemente.</p>
       <textarea id="aula5-reflexao-textarea-local" style="width:100%; min-height:120px; background:var(--bg-base); border:1px solid var(--border-soft); border-radius:10px; padding:12px; color:var(--text-primary); font-size:0.9rem; resize:vertical; line-height:1.6;" placeholder="Escreva sua resposta de forma organizada..."></textarea>
-      <button class="btn btn-primary mt-1" id="aula5-save-btn-local" style="width:100%;">💾 Salvar Minhas Estruturas Organizadas</button>
+      <button class="btn btn-primary mt-1" id="aula5-save-btn-local" style="width:100%;">💾 Salvar Minhas Anotações Reflexivas</button>
       <div id="aula5-save-feedback-local" class="text-small mt-1" style="font-weight:bold;"></div>
     </div>
   `;
@@ -11399,16 +11299,32 @@ async function initAula5Reflexao(container, isReset = false) {
       if (!state.completedLessons) state.completedLessons = {};
       state.completedLessons["aula-5"] = true;
       
-      addXP(100);
-      unlockAchievement("guardian_files");
+      // Define a habilidade no state
+      if (!state.module1Skills) {
+        state.module1Skills = {
+          hardware: false,
+          peripherals: false,
+          windows: false,
+          files: false,
+          maintenance: false,
+          support: false
+        };
+      }
+      state.module1Skills.files = true;
+      
+      addXP(500);
+      unlockAchievement("operador_digital");
       markSlideAsCompleted(slideId);
       
       saveState();
+      
+      // Atualizações de UI
+      updateModuleProgressBar();
       initSidebarMenu();
       
       feedback.style.color = "#10b981";
       feedback.textContent = "✅ Sucesso! Suas anotações foram gravadas no seu bloco de notas e a lição 5 foi concluída!";
-      showToastNotification("📂 Guardião dos Arquivos!", "Medalha conquistada e aula concluída.");
+      showToastNotification("🏅 Operador Digital!", "Medalha conquistada e aula concluída.");
       
       // Sincroniza também no DOM caso o textarea do slide didático esteja ativo
       const domTextarea = document.getElementById("aula5-reflexao-textarea");
@@ -11430,30 +11346,30 @@ async function initAula5Reflexao(container, isReset = false) {
 // 11. Atividade Reflexiva com gravação de notas (Aula 6)
 async function initAula6Reflexao(container, isReset = false) {
   container.innerHTML = "";
-  const slideId = "aula6-cap14-conclusao";
+  const slideId = "aula6-conclusao";
   const saved = state.notes[slideId] || "";
-  
+
   container.innerHTML = `
     <div style="background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:16px;">
       <h4 style="margin:0 0 8px;">✍️ Atividade Reflexiva da Aula 6</h4>
-      <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Desafio Prático:</strong> Descreva detalhadamente abaixo como você configuraria a mesa, cadeira e monitor na sua empresa para trabalhar de forma confortável sem lesionar seus braços ou colunas e que procedimentos básicos de manutenção preventiva (como limpeza física e de arquivos temporários) você faria mensalmente para manter seu computador sempre rápido e estável. Suas notas serão gravadas no seu bloco.</p>
-      <textarea id="aula6-reflexao-textarea-local" style="width:100%; min-height:120px; background:var(--bg-base); border:1px solid var(--border-soft); border-radius:10px; padding:12px; color:var(--text-primary); font-size:0.9rem; resize:vertical; line-height:1.6;" placeholder="Escreva suas metas de postura e manutenção preventiva..."></textarea>
+      <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Desafio Prático:</strong> Descreva detalhadamente como você configuraria a estação de trabalho do seu computador pessoal considerando ergonomia, proteção elétrica e um plano de manutenção preventiva mensal. Inclua os equipamentos que compraria e os procedimentos que adotaria regularmente.</p>
+      <textarea id="aula6-reflexao-textarea-local" style="width:100%; min-height:130px; background:var(--bg-base); border:1px solid var(--border-soft); border-radius:10px; padding:12px; color:var(--text-primary); font-size:0.9rem; resize:vertical; line-height:1.6;" placeholder="Escreva sua resposta completa e detalhada..."></textarea>
       <button class="btn btn-primary mt-1" id="aula6-save-btn-local" style="width:100%;">💾 Salvar Minhas Notas Técnicas</button>
       <div id="aula6-save-feedback-local" class="text-small mt-1" style="font-weight:bold;"></div>
     </div>
   `;
-  
+
   const btn = document.getElementById("aula6-save-btn-local");
   const textarea = document.getElementById("aula6-reflexao-textarea-local");
   const feedback = document.getElementById("aula6-save-feedback-local");
-  
+
   if (textarea) textarea.value = saved;
-  
+
   btn.addEventListener("click", async () => {
     const val = textarea.value.trim();
-    if (val.length < 30) {
+    if (val.length < 40) {
       feedback.style.color = "#ef4444";
-      feedback.textContent = "❌ Reflexão muito curta! Escreva pelo menos 30 caracteres.";
+      feedback.textContent = "❌ Reflexão muito curta! Escreva pelo menos 40 caracteres.";
       return;
     }
     btn.disabled = true;
@@ -11461,22 +11377,30 @@ async function initAula6Reflexao(container, isReset = false) {
     feedback.textContent = "⌛ Salvando anotações...";
     try {
       state.notes[slideId] = val;
-      
+
       if (!state.completedLessons) state.completedLessons = {};
       state.completedLessons["aula-6"] = true;
-      
-      addXP(100);
+
+      if (!state.module1Skills) {
+        state.module1Skills = {
+          hardware: false, peripherals: false, windows: false,
+          files: false, maintenance: false, support: false
+        };
+      }
+      state.module1Skills.maintenance = true;
+
+      addXP(500);
       unlockAchievement("assistente_tecnico");
       markSlideAsCompleted(slideId);
-      
+
       saveState();
+      updateModuleProgressBar();
       initSidebarMenu();
-      
+
       feedback.style.color = "#10b981";
-      feedback.textContent = "✅ Sucesso! Suas anotações foram gravadas no seu bloco de notas e a lição 6 foi concluída!";
-      showToastNotification("🥈 Assistente Técnico!", "Medalha conquistada e aula concluída.");
-      
-      // Sincroniza também no DOM caso o textarea do slide didático esteja ativo
+      feedback.textContent = "✅ Sucesso! Suas notas foram salvas e a Aula 6 foi concluída com a medalha Assistente Técnico!";
+      showToastNotification("🥈 Assistente Técnico!", "Medalha conquistada — Aula 6 concluída!");
+
       const domTextarea = document.getElementById("aula6-reflexao-textarea");
       const domFeedback = document.getElementById("aula6-save-feedback");
       if (domTextarea) domTextarea.value = val;
@@ -12040,6 +11964,7 @@ function initExplorerSimulator(container, isReset = false) {
     });
     
     renderExplorerContent(win.querySelector(".window-content"));
+
   }
 
   function renderExplorerContent(winContent) {
@@ -12756,5 +12681,3267 @@ function initWindowsControlCenterSimulator(container, isReset = false) {
   }
 }
 
+// 1. Simulador de Limpeza Técnica (Oficina de Limpeza)
+function initAula6CleaningSim(container, isReset = false) {
+  container.innerHTML = "";
 
+  const steps = [
+    {
+      question: "Antes de abrir o gabinete, qual é o primeiro procedimento obrigatório de segurança?",
+      options: [
+        "Ligar o computador para verificar se ainda funciona.",
+        "Desligar o computador e desconectar completamente o cabo da tomada elétrica.",
+        "Cobrir o gabinete com um pano úmido para evitar acúmulo de estática.",
+        "Soprar com a boca diretamente nas peças para remover a poeira."
+      ],
+      correct: 1,
+      tip: "Trabalhar com o PC energizado pode causar curto-circuito e choque elétrico. Sempre desconecte da tomada antes de abrir."
+    },
+    {
+      question: "Após desligar, o que você deve fazer antes de tocar nos componentes internos?",
+      options: [
+        "Usar luvas de borracha grossa para isolar as mãos completamente.",
+        "Tocar em uma superfície metálica aterrada (como o próprio gabinete) para descarregar a eletricidade estática do corpo.",
+        "Pingar algumas gotas de água nas mãos para melhorar a condutividade.",
+        "Aguardar 24 horas depois de desligar o computador."
+      ],
+      correct: 1,
+      tip: "Eletricidade estática do corpo pode destruir chips sensíveis. O toque em metal aterrado ou uma pulseira antiestática são essenciais."
+    },
+    {
+      question: "Qual ferramenta é a mais indicada para remover poeira das ventoinhas e dissipadores do computador?",
+      options: [
+        "Aspirador de pó doméstico potente para sugar toda a poeira de uma vez.",
+        "Pano úmido com água e detergente neutro para dissolver a sujeira.",
+        "Ar comprimido em lata ou soprador elétrico antiestático.",
+        "Escova de dentes velha com cerdas firmes e rígidas."
+      ],
+      correct: 2,
+      tip: "Aspiradores geram eletricidade estática intensa. O ar comprimido expulsa a poeira com eficiência e segurança."
+    },
+    {
+      question: "Ao limpar as ventoinhas com ar comprimido, o que você deve fazer para não danificá-las?",
+      options: [
+        "Ligar o computador durante a limpeza para ver se a ventoinha gira normalmente.",
+        "Segurar as pás da ventoinha com o dedo para impedir que girem durante o sopro.",
+        "Usar o soprador na potência máxima para garantir a remoção completa da poeira.",
+        "Molhar a ventoinha com álcool 70% antes de soprar."
+      ],
+      correct: 1,
+      tip: "Ventoinhas girando em alta velocidade por ar comprimido sem carga elétrica podem danificar os rolamentos ou até gerar tensão indesejada."
+    },
+    {
+      question: "Com que frequência a limpeza interna de um computador de escritório deve ser realizada?",
+      options: [
+        "A cada 5 anos, apenas quando o computador apresentar travamentos graves.",
+        "Uma vez por semana, independentemente do ambiente de uso.",
+        "A cada 3 a 6 meses, com maior frequência em ambientes com carpete ou pó.",
+        "Apenas quando o técnico especializado fizer a visita anual de manutenção."
+      ],
+      correct: 2,
+      tip: "A frequência ideal é 3 a 6 meses. Ambientes empoeirados ou com carpete podem exigir limpeza trimestral."
+    }
+  ];
 
+  let current = 0;
+  let lives = 3;
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff; font-family:var(--font-sans);";
+  container.appendChild(mainDiv);
+
+  const drawUI = () => {
+    if (lives <= 0) {
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:3.5rem; display:block; margin-bottom:1rem;">💔</span>
+          <h3 style="color:#ef4444; margin:0 0 8px;">Procedimento Incorreto!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">Você cometeu erros críticos durante o processo de limpeza. Revise os procedimentos e tente novamente.</p>
+          <button class="btn btn-primary" id="retry-clean" style="width:100%;">🔄 Tentar Novamente</button>
+        </div>
+      `;
+      mainDiv.querySelector("#retry-clean").addEventListener("click", () => initAula6CleaningSim(container, true));
+      return;
+    }
+
+    if (current >= steps.length) {
+      addXP(80);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:3.5rem; display:block; margin-bottom:1rem;">🏆</span>
+          <h3 style="color:#10b981; margin:0 0 8px;">Oficina Aprovada!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">Você completou todos os procedimentos corretos de limpeza técnica. Equipamento funcionando perfeitamente!</p>
+          <button class="btn btn-primary" id="next-clean" style="width:100%;">Avançar Lição ➔</button>
+        </div>
+      `;
+      mainDiv.querySelector("#next-clean").addEventListener("click", () => {
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return;
+    }
+
+    const step = steps[current];
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <strong style="color:var(--color-primary-light); font-size:0.82rem;">Passo ${current + 1} / ${steps.length}</strong>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px; padding:1rem; margin-bottom:1rem;">
+        <p style="font-size:0.9rem; line-height:1.6; margin:0; color:#fff;">${step.question}</p>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:1rem;">
+        ${step.options.map((opt, idx) => `
+          <button class="clean-opt" data-idx="${idx}" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.7rem 1rem; text-align:left; color:#fff; font-size:0.82rem; cursor:pointer; transition:background 0.15s; line-height:1.4;">
+            <span style="color:#fbbf24; font-weight:700;">${String.fromCharCode(65+idx)}.</span> ${opt}
+          </button>
+        `).join("")}
+      </div>
+
+      <div id="clean-feedback" style="display:none; padding:0.8rem; border-radius:8px; font-size:0.82rem; line-height:1.5;"></div>
+    `;
+
+    mainDiv.querySelectorAll(".clean-opt").forEach(btn => {
+      btn.addEventListener("mouseenter", () => btn.style.background = "rgba(255,255,255,0.06)");
+      btn.addEventListener("mouseleave", () => btn.style.background = "rgba(255,255,255,0.03)");
+      btn.addEventListener("click", () => {
+        const chosen = parseInt(btn.getAttribute("data-idx"), 10);
+        const feedback = mainDiv.querySelector("#clean-feedback");
+        feedback.style.display = "block";
+
+        mainDiv.querySelectorAll(".clean-opt").forEach(b => b.disabled = true);
+
+        if (chosen === step.correct) {
+          feedback.style.background = "rgba(16,185,129,0.12)";
+          feedback.style.border = "1px solid rgba(16,185,129,0.3)";
+          feedback.style.color = "#10b981";
+          feedback.innerHTML = `✅ <strong>Correto!</strong> ${step.tip}`;
+          current++;
+          setTimeout(drawUI, 1800);
+        } else {
+          lives--;
+          feedback.style.background = "rgba(239,68,68,0.12)";
+          feedback.style.border = "1px solid rgba(239,68,68,0.3)";
+          feedback.style.color = "#ef4444";
+          feedback.innerHTML = `❌ <strong>Procedimento errado!</strong> ${step.tip}`;
+          setTimeout(drawUI, 2000);
+        }
+      });
+    });
+  };
+
+  drawUI();
+}
+
+// 2. Monitor de Temperatura Virtual
+function initAula6TempMonitor(container, isReset = false) {
+  container.innerHTML = "";
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff; font-family:var(--font-sans);";
+  container.appendChild(mainDiv);
+
+  let lives = 3;
+  let score = 0;
+
+  const scenarios = [
+    {
+      temps: { cpu: 95, gpu: 72, hd: 38, mb: 41 },
+      problem: "cpu",
+      actions: [
+        { label: "Reaplicar a pasta térmica na CPU e limpar o cooler", correct: true },
+        { label: "Formatar o computador e reinstalar o Windows", correct: false },
+        { label: "Adicionar mais memória RAM ao computador", correct: false },
+        { label: "Trocar o monitor por um modelo de baixo consumo", correct: false }
+      ],
+      tip: "CPU a 95°C está em throttling crítico. Pasta térmica seca e cooler entupido são as causas mais comuns."
+    },
+    {
+      temps: { cpu: 68, gpu: 92, hd: 40, mb: 38 },
+      problem: "gpu",
+      actions: [
+        { label: "Atualizar o driver da placa de rede Wi-Fi", correct: false },
+        { label: "Limpar as ventoinhas da GPU e garantir boa circulação de ar no gabinete", correct: true },
+        { label: "Aumentar o brilho do monitor para melhorar a visualização", correct: false },
+        { label: "Desconectar o cabo HDMI e reconectá-lo", correct: false }
+      ],
+      tip: "GPU a 92°C indica obstrução da ventoinha ou falta de fluxo de ar no gabinete. Limpe as entradas e saídas de ar."
+    },
+    {
+      temps: { cpu: 72, gpu: 65, hd: 58, mb: 44 },
+      problem: "hd",
+      actions: [
+        { label: "Trocar o protetor de tela do monitor por um mais escuro", correct: false },
+        { label: "Verificar se o HD está próximo a uma fonte de calor e melhorar o fluxo de ar na região", correct: true },
+        { label: "Instalar um antivírus para remover arquivos que esquentam o processador", correct: false },
+        { label: "Aumentar a velocidade do Wi-Fi para reduzir o processamento do HD", correct: false }
+      ],
+      tip: "HDs acima de 55°C têm vida útil drasticamente reduzida. Verifique o posicionamento no gabinete e os cabos de ar."
+    }
+  ];
+
+  let currentScenario = 0;
+
+  const drawUI = () => {
+    if (lives <= 0) {
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:3.5rem; display:block;">💔</span>
+          <h3 style="color:#ef4444; margin:1rem 0 8px;">Sistema Desligado por Superaquecimento!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">As ações incorretas causaram dano permanente ao componente crítico.</p>
+          <button class="btn btn-primary" id="retry-temp" style="width:100%;">🔄 Reiniciar Painel</button>
+        </div>
+      `;
+      mainDiv.querySelector("#retry-temp").addEventListener("click", () => initAula6TempMonitor(container, true));
+      return;
+    }
+
+    if (currentScenario >= scenarios.length) {
+      addXP(100);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:3.5rem; display:block;">🏆</span>
+          <h3 style="color:#10b981; margin:1rem 0 8px;">Todos os Alertas Resolvidos!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">Você diagnosticou e resolveu todos os problemas de temperatura corretamente!</p>
+          <button class="btn btn-primary" id="next-temp" style="width:100%;">Avançar Lição ➔</button>
+        </div>
+      `;
+      mainDiv.querySelector("#next-temp").addEventListener("click", () => {
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return;
+    }
+
+    const sc = scenarios[currentScenario];
+
+    const tempColor = (t) => {
+      if (t >= 90) return "#ef4444";
+      if (t >= 70) return "#fbbf24";
+      return "#10b981";
+    };
+
+    const tempBar = (t) => {
+      const pct = Math.min(100, (t / 100) * 100);
+      const col = tempColor(t);
+      return `<div style="background:rgba(255,255,255,0.05); border-radius:4px; height:8px; width:100%; margin-top:4px;"><div style="background:${col}; width:${pct}%; height:100%; border-radius:4px; transition:width 1s;"></div></div>`;
+    };
+
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <strong style="color:var(--color-primary-light); font-size:0.82rem;">Caso ${currentScenario + 1} / ${scenarios.length}</strong>
+      </div>
+
+      <div style="background:#121226; border-radius:10px; padding:1rem; margin-bottom:1rem; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div>
+          <div style="font-size:0.75rem; color:#888; margin-bottom:4px;">🔲 Processador (CPU)</div>
+          <div style="font-size:1.4rem; font-weight:800; color:${tempColor(sc.temps.cpu)}; font-family:monospace;">${sc.temps.cpu}°C</div>
+          ${tempBar(sc.temps.cpu)}
+        </div>
+        <div>
+          <div style="font-size:0.75rem; color:#888; margin-bottom:4px;">🎮 Placa de Vídeo (GPU)</div>
+          <div style="font-size:1.4rem; font-weight:800; color:${tempColor(sc.temps.gpu)}; font-family:monospace;">${sc.temps.gpu}°C</div>
+          ${tempBar(sc.temps.gpu)}
+        </div>
+        <div>
+          <div style="font-size:0.75rem; color:#888; margin-bottom:4px;">💾 Disco (HD/SSD)</div>
+          <div style="font-size:1.4rem; font-weight:800; color:${tempColor(sc.temps.hd)}; font-family:monospace;">${sc.temps.hd}°C</div>
+          ${tempBar(sc.temps.hd)}
+        </div>
+        <div>
+          <div style="font-size:0.75rem; color:#888; margin-bottom:4px;">🔌 Placa-Mãe</div>
+          <div style="font-size:1.4rem; font-weight:800; color:${tempColor(sc.temps.mb)}; font-family:monospace;">${sc.temps.mb}°C</div>
+          ${tempBar(sc.temps.mb)}
+        </div>
+      </div>
+
+      <p style="font-size:0.82rem; color:#fbbf24; font-weight:700; margin-bottom:8px;">⚠️ Alerta detectado! Qual ação você toma?</p>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:1rem;">
+        ${sc.actions.map((a, idx) => `
+          <button class="temp-action" data-correct="${a.correct}" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.65rem 1rem; text-align:left; color:#fff; font-size:0.8rem; cursor:pointer; transition:background 0.15s; line-height:1.4;">
+            <span style="color:#fbbf24; font-weight:700;">${String.fromCharCode(65+idx)}.</span> ${a.label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div id="temp-feedback" style="display:none; padding:0.8rem; border-radius:8px; font-size:0.82rem; line-height:1.5;"></div>
+    `;
+
+    mainDiv.querySelectorAll(".temp-action").forEach(btn => {
+      btn.addEventListener("mouseenter", () => btn.style.background = "rgba(255,255,255,0.06)");
+      btn.addEventListener("mouseleave", () => btn.style.background = "rgba(255,255,255,0.03)");
+      btn.addEventListener("click", () => {
+        const isCorrect = btn.getAttribute("data-correct") === "true";
+        const feedback = mainDiv.querySelector("#temp-feedback");
+        feedback.style.display = "block";
+        mainDiv.querySelectorAll(".temp-action").forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+          score++;
+          currentScenario++;
+          feedback.style.background = "rgba(16,185,129,0.12)";
+          feedback.style.border = "1px solid rgba(16,185,129,0.3)";
+          feedback.style.color = "#10b981";
+          feedback.innerHTML = `✅ <strong>Correto!</strong> ${sc.tip}`;
+          setTimeout(drawUI, 1800);
+        } else {
+          lives--;
+          feedback.style.background = "rgba(239,68,68,0.12)";
+          feedback.style.border = "1px solid rgba(239,68,68,0.3)";
+          feedback.style.color = "#ef4444";
+          feedback.innerHTML = `❌ <strong>Ação incorreta!</strong> ${sc.tip}`;
+          setTimeout(drawUI, 2200);
+        }
+      });
+    });
+  };
+
+  drawUI();
+}
+
+// 3. Jogo de Diagnóstico Técnico
+function initAula6DiagnosticoSim(container, isReset = false) {
+  container.innerHTML = "";
+
+  const cases = [
+    {
+      symptom: "O computador não liga. Ao pressionar o botão Power, nada acontece — sem luz, sem ventoinha, sem bipe.",
+      clue: "Você cheira um leve odor de queimado vindo da área da fonte de alimentação.",
+      options: [
+        { label: "Fonte de alimentação queimada ou com defeito grave.", correct: true },
+        { label: "Monitor desconectado ou com cabo HDMI solto.", correct: false },
+        { label: "Memória RAM solta no slot da placa-mãe.", correct: false },
+        { label: "Windows corrompido — necessário reinstalar o sistema.", correct: false }
+      ],
+      tip: "Sem reação alguma ao ligar (sem ventoinha, sem LED) com odor de queimado aponta para falha grave na fonte de alimentação."
+    },
+    {
+      symptom: "O computador liga, mas emite 3 bipes longos e não exibe nada na tela. Permanece nessa situação indefinidamente.",
+      clue: "Os LEDs da placa-mãe indicam a letra 'D' piscando em vermelho.",
+      options: [
+        { label: "Driver da placa de vídeo desatualizado ou corrompido.", correct: false },
+        { label: "Memória RAM com defeito, mal encaixada ou incompatível.", correct: true },
+        { label: "Disco rígido sem espaço livre suficiente para inicializar.", correct: false },
+        { label: "Monitor com defeito na retroiluminação traseira.", correct: false }
+      ],
+      tip: "3 bipes longos = erro de memória RAM (código BIOS universal). O LED 'DRAM' aceso confirma o diagnóstico."
+    },
+    {
+      symptom: "O computador funciona normalmente por 15 minutos e depois desliga sozinho subitamente sem aviso. Ao ligar novamente, repete o mesmo comportamento.",
+      clue: "Você nota que o cooler da CPU está extremamente sujo e quase parado de tanto pó acumulado.",
+      options: [
+        { label: "Vírus no sistema operacional causando desligamento automático agendado.", correct: false },
+        { label: "Superaquecimento da CPU causando desligamento de proteção térmico.", correct: true },
+        { label: "Placa de rede com defeito interrompendo a conexão com a internet.", correct: false },
+        { label: "Bateria da placa-mãe descarregada, perdendo a hora do sistema.", correct: false }
+      ],
+      tip: "Desligamento após tempo fixo de uso + cooler entupido é diagnóstico clássico de thermal shutdown por CPU superaquecida."
+    },
+    {
+      symptom: "O computador liga normalmente, mas a imagem na tela está distorcida, com linhas horizontais coloridas e artefatos visuais estranhos.",
+      clue: "Os artefatos aparecem mesmo na tela de BIOS, antes do Windows carregar.",
+      options: [
+        { label: "Problema no sistema operacional ou em um driver de vídeo corrompido.", correct: false },
+        { label: "Cabo HDMI com defeito ou mal encaixado na saída de vídeo.", correct: false },
+        { label: "Placa de vídeo (GPU) com defeito físico na memória de vídeo (VRAM).", correct: true },
+        { label: "Memória RAM insuficiente para renderizar a interface gráfica do Windows.", correct: false }
+      ],
+      tip: "Artefatos visuais que aparecem no BIOS (antes do S.O.) eliminam causas de software. O defeito é físico na GPU."
+    },
+    {
+      symptom: "Ao tocar no gabinete de metal do computador, você leva um choque elétrico leve. O computador funciona normalmente.",
+      clue: "A tomada onde o computador está ligado não possui o fio de aterramento (terra).",
+      options: [
+        { label: "Problema na fonte de alimentação que precisa ser trocada imediatamente.",correct: false },
+        { label: "Corrente de fuga elétrica por falta de aterramento na instalação elétrica.", correct: true },
+        { label: "O gabinete tem pintura condutiva que acumula eletricidade estática.", correct: false },
+        { label: "O processador está operando acima da tensão correta (overvolt).", correct: false }
+      ],
+      tip: "Choque leve no gabinete indica corrente de fuga. Sem o fio terra na tomada, essa corrente não tem caminho seguro e passa pelo toque humano."
+    }
+  ];
+
+  let current = 0;
+  let lives = 3;
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff; font-family:var(--font-sans);";
+  container.appendChild(mainDiv);
+
+  const drawUI = () => {
+    if (lives <= 0) {
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:3.5rem; display:block; margin-bottom:1rem;">💔</span>
+          <h3 style="color:#ef4444; margin:0 0 8px;">Diagnóstico Incorreto!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">Os erros de diagnóstico custaram o equipamento do cliente. Estude melhor os sinais físicos e beep codes.</p>
+          <button class="btn btn-primary" id="retry-diag" style="width:100%;">🔄 Tentar Novamente</button>
+        </div>
+      `;
+      mainDiv.querySelector("#retry-diag").addEventListener("click", () => initAula6DiagnosticoSim(container, true));
+      return;
+    }
+
+    if (current >= cases.length) {
+      addXP(120);
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:3.5rem; display:block; margin-bottom:1rem;">🏆</span>
+          <h3 style="color:#10b981; margin:0 0 8px;">Técnico Aprovado!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">Você diagnosticou corretamente todos os 5 casos técnicos. Parabéns, Assistente Técnico!</p>
+          <button class="btn btn-primary" id="next-diag" style="width:100%;">Avançar Lição ➔</button>
+        </div>
+      `;
+      mainDiv.querySelector("#next-diag").addEventListener("click", () => {
+        const nextBtn = document.getElementById("next-slide-btn");
+        if (nextBtn) nextBtn.click();
+      });
+      return;
+    }
+
+    const c = cases[current];
+
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">❤️ Vidas: ${"❤️".repeat(lives)}</span>
+        <strong style="color:var(--color-primary-light); font-size:0.82rem;">Chamado ${current + 1} / ${cases.length}</strong>
+      </div>
+
+      <div style="background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.2); border-radius:10px; padding:1rem; margin-bottom:10px;">
+        <strong style="color:#a78bfa; font-size:0.78rem; display:block; margin-bottom:4px;">📋 SINTOMA RELATADO PELO CLIENTE:</strong>
+        <p style="font-size:0.85rem; color:#fff; margin:0; line-height:1.5;">${c.symptom}</p>
+      </div>
+
+      <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:10px; padding:0.8rem; margin-bottom:1rem;">
+        <strong style="color:#fbbf24; font-size:0.78rem; display:block; margin-bottom:4px;">🔍 PISTA DO TÉCNICO:</strong>
+        <p style="font-size:0.82rem; color:#ccc; margin:0; line-height:1.5;">${c.clue}</p>
+      </div>
+
+      <p style="font-size:0.82rem; color:#ccc; font-weight:600; margin-bottom:8px;">Qual é o diagnóstico correto?</p>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:1rem;">
+        ${c.options.map((opt, idx) => `
+          <button class="diag-opt" data-correct="${opt.correct}" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.65rem 1rem; text-align:left; color:#fff; font-size:0.8rem; cursor:pointer; transition:background 0.15s; line-height:1.4;">
+            <span style="color:#a78bfa; font-weight:700;">${String.fromCharCode(65+idx)}.</span> ${opt.label}
+          </button>
+        `).join("")}
+      </div>
+
+      <div id="diag-feedback" style="display:none; padding:0.8rem; border-radius:8px; font-size:0.82rem; line-height:1.5;"></div>
+    `;
+
+    mainDiv.querySelectorAll(".diag-opt").forEach(btn => {
+      btn.addEventListener("mouseenter", () => btn.style.background = "rgba(255,255,255,0.06)");
+      btn.addEventListener("mouseleave", () => btn.style.background = "rgba(255,255,255,0.03)");
+      btn.addEventListener("click", () => {
+        const isCorrect = btn.getAttribute("data-correct") === "true";
+        const feedback = mainDiv.querySelector("#diag-feedback");
+        feedback.style.display = "block";
+        mainDiv.querySelectorAll(".diag-opt").forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+          current++;
+          feedback.style.background = "rgba(16,185,129,0.12)";
+          feedback.style.border = "1px solid rgba(16,185,129,0.3)";
+          feedback.style.color = "#10b981";
+          feedback.innerHTML = `✅ <strong>Diagnóstico Correto!</strong> ${c.tip}`;
+          setTimeout(drawUI, 2000);
+        } else {
+          lives--;
+          feedback.style.background = "rgba(239,68,68,0.12)";
+          feedback.style.border = "1px solid rgba(239,68,68,0.3)";
+          feedback.style.color = "#ef4444";
+          feedback.innerHTML = `❌ <strong>Diagnóstico errado!</strong> ${c.tip}`;
+          setTimeout(drawUI, 2200);
+        }
+      });
+    });
+  };
+
+  drawUI();
+}
+
+// 4. Simulador de Ergonomia — Monte a Estação Perfeita
+function initAula6ErgonomiaSim(container, isReset = false) {
+  container.innerHTML = "";
+
+  const mainDiv = document.createElement("div");
+  mainDiv.style.cssText = "background:#1e1e38; border:1px solid var(--border-soft); border-radius:12px; padding:1.2rem; color:#fff; font-family:var(--font-sans);";
+  container.appendChild(mainDiv);
+
+  // Configurações da estação
+  let settings = {
+    chairHeight: 50,       // 40-60cm, ideal ~50
+    monitorHeight: 50,     // 0-100%, ideal ~60
+    monitorDistance: 50,   // 0-100, ideal ~60
+    monitorAngle: 10,      // 0-30°, ideal 10-20°
+    armAngle: 90           // 60-130°, ideal 90
+  };
+
+  let attempts = 3;
+  let validated = false;
+
+  const isOk = () => {
+    return (
+      settings.chairHeight >= 45 && settings.chairHeight <= 55 &&
+      settings.monitorHeight >= 55 && settings.monitorHeight <= 65 &&
+      settings.monitorDistance >= 50 && settings.monitorDistance <= 70 &&
+      settings.monitorAngle >= 10 && settings.monitorAngle <= 20 &&
+      settings.armAngle >= 85 && settings.armAngle <= 95
+    );
+  };
+
+  const drawUI = () => {
+    if (attempts <= 0 && !validated) {
+      mainDiv.innerHTML = `
+        <div style="text-align:center; padding:2rem 0;">
+          <span style="font-size:3.5rem; display:block; margin-bottom:1rem;">💔</span>
+          <h3 style="color:#ef4444; margin:0 0 8px;">Estação Incorreta!</h3>
+          <p style="color:#ccc; font-size:0.85rem; margin-bottom:1.5rem;">O funcionário vai desenvolver problemas posturais. Revise as regras de ergonomia e tente novamente.</p>
+          <button class="btn btn-primary" id="retry-ergo" style="width:100%;">🔄 Tentar Novamente</button>
+        </div>
+      `;
+      mainDiv.querySelector("#retry-ergo").addEventListener("click", () => initAula6ErgonomiaSim(container, true));
+      return;
+    }
+
+    const statusOf = (key) => {
+      const checks = {
+        chairHeight: settings.chairHeight >= 45 && settings.chairHeight <= 55,
+        monitorHeight: settings.monitorHeight >= 55 && settings.monitorHeight <= 65,
+        monitorDistance: settings.monitorDistance >= 50 && settings.monitorDistance <= 70,
+        monitorAngle: settings.monitorAngle >= 10 && settings.monitorAngle <= 20,
+        armAngle: settings.armAngle >= 85 && settings.armAngle <= 95
+      };
+      return checks[key] ? "✅" : "⚠️";
+    };
+
+    mainDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:0.6rem;">
+        <span style="font-weight:700; color:#fbbf24;">🎯 Tentativas: ${attempts}</span>
+        <strong style="color:var(--color-primary-light); font-size:0.82rem;">Configure a Estação Ergonômica</strong>
+      </div>
+
+      <p style="font-size:0.8rem; color:#aaa; margin-bottom:1rem; line-height:1.5;">Ajuste os sliders abaixo para configurar a estação de trabalho dentro das faixas ergonômicas corretas. O ícone ✅ confirma cada ajuste correto.</p>
+
+      <div style="display:flex; flex-direction:column; gap:1rem; margin-bottom:1.2rem;">
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+            <span>${statusOf("chairHeight")} 🪑 Altura da cadeira</span>
+            <strong style="font-family:monospace;">${settings.chairHeight} cm</strong>
+          </div>
+          <input type="range" id="ergo-chair" min="30" max="75" step="1" value="${settings.chairHeight}" style="width:100%; cursor:pointer;" />
+          <div style="font-size:0.68rem; color:#666; margin-top:2px;">Faixa correta: 45–55 cm (coxas paralelas ao chão)</div>
+        </div>
+
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+            <span>${statusOf("monitorHeight")} 🖥️ Altura do monitor</span>
+            <strong style="font-family:monospace;">${settings.monitorHeight}%</strong>
+          </div>
+          <input type="range" id="ergo-monH" min="20" max="100" step="1" value="${settings.monitorHeight}" style="width:100%; cursor:pointer;" />
+          <div style="font-size:0.68rem; color:#666; margin-top:2px;">Faixa correta: 55–65% (topo na linha dos olhos)</div>
+        </div>
+
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+            <span>${statusOf("monitorDistance")} 📏 Distância do monitor</span>
+            <strong style="font-family:monospace;">${settings.monitorDistance} cm</strong>
+          </div>
+          <input type="range" id="ergo-monD" min="20" max="120" step="1" value="${settings.monitorDistance}" style="width:100%; cursor:pointer;" />
+          <div style="font-size:0.68rem; color:#666; margin-top:2px;">Faixa correta: 50–70 cm (comprimento do braço)</div>
+        </div>
+
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+            <span>${statusOf("monitorAngle")} 📐 Inclinação do monitor</span>
+            <strong style="font-family:monospace;">${settings.monitorAngle}°</strong>
+          </div>
+          <input type="range" id="ergo-monA" min="0" max="30" step="1" value="${settings.monitorAngle}" style="width:100%; cursor:pointer;" />
+          <div style="font-size:0.68rem; color:#666; margin-top:2px;">Faixa correta: 10–20° (inclinação leve para trás)</div>
+        </div>
+
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
+            <span>${statusOf("armAngle")} 💪 Ângulo dos cotovelos</span>
+            <strong style="font-family:monospace;">${settings.armAngle}°</strong>
+          </div>
+          <input type="range" id="ergo-arm" min="60" max="130" step="1" value="${settings.armAngle}" style="width:100%; cursor:pointer;" />
+          <div style="font-size:0.68rem; color:#666; margin-top:2px;">Faixa correta: 85–95° (cotovelo quase em ângulo reto)</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-validate-ergo" style="width:100%; padding:0.75rem;">✅ Validar Configuração Ergonômica</button>
+      <div id="ergo-feedback" style="margin-top:10px; display:none; padding:0.8rem; border-radius:8px; font-size:0.82rem; line-height:1.5;"></div>
+    `;
+
+    // Bind sliders
+    const bindSlider = (id, key) => {
+      mainDiv.querySelector(`#${id}`).addEventListener("input", (e) => {
+        settings[key] = parseInt(e.target.value, 10);
+        drawUI();
+      });
+    };
+    bindSlider("ergo-chair", "chairHeight");
+    bindSlider("ergo-monH", "monitorHeight");
+    bindSlider("ergo-monD", "monitorDistance");
+    bindSlider("ergo-monA", "monitorAngle");
+    bindSlider("ergo-arm", "armAngle");
+
+    mainDiv.querySelector("#btn-validate-ergo").addEventListener("click", () => {
+      const feedback = mainDiv.querySelector("#ergo-feedback");
+      feedback.style.display = "block";
+      attempts--;
+
+      if (isOk()) {
+        validated = true;
+        addXP(150);
+        feedback.style.background = "rgba(16,185,129,0.12)";
+        feedback.style.border = "1px solid rgba(16,185,129,0.3)";
+        feedback.style.color = "#10b981";
+        feedback.innerHTML = `✅ <strong>Estação Perfeita!</strong> Todos os parâmetros estão dentro das faixas ergonômicas corretas. O funcionário terá uma jornada saudável!`;
+        mainDiv.querySelector("#btn-validate-ergo").textContent = "Avançar Lição ➔";
+        mainDiv.querySelector("#btn-validate-ergo").addEventListener("click", () => {
+          const nextBtn = document.getElementById("next-slide-btn");
+          if (nextBtn) nextBtn.click();
+        }, { once: true });
+      } else {
+        const erros = [];
+        if (settings.chairHeight < 45 || settings.chairHeight > 55) erros.push("Altura da cadeira fora do ideal (45–55cm).");
+        if (settings.monitorHeight < 55 || settings.monitorHeight > 65) erros.push("Monitor não está na altura dos olhos (55–65%).");
+        if (settings.monitorDistance < 50 || settings.monitorDistance > 70) erros.push("Distância do monitor incorreta (50–70cm).");
+        if (settings.monitorAngle < 10 || settings.monitorAngle > 20) erros.push("Inclinação do monitor fora do ideal (10–20°).");
+        if (settings.armAngle < 85 || settings.armAngle > 95) erros.push("Cotovelos precisam estar em 90° (85–95°).");
+
+        if (attempts <= 0) {
+          setTimeout(drawUI, 100);
+          return;
+        }
+        feedback.style.background = "rgba(239,68,68,0.12)";
+        feedback.style.border = "1px solid rgba(239,68,68,0.3)";
+        feedback.style.color = "#ef4444";
+        feedback.innerHTML = `❌ <strong>Ajustes necessários (${attempts} tentativas restantes):</strong><br>• ${erros.join("<br>• ")}`;
+      }
+    });
+  };
+
+  drawUI();
+}
+
+// 5. Atividade Reflexiva da Aula 6
+async function initAula6Reflexao(container, isReset = false) {
+  container.innerHTML = "";
+  const slideId = "aula6-conclusao";
+  const saved = state.notes[slideId] || "";
+
+  container.innerHTML = `
+    <div style="background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:12px; padding:16px;">
+      <h4 style="margin:0 0 8px;">✍️ Atividade Reflexiva da Aula 6</h4>
+      <p class="text-small text-muted" style="line-height:1.4; margin-bottom:12px;"><strong>Desafio Prático:</strong> Descreva detalhadamente como você configuraria a estação de trabalho do seu computador pessoal considerando ergonomia, proteção elétrica e um plano de manutenção preventiva mensal. Inclua os equipamentos que compraria e os procedimentos que adotaria regularmente.</p>
+      <textarea id="aula6-reflexao-textarea-local" style="width:100%; min-height:130px; background:var(--bg-base); border:1px solid var(--border-soft); border-radius:10px; padding:12px; color:var(--text-primary); font-size:0.9rem; resize:vertical; line-height:1.6;" placeholder="Escreva sua resposta completa e detalhada..."></textarea>
+      <button class="btn btn-primary mt-1" id="aula6-save-btn-local" style="width:100%;">💾 Salvar Minhas Notas Técnicas</button>
+      <div id="aula6-save-feedback-local" class="text-small mt-1" style="font-weight:bold;"></div>
+    </div>
+  `;
+
+  const btn = document.getElementById("aula6-save-btn-local");
+  const textarea = document.getElementById("aula6-reflexao-textarea-local");
+  const feedback = document.getElementById("aula6-save-feedback-local");
+
+  if (textarea) textarea.value = saved;
+
+  btn.addEventListener("click", async () => {
+    const val = textarea.value.trim();
+    if (val.length < 40) {
+      feedback.style.color = "#ef4444";
+      feedback.textContent = "❌ Reflexão muito curta! Escreva pelo menos 40 caracteres.";
+      return;
+    }
+    btn.disabled = true;
+    feedback.style.color = "#fbbf24";
+    feedback.textContent = "⌛ Salvando anotações...";
+    try {
+      state.notes[slideId] = val;
+
+      if (!state.completedLessons) state.completedLessons = {};
+      state.completedLessons["aula-6"] = true;
+
+      // Define a habilidade no state
+      if (!state.module1Skills) {
+        state.module1Skills = {
+          hardware: false, peripherals: false, windows: false,
+          files: false, maintenance: false, support: false
+        };
+      }
+      state.module1Skills.maintenance = true;
+
+      addXP(500);
+      unlockAchievement("assistente_tecnico");
+      markSlideAsCompleted(slideId);
+
+      saveState();
+      updateModuleProgressBar();
+      initSidebarMenu();
+
+      feedback.style.color = "#10b981";
+      feedback.textContent = "✅ Sucesso! Notas salvas e Aula 6 concluída com a medalha Assistente Técnico!";
+      showToastNotification("🥈 Assistente Técnico!", "Medalha conquistada — Aula 6 concluída!");
+
+      // Sincroniza DOM
+      const domTextarea = document.getElementById("aula6-reflexao-textarea");
+      const domFeedback = document.getElementById("aula6-save-feedback");
+      if (domTextarea) domTextarea.value = val;
+      if (domFeedback) {
+        domFeedback.style.color = "#10b981";
+        domFeedback.textContent = "✅ Sucesso! Medalha desbloqueada!";
+      }
+    } catch (error) {
+      feedback.style.color = "#ef4444";
+      feedback.textContent = "❌ Erro ao salvar: " + error.message;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+}
+
+// ==========================================================================
+// WINDOWS LAB SIMULATOR — AULA 7 (LABORATÓRIO CONTÍNUO)
+// ==========================================================================
+function initAula7WindowsLab(container, isReset = false) {
+  if (isReset) container.innerHTML = "";
+
+  const TICKETS = [
+    { id: 1, icon: "📦", title: "Instalar PDF Reader", dept: "Financeiro", desc: "O setor financeiro precisa do leitor de PDF para acessar relatórios.", theoryTitle: "📘 Instalação de Programas", theory: [
+      "Um instalador copia arquivos para o computador, cria atalhos e registra componentes no sistema.",
+      "Extensões comuns: <strong>.exe</strong> (executável), <strong>.msi</strong> (instalador Windows), <strong>.zip</strong> (compactado).",
+      "Sempre baixe de fontes oficiais. Evite sites piratas — eles podem conter malwares.",
+      "Escolha a <strong>instalação personalizada</strong> para desmarcar bloatware (programas extras indesejados).",
+      "Após instalar, verifique se o programa aparece no Menu Iniciar."
+    ], check: () => S.installDone },
+    { id: 2, icon: "🗑️", title: "Desinstalar Antivírus obsoleto", dept: "TI", desc: "O programa 'Antivirus Legacy' está desatualizado e precisa ser removido corretamente.", theoryTitle: "🗑️ Desinstalação Segura", theory: [
+      "NUNCA apague a pasta do programa manualmente — isso deixa residuais no registro do Windows.",
+      "Sempre use <strong>Painel de Controle > Programas e Recursos</strong> ou <strong>Configurações > Aplicativos</strong>.",
+      "Após desinstalar, reinicie o computador para limpeza completa.",
+      "Ferramentas avançadas como <strong>Revo Uninstaller</strong> varrem o registro atrás de chaves residuais."
+    ], check: () => S.programsUninstalled["antivirus"] },
+    { id: 3, icon: "💾", title: "Liberar espaço em disco", dept: "Suporte", desc: "Disco C: com 96% ocupado. Identifique e remova arquivos grandes e desnecessários.", theoryTitle: "💾 Limpeza de Disco", theory: [
+      "Mantenha sempre pelo menos <strong>15% do disco livre</strong> para o sistema funcionar bem.",
+      "Use a <strong>Limpeza de Disco</strong> do Windows para remover temporários, cache e atualizações antigas.",
+      "A pasta <strong>Downloads</strong> acumula instaladores e arquivos baixados que nunca mais foram usados.",
+      "Esvazie a <strong>Lixeira</strong> após excluir arquivos — eles continuam ocupando espaço até lá."
+    ], check: () => S.cleanupDone },
+    { id: 4, icon: "⚡", title: "Computador lento — investigar", dept: "Cliente", desc: "CPU em 100% e RAM em 94%. Descubra o que está consumindo os recursos.", theoryTitle: "⚙️ Gerenciador de Tarefas", theory: [
+      "O <strong>Gerenciador de Tarefas</strong> (Ctrl+Shift+Esc) mostra processos em execução e consumo de recursos.",
+      "Na aba <strong>Processos</strong>, você vê CPU, memória, disco e rede por programa.",
+      "Na aba <strong>Desempenho</strong>, você monitora o uso geral do sistema em tempo real.",
+      "Desconfie de processos com nome suspeito ou consumo anormalmente alto de CPU."
+    ], check: () => S.endedProcesses[6666] },
+    { id: 5, icon: "🩺", title: "Diagnóstico técnico", dept: "Qualidade", desc: "Responda ao quiz de diagnóstico para validar seus conhecimentos.", theoryTitle: "🩺 Raciocínio de Diagnóstico", theory: [
+      "1. <strong>Ouça o cliente</strong> — pergunte o que acontecia antes do problema.",
+      "2. <strong>Reproduza</strong> — tente fazer o erro acontecer na sua frente.",
+      "3. <strong>Teste o simples primeiro</strong> — 80% dos problemas se resolvem com reiniciar, verificar cabos ou atualizar drivers.",
+      "4. <strong>Isole o componente</strong> — teste com outro mouse, outra porta, outro monitor."
+    ], check: () => S.tickets[5] },
+  ];
+
+  const QUIZ = [
+    { q: "Qual extensão normalmente representa um programa executável no Windows?", opts: [".jpg", ".mp4", ".exe", ".pdf"], correct: 2, explain: "Arquivos .exe (executáveis) são programas do Windows. Sempre verifique a extensão antes de abrir." },
+    { q: "Qual ferramenta do Windows permite desinstalar programas corretamente?", opts: ["Bloco de Notas", "Gerenciador de Tarefas", "Programas e Recursos", "Windows Explorer"], correct: 2, explain: "Programas e Recursos no Painel de Controle é o local correto para desinstalar programas de forma segura." },
+    { q: "O que significa CPU em 100% no Gerenciador de Tarefas?", opts: ["O computador está desligando", "Um processo está usando toda a capacidade do processador", "A memória RAM está cheia", "O disco está cheio"], correct: 1, explain: "CPU em 100% indica que um ou mais processos estão usando toda a capacidade do processador, causando lentidão." },
+    { q: "Qual o primeiro passo ao diagnosticar 'PC sem som'?", opts: ["Comprar caixas de som novas", "Verificar se o volume está mutado e os cabos conectados", "Formatar o Windows", "Trocar a placa de som"], correct: 1, explain: "Sempre comece pelo mais simples: volume mutado ou cabo solto são as causas mais comuns." },
+  ];
+
+  const S = {
+    openWindows: {},
+    activeWindow: null,
+    zIndex: 50,
+    startOpen: false,
+    selectedIcon: null,
+    contextTarget: null,
+    explorerPath: "Este Computador",
+    explorerFolder: null,
+    clockInterval: null,
+    explorerHistory: ["Este Computador"],
+    explorerHistoryIdx: 0,
+    toastTimer: null,
+    programsUninstalled: {},
+    cleanupChecked: {},
+    cleanupDone: false,
+    installDone: false,
+    processes: [
+      { name: "System", cpu: "2%", mem: "0.5 MB", pid: 4, critical: true },
+      { name: "svchost.exe", cpu: "1%", mem: "8.2 MB", pid: 512, critical: true },
+      { name: "explorer.exe", cpu: "3%", mem: "22 MB", pid: 1204, critical: true },
+      { name: "winlogon.exe", cpu: "0%", mem: "3.1 MB", pid: 624, critical: true },
+      { name: "CryptoMiner.exe", cpu: "87%", mem: "412 MB", pid: 6666, critical: false },
+      { name: "chrome.exe (8)", cpu: "12%", mem: "345 MB", pid: 4012, critical: false },
+      { name: "Spotify.exe", cpu: "6%", mem: "94 MB", pid: 2156, critical: false },
+      { name: "Discord.exe", cpu: "4%", mem: "78 MB", pid: 1884, critical: false },
+      { name: "WINWORD.EXE", cpu: "2%", mem: "45 MB", pid: 2988, critical: false },
+    ],
+    endedProcesses: {},
+    tickets: { 1: false, 2: false, 3: false, 4: false, 5: false },
+    activeTicketId: null,
+    ticketNotifTimer: null,
+    sendingTicket: 0,
+    quizLives: 3,
+    quizIdx: 0,
+    quizCorrect: 0,
+    quizAnswered: false,
+    trainingWinOpen: false,
+    completeShown: false,
+  };
+
+  const FOLDERS = {
+    "Este Computador": { name: "Este Computador", icon: "💻", items: [
+      { name: "Disco Local (C:)", icon: "💾", type: "drive", path: "C:" },
+    ]},
+    "C:": { name: "Disco Local (C:)", icon: "💾", items: [
+      { name: "Arquivos de Programas", icon: "📁", type: "folder", path: "C:\\Program Files" },
+      { name: "Windows", icon: "📁", type: "folder", path: "C:\\Windows" },
+      { name: "Usuários", icon: "📁", type: "folder", path: "C:\\Users" },
+    ]},
+    "C:\\Users": { name: "Usuários", icon: "📁", items: [
+      { name: "Aluno", icon: "👤", type: "folder", path: "C:\\Users\\Aluno" },
+    ]},
+    "C:\\Users\\Aluno": { name: "Aluno", icon: "👤", items: [
+      { name: "Downloads", icon: "📥", type: "folder", path: "C:\\Users\\Aluno\\Downloads" },
+      { name: "Documentos", icon: "📄", type: "folder", path: "C:\\Users\\Aluno\\Documents" },
+      { name: "Imagens", icon: "🖼️", type: "folder", path: "C:\\Users\\Aluno\\Pictures" },
+    ]},
+    "C:\\Users\\Aluno\\Downloads": { name: "Downloads", icon: "📥", items: [
+      { name: "PDFReader_Setup.exe", icon: "📦", type: "file", size: "28 MB" },
+      { name: "Filme.mp4", icon: "🎬", type: "file", size: "12 GB" },
+      { name: "Backup.zip", icon: "🗜️", type: "file", size: "8 GB" },
+      { name: "FotosDuplicadas.zip", icon: "🖼️", type: "file", size: "4 GB" },
+      { name: "InstaladorAntigo.exe", icon: "📦", type: "file", size: "2 GB" },
+      { name: "relatorio_final.pdf", icon: "📕", type: "file", size: "1.8 MB" },
+      { name: "musica_favorita.mp3", icon: "🎵", type: "file", size: "8.4 MB" },
+    ]},
+    "C:\\Users\\Aluno\\Documents": { name: "Documentos", icon: "📄", items: [
+      { name: "Trabalho_Faculdade.docx", icon: "📝", type: "file", size: "2.1 MB" },
+      { name: "Planilha_Orcamento.xlsx", icon: "📊", type: "file", size: "1.4 MB" },
+    ]},
+    "C:\\Users\\Aluno\\Pictures": { name: "Imagens", icon: "🖼️", items: [
+      { name: "Ferias_2025.jpg", icon: "🖼️", type: "file", size: "4.2 MB" },
+    ]},
+  };
+
+  const PROGRAMS_LIST = [
+    { id: "antivirus", name: "Antivirus Legacy v6.2", icon: "🛡️", size: "86 MB" },
+    { id: "office", name: "Microsoft 365", icon: "📘", size: "2.4 GB" },
+    { id: "chrome", name: "Google Chrome", icon: "🌐", size: "285 MB" },
+    { id: "spotify", name: "Spotify", icon: "🎵", size: "210 MB" },
+    { id: "discord", name: "Discord", icon: "💬", size: "195 MB" },
+    { id: "vscode", name: "VS Code", icon: "📝", size: "178 MB" },
+    { id: "winrar", name: "WinRAR", icon: "🗜️", size: "4.8 MB" },
+    { id: "zoom", name: "Zoom", icon: "📹", size: "124 MB" },
+  ];
+
+  const CLEANUP_ITEMS = [
+    { id: "temp", label: "Arquivos Temporários", desc: "Criados pelo sistema", size: "1.2 GB" },
+    { id: "recycle", label: "Lixeira", desc: "Arquivos excluídos", size: "8.4 GB" },
+    { id: "downloads", label: "Pastas de Downloads", desc: "Downloads não utilizados", size: "890 MB" },
+    { id: "cache", label: "Cache do Navegador", desc: "Temporários da web", size: "420 MB" },
+    { id: "oldwindows", label: "Instalação Anterior", desc: "Backup antigo", size: "12 GB" },
+    { id: "updates", label: "Otimização de Entrega", desc: "Atualizações instaladas", size: "680 MB" },
+  ];
+
+  // ==================== HELPERS ====================
+  function updateClock() {
+    const el = container.querySelector(".winlab-clock");
+    if (!el) return;
+    el.textContent = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function focusWindow(id) {
+    if (S.activeWindow && S.activeWindow !== id) {
+      const p = container.querySelector(`.winlab-window[data-win-id="${S.activeWindow}"]`);
+      if (p) p.classList.remove("active-win");
+    }
+    S.activeWindow = id;
+    const w = container.querySelector(`.winlab-window[data-win-id="${id}"]`);
+    if (w) { w.classList.add("active-win"); w.style.zIndex = ++S.zIndex; }
+  }
+
+  function closeWindow(id) {
+    const w = container.querySelector(`.winlab-window[data-win-id="${id}"]`);
+    if (!w) return;
+    w.classList.remove("open"); delete S.openWindows[id];
+    if (S.activeWindow === id) S.activeWindow = null; updateTaskbar();
+  }
+
+  function openWindow(id) {
+    const w = container.querySelector(`.winlab-window[data-win-id="${id}"]`);
+    if (!w) return;
+    if (w.classList.contains("open")) { focusWindow(id); return; }
+    w.classList.add("open"); S.openWindows[id] = true; focusWindow(id); updateTaskbar();
+    if (id === "explorer") renderExplorer();
+    if (id === "taskmgr") renderTaskManager();
+    if (id === "programs") renderPrograms();
+    if (id === "cleanup") renderDiskCleanup();
+    if (id === "training") renderTraining();
+  }
+
+  function updateTaskbar() {
+    const bar = container.querySelector(".winlab-taskbar-items");
+    if (!bar) return;
+    const L = { explorer: "📁 Explorador", taskmgr: "⚙️ Gerenciador", system: "🖥️ Sistema", programs: "📦 Programas", cleanup: "🧹 Limpeza", training: "📘 Treinamento" };
+    const doneCount = Object.values(S.tickets).filter(Boolean).length;
+    bar.innerHTML = Object.keys(S.openWindows).map(id =>
+      `<button class="winlab-taskbar-item ${S.activeWindow === id ? 'active' : ''}" data-win-task="${id}">${L[id] || id}</button>`
+    ).join("");
+    bar.innerHTML += `<span class="winlab-ticket-counter" id="winlab-ticket-info">📋 ${doneCount}/${TICKETS.length}</span>`;
+    bar.querySelectorAll("[data-win-task]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const w = btn.dataset.winTask;
+        if (S.activeWindow === w) { closeWindow(w); return; }
+        openWindow(w); focusWindow(w);
+      });
+    });
+    bar.querySelector("#winlab-ticket-info")?.addEventListener("click", () => showTicketList());
+  }
+
+  function deselectIcons() {
+    container.querySelectorAll(".winlab-icon.selected").forEach(el => el.classList.remove("selected"));
+    S.selectedIcon = null; closeContextMenu();
+  }
+
+  function showContextMenu(x, y, items) {
+    closeContextMenu();
+    const menu = container.querySelector(".winlab-context-menu");
+    if (!menu) return;
+    menu.innerHTML = items.map((item, idx) =>
+      item.divider ? '<div class="winlab-context-divider"></div>' : `<div class="winlab-context-item" data-context-idx="${idx}">${item.icon||''} ${item.label}</div>`
+    ).join("");
+    menu.style.left = Math.min(x, container.offsetWidth - 160) + "px";
+    menu.style.top = Math.min(y, container.offsetHeight - 100) + "px";
+    menu.classList.add("open");
+    menu.querySelectorAll("[data-context-idx]").forEach(el => {
+      el.addEventListener("click", () => { const it = items[parseInt(el.dataset.contextIdx)]; if(it&&it.action)it.action(); closeContextMenu(); });
+    });
+  }
+
+  function closeContextMenu() { const m = container.querySelector(".winlab-context-menu"); if(m)m.classList.remove("open"); }
+
+  function showToast(title, desc) {
+    const t = container.querySelector(".winlab-toast");
+    if (!t) return;
+    if (S.toastTimer) clearTimeout(S.toastTimer);
+    t.querySelector(".winlab-toast-title").textContent = title;
+    t.querySelector(".winlab-toast-desc").textContent = desc;
+    t.classList.add("show");
+    S.toastTimer = setTimeout(() => t.classList.remove("show"), 3000);
+  }
+
+  // ==================== BOOT ====================
+  function showBoot() {
+    const boot = document.createElement("div");
+    boot.className = "winlab-boot";
+    boot.innerHTML = `
+      <div class="winlab-boot-content">
+        <div class="winlab-boot-logo">🖥️</div>
+        <div class="winlab-boot-title">Windows Lab — InforMestre</div>
+        <div class="winlab-boot-subtitle">Plataforma de Treinamento Técnico</div>
+        <div class="winlab-boot-status">Inicializando estação de trabalho...</div>
+        <div class="winlab-boot-bar"><div class="winlab-boot-fill"></div></div>
+        <div class="winlab-boot-userinfo" id="boot-userinfo">
+          <div class="winlab-boot-userinfo-row"><span class="winlab-boot-userinfo-label">Usuário</span><span class="winlab-boot-userinfo-value">João Silva</span></div>
+          <div class="winlab-boot-userinfo-row"><span class="winlab-boot-userinfo-label">Cargo</span><span class="winlab-boot-userinfo-value">Técnico de Suporte</span></div>
+          <div class="winlab-boot-userinfo-row"><span class="winlab-boot-userinfo-label">Departamento</span><span class="winlab-boot-userinfo-value">TI</span></div>
+        </div>
+        <div class="winlab-boot-welcome" id="boot-welcome">✅ Bem-vindo ao laboratório. Chamados pendentes: 5.</div>
+      </div>`;
+    container.appendChild(boot);
+
+    setTimeout(() => {
+      boot.querySelector(".winlab-boot-fill").style.width = "40%";
+      boot.querySelector(".winlab-boot-status").textContent = "Carregando módulos do sistema...";
+    }, 400);
+    setTimeout(() => {
+      boot.querySelector(".winlab-boot-fill").style.width = "75%";
+      boot.querySelector(".winlab-boot-status").textContent = "Preparando ambiente de trabalho...";
+    }, 900);
+    setTimeout(() => {
+      boot.querySelector(".winlab-boot-fill").style.width = "100%";
+      boot.querySelector(".winlab-boot-status").textContent = "Autenticando...";
+    }, 1500);
+    setTimeout(() => {
+      boot.querySelector("#boot-userinfo").classList.add("show");
+    }, 2000);
+    setTimeout(() => {
+      boot.querySelector("#boot-welcome").classList.add("show");
+    }, 2800);
+    setTimeout(() => {
+      boot.remove();
+      buildDesktop();
+      afterDesktop();
+    }, 3600);
+  }
+
+  // ==================== DESKTOP ====================
+  function buildDesktop() {
+    container.innerHTML = `
+    <div class="winlab" id="winlab-desktop">
+      <div class="winlab-icons" id="winlab-icons">
+        <div class="winlab-icon" data-icon="computer"><div class="winlab-icon-img">💻</div><div class="winlab-icon-label">Este Computador</div></div>
+        <div class="winlab-icon" data-icon="downloads"><div class="winlab-icon-img">📥</div><div class="winlab-icon-label">Downloads</div></div>
+        <div class="winlab-icon" data-icon="recycle"><div class="winlab-icon-img">🗑️</div><div class="winlab-icon-label">Lixeira</div></div>
+        <div class="winlab-icon" data-icon="system"><div class="winlab-icon-img">⚙️</div><div class="winlab-icon-label">Sistema</div></div>
+        <div class="winlab-icon" data-icon="programs"><div class="winlab-icon-img">📦</div><div class="winlab-icon-label">Programas</div></div>
+        <div class="winlab-icon" data-icon="tickets"><div class="winlab-icon-img">📋</div><div class="winlab-icon-label">Chamados</div></div>
+      </div>
+      <div class="winlab-context-menu"></div>
+      <div class="winlab-quiz-overlay" id="winlab-quiz-overlay"><div class="winlab-quiz-modal" id="winlab-quiz-modal"></div></div>
+      <div class="winlab-complete-overlay" id="winlab-complete-overlay"><div class="winlab-complete-modal" id="winlab-complete-modal"></div></div>
+      <div class="winlab-installer-overlay" id="winlab-installer-overlay">
+        <div class="winlab-installer-window" id="winlab-installer-window"></div>
+      </div>
+      <div class="winlab-toast"><div class="winlab-toast-title"></div><div class="winlab-toast-desc"></div></div>
+      <div class="winlab-ticket-notif" id="winlab-ticket-notif"></div>
+
+      <div class="winlab-window" data-win-id="explorer" style="width:420px;height:300px;top:30px;left:30px;">
+        <div class="winlab-win-header">
+          <div class="winlab-win-title">📁 Explorador de Arquivos</div>
+          <div class="winlab-win-controls"><button class="winlab-win-btn winlab-win-min" data-win-min="explorer"></button><button class="winlab-win-btn winlab-win-max" data-win-close="explorer"></button><button class="winlab-win-btn winlab-win-close" data-win-close="explorer"></button></div>
+        </div>
+        <div class="winlab-win-body"></div>
+      </div>
+      <div class="winlab-window" data-win-id="taskmgr" style="width:400px;height:320px;top:80px;left:80px;">
+        <div class="winlab-win-header">
+          <div class="winlab-win-title">⚙️ Gerenciador de Tarefas</div>
+          <div class="winlab-win-controls"><button class="winlab-win-btn winlab-win-min" data-win-min="taskmgr"></button><button class="winlab-win-btn winlab-win-max" data-win-close="taskmgr"></button><button class="winlab-win-btn winlab-win-close" data-win-close="taskmgr"></button></div>
+        </div>
+        <div class="winlab-win-body"></div>
+      </div>
+      <div class="winlab-window" data-win-id="system" style="width:360px;height:260px;top:130px;left:130px;">
+        <div class="winlab-win-header">
+          <div class="winlab-win-title">🖥️ Sistema</div>
+          <div class="winlab-win-controls"><button class="winlab-win-btn winlab-win-min" data-win-min="system"></button><button class="winlab-win-btn winlab-win-max" data-win-close="system"></button><button class="winlab-win-btn winlab-win-close" data-win-close="system"></button></div>
+        </div>
+        <div class="winlab-win-body"><div class="winlab-sysprop-grid">
+          <div class="winlab-sysprop-label">Edição</div><div class="winlab-sysprop-value">Windows 11 Pro</div>
+          <div class="winlab-sysprop-label">Versão</div><div class="winlab-sysprop-value">23H2</div>
+          <div class="winlab-sysprop-label">Processador</div><div class="winlab-sysprop-value">Intel Core i5-13400F, 2.50 GHz</div>
+          <div class="winlab-sysprop-label">RAM</div><div class="winlab-sysprop-value">16,0 GB</div>
+          <div class="winlab-sysprop-label">Tipo</div><div class="winlab-sysprop-value">64 bits</div>
+          <div class="winlab-sysprop-label">Dispositivo</div><div class="winlab-sysprop-value">DESKTOP-INFOMESTRE</div>
+          <div class="winlab-sysprop-label">Armazenamento</div><div class="winlab-sysprop-value">SSD 512 GB</div>
+        </div></div>
+      </div>
+      <div class="winlab-window" data-win-id="programs" style="width:380px;height:340px;top:180px;left:80px;">
+        <div class="winlab-win-header">
+          <div class="winlab-win-title">📦 Programas e Recursos</div>
+          <div class="winlab-win-controls"><button class="winlab-win-btn winlab-win-min" data-win-min="programs"></button><button class="winlab-win-btn winlab-win-max" data-win-close="programs"></button><button class="winlab-win-btn winlab-win-close" data-win-close="programs"></button></div>
+        </div>
+        <div class="winlab-win-body"></div>
+      </div>
+      <div class="winlab-window" data-win-id="cleanup" style="width:400px;height:360px;top:50px;left:200px;">
+        <div class="winlab-win-header">
+          <div class="winlab-win-title">🧹 Limpeza de Disco</div>
+          <div class="winlab-win-controls"><button class="winlab-win-btn winlab-win-min" data-win-min="cleanup"></button><button class="winlab-win-btn winlab-win-max" data-win-close="cleanup"></button><button class="winlab-win-btn winlab-win-close" data-win-close="cleanup"></button></div>
+        </div>
+        <div class="winlab-win-body"></div>
+      </div>
+      <div class="winlab-window" data-win-id="training" style="width:440px;height:380px;top:60px;left:60px;">
+        <div class="winlab-win-header">
+          <div class="winlab-win-title" id="training-title">📘 Central de Treinamento</div>
+          <div class="winlab-win-controls"><button class="winlab-win-btn winlab-win-min" data-win-min="training"></button><button class="winlab-win-btn winlab-win-close" data-win-close="training"></button></div>
+        </div>
+        <div class="winlab-win-body" id="training-body"></div>
+      </div>
+
+      <div class="winlab-start-menu" id="winlab-start-menu">
+        <div class="winlab-start-header">🪟 Iniciar</div>
+        <div class="winlab-start-item" data-start-app="explorer"><span class="winlab-start-item-icon">📁</span><span class="winlab-start-item-label">Explorador de Arquivos</span></div>
+        <div class="winlab-start-item" data-start-app="taskmgr"><span class="winlab-start-item-icon">⚙️</span><span class="winlab-start-item-label">Gerenciador de Tarefas</span></div>
+        <div class="winlab-start-item" data-start-app="system"><span class="winlab-start-item-icon">🖥️</span><span class="winlab-start-item-label">Sistema</span></div>
+        <div class="winlab-start-item" data-start-app="programs"><span class="winlab-start-item-icon">📦</span><span class="winlab-start-item-label">Programas</span></div>
+        <div class="winlab-start-item" data-start-app="cleanup"><span class="winlab-start-item-icon">🧹</span><span class="winlab-start-item-label">Limpeza de Disco</span></div>
+        <div class="winlab-start-divider"></div>
+        <div class="winlab-start-item" data-start-app="tickets"><span class="winlab-start-item-icon">📋</span><span class="winlab-start-item-label">Central de Chamados</span></div>
+        <div class="winlab-start-item" data-start-app="notepad"><span class="winlab-start-item-icon">📄</span><span class="winlab-start-item-label">Bloco de Notas</span></div>
+        <div class="winlab-start-item" data-start-app="calc"><span class="winlab-start-item-icon">🧮</span><span class="winlab-start-item-label">Calculadora</span></div>
+      </div>
+
+      <div class="winlab-taskbar">
+        <button class="winlab-start-btn" id="winlab-start-btn"><span style="font-size:16px;">🪟</span> Iniciar</button>
+        <div class="winlab-taskbar-divider"></div>
+        <div class="winlab-taskbar-items" style="display:flex;gap:2px;flex:1;"></div>
+        <div class="winlab-tray"><span>🔊</span><span>🔌</span><button class="winlab-expand-btn" id="winlab-expand-btn" title="Expandir simulador">⛶</button><span class="winlab-clock">--:--</span></div>
+      </div>
+      <button class="winlab-exit-expand" id="winlab-exit-expand">✕ Fechar tela expandida</button>
+      </div>
+    </div>`;
+
+    // Event Binding
+    updateClock(); S.clockInterval = setInterval(updateClock, 10000);
+
+    container.querySelectorAll(".winlab-icon").forEach(icon => {
+      icon.addEventListener("click", (e) => { e.stopPropagation(); deselectIcons(); icon.classList.add("selected"); S.selectedIcon = icon.dataset.icon; });
+      icon.addEventListener("dblclick", () => {
+        switch (icon.dataset.icon) {
+          case "computer": navigateTo("Este Computador"); openWindow("explorer"); break;
+          case "downloads": navigateTo("C:\\Users\\Aluno\\Downloads"); openWindow("explorer"); break;
+          case "system": openWindow("system"); break;
+          case "programs": openWindow("programs"); break;
+          case "tickets": showTicketList(); break;
+          case "recycle": showToast("🗑️ Lixeira", "Contém arquivos. Use Limpeza de Disco."); break;
+        }
+      });
+      icon.addEventListener("contextmenu", (e) => { e.preventDefault(); const r=container.getBoundingClientRect(); const m={computer:[{label:"Abrir",icon:"▶️",action:()=>{navigateTo("Este Computador");openWindow("explorer");}},{label:"Propriedades",icon:"ℹ️",action:()=>openWindow("system")}],downloads:[{label:"Abrir",icon:"▶️",action:()=>{navigateTo("C:\\Users\\Aluno\\Downloads");openWindow("explorer");}}]}; showContextMenu(e.clientX-r.left, e.clientY-r.top, m[icon.dataset.icon]||[{label:"Abrir",icon:"▶️",action:()=>{}}]); });
+    });
+    container.querySelector("#winlab-icons").addEventListener("click", (e) => { if(e.target===e.currentTarget) deselectIcons(); });
+
+    const startBtn = container.querySelector("#winlab-start-btn");
+    const startMenuEl = container.querySelector("#winlab-start-menu");
+    startBtn.addEventListener("click", (e) => { e.stopPropagation(); S.startOpen=!S.startOpen; startMenuEl.classList.toggle("open",S.startOpen); });
+    container.addEventListener("click", (e) => { if(S.startOpen&&!e.target.closest("#winlab-start-menu")&&!e.target.closest("#winlab-start-btn")){S.startOpen=false;startMenuEl.classList.remove("open");} closeContextMenu(); });
+    container.querySelectorAll("[data-start-app]").forEach(item => {
+      item.addEventListener("click", () => {
+        S.startOpen=false;startMenuEl.classList.remove("open");
+        switch(item.dataset.startApp){
+          case "explorer": openWindow("explorer"); break;
+          case "taskmgr": openWindow("taskmgr"); break;
+          case "system": openWindow("system"); break;
+          case "programs": openWindow("programs"); break;
+          case "cleanup": openWindow("cleanup"); break;
+          case "tickets": showTicketList(); break;
+          case "notepad": showToast("📄 Bloco de Notas", "Use para anotações."); break;
+          case "calc": showToast("🧮 Calculadora", "Abrindo..."); break;
+        }
+      });
+    });
+    container.querySelectorAll("[data-win-close]").forEach(btn => btn.addEventListener("click",()=>closeWindow(btn.dataset.winClose)));
+    container.querySelectorAll("[data-win-min]").forEach(btn => { btn.addEventListener("click",()=>{const w=container.querySelector(`.winlab-window[data-win-id="${btn.dataset.winMin}"]`); if(w){w.classList.remove("open");delete S.openWindows[btn.dataset.winMin];updateTaskbar();}}); });
+
+    container.querySelectorAll(".winlab-window").forEach(win => win.addEventListener("mousedown",()=>focusWindow(win.dataset.winId)));
+    container.addEventListener("click", (e) => { const eb=e.target.closest("[data-tm-end]"); if(eb){const p=S.processes.find(x=>x.pid===parseInt(eb.dataset.tmEnd)); if(p){S.endedProcesses[p.pid]=true;showToast("Finalizado",`${p.name} encerrado.`);renderTaskManager();checkTickets();}} });
+    container.querySelector("#winlab-icons").addEventListener("contextmenu", (e) => { e.preventDefault();const r=container.getBoundingClientRect();showContextMenu(e.clientX-r.left,e.clientY-r.top,[{label:"Novo ▶ Pasta",icon:"📁",action:()=>showToast("Pasta","Criada.")},{label:"Novo ▶ Documento",icon:"📄",action:()=>showToast("Documento","Criado.")}]); });
+    container.setAttribute("tabindex","0");
+
+    // Expand fullscreen toggle
+    const winlabEl = container.querySelector("#winlab-desktop");
+    const expandBtn = container.querySelector("#winlab-expand-btn");
+    const exitBtn = container.querySelector("#winlab-exit-expand");
+    if (expandBtn) expandBtn.addEventListener("click", () => {
+      if (winlabEl) { winlabEl.classList.add("winlab-expanded"); if (exitBtn) exitBtn.style.display = "block"; }
+    });
+    if (exitBtn) exitBtn.addEventListener("click", () => {
+      if (winlabEl) { winlabEl.classList.remove("winlab-expanded"); exitBtn.style.display = "none"; }
+    });
+    document.addEventListener("keydown", function escHandler(e) {
+      if (e.key === "Escape" && winlabEl?.classList.contains("winlab-expanded")) {
+        winlabEl.classList.remove("winlab-expanded");
+        if (exitBtn) exitBtn.style.display = "none";
+      }
+    });
+  }
+
+  // ==================== BASTIDORES DO COMPUTADOR ====================
+  function showBastidoresChapter() {
+    const overlay = container.querySelector("#winlab-complete-overlay");
+    const modal = container.querySelector("#winlab-complete-modal");
+    if (!overlay || !modal) return;
+    let slide = 0;
+    let exerciseAnswered = {};
+
+    function render() {
+      overlay.classList.add("active");
+      if (slide === 0) {
+        modal.innerHTML = `
+          <div style="text-align:center;">
+            <div style="font-size:1.8rem;margin-bottom:4px;">📦</div>
+            <div class="winlab-complete-title" style="font-size:1rem;">O que acontece quando você instala um programa?</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);line-height:1.6;margin:8px 0;text-align:left;">
+              <p style="margin:4px 0;">Nos bastidores, a instalação segue um processo organizado:</p>
+              <ul style="padding-left:16px;">
+                <li><strong>Criação de pastas</strong> — o instalador cria uma pasta dentro de <em>C:\\Program Files</em> com o nome do programa.</li>
+                <li><strong>Cópia de arquivos</strong> — centenas de arquivos (executáveis, bibliotecas DLL, configurações) são copiados para essa pasta.</li>
+                <li><strong>Registro no sistema</strong> — o programa se registra no <em>Registry</em> do Windows, informando onde está e como deve ser executado.</li>
+                <li><strong>Criação de atalhos</strong> — um atalho aparece no Menu Iniciar e, opcionalmente, na Área de Trabalho.</li>
+                <li><strong>Inicialização automática</strong> — alguns programas se configuram para iniciar com o Windows (atenção: isso deixa o computador mais lento).</li>
+              </ul>
+            </div>
+            <div style="display:flex;justify-content:center;align-items:center;gap:4px;font-size:0.75rem;color:rgba(255,255,255,0.4);flex-wrap:wrap;margin-bottom:8px;">
+              <span style="background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px;">📥 Download</span> <span style="color:#6366f1;">→</span>
+              <span style="background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px;">⚙️ Instalação</span> <span style="color:#6366f1;">→</span>
+              <span style="background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px;">📂 Arquivos copiados</span> <span style="color:#6366f1;">→</span>
+              <span style="background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px;">🖥️ Atalho criado</span> <span style="color:#6366f1;">→</span>
+              <span style="background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px;">🚀 Funcionando</span>
+            </div>
+            <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.15);border-radius:6px;padding:8px;margin-bottom:8px;font-size:0.74rem;color:rgba(255,255,255,0.6);">
+              💡 <strong>Curiosidade:</strong> Muitos programas continuam executando processos em segundo plano mesmo quando parecem estar fechados. É por isso que o Gerenciador de Tarefas às vezes mostra programas que você nem abriu.
+            </div>
+            <button class="winlab-complete-btn" id="bastidores-next-btn">Próximo →</button>
+          </div>`;
+      } else if (slide === 1) {
+        const opts = ["📁 Área de Trabalho", "📥 Downloads", "📄 Documentos", "🗑️ Lixeira"];
+        const correct = 1;
+        const ans = exerciseAnswered[1];
+        modal.innerHTML = `
+          <div style="text-align:center;">
+            <div style="font-size:1.8rem;margin-bottom:4px;">📂</div>
+            <div class="winlab-complete-title" style="font-size:0.95rem;">Como o Windows encontra seus arquivos?</div>
+            <div style="text-align:left;font-size:0.78rem;color:rgba(255,255,255,0.6);line-height:1.6;margin:6px 0 8px;">
+              O Windows organiza seus arquivos em pastas-padrão dentro do disco C:.
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;">
+              <div style="background:rgba(99,102,241,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:6px 8px;font-size:0.74rem;text-align:left;">📁 <strong>Área de Trabalho</strong><br><span style="color:rgba(255,255,255,0.3);">C:\\Users\\Aluno\\Desktop</span></div>
+              <div style="background:rgba(99,102,241,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:6px 8px;font-size:0.74rem;text-align:left;">📥 <strong>Downloads</strong><br><span style="color:rgba(255,255,255,0.3);">C:\\Users\\Aluno\\Downloads</span></div>
+              <div style="background:rgba(99,102,241,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:6px 8px;font-size:0.74rem;text-align:left;">📄 <strong>Documentos</strong><br><span style="color:rgba(255,255,255,0.3);">C:\\Users\\Aluno\\Documents</span></div>
+              <div style="background:rgba(99,102,241,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:6px 8px;font-size:0.74rem;text-align:left;">🖼️ <strong>Imagens</strong><br><span style="color:rgba(255,255,255,0.3);">C:\\Users\\Aluno\\Pictures</span></div>
+            </div>
+            <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);border-radius:6px;padding:8px;margin-bottom:8px;text-align:left;font-size:0.78rem;">
+              <strong style="color:#fbbf24;">🧪 Exercício rápido:</strong>
+              <p style="color:rgba(255,255,255,0.7);margin:4px 0 6px;">O funcionário perdeu o arquivo <strong>vendas_julho.xlsx</strong>. Onde você procuraria primeiro?</p>
+              ${opts.map((o,i)=>`<div class="bastidores-exercise-opt ${ans===i?'selected':''}" data-ex-opt="${i}" style="padding:6px 10px;margin:3px 0;border-radius:5px;border:1px solid ${ans===i?'#818cf8':'rgba(255,255,255,0.08)'};background:${ans===i?'rgba(99,102,241,0.12)':'rgba(255,255,255,0.03)'};cursor:pointer;font-size:0.78rem;color:${ans===i?'#818cf8':'rgba(255,255,255,0.7)'};">${o}</div>`).join("")}
+              ${ans !== undefined ? `<div style="margin-top:6px;padding:8px;border-radius:6px;background:${ans===correct?'rgba(16,185,129,0.1)':'rgba(239,68,68,0.1)'};border:1px solid ${ans===correct?'rgba(16,185,129,0.2)':'rgba(239,68,68,0.2)'};font-size:0.74rem;color:${ans===correct?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.7)'};text-align:left;">${ans===correct?'✅ Correto!':'❌ Não é por aí.'} ${ans===correct?'Arquivos baixados recentemente ficam em Downloads. Se ele baixou o arquivo por e-mail ou sistema, provavelmente está lá.':'Pense: se o arquivo foi baixado recentemente, a pasta Downloads é o local mais provável.'}</div>` : ''}
+            </div>
+            ${ans === undefined ? `<button class="winlab-complete-btn" id="bastidores-opt-btn" style="background:#6366f1;" disabled>Confirme uma opção primeiro</button>` : `<button class="winlab-complete-btn" id="bastidores-next-btn">${slide < 6 ? 'Próximo →' : '📜 Ver resumo da aula'}</button>`}
+          </div>`;
+        if (ans === undefined) {
+          modal.querySelectorAll("[data-ex-opt]").forEach(el => el.addEventListener("click", () => {
+            const val = parseInt(el.dataset.exOpt);
+            exerciseAnswered[1] = val;
+            render();
+          }));
+        }
+      } else if (slide === 2) {
+        modal.innerHTML = `
+          <div style="text-align:center;">
+            <div style="font-size:1.8rem;margin-bottom:4px;">🐌</div>
+            <div class="winlab-complete-title" style="font-size:0.95rem;">O que deixa um computador lento?</div>
+            <div style="text-align:left;font-size:0.78rem;color:rgba(255,255,255,0.6);line-height:1.6;margin:6px 0 8px;">
+              A lentidão raramente tem uma causa única. Geralmente é uma combinação de fatores. Veja os mais comuns:
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;">
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.12);border-radius:6px;padding:7px 10px;text-align:left;font-size:0.76rem;">
+                <span style="font-size:1.1rem;">🧠</span>
+                <div><strong style="color:#ef4444;">Pouca RAM</strong><br><span style="color:rgba(255,255,255,0.45);">O sistema fica "pensando" ao alternar entre janelas. Solução: feche programas não usados ou aumente a memória.</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);border-radius:6px;padding:7px 10px;text-align:left;font-size:0.76rem;">
+                <span style="font-size:1.1rem;">💾</span>
+                <div><strong style="color:#fbbf24;">Disco cheio</strong><br><span style="color:rgba(255,255,255,0.45);">Menos de 15% de espaço livre trava o sistema. Solução: limpeza de disco e desinstalar programas.</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.12);border-radius:6px;padding:7px 10px;text-align:left;font-size:0.76rem;">
+                <span style="font-size:1.1rem;">🔄</span>
+                <div><strong style="color:#818cf8;">Muitos programas abertos</strong><br><span style="color:rgba(255,255,255,0.45);">Cada aba do Chrome consome RAM. Solução: feche o que não estiver usando.</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.12);border-radius:6px;padding:7px 10px;text-align:left;font-size:0.76rem;">
+                <span style="font-size:1.1rem;">🚀</span>
+                <div><strong style="color:#10b981;">Programas iniciando automaticamente</strong><br><span style="color:rgba(255,255,255,0.45);">Muitos programas se ativam na inicialização. Solução: desative no Gerenciador de Tarefas > Inicializar.</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:6px;padding:7px 10px;text-align:left;font-size:0.76rem;">
+                <span style="font-size:1.1rem;">🦠</span>
+                <div><strong style="color:#8b5cf6;">Malware</strong><br><span style="color:rgba(255,255,255,0.45);">Vírus e miners consomem CPU sem você perceber. Solução: antivírus + Gerenciador de Tarefas.</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(244,114,182,0.06);border:1px solid rgba(244,114,182,0.12);border-radius:6px;padding:7px 10px;text-align:left;font-size:0.76rem;">
+                <span style="font-size:1.1rem;">🌡️</span>
+                <div><strong style="color:#f472b6;">Superaquecimento</strong><br><span style="color:rgba(255,255,255,0.45);">Poeira bloqueia ventoinhas. O computador reduz performance para não queimar. Solução: limpeza física.</span></div>
+              </div>
+            </div>
+            <button class="winlab-complete-btn" id="bastidores-next-btn">Próximo →</button>
+          </div>`;
+      } else if (slide === 3) {
+        modal.innerHTML = `
+          <div style="text-align:center;">
+            <div style="font-size:1.8rem;margin-bottom:4px;">🔍</div>
+            <div class="winlab-complete-title" style="font-size:0.95rem;">Como pensa um técnico? — Método dos 5 Passos</div>
+            <div style="text-align:left;font-size:0.78rem;color:rgba(255,255,255,0.6);line-height:1.5;margin:6px 0;">
+              Um bom técnico não chuta soluções. Ele segue um <strong>método lógico</strong>:
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;">
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.1);border-radius:6px;padding:6px 10px;text-align:left;font-size:0.76rem;">
+                <span style="background:#6366f1;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">1</span>
+                <span><strong>Observar</strong> — qual é o sintoma? O usuário diz o quê?</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.1);border-radius:6px;padding:6px 10px;text-align:left;font-size:0.76rem;">
+                <span style="background:#6366f1;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">2</span>
+                <span><strong>Perguntar</strong> — o que acontecia antes? Quando começou?</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.1);border-radius:6px;padding:6px 10px;text-align:left;font-size:0.76rem;">
+                <span style="background:#6366f1;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">3</span>
+                <span><strong>Testar hipóteses</strong> — será que é o cabo? O Wi-Fi? O site?</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.1);border-radius:6px;padding:6px 10px;text-align:left;font-size:0.76rem;">
+                <span style="background:#6366f1;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">4</span>
+                <span><strong>Corrigir</strong> — aplicou a solução. Funcionou?</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.1);border-radius:6px;padding:6px 10px;text-align:left;font-size:0.76rem;">
+                <span style="background:#6366f1;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0;">5</span>
+                <span><strong>Validar</strong> — o problema voltou? O usuário confirmou?</span>
+              </div>
+            </div>
+            <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.12);border-radius:6px;padding:8px;margin-bottom:8px;text-align:left;font-size:0.76rem;">
+              <strong style="color:#10b981;">🧪 Exemplo real — "Sem internet"</strong>
+              <p style="color:rgba(255,255,255,0.55);margin:4px 0 0;">
+                1. Observar: o navegador diz "sem conexão"<br>
+                2. Perguntar: outros dispositivos funcionam? O roteador está ligado?<br>
+                3. Testar: ping no Google, verificar cabo, reiniciar roteador<br>
+                4. Corrigir: religar o roteador ou trocar o cabo<br>
+                5. Validar: a internet voltou? O usuário está satisfeito?
+              </p>
+            </div>
+            <button class="winlab-complete-btn" id="bastidores-next-btn">Próximo →</button>
+          </div>`;
+      } else if (slide === 4) {
+        const situations = [
+          { text: "Recebeu um e-mail com anexo 'fatura.exe' de remetente desconhecido", risk: true, reason: "Arquivos .exe em e-mails são a forma mais comum de espalhar malwares. Nunca abra." },
+          { text: "Alguém da TI pediu sua senha por telefone para fazer uma atualização", risk: true, reason: "Nenhum profissional de TI pede sua senha. Isso é golpe de engenharia social." },
+          { text: "O Windows pediu para instalar atualizações de segurança", risk: false, reason: "Atualizações de segurança são essenciais. Sempre instale quando solicitado." },
+          { text: "Um colega pediu para você copiar um programa que ele instalou no pendrive", risk: true, reason: "Programas copiados podem vir com malwares. Sempre instale da fonte oficial." },
+          { text: "Você configurou o backup automático dos arquivos para um HD externo", risk: false, reason: "Backup regular é a prática mais importante para não perder dados." },
+        ];
+        const s = exerciseAnswered[4] || 0;
+        const cur = situations[s];
+        const ans = exerciseAnswered[`4_${s}`];
+        modal.innerHTML = `
+          <div style="text-align:center;">
+            <div style="font-size:1.8rem;margin-bottom:4px;">🔒</div>
+            <div class="winlab-complete-title" style="font-size:0.95rem;">Segurança digital — Identifique os riscos</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);margin:4px 0 8px;">Analise a situação e diga se é um <strong style="color:#ef4444;">risco</strong> ou <strong style="color:#10b981;">seguro</strong>.</div>
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px;margin-bottom:8px;text-align:left;font-size:0.8rem;color:rgba(255,255,255,0.8);">
+              "${cur.text}"
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:6px;">
+              <button class="bastidores-risk-btn" id="bastidores-risk-yes" style="flex:1;padding:8px;border-radius:6px;border:1px solid ${ans===true?'rgba(239,68,68,0.4)':'rgba(255,255,255,0.1)'};background:${ans===true?'rgba(239,68,68,0.12)':'rgba(255,255,255,0.03)'};color:${ans===true?'#ef4444':'rgba(255,255,255,0.5)'};cursor:pointer;font-size:0.8rem;font-family:inherit;">🚨 É um risco</button>
+              <button class="bastidores-risk-btn" id="bastidores-risk-no" style="flex:1;padding:8px;border-radius:6px;border:1px solid ${ans===false?'rgba(16,185,129,0.4)':'rgba(255,255,255,0.1)'};background:${ans===false?'rgba(16,185,129,0.12)':'rgba(255,255,255,0.03)'};color:${ans===false?'#10b981':'rgba(255,255,255,0.5)'};cursor:pointer;font-size:0.8rem;font-family:inherit;">✅ É seguro</button>
+            </div>
+            ${ans !== undefined ? `<div style="margin-bottom:6px;padding:8px;border-radius:6px;background:${ans===cur.risk?'rgba(16,185,129,0.1)':'rgba(239,68,68,0.1)'};border:1px solid ${ans===cur.risk?'rgba(16,185,129,0.2)':'rgba(239,68,68,0.2)'};font-size:0.74rem;text-align:left;"><strong>${ans===cur.risk?'✅ Correto!':'❌ Na verdade é um risco'}</strong><br>${cur.reason}</div>` : ''}
+            ${ans !== undefined ? `<button class="winlab-complete-btn" id="bastidores-next-btn">${s < situations.length - 1 ? 'Próxima situação →' : 'Próximo →'}</button>` : `<button class="winlab-complete-btn" id="bastidores-next-btn" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.3);" disabled>Responda primeiro</button>`}
+          </div>`;
+        // Dynamic binding for risk buttons
+        const yesBtn = modal.querySelector("#bastidores-risk-yes");
+        const noBtn = modal.querySelector("#bastidores-risk-no");
+        if (yesBtn && ans === undefined) yesBtn.addEventListener("click", () => { exerciseAnswered[`4_${s}`] = true; render(); });
+        if (noBtn && ans === undefined) noBtn.addEventListener("click", () => { exerciseAnswered[`4_${s}`] = false; render(); });
+        // Bind next to advance situation
+        const nextBtn = modal.querySelector("#bastidores-next-btn");
+        if (nextBtn && ans !== undefined) {
+          if (s < situations.length - 1) {
+            nextBtn.addEventListener("click", () => { exerciseAnswered[4] = s + 1; render(); });
+          } else {
+            nextBtn.addEventListener("click", () => { slide = 5; render(); });
+          }
+        }
+        return;
+      } else if (slide === 5) {
+        modal.innerHTML = `
+          <div style="text-align:center;">
+            <div style="font-size:1.8rem;margin-bottom:4px;">💼</div>
+            <div class="winlab-complete-title" style="font-size:0.95rem;">Profissões da área de tecnologia</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:8px 0;">
+              <div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.12);border-radius:6px;padding:7px;text-align:left;font-size:0.72rem;">
+                <span style="font-size:1rem;">👨‍💻</span> <strong style="color:#818cf8;">Técnico de Suporte</strong><br>
+                <span style="color:rgba(255,255,255,0.45);">Atende chamados, instala software, diagnostica problemas.</span>
+              </div>
+              <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.12);border-radius:6px;padding:7px;text-align:left;font-size:0.72rem;">
+                <span style="font-size:1rem;">🖥️</span> <strong style="color:#10b981;">Analista de TI</strong><br>
+                <span style="color:rgba(255,255,255,0.45);">Gerencia servidores, redes e infraestrutura da empresa.</span>
+              </div>
+              <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);border-radius:6px;padding:7px;text-align:left;font-size:0.72rem;">
+                <span style="font-size:1rem;">🌐</span> <strong style="color:#fbbf24;">Admin. de Redes</strong><br>
+                <span style="color:rgba(255,255,255,0.45);">Configura roteadores, firewalls e mantém a rede funcionando.</span>
+              </div>
+              <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.12);border-radius:6px;padding:7px;text-align:left;font-size:0.72rem;">
+                <span style="font-size:1rem;">⚙️</span> <strong style="color:#ef4444;">Téc. Automação</strong><br>
+                <span style="color:rgba(255,255,255,0.45);">Trabalha com sensores, CLPs e sistemas industriais.</span>
+              </div>
+              <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:6px;padding:7px;text-align:left;font-size:0.72rem;grid-column:1/-1;">
+                <span style="font-size:1rem;">🔒</span> <strong style="color:#8b5cf6;">Esp. Segurança Digital</strong><br>
+                <span style="color:rgba(255,255,255,0.45);">Protege empresas contra ataques cibernéticos, gerencia firewalls e responde a incidentes.</span>
+              </div>
+            </div>
+            <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);border-radius:6px;padding:8px;margin-bottom:8px;font-size:0.74rem;color:rgba(255,255,255,0.6);">
+              💡 <em>"Todo profissional da tecnologia começou aprendendo exatamente os fundamentos estudados neste módulo."</em>
+            </div>
+            <button class="winlab-complete-btn" id="bastidores-next-btn">Próximo →</button>
+          </div>`;
+      } else if (slide === 6) {
+        modal.innerHTML = `
+          <div style="text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:6px;">🔒</div>
+            <div class="winlab-complete-title" style="font-size:1rem;">Preparação para a Missão Final</div>
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.7);line-height:1.5;margin:6px 0 10px;">
+              Na <strong>Aula 8</strong>, você enfrentará o desafio final do Módulo 1.<br>
+              Precisará utilizar <strong>todos</strong> os conhecimentos adquiridos desde a Aula 1.
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:10px;">
+              <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:6px;padding:6px;font-size:0.7rem;color:#10b981;">✅ Hardware</div>
+              <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:6px;padding:6px;font-size:0.7rem;color:#10b981;">✅ Periféricos</div>
+              <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:6px;padding:6px;font-size:0.7rem;color:#10b981;">✅ Windows</div>
+              <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:6px;padding:6px;font-size:0.7rem;color:#10b981;">✅ Arquivos</div>
+              <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:6px;padding:6px;font-size:0.7rem;color:#10b981;">✅ Manutenção</div>
+              <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:6px;padding:6px;font-size:0.7rem;color:#10b981;">✅ Suporte</div>
+            </div>
+            <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:10px;margin-bottom:8px;">
+              <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">Progresso do Módulo 1</div>
+              <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                <div style="height:100%;width:87%;background:linear-gradient(90deg,#6366f1,#10b981);border-radius:3px;"></div>
+              </div>
+              <div style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:4px;">7 de 8 aulas concluídas — falta apenas a certificação!</div>
+            </div>
+            <p style="font-size:0.85rem;color:rgba(255,255,255,0.8);margin:0 0 10px;font-weight:700;">Você está pronto para provar que domina os fundamentos da informática?</p>
+            <button class="winlab-complete-btn" id="bastidores-next-btn" style="background:linear-gradient(90deg,#6366f1,#10b981);">📜 Ver resumo da aula</button>
+          </div>`;
+      }
+
+      // Navigation
+      const nextBtn = modal.querySelector("#bastidores-next-btn");
+      if (nextBtn) nextBtn.addEventListener("click", () => {
+        if (slide < 6) { slide++; render(); }
+        else {
+          overlay.classList.remove("active");
+          if (typeof window.goToSlide === "function" && typeof window.currentPage === "number") {
+            window.goToSlide(window.currentPage + 1);
+          }
+        }
+      });
+    }
+    slide = 0;
+    exerciseAnswered = {};
+    render();
+  }
+
+  // ==================== EXPLORER RENDERERS ====================
+  function renderExplorer() {
+    const body = container.querySelector(".winlab-window[data-win-id='explorer'] .winlab-win-body");
+    if (!body) return;
+    const folder = FOLDERS[S.explorerPath];
+    const items = folder ? folder.items : [];
+    body.innerHTML = `
+      <div class="winlab-explorer-breadcrumb">${S.explorerPath.split("\\").map((p,i,a)=>`<span class="winlab-bread-part" data-bread-idx="${i}">${p}</span>${i<a.length-1?'<span class="sep">›</span>':''}`).join("")}</div>
+      <div class="winlab-explorer-nav">
+        <button class="winlab-nav-back" ${S.explorerHistoryIdx<=0?'disabled style="opacity:0.4"':''}>⬅ Voltar</button>
+        <button class="winlab-nav-forward" ${S.explorerHistoryIdx>=S.explorerHistory.length-1?'disabled style="opacity:0.4"':''}>➡ Avançar</button>
+        <button class="winlab-nav-up" ${S.explorerPath==="Este Computador"?'disabled style="opacity:0.4"':''}>⬆ Acima</button>
+        <button class="winlab-nav-refresh">🔄</button>
+      </div>
+      <div class="winlab-file-grid">${items.length===0?'<div style="grid-column:1/-1;color:rgba(255,255,255,0.4);padding:20px;text-align:center;">Pasta vazia</div>':items.map((item,idx)=>`<div class="winlab-file-item" data-file-idx="${idx}" data-file-path="${item.path||''}" data-file-type="${item.type}"><div class="winlab-file-icon">${item.icon}</div><div class="winlab-file-name">${item.name}</div></div>`).join("")}</div>`;
+    body.querySelectorAll(".winlab-bread-part").forEach(el=>{el.addEventListener("click",()=>{const p=S.explorerPath.split("\\");navigateTo(p.slice(0,parseInt(el.dataset.breadIdx)+1).join("\\"));});});
+    body.querySelector(".winlab-nav-back")?.addEventListener("click",()=>{if(S.explorerHistoryIdx>0){S.explorerHistoryIdx--;S.explorerPath=S.explorerHistory[S.explorerHistoryIdx];renderExplorer();}});
+    body.querySelector(".winlab-nav-forward")?.addEventListener("click",()=>{if(S.explorerHistoryIdx<S.explorerHistory.length-1){S.explorerHistoryIdx++;S.explorerPath=S.explorerHistory[S.explorerHistoryIdx];renderExplorer();}});
+    body.querySelector(".winlab-nav-up")?.addEventListener("click",()=>{const p=S.explorerPath.split("\\");if(p.length>1){p.pop();navigateTo(p.join("\\"));}else if(S.explorerPath!=="Este Computador")navigateTo("Este Computador");});
+    body.querySelector(".winlab-nav-refresh")?.addEventListener("click",()=>renderExplorer());
+    body.querySelectorAll(".winlab-file-item").forEach(el=>{
+      el.addEventListener("dblclick",()=>{const t=el.dataset.fileType,p=el.dataset.filePath,fname=el.querySelector(".winlab-file-name")?.textContent||"";if(t==="folder"||t==="drive")navigateTo(p);else{if(S.explorerPath==="C:\\Users\\Aluno\\Downloads"&&fname==="PDFReader_Setup.exe")showInstallWizard();else showToast("Abrindo",fname);}});
+      el.addEventListener("click",()=>{body.querySelectorAll(".winlab-file-item.selected").forEach(s=>s.classList.remove("selected"));el.classList.add("selected");});
+      el.addEventListener("contextmenu",(e)=>{e.preventDefault();const r=container.getBoundingClientRect();showContextMenu(e.clientX-r.left,e.clientY-r.top,[{label:"Abrir",icon:"▶️",action:()=>el.dispatchEvent(new Event("dblclick"))},{label:"Excluir",icon:"🗑️",action:()=>{el.remove();showToast("Excluído","Enviado à Lixeira");}},{divider:true},{label:"Propriedades",icon:"ℹ️",action:()=>showToast("Propriedades",el.querySelector(".winlab-file-name")?.textContent||"")}]);});
+    });
+  }
+
+  function navigateTo(path) {
+    if (FOLDERS[path]) {
+      if (S.explorerHistoryIdx < S.explorerHistory.length - 1) S.explorerHistory = S.explorerHistory.slice(0, S.explorerHistoryIdx + 1);
+      S.explorerPath = path; S.explorerHistory.push(path); S.explorerHistoryIdx = S.explorerHistory.length - 1;
+      renderExplorer();
+    } else showToast("Acesso negado", path);
+  }
+
+  function renderTaskManager() {
+    const body = container.querySelector(".winlab-window[data-win-id='taskmgr'] .winlab-win-body");
+    if (!body) return;
+    const t = body.dataset.tmTab || "processes";
+    body.innerHTML = `<div class="winlab-tm-tabs"><button class="winlab-tm-tab ${t==='processes'?'active':''}" data-tm-tab="processes">Processos</button><button class="winlab-tm-tab ${t==='performance'?'active':''}" data-tm-tab="performance">Desempenho</button></div><div>${t==='processes'?renderTMProcesses():renderTMPerformance()}</div>`;
+    body.querySelectorAll(".winlab-tm-tab").forEach(b=>{b.addEventListener("click",()=>{body.dataset.tmTab=b.dataset.tmTab;renderTaskManager();});});
+  }
+  function renderTMProcesses() {
+    return `<table class="winlab-tm-table"><thead><tr><th>Nome</th><th>CPU</th><th>Memória</th><th>PID</th><th></th></tr></thead><tbody>${S.processes.filter(p=>!S.endedProcesses[p.pid]).map(p=>`<tr><td>${p.name}</td><td>${p.cpu}</td><td>${p.mem}</td><td>${p.pid}</td><td>${p.critical?'<span style="color:rgba(255,255,255,0.3);font-size:10px;">—</span>':`<button class="winlab-tm-end-btn" data-tm-end="${p.pid}">Finalizar</button>`}</td></tr>`).join("")}</tbody></table>`;
+  }
+  function renderTMPerformance() {
+    const cpu = S.endedProcesses[6666] ? 23 : 97, mem = S.endedProcesses[6666] ? 47 : 94, dsk = Math.floor(Math.random()*10)+5;
+    return `<div class="winlab-tm-performance">${[{l:"CPU",v:cpu,c:"#6366f1"},{l:"Memória",v:mem,c:"#10b981"},{l:"Disco (C:)",v:dsk,c:"#f59e0b"},{l:"Rede",v:0,c:"#8b5cf6"}].map(g=>`<div class="winlab-tm-gauge"><div class="winlab-tm-gauge-label">${g.l}</div><div class="winlab-tm-gauge-value">${g.v}%</div><div class="winlab-tm-bar"><div class="winlab-tm-bar-fill" style="width:${g.v}%;background:${g.c};"></div></div></div>`).join("")}</div>`;
+  }
+
+  function renderPrograms() {
+    const body = container.querySelector(".winlab-window[data-win-id='programs'] .winlab-win-body");
+    if (!body) return;
+    const done = Object.keys(S.programsUninstalled).length;
+    body.innerHTML = `<p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0 0 8px;">Programas instalados:</p><div style="max-height:250px;overflow-y:auto;">${PROGRAMS_LIST.map(p=>`<div class="winlab-prog-item"><div class="winlab-prog-name">${p.icon} ${p.name}</div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;color:rgba(255,255,255,0.3);">${p.size}</span><button class="winlab-prog-uninstall ${S.programsUninstalled[p.id]?'done':''}" data-prog-id="${p.id}">${S.programsUninstalled[p.id]?'✓ Desinstalado':'Desinstalar'}</button></div></div>`).join("")}</div>`;
+    body.querySelectorAll(".winlab-prog-uninstall:not(.done)").forEach(btn=>{btn.addEventListener("click",()=>{S.programsUninstalled[btn.dataset.progId]=true;showToast("Desinstalação concluída","Programa removido.");renderPrograms();checkTickets();});});
+  }
+
+  function renderDiskCleanup() {
+    const body = container.querySelector(".winlab-window[data-win-id='cleanup'] .winlab-win-body");
+    if (!body) return;
+    const total = CLEANUP_ITEMS.reduce((a,item)=>{const n=parseFloat(item.size.replace(/[^\d.]/g,''));return a+(S.cleanupChecked[item.id]!==false?n*(item.size.includes("GB")?1024:1):0);},0);
+    const fmt = total>=1024?(total/1024).toFixed(1)+" GB":total.toFixed(0)+" MB";
+    body.innerHTML = `<p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0 0 8px;">Selecione para limpar:</p>${CLEANUP_ITEMS.map(item=>`<div class="winlab-cleanup-item"><input type="checkbox" ${S.cleanupChecked[item.id]!==false?'checked':''} data-cleanup-id="${item.id}"><div class="winlab-cleanup-info"><div>${item.label}</div><div style="font-size:10px;color:rgba(255,255,255,0.4);">${item.desc}</div></div><div class="winlab-cleanup-size">${item.size}</div></div>`).join("")}
+    <div class="winlab-cleanup-total">💾 Total: <strong>${fmt}</strong></div><button class="btn btn-primary" id="winlab-cleanup-run" style="width:100%;margin-top:8px;font-size:12px;padding:8px;">🧹 Executar Limpeza</button><div id="winlab-cleanup-result" style="margin-top:6px;text-align:center;font-size:11px;font-weight:700;"></div>`;
+    body.querySelectorAll("[data-cleanup-id]").forEach(cb=>{cb.addEventListener("change",()=>{S.cleanupChecked[cb.dataset.cleanupId]=cb.checked;renderDiskCleanup();});});
+    body.querySelector("#winlab-cleanup-run")?.addEventListener("click",()=>{if(S.cleanupDone){showToast("Já limpo","Recarregue.");return;}const checked=CLEANUP_ITEMS.filter(item=>S.cleanupChecked[item.id]!==false);if(checked.length===0){showToast("Nada selecionado","Marque ao menos um item.");return;}S.cleanupDone=true;const t=checked.reduce((a,item)=>{const n=parseFloat(item.size.replace(/[^\d.]/g,''));return a+(item.size.includes("GB")?n*1024:n);},0);const f=t>=1024?(t/1024).toFixed(1)+" GB":t.toFixed(0)+" MB";const r=container.querySelector("#winlab-cleanup-result");if(r){r.style.color="#10b981";r.textContent=`✅ ${f} liberados!`;}showToast("🧹 Limpeza concluída!",`${f} liberados.`);checkTickets();});
+  }
+
+  // ==================== TRAINING WINDOW ====================
+  function renderTraining() {
+    const ticket = TICKETS.find(t => t.id === S.activeTicketId);
+    if (!ticket) return;
+    const body = container.querySelector(".winlab-window[data-win-id='training'] .winlab-win-body");
+    if (!body) return;
+    const isDone = S.tickets[ticket.id];
+    const titleEl = container.querySelector("#training-title");
+    if (titleEl) titleEl.textContent = `📘 ${ticket.theoryTitle}`;
+    body.innerHTML = `
+      ${ticket.theory.map((p,i)=>`<div class="winlab-training-page ${i===0?'active':''}" data-tpage="${i}"><div class="winlab-training-title">${ticket.theoryTitle}</div><div class="winlab-training-body"><p>${p}</p></div></div>`).join("")}
+      <div class="winlab-training-nav">
+        <div><button class="winlab-training-btn winlab-training-btn-prev" id="training-prev" style="display:none;">⬅ Anterior</button></div>
+        <span class="winlab-training-counter" id="training-counter">1 / ${ticket.theory.length}</span>
+        <div>
+          <button class="winlab-training-btn winlab-training-btn-next" id="training-next">Próximo ➡</button>
+          <button class="winlab-training-btn winlab-training-btn-practice" id="training-practice" style="display:none;">${isDone ? '✅ Concluído' : '▶️ Praticar'}</button>
+        </div>
+      </div>`;
+    let page = 0;
+    function showPage(i) {
+      body.querySelectorAll(".winlab-training-page").forEach(el=>el.classList.toggle("active",parseInt(el.dataset.tpage)===i));
+      body.querySelector("#training-prev").style.display = i > 0 ? "inline-block" : "none";
+      body.querySelector("#training-next").style.display = i < ticket.theory.length - 1 ? "inline-block" : "none";
+      body.querySelector("#training-practice").style.display = i === ticket.theory.length - 1 ? "inline-block" : "none";
+      body.querySelector("#training-counter").textContent = `${i+1} / ${ticket.theory.length}`;
+      page = i;
+    }
+    body.querySelector("#training-next")?.addEventListener("click",()=>{if(page<ticket.theory.length-1)showPage(page+1);});
+    body.querySelector("#training-prev")?.addEventListener("click",()=>{if(page>0)showPage(page-1);});
+    body.querySelector("#training-practice")?.addEventListener("click",()=>{
+      if (isDone) return;
+      S.trainingWinOpen = false;
+      closeWindow("training");
+      startPractice(ticket.id);
+    });
+  }
+
+  function startPractice(ticketId) {
+    const ticket = TICKETS.find(t => t.id === ticketId);
+    if (!ticket) return;
+    closeWindow("training");
+    const steps = [
+      { id: 1, win: "explorer", toastTitle: "📂 Sua vez!", toastDesc: "Abra o Explorador de Arquivos (📁) na barra de tarefas e navegue até a pasta Downloads.", nav: "C:\\Users\\Aluno\\Downloads" },
+      { id: 2, win: "programs", toastTitle: "🗑️ Sua vez!", toastDesc: "Abra Programas (📦) na barra de tarefas ou na área de trabalho para desinstalar o Antivirus Legacy." },
+      { id: 3, win: "cleanup", toastTitle: "💾 Sua vez!", toastDesc: "Abra a Limpeza de Disco (🧹) pelo Menu Iniciar para liberar espaço." },
+      { id: 4, win: "taskmgr", toastTitle: "⚡ Sua vez!", toastDesc: "Abra o Gerenciador de Tarefas (⚙️) na barra de tarefas para encontrar o processo suspeito." },
+    ];
+    const step = steps.find(s => s.id === ticketId);
+    if (!step) { if (ticketId === 5) showQuiz(); return; }
+    if (step.nav) navigateTo(step.nav);
+    S.openWindows[step.win] = true;
+    updateTaskbar();
+    showToast(step.toastTitle, step.toastDesc);
+  }
+
+  // ==================== QUIZ ====================
+  function showQuiz() {
+    const overlay = container.querySelector("#winlab-quiz-overlay");
+    const modal = container.querySelector("#winlab-quiz-modal");
+    if (!overlay || !modal) return;
+    S.quizIdx = 0; S.quizCorrect = 0; S.quizLives = 3; S.quizAnswered = false;
+    overlay.classList.add("active");
+    renderQuiz();
+  }
+
+  function renderQuiz() {
+    const overlay = container.querySelector("#winlab-quiz-overlay");
+    const modal = container.querySelector("#winlab-quiz-modal");
+    if (!modal) return;
+    if (S.quizIdx >= QUIZ.length) { finishQuiz(); return; }
+    if (S.quizLives <= 0) { modal.innerHTML = `<div class="winlab-quiz-header">❌ Quiz encerrado</div><p style="font-size:0.85rem;color:rgba(255,255,255,0.6);">Você perdeu todas as vidas. Tente novamente!</p><div class="winlab-quiz-footer"><button class="winlab-quiz-btn winlab-quiz-btn-next" onclick="document.querySelector('#winlab-quiz-overlay').classList.remove('active')">Fechar</button></div>`; return; }
+    const q = QUIZ[S.quizIdx];
+    modal.innerHTML = `
+      <div class="winlab-quiz-header">📝 Verificação de Conhecimento</div>
+      <div class="winlab-quiz-lives">${'❤️'.repeat(S.quizLives)}</div>
+      <div class="winlab-quiz-question">${q.q}</div>
+      <div id="quiz-options">${q.opts.map((o,i)=>`<div class="winlab-quiz-option" data-opt="${i}"><div class="winlab-quiz-option-radio"></div><span>${o}</span></div>`).join("")}</div>
+      <div class="winlab-quiz-explanation" id="quiz-explain"></div>
+      <div class="winlab-quiz-footer">
+        <span class="winlab-quiz-counter">${S.quizIdx+1} / ${QUIZ.length}</span>
+        <button class="winlab-quiz-btn winlab-quiz-btn-next" id="quiz-next" disabled>Confirmar</button>
+      </div>`;
+    let selected = null;
+    modal.querySelectorAll(".winlab-quiz-option").forEach(el => {
+      el.addEventListener("click", () => {
+        if (S.quizAnswered) return;
+        modal.querySelectorAll(".winlab-quiz-option").forEach(e => e.classList.remove("selected"));
+        el.classList.add("selected"); selected = parseInt(el.dataset.opt);
+        modal.querySelector("#quiz-next").disabled = false;
+      });
+    });
+    modal.querySelector("#quiz-next").addEventListener("click", () => {
+      if (selected === null || S.quizAnswered) return;
+      S.quizAnswered = true;
+      const q = QUIZ[S.quizIdx];
+      const correct = selected === q.correct;
+      if (correct) { S.quizCorrect++; } else { S.quizLives--; }
+      modal.querySelectorAll(".winlab-quiz-option").forEach(el => {
+        const opt = parseInt(el.dataset.opt);
+        if (opt === q.correct) el.classList.add("correct");
+        else if (opt === selected && !correct) el.classList.add("wrong");
+      });
+      const explain = modal.querySelector("#quiz-explain");
+      explain.className = `winlab-quiz-explanation show ${correct ? 'correct-bg' : 'wrong-bg'}`;
+      explain.textContent = (correct ? "✅ Correto! " : "❌ " ) + q.explain;
+      modal.querySelector("#quiz-next").textContent = S.quizIdx < QUIZ.length - 1 && S.quizLives > 0 ? "Próxima →" : "Ver resultado";
+      modal.querySelector("#quiz-next").disabled = false;
+      modal.querySelector("#quiz-next").addEventListener("click", () => {
+        S.quizAnswered = false; S.quizIdx++;
+        if (S.quizIdx >= QUIZ.length || S.quizLives <= 0) finishQuiz();
+        else renderQuiz();
+      }, { once: true });
+    });
+  }
+
+  function finishQuiz() {
+    const modal = container.querySelector("#winlab-quiz-modal");
+    if (!modal) return;
+    const passed = S.quizCorrect >= 3;
+    modal.innerHTML = `
+      <div class="winlab-quiz-header">${passed ? '🎉' : '❌'} Resultado</div>
+      <p style="font-size:0.85rem;color:rgba(255,255,255,0.85);text-align:center;margin:12px 0;">
+        Você acertou <strong style="color:#10b981;">${S.quizCorrect}</strong> de <strong>${QUIZ.length}</strong> questões.
+      </p>
+      <div class="winlab-quiz-footer" style="justify-content:center;">
+        <button class="winlab-quiz-btn winlab-quiz-btn-next" id="quiz-close">${passed ? '✅ Finalizar Chamado' : '🔄 Tentar Novamente'}</button>
+      </div>`;
+    modal.querySelector("#quiz-close").addEventListener("click", () => {
+      container.querySelector("#winlab-quiz-overlay").classList.remove("active");
+      if (passed) { S.tickets[5] = true; showToast("✅ Chamado #005 resolvido!", "Diagnóstico concluído!"); checkTickets(); }
+    });
+  }
+
+  // ==================== TICKET SYSTEM ====================
+  function showTicketList() {
+    const done = Object.values(S.tickets).filter(Boolean).length;
+    const html = TICKETS.map(t => {
+      const isDone = S.tickets[t.id];
+      return `<div class="winlab-prog-item" style="cursor:pointer;${isDone ? 'opacity:0.6;' : ''}" data-ticket-id="${t.id}">
+        <div class="winlab-prog-name">${isDone ? '✅' : '📋'} ${t.icon} ${t.title}</div>
+        <span style="font-size:10px;color:${isDone ? '#10b981' : '#6366f1'};font-weight:600;">${isDone ? 'Concluído' : 'Pendente'}</span>
+      </div>`;
+    }).join("");
+
+    // Show ticket list as a modal within the training window
+    const titleEl = container.querySelector("#training-title");
+    if (titleEl) titleEl.textContent = "📋 Central de Chamados";
+    const body = container.querySelector(".winlab-window[data-win-id='training'] .winlab-win-body");
+    if (!body) return;
+    body.innerHTML = `
+      <p style="font-size:11px;color:rgba(255,255,255,0.5);margin:0 0 8px;">Chamados do dia (${done}/${TICKETS.length} resolvidos):</p>
+      ${html}
+      ${done === TICKETS.length ? '<div style="text-align:center;margin-top:12px;padding:10px;background:rgba(16,185,129,0.1);border-radius:8px;"><strong style="color:#10b981;">🎉 Todos os chamados resolvidos!</strong></div>' : ''}
+      <div style="margin-top:10px;font-size:10px;color:rgba(255,255,255,0.3);text-align:center;">Clique em um chamado para iniciar</div>`;
+
+    body.querySelectorAll("[data-ticket-id]").forEach(el => {
+      el.addEventListener("click", () => {
+        const id = parseInt(el.dataset.ticketId);
+        if (S.tickets[id]) { showToast("Já resolvido", "Este chamado já foi concluído."); return; }
+        S.activeTicketId = id;
+        openTrainingForTicket(id);
+      });
+    });
+    openWindow("training");
+  }
+
+  function openTrainingForTicket(ticketId) {
+    const ticket = TICKETS.find(t => t.id === ticketId);
+    if (!ticket || S.tickets[ticketId]) return;
+    S.activeTicketId = ticketId;
+    S.trainingWinOpen = true;
+    renderTraining();
+    openWindow("training");
+    showTicketNotif(ticketId);
+  }
+
+  function showTicketNotif(ticketId) {
+    const ticket = TICKETS.find(t => t.id === ticketId);
+    if (!ticket) return;
+    const notif = container.querySelector("#winlab-ticket-notif");
+    if (!notif) return;
+    notif.innerHTML = `<div class="winlab-ticket-notif-header">📌 <span>CHAMADO #00${ticket.id}</span><span class="winlab-ticket-notif-badge">${ticket.dept}</span></div>
+      <div class="winlab-ticket-notif-title">${ticket.icon} ${ticket.title}</div>
+      <div class="winlab-ticket-notif-desc">${ticket.desc}</div>`;
+    notif.classList.add("show");
+    notif.onclick = () => { notif.classList.remove("show"); openWindow("training"); };
+    if (S.ticketNotifTimer) clearTimeout(S.ticketNotifTimer);
+    S.ticketNotifTimer = setTimeout(() => notif.classList.remove("show"), 6000);
+  }
+
+  function checkTickets() {
+    let changed = false, completedId = null;
+    TICKETS.forEach(t => {
+      if (!S.tickets[t.id] && t.check()) { S.tickets[t.id] = true; changed = true; completedId = t.id; }
+    });
+    if (changed) {
+      updateTaskbar();
+      showToast(`✅ Chamado #00${completedId} resolvido!`, `${TICKETS.find(t=>t.id===completedId)?.title || ''} concluído.`);
+      setTimeout(() => showChamadoComplete(completedId), 800);
+    }
+  }
+
+  // ==================== COMPLETION ====================
+  function showCompletion() {
+    if (S.completeShown) return;
+    S.completeShown = true;
+    const modal = container.querySelector("#winlab-complete-modal");
+    const overlay = container.querySelector("#winlab-complete-overlay");
+    if (!modal || !overlay) return;
+    overlay.classList.add("active");
+    modal.innerHTML = `
+      <div style="text-align:left;">
+        <div style="text-align:center;font-size:3rem;margin-bottom:6px;">🎓</div>
+        <div class="winlab-complete-title" style="text-align:center;font-size:1.1rem;">O que você aprendeu hoje?</div>
+        <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.15);border-radius:8px;padding:10px;margin:10px 0;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:0.78rem;">
+            <span>✅ Resolver chamados de suporte</span>
+            <span>✅ Instalar programas corretamente</span>
+            <span>✅ Remover programas obsoletos</span>
+            <span>✅ Diagnosticar problemas de desempenho</span>
+            <span>✅ Utilizar ferramentas do Windows</span>
+            <span>✅ Pensar como um técnico</span>
+          </div>
+        </div>
+        <div style="background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.12);border-radius:8px;padding:10px;margin-bottom:8px;">
+          <p style="font-size:0.78rem;color:rgba(255,255,255,0.65);line-height:1.6;margin:0;">
+            <strong>💭 Reflita:</strong><br>
+            • O que foi mais difícil para você?<br>
+            • Como você resolveria esses problemas na vida real?<br>
+            • O que aprendeu hoje que não sabia antes?
+          </p>
+        </div>
+        <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);border-radius:8px;padding:10px;margin-bottom:12px;">
+          <p style="font-size:0.78rem;color:rgba(255,255,255,0.65);line-height:1.5;margin:0;">
+            <strong>🔮 Próxima missão:</strong><br>
+            Na Aula 8, você enfrentará o <strong>desafio final do Módulo 1</strong> e precisará utilizar tudo o que aprendeu desde a Aula 1.<br>
+            Prepare-se — será uma avaliação completa de todos os conhecimentos adquiridos!
+          </p>
+        </div>
+        <div class="winlab-complete-stats">
+          <div class="winlab-complete-stat"><div class="winlab-complete-stat-val">5</div><div class="winlab-complete-stat-label">Chamados</div></div>
+          <div class="winlab-complete-stat"><div class="winlab-complete-stat-val">+500</div><div class="winlab-complete-stat-label">XP</div></div>
+          <div class="winlab-complete-stat"><div class="winlab-complete-stat-val">🥇</div><div class="winlab-complete-stat-label">Medalha</div></div>
+        </div>
+        <div style="margin-bottom:12px;text-align:left;">
+          <p style="font-size:0.82rem;color:rgba(255,255,255,0.7);margin:0 0 6px;"><strong>📋 Relatório do Técnico</strong></p>
+          <textarea id="winlab-report-text" style="width:100%;min-height:80px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px;color:#fff;font-size:0.78rem;resize:vertical;line-height:1.5;" placeholder="Descreva resumidamente os problemas resolvidos e o que aprendeu..."></textarea>
+        </div>
+        <button class="winlab-complete-btn" id="winlab-finish-btn">🏆 Finalizar e Receber Medalha</button>
+        <div id="winlab-finish-feedback" style="margin-top:8px;font-size:0.82rem;font-weight:700;"></div>
+      </div>`;
+    modal.querySelector("#winlab-finish-btn").addEventListener("click", async () => {
+      const btn = modal.querySelector("#winlab-finish-btn");
+      const fb = modal.querySelector("#winlab-finish-feedback");
+      btn.disabled = true; btn.textContent = "Salvando...";
+      try {
+        const report = modal.querySelector("#winlab-report-text")?.value?.trim() || "Relatório concluído.";
+        if (!state.module1Skills) state.module1Skills = {hardware:false,peripherals:false,windows:false,files:false,maintenance:false,support:false};
+        state.module1Skills.support = true;
+        state.notes["aula7-lab"] = report;
+        addXP(500);
+        unlockAchievement("especialista_informatica");
+        markSlideAsCompleted("aula7-lab");
+        saveState();
+        updateModuleProgressBar();
+        initSidebarMenu();
+        fb.style.color = "#10b981"; fb.textContent = "✅ Sucesso! Medalha Especialista em Informática conquistada!";
+        showToastNotification("🥇 Especialista em Informática!", "Aula 7 concluída!");
+        btn.textContent = "✅ Concluído!";
+        setTimeout(() => {
+          overlay.classList.remove("active");
+          showBastidoresChapter();
+        }, 1500);
+      } catch (e) {
+        fb.style.color = "#ef4444"; fb.textContent = "❌ Erro: " + e.message;
+        btn.disabled = false; btn.textContent = "Tentar novamente";
+      }
+    });
+  }
+
+  // ==================== WELCOME MODAL ====================
+  function showInstallWizard() {
+    const overlay = container.querySelector("#winlab-installer-overlay");
+    const win = container.querySelector("#winlab-installer-window");
+    if (!overlay || !win) return;
+    overlay.style.display = "flex";
+    let step = 1;
+    function render() {
+      if (step === 1) {
+        win.innerHTML = `
+          <div class="installer-title-bar"><span class="installer-title-text">📦 Instalador do PDF Reader v5.2</span><span class="installer-title-btn" id="installer-close">✕</span></div>
+          <div class="installer-body">
+            <div class="installer-icon-area">📄</div>
+            <div class="installer-content">
+              <div class="installer-heading">Bem-vindo ao Instalador do PDF Reader</div>
+              <p class="installer-desc">Este assistente vai instalar o <strong>PDF Reader v5.2</strong> no seu computador.</p>
+              <p class="installer-desc">O PDF Reader é um programa leve para visualizar, imprimir e assinar documentos PDF.</p>
+              <div class="installer-info"><strong>Editor:</strong> InforTech Software<br><strong>Versão:</strong> 5.2.0<br><strong>Tamanho:</strong> 28 MB</div>
+            </div>
+          </div>
+          <div class="installer-footer"><button class="installer-btn installer-btn-secondary" id="installer-cancel">Cancelar</button><button class="installer-btn installer-btn-primary" id="installer-next">Avançar →</button></div>`;
+      } else if (step === 2) {
+        win.innerHTML = `
+          <div class="installer-title-bar"><span class="installer-title-text">📦 Instalador do PDF Reader v5.2</span><span class="installer-title-btn" id="installer-close">✕</span></div>
+          <div class="installer-body">
+            <div class="installer-icon-area">⚙️</div>
+            <div class="installer-content">
+              <div class="installer-heading">Pronto para Instalar</div>
+              <p class="installer-desc">O assistente está pronto para iniciar a instalação.</p>
+              <div class="installer-info"><strong>Destino:</strong> C:\\Program Files\\PDF Reader<br><strong>Espaço necessário:</strong> 28 MB<br><strong>Espaço disponível:</strong> 154 GB</div>
+              <p class="installer-desc" style="font-size:0.75rem;color:rgba(255,255,255,0.5);">Clique em "Instalar" para continuar ou "Voltar" para revisar as informações.</p>
+            </div>
+          </div>
+          <div class="installer-footer"><button class="installer-btn installer-btn-secondary" id="installer-back">← Voltar</button><button class="installer-btn installer-btn-primary" id="installer-install">📦 Instalar</button></div>`;
+      } else if (step === 3) {
+        win.innerHTML = `
+          <div class="installer-title-bar"><span class="installer-title-text">📦 Instalador do PDF Reader v5.2</span><span class="installer-title-btn" id="installer-close">✕</span></div>
+          <div class="installer-body">
+            <div class="installer-icon-area">⏳</div>
+            <div class="installer-content">
+              <div class="installer-heading">Instalando...</div>
+              <div class="installer-progress-track"><div class="installer-progress-fill" id="installer-progress-fill" style="width:0%"></div></div>
+              <div class="installer-progress-label" id="installer-progress-label">0%</div>
+              <div class="installer-status" id="installer-status">Preparando arquivos...</div>
+            </div>
+          </div>
+          <div class="installer-footer"><button class="installer-btn installer-btn-secondary" id="installer-cancel" ${1===1?'disabled':''}>Cancelar</button></div>`;
+        const statusMsgs = [
+          "Preparando arquivos...",
+          "Copiando PDFReader.exe...",
+          "Copiando pdfreader.dll...",
+          "Copiando leitor.pdf...",
+          "Registrando componentes do sistema...",
+          "Criando atalhos no Menu Iniciar...",
+          "Configurações finais..."
+        ];
+        let prog = 0;
+        const fill = win.querySelector("#installer-progress-fill");
+        const lbl = win.querySelector("#installer-progress-label");
+        const sts = win.querySelector("#installer-status");
+        const iv = setInterval(() => {
+          prog += Math.random() * 8 + 3;
+          if (prog >= 100) { prog = 100; clearInterval(iv); }
+          const pct = Math.min(Math.round(prog), 100);
+          if (fill) fill.style.width = pct + "%";
+          if (lbl) lbl.textContent = pct + "%";
+          if (sts) sts.textContent = statusMsgs[Math.min(Math.floor(pct / 15), statusMsgs.length - 1)];
+          if (pct >= 100) setTimeout(() => { step = 4; render(); }, 400);
+        }, 280);
+      } else if (step === 4) {
+        win.innerHTML = `
+          <div class="installer-title-bar"><span class="installer-title-text">📦 Instalador do PDF Reader v5.2</span><span class="installer-title-btn" id="installer-close">✕</span></div>
+          <div class="installer-body">
+            <div class="installer-icon-area">✅</div>
+            <div class="installer-content">
+              <div class="installer-heading" style="color:#4ade80;">Instalação Concluída</div>
+              <p class="installer-desc">O <strong>PDF Reader v5.2</strong> foi instalado com sucesso no seu computador.</p>
+              <div class="installer-info" style="border-color:rgba(74,222,128,0.2);background:rgba(74,222,128,0.06);">
+                ✅ PDF Reader pronto para uso<br>
+                📍 Localização: C:\\Program Files\\PDF Reader<br>
+                🖱️ Atalho criado no Menu Iniciar
+              </div>
+            </div>
+          </div>
+          <div class="installer-footer"><button class="installer-btn installer-btn-primary" id="installer-finish">✅ Concluir</button></div>`;
+        S.installDone = true;
+        checkTickets();
+      }
+      // Bind buttons
+      const closeBtn = win.querySelector("#installer-close");
+      if (closeBtn) closeBtn.addEventListener("click", () => { overlay.style.display = "none"; });
+      ["installer-cancel", "installer-finish"].forEach(id => {
+        const btn = win.querySelector("#" + id);
+        if (btn) btn.addEventListener("click", () => { overlay.style.display = "none"; });
+      });
+      const nextBtn = win.querySelector("#installer-next");
+      if (nextBtn) nextBtn.addEventListener("click", () => { step = 2; render(); });
+      const backBtn = win.querySelector("#installer-back");
+      if (backBtn) backBtn.addEventListener("click", () => { step = 1; render(); });
+      const installBtn = win.querySelector("#installer-install");
+      if (installBtn) installBtn.addEventListener("click", () => { step = 3; render(); });
+    }
+    render();
+  }
+
+  function showExpandPrompt() {
+    const overlay = container.querySelector("#winlab-complete-overlay");
+    const modal = container.querySelector("#winlab-complete-modal");
+    if (!overlay || !modal) return;
+    overlay.classList.add("active");
+    modal.innerHTML = `
+      <div style="text-align:center;">
+        <div style="font-size:3rem;margin-bottom:8px;">🖥️</div>
+        <div class="winlab-complete-title" style="font-size:1.1rem;margin-bottom:6px;">Tela cheia recomendada</div>
+        <p style="font-size:0.82rem;color:rgba(255,255,255,0.7);line-height:1.5;margin:0 0 14px;">
+          Para aproveitar melhor o laboratório, expanda o simulador para <strong>tela cheia</strong>.<br>
+          Isso vai permitir visualizar todo o conteúdo da aula sem cortes.
+        </p>
+        <button class="winlab-complete-btn" id="expand-prompt-btn" style="width:100%;margin-bottom:8px;background:#6366f1;">⛶ Expandir Agora</button>
+        <button class="winlab-complete-btn" id="expand-skip-btn" style="width:100%;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);font-size:0.78rem;">Continuar sem expandir</button>
+      </div>`;
+    const winlabEl = container.querySelector("#winlab-desktop");
+    const exitBtn = container.querySelector("#winlab-exit-expand");
+    modal.querySelector("#expand-prompt-btn").addEventListener("click", () => {
+      if (winlabEl) winlabEl.classList.add("winlab-expanded");
+      if (exitBtn) exitBtn.style.display = "block";
+      overlay.classList.remove("active");
+      setTimeout(() => showWelcomeModal(), 400);
+    });
+    modal.querySelector("#expand-skip-btn").addEventListener("click", () => {
+      overlay.classList.remove("active");
+      setTimeout(() => showWelcomeModal(), 400);
+    });
+  }
+
+  function showWelcomeModal() {
+    const overlay = container.querySelector("#winlab-complete-overlay");
+    const modal = container.querySelector("#winlab-complete-modal");
+    if (!overlay || !modal) return;
+    overlay.classList.add("active");
+    modal.innerHTML = `
+      <div style="text-align:left;">
+        <div style="font-size:2.8rem;text-align:center;margin-bottom:6px;">💼</div>
+        <div class="winlab-complete-title" style="font-size:1.1rem;text-align:center;">Bem-vindo à InforTech Soluções Digitais</div>
+        <p style="font-size:0.82rem;color:rgba(255,255,255,0.7);line-height:1.5;margin:8px 0 12px;">
+          Você acaba de ser contratado como <strong>técnico de suporte</strong>.<br><br>
+          Durante esta aula, funcionários abrirão chamados relatando problemas no computador.<br><br>
+          Cada problema exigirá conhecimentos adquiridos nas aulas anteriores.<br><br>
+          Leia atentamente as instruções antes de iniciar qualquer tarefa.
+        </p>
+        <button class="winlab-complete-btn" id="welcome-start-btn" style="width:100%;">▶️ Entrar no laboratório</button>
+      </div>`;
+    modal.querySelector("#welcome-start-btn").addEventListener("click", () => {
+      overlay.classList.remove("active");
+      setTimeout(() => startChamadoSequence(1), 300);
+    });
+  }
+
+  // ==================== CHAMADO INTRO ====================
+  const CHAMADO_THEORY = {
+    1: { title: "📦 O que é um programa de computador?", color: "#818cf8",
+      content: [
+        "<strong>Software</strong> é a parte lógica do computador: o conjunto de instruções que diz ao hardware o que fazer.",
+        "<strong>Sistema Operacional</strong> (Windows) é o software principal que gerencia o computador inteiro. <strong>Aplicativos</strong> (Word, Chrome, PDF Reader) são programas que executam tarefas específicas.",
+        "<strong>Arquivo .exe</strong> (executável) é o formato padrão de programas no Windows. Ao clicar duas vezes, o sistema carrega o programa na memória e inicia a instalação ou execução.",
+        "<strong>Como a instalação funciona?</strong> O instalador copia arquivos para C:\\Program Files, registra componentes no sistema, cria atalhos no Menu Iniciar e libera o programa para uso.",
+        "<strong>Onde os programas ficam armazenados?</strong> Lembra quando aprendemos sobre armazenamento na Aula 5? Todo programa instalado ocupa espaço no SSD ou HD. Um PDF Reader ocupa cerca de 28 MB.",
+        "<strong>⚠️ Cuidado com programas desconhecidos!</strong> Instalar de sites não oficiais pode trazer malwares. Sempre verifique se o arquivo é confiável antes de executar.",
+        "<strong>🎯 Missão:</strong> O setor financeiro precisa do <strong>PDF Reader</strong> para abrir relatórios. Abra a pasta <strong>Downloads</strong>, localize <strong>PDFReader_Setup.exe</strong> e execute a instalação."
+      ]},
+    2: { title: "🗑️ Como remover programas corretamente?", color: "#ef4444",
+      content: [
+        "Com o tempo, o computador acumula programas que nunca mais foram usados — eles ocupam espaço, podem conflitar com versões novas e deixam o sistema mais lento.",
+        "<strong>Apagar o atalho da área de trabalho NÃO desinstala o programa!</strong> O atalho é só um link. O programa continua no disco ocupando espaço.",
+        "<strong>A forma correta:</strong> Use <strong>Painel de Controle > Programas e Recursos</strong> ou <strong>Configurações > Aplicativos</strong>. O desinstalador remove os arquivos, limpa registros e restaura configurações.",
+        "<strong>⚠️ Risco:</strong> NUNCA apague a pasta do programa manualmente (ex: C:\\Program Files\\Antivirus Legacy). Isso deixa centenas de chaves perdidas no registro do Windows — o chamado 'lixo digital'.",
+        "<strong>Organizar programas é tão importante quanto organizar arquivos.</strong> Lembra da Aula 5? Da mesma forma que você organiza documentos em pastas, deve manter a lista de programas instalados limpa.",
+        "<strong>🎯 Missão:</strong> O Antivirus Legacy está desatualizado e ocupa espaço. Acesse <strong>Programas e Recursos</strong> e desinstale-o corretamente."
+      ]},
+    3: { title: "💾 Por que o computador fica lento?", color: "#10b981",
+      content: [
+        "Três componentes trabalham juntos para um computador funcionar rápido: <strong>CPU</strong> (processador), <strong>RAM</strong> (memória) e <strong>disco</strong> (SSD/HD).",
+        "<strong>CPU</strong> — o cérebro. Executa instruções. Se algum programa usar 100% da CPU, tudo trava porque não sobra capacidade para outros processos.",
+        "<strong>RAM</strong> — memória temporária. Guarda o que está sendo usado agora. Pouca RAM = o computador fica 'pensando' ao alternar entre janelas.",
+        "<strong>Disco (HD/SSD)</strong> — armazenamento permanente. Um disco quase cheio (acima de 90%) deixa o sistema lento, especialmente em HDs mecânicos.",
+        "Arquivos <strong>temporários</strong> acumulam com o uso e ocupam espaço sem necessidade. A pasta <strong>Downloads</strong> frequentemente tem instaladores que você baixou e nunca mais usou.",
+        "O <strong>Gerenciador de Tarefas</strong> (Ctrl+Shift+Esc) é seu melhor amigo para descobrir o que está consumindo recursos do sistema.",
+        "<strong>🎯 Missão:</strong> O disco C: está com 96% ocupado. Use a <strong>Limpeza de Disco</strong> para remover arquivos desnecessários e liberar espaço."
+      ]},
+    4: { title: "⚡ Como diagnosticar um problema técnico?", color: "#f59e0b",
+      content: [
+        "Um técnico de suporte não chuta soluções. Ele segue um <strong>método lógico</strong> de investigação — igual um detetive de computadores.",
+        "1. <strong>O computador liga?</strong> (Aula 2 — Hardware) Verifique energia, cabos e fonte. Se não liga, pode ser fonte queimada ou cabo solto.",
+        "2. <strong>O monitor funciona?</strong> (Aula 3 — Periféricos) Verifique cabo de vídeo e entrada correta. Teste com outro monitor se possível.",
+        "3. <strong>O mouse e teclado respondem?</strong> (Aula 3) Periféricos sem resposta podem indicar driver corrompido ou porta USB com problema.",
+        "4. <strong>O Windows iniciou normalmente?</strong> (Aula 4) Se o sistema trava na inicialização, pode ser software corrompido ou disco com erro.",
+        "5. <strong>Há espaço em disco?</strong> (Aula 5) Disco cheio impede o Windows de criar arquivos temporários. Já vimos isso no desafio anterior.",
+        "6. <strong>Algum programa está causando problemas?</strong> (Aula 6 + esta aula) Use o Gerenciador de Tarefas para encontrar processos suspeitos.",
+        "<strong>🎯 Missão:</strong> O computador do cliente está extremamente lento (CPU 100%). Abra o <strong>Gerenciador de Tarefas</strong>, encontre o processo <strong>CryptoMiner.exe</strong> e finalize-o."
+      ]},
+    5: { title: "🩺 Quiz — Verificação de Conhecimentos", color: "#8b5cf6",
+      content: [
+        "Você atendeu 4 chamados e aprendeu na prática como funciona o suporte técnico.",
+        "Agora vamos testar seus conhecimentos com um rápido quiz.<br>4 perguntas de múltipla escolha.<br>Você tem <strong>3 vidas</strong> — erre 3 e o teste encerra.",
+        "Os tópicos cobrem tudo que você viu até aqui: instalação, desinstalação, limpeza de disco, gerenciamento de tarefas e diagnóstico.",
+        "<strong>🎯 Missão:</strong> Responda às perguntas corretamente para validar seu aprendizado."
+      ]},
+  };
+
+  function showChamadoIntro(ticketId) {
+    const theory = CHAMADO_THEORY[ticketId];
+    if (!theory) { startChamadoPractice(ticketId); return; }
+    const overlay = container.querySelector("#winlab-complete-overlay");
+    const modal = container.querySelector("#winlab-complete-modal");
+    if (!overlay || !modal) return;
+    overlay.classList.add("active");
+    const ticket = TICKETS.find(t => t.id === ticketId);
+    modal.innerHTML = `
+      <div style="text-align:left;">
+        <div class="winlab-complete-title" style="font-size:1rem;display:flex;align-items:center;gap:6px;">
+          <span>📌 CHAMADO #00${ticketId}</span>
+          <span style="font-size:0.7rem;background:${theory.color};color:#fff;padding:1px 6px;border-radius:3px;">${ticket?.dept||''}</span>
+        </div>
+        <div style="font-size:0.95rem;font-weight:700;color:${theory.color};margin:6px 0 8px;">${theory.title}</div>
+        ${theory.content.map(p => `<p style="font-size:0.8rem;color:rgba(255,255,255,0.75);line-height:1.5;margin:0 0 6px;padding-left:8px;border-left:2px solid ${theory.color}40;">${p}</p>`).join("")}
+        <button class="winlab-complete-btn" id="chamado-accept-btn" style="width:100%;margin-top:10px;background:${theory.color};">
+          ${ticketId === 5 ? '▶️ Iniciar Quiz' : '▶️ Aceitar Chamado'}
+        </button>
+      </div>`;
+    modal.querySelector("#chamado-accept-btn").addEventListener("click", () => {
+      overlay.classList.remove("active");
+      setTimeout(() => startChamadoPractice(ticketId), 300);
+    });
+  }
+
+  function showChamadoComplete(ticketId) {
+    const overlay = container.querySelector("#winlab-complete-overlay");
+    const modal = container.querySelector("#winlab-complete-modal");
+    if (!overlay || !modal) return;
+    const nextId = ticketId < 5 ? ticketId + 1 : null;
+    const detail = {
+      1: {
+        title: "Desafio Concluído 🎉",
+        icon: "📦",
+        recap: "Você instalou o <strong>PDF Reader</strong> com sucesso! Na prática, você aprendeu que:",
+        bullets: [
+          "Programas são ferramentas que adicionam funcionalidades ao computador",
+          "A instalação copia arquivos, registra componentes e cria atalhos automaticamente",
+          "O instalador é um programa que gerencia todo esse processo de forma segura"
+        ],
+        learnMore: "No dia a dia, você usará instaladores para adicionar navegadores, antivírus, editores de texto, pacotes Office e sistemas empresariais. Cada programa tem um propósito diferente — e saber instalar corretamente é a base do suporte técnico.",
+        transition: "Agora que você instalou um programa, vamos aprender o oposto: como <strong>remover</strong> programas que não são mais necessários."
+      },
+      2: {
+        title: "Desafio Concluído 🎉",
+        icon: "🗑️",
+        recap: "Você desinstalou o <strong>Antivirus Legacy</strong> corretamente! Isso é importante porque:",
+        bullets: [
+          "Programas antigos ocupam espaço e podem causar conflitos com versões novas",
+          "A desinstalação pelo Painel de Controle remove o programa de forma limpa — sem deixar resíduos",
+          "NUNCA apague a pasta do programa manualmente — isso polui o registro do Windows"
+        ],
+        learnMore: "Mantenha apenas os programas que você realmente usa. Revise a lista de programas instalados a cada 3 meses. Se um programa não é usado há mais de 6 meses, desinstale. Máquinas limpas são máquinas rápidas.",
+        transition: "Com a instalação e desinstalação dominadas, o próximo passo é aprender a <strong>liberar espaço em disco</strong> para o sistema funcionar melhor."
+      },
+      3: {
+        title: "Desafio Concluído 🎉",
+        icon: "💾",
+        recap: "Você limpou arquivos desnecessários do disco! Veja o que aprendeu:",
+        bullets: [
+          "Arquivos temporários acumulam com o uso e ocupam GB de espaço sem necessidade",
+          "A Limpeza de Disco é uma ferramenta nativa do Windows, gratuita e eficaz",
+          "Pastas como Downloads acumulam instaladores que nunca mais serão usados"
+        ],
+        learnMore: "Para manter o disco saudável: (1) execute a Limpeza de Disco 1x por mês, (2) mantenha pelo menos 15% do disco livre, (3) organize seus arquivos em pastas com nomes claros. HD muito cheio trava. SSD muito cheio perde performance de escrita.",
+        transition: "Com o disco limpo, vamos descobrir o que fazer quando o computador fica <strong>lento de repente</strong>."
+      },
+      4: {
+        title: "Desafio Concluído 🎉",
+        icon: "⚡",
+        recap: "Você diagnosticou e finalizou um processo suspeito! Principais aprendizados:",
+        bullets: [
+          "O Gerenciador de Tarefas mostra em tempo real o consumo de CPU, RAM e disco",
+          "Processos com nomes estranhos ou consumo de CPU acima de 90% merecem atenção",
+          "Finalizar um processo pode resolver lentidão imediata, mas investigue a causa raiz"
+        ],
+        learnMore: "Sempre desconfie de: (1) processos com nomes genéricos como 'sys32.exe' ou 'winupdate.exe', (2) consumo de CPU acima de 95% sem motivo, (3) programas que iniciam com o Windows sem necessidade. Use o Gerenciador de Tarefas como seu primeiro raio-X do sistema.",
+        transition: "Chegou o momento final! Vamos testar seus conhecimentos com um <strong>diagnóstico rápido</strong> para fechar o expediente."
+      }
+    };
+    const d = detail[ticketId] || { title: "Chamado Resolvido ✅", icon: "✅", recap: "", bullets: [], learnMore: "", transition: "" };
+    overlay.classList.add("active");
+    modal.innerHTML = `
+      <div style="text-align:left;">
+        <div style="text-align:center;font-size:2.8rem;margin-bottom:4px;">${d.icon}</div>
+        <div class="winlab-complete-title" style="text-align:center;font-size:1.1rem;">${d.title}</div>
+        <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.15);border-radius:8px;padding:10px;margin:10px 0;">
+          <strong style="font-size:0.82rem;color:#818cf8;">📌 Resumo do que você fez</strong>
+          <p style="font-size:0.8rem;color:rgba(255,255,255,0.7);line-height:1.5;margin:4px 0 0;">${d.recap}</p>
+          <ul style="font-size:0.78rem;color:rgba(255,255,255,0.6);line-height:1.6;margin:6px 0 0;padding-left:18px;">
+            ${d.bullets.map(b => `<li>${b}</li>`).join("")}
+          </ul>
+        </div>
+        <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.12);border-radius:8px;padding:10px;margin-bottom:10px;">
+          <strong style="font-size:0.82rem;color:#10b981;">💡 Para seu dia a dia</strong>
+          <p style="font-size:0.78rem;color:rgba(255,255,255,0.65);line-height:1.5;margin:4px 0 0;">${d.learnMore}</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.12);border-radius:8px;padding:10px;margin-bottom:12px;">
+          <strong style="font-size:0.82rem;color:#fbbf24;">🔄 Próximo passo</strong>
+          <p style="font-size:0.78rem;color:rgba(255,255,255,0.65);line-height:1.5;margin:4px 0 0;">${d.transition}</p>
+        </div>
+        ${nextId
+          ? `<button class="winlab-complete-btn" id="next-chamado-btn" style="width:100%;">➡️ Continuar Aula — Chamado #00${nextId}</button>`
+          : `<button class="winlab-complete-btn" id="next-chamado-btn" style="width:100%;background:#10b981;">🏆 Finalizar Jornada</button>`}
+      </div>`;
+    modal.querySelector("#next-chamado-btn").addEventListener("click", () => {
+      overlay.classList.remove("active");
+      if (nextId) setTimeout(() => startChamadoSequence(nextId), 300);
+      else setTimeout(showCompletion, 500);
+    });
+  }
+
+  function startChamadoSequence(ticketId) {
+    S.activeTicketId = ticketId;
+    S.trainingWinOpen = false;
+    closeWindow("training");
+    showChamadoIntro(ticketId);
+  }
+
+  function startChamadoPractice(ticketId) {
+    S.activeTicketId = ticketId;
+    S.trainingWinOpen = false;
+    closeWindow("training");
+    if (ticketId === 5) { showQuiz(); return; }
+    // Pré-renderiza o treinamento e adiciona à barra de tarefas, mas não abre automaticamente
+    renderTraining();
+    S.openWindows["training"] = true;
+    updateTaskbar();
+    showTicketNotif(ticketId);
+    showToast("📘 Instruções disponíveis", `Chamado #00${ticketId}: Abra a Central de Treinamento na barra de tarefas.`);
+  }
+
+  // ==================== AFTER DESKTOP ====================
+  function afterDesktop() {
+    setTimeout(() => showExpandPrompt(), 500);
+  }
+
+  // START
+  showBoot();
+}
+
+// ==========================================================================
+// AULA 8 — REVISÃO COM CARDS INTERATIVOS
+// ==========================================================================
+function initAula8RevisaoCards(container, isReset) {
+  if (isReset) sessionStorage.removeItem("aula8_revisao_visto");
+
+  const TOPICS = [
+    {
+      id: "hardware",
+      icon: "🖥️",
+      title: "Hardware",
+      color: "#10b981",
+      foto: `<div style="font-size:5rem;">🖥️</div>`,
+      content: `<div style="font-size:0.82rem; line-height:1.6; color:rgba(255,255,255,0.7);">
+        <p><strong style="color:#10b981;">Hardware</strong> são todos os componentes físicos e tangíveis do computador — as peças que você pode tocar.</p>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#10b981;">🧠 Processador (CPU)</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">É o "cérebro" do computador. Executa bilhões de cálculos por segundo. Quanto maior a frequência (GHz) e mais núcleos, mais rápido ele processa dados.</p>
+        </div>
+        <div style="background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#60a5fa;">⚡ Memória RAM</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Memória de acesso rápido que armazena dados temporários enquanto o computador está ligado. Quanto mais RAM, mais programas você pode abrir ao mesmo tempo sem lentidão.</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#fbbf24;">💾 HD vs SSD</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">HD (Disco Rígido) usa pratos magnéticos giratórios — é mais lento e barato. SSD (Solid State Drive) usa chips de memória flash — é muito mais rápido, silencioso e resistente a impactos.</p>
+        </div>
+        <div style="background:rgba(168,85,247,0.06); border:1px solid rgba(168,85,247,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#a78bfa;">🖥️ Placa-mãe</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">A placa-mãe conecta todos os componentes. Ela possui soquete para CPU, slots para RAM, portas SATA para HD/SSD, conectores de energia e portas de expansão (PCI-Express).</p>
+        </div>
+        <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#f87171;">🔌 Fonte de Alimentação</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Converte a energia elétrica da tomada (110V/220V AC) em tensões menores (12V, 5V, 3.3V DC) que os componentes do computador utilizam.</p>
+        </div>
+      </div>`
+    },
+    {
+      id: "perifericos",
+      icon: "⚡",
+      title: "Periféricos",
+      color: "#60a5fa",
+      foto: `<div style="font-size:5rem;">⌨️🖱️</div>`,
+      content: `<div style="font-size:0.82rem; line-height:1.6; color:rgba(255,255,255,0.7);">
+        <p><strong style="color:#60a5fa;">Periféricos</strong> são dispositivos externos que se conectam ao computador para enviar ou receber informações.</p>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#10b981;">⌨️ Dispositivos de Entrada</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Enviam dados para o computador. Exemplos: <strong>Teclado</strong> (digitar textos), <strong>Mouse</strong> (mover cursor), <strong>Microfone</strong> (capturar áudio), <strong>Webcam</strong> (capturar vídeo), <strong>Scanner</strong> (digitalizar documentos).</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#fbbf24;">🖥️ Dispositivos de Saída</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Recebem dados do computador e os apresentam ao usuário. Exemplos: <strong>Monitor</strong> (exibir imagens), <strong>Impressora</strong> (imprimir documentos), <strong>Caixas de Som</strong> (reproduzir áudio), <strong>Projetor</strong> (projetar imagem).</p>
+        </div>
+        <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#818cf8;">🔌 Conexões e Portas</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;"><strong>USB</strong> (Universal Serial Bus): padrão universal para teclado, mouse, pendrive. <strong>HDMI/DisplayPort</strong>: para vídeo e áudio digital (monitor, TV). <strong>P2 (P3)</strong>: conector de áudio para fones e microfone. <strong>Ethernet (RJ-45)</strong>: para internet cabeada.</p>
+        </div>
+        <div style="background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#8b5cf6;">💾 Dispositivos de Armazenamento Externo</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;"><strong>Pendrive</strong>: memória flash portátil. <strong>HD Externo</strong>: para backups e grandes volumes. <strong>Cartão SD</strong>: usado em câmeras e celulares.</p>
+        </div>
+      </div>`
+    },
+    {
+      id: "windows",
+      icon: "🪟",
+      title: "Windows",
+      color: "#fbbf24",
+      foto: `<div style="font-size:5rem;">🪟</div>`,
+      content: `<div style="font-size:0.82rem; line-height:1.6; color:rgba(255,255,255,0.7);">
+        <p><strong style="color:#fbbf24;">Windows</strong> é um Sistema Operacional (SO) — o software que gerencia todo o computador: hardware, programas e arquivos. Ele cria a interface gráfica que você usa.</p>
+        <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#fbbf24;">🖼️ Área de Trabalho (Desktop)</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Tela principal após o login. Contém: <strong>Ícones</strong> (atalhos para programas e pastas), <strong>Barra de Tarefas</strong> (programas abertos, relógio, volume, rede), <strong>Menu Iniciar</strong> (acesso a todos os programas e configurações).</p>
+        </div>
+        <div style="background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#60a5fa;">📂 Explorador de Arquivos</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Ferramenta para navegar pelas pastas e arquivos do computador. Atalho: <code>Windows + E</code>. Exibe unidades (C:, D:), pastas do usuário (Documentos, Imagens, Downloads) e permite copiar, mover, renomear e excluir arquivos.</p>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#10b981;">⚙️ Configurações vs Painel de Controle</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">O <strong>Painel de Controle</strong> (versão clássica) e o app <strong>Configurações</strong> (Windows 10/11) permitem personalizar o sistema: alterar papel de parede, ajustar volume e brilho, configurar rede, instalar e desinstalar programas, gerenciar usuários.</p>
+        </div>
+        <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#f87171;">⌨️ Atalhos Essenciais</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;"><code>Ctrl + C</code> Copiar • <code>Ctrl + V</code> Colar • <code>Ctrl + X</code> Recortar • <code>Ctrl + Z</code> Desfazer • <code>Alt + Tab</code> Alternar janelas • <code>Windows + D</code> Mostrar Área de Trabalho • <code>Ctrl + Shift + Esc</code> Gerenciador de Tarefas • <code>Windows + E</code> Explorador de Arquivos • <code>Windows + I</code> Configurações.</p>
+        </div>
+      </div>`
+    },
+    {
+      id: "arquivos",
+      icon: "📁",
+      title: "Arquivos e Pastas",
+      color: "#a78bfa",
+      foto: `<div style="font-size:5rem;">📁</div>`,
+      content: `<div style="font-size:0.82rem; line-height:1.6; color:rgba(255,255,255,0.7);">
+        <p><strong style="color:#a78bfa;">Arquivos e pastas</strong> são a base da organização digital. Saber criar, nomear, mover e identificar tipos de arquivo é essencial.</p>
+        <div style="background:rgba(168,85,247,0.06); border:1px solid rgba(168,85,247,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#a78bfa;">📄 Extensões de Arquivo</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">A extensão (os caracteres após o ponto) identifica o tipo do arquivo e qual programa abre ele:<br>
+          <strong>.docx / .pdf</strong> — Documento (Word / Leitor PDF)<br>
+          <strong>.xlsx</strong> — Planilha (Excel)<br>
+          <strong>.pptx</strong> — Apresentação (PowerPoint)<br>
+          <strong>.jpg / .png</strong> — Imagem<br>
+          <strong>.mp3 / .wav</strong> — Áudio<br>
+          <strong>.mp4 / .avi</strong> — Vídeo<br>
+          <strong>.exe</strong> — Programa executável<br>
+          <strong>.txt</strong> — Texto puro (Bloco de Notas)</p>
+        </div>
+        <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#818cf8;">🗂️ Hierarquia de Pastas</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Pastas organizam arquivos em uma estrutura em árvore. Exemplo:<br>
+          <code>C:\Usuários\Aluno\Documentos\Trabalho\relatorio.docx</code><br>
+          O <strong>caminho completo</strong> mostra onde o arquivo está armazenado. Boas práticas: use nomes descritivos (ex: "2024-03-15_Contrato.pdf" em vez de "doc1.pdf").</p>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#10b981;">📌 Dicas de Organização</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Crie pastas por categoria (Trabalho, Estudos, Pessoal). Evite acumular arquivos na Área de Trabalho. Faça backups regulares. Use nomes de arquivo que facilitem encontrar depois.</p>
+        </div>
+      </div>`
+    },
+    {
+      id: "seguranca",
+      icon: "🔒",
+      title: "Segurança e Manutenção",
+      color: "#f87171",
+      foto: `<div style="font-size:5rem;">🔒</div>`,
+      content: `<div style="font-size:0.82rem; line-height:1.6; color:rgba(255,255,255,0.7);">
+        <p><strong style="color:#f87171;">Segurança e manutenção</strong> são práticas essenciais para manter o computador funcionando bem e protegido contra ameaças.</p>
+        <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#f87171;">🧹 Limpeza Física</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Mantenha o computador livre de poeira (use pincel e ar comprimido). Limpe teclado e tela com pano macio. Garanta boa ventilação — não obstrua as entradas de ar. Poeira causa superaquecimento e reduz a vida útil dos componentes.</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#fbbf24;">⚡ Proteção Elétrica</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Use <strong>filtro de linha</strong> (estabilizador) para proteger contra picos de tensão. O <strong>nobreak</strong> mantém o PC ligado por alguns minutos durante queda de energia, permitindo salvar o trabalho. Evite ligar o PC em extensões de baixa qualidade.</p>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#10b981;">🛡️ Segurança Digital</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Mantenha o Windows e os programas atualizados. Use um antivírus (Windows Defender já vem instalado). Não clique em links suspeitos nem baixe programas de fontes não oficiais. Cuidado com <strong>adwares</strong> — programas que vêm "junto" com outros instaladores.</p>
+        </div>
+        <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#818cf8;">💾 Backup</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Sempre mantenha cópias de segurança dos seus arquivos importantes. Use HD externo, nuvem (Google Drive, OneDrive) ou pendrive. A regra de ouro: se você não tem backup em pelo menos 2 lugares, seus dados não estão seguros.</p>
+        </div>
+      </div>`
+    },
+    {
+      id: "diagnostico",
+      icon: "🔧",
+      title: "Diagnóstico e Suporte",
+      color: "#22d3ee",
+      foto: `<div style="font-size:5rem;">🔧</div>`,
+      content: `<div style="font-size:0.82rem; line-height:1.6; color:rgba(255,255,255,0.7);">
+        <p><strong style="color:#22d3ee;">Diagnóstico e suporte técnico</strong> envolvem identificar problemas e aplicar soluções. O método do técnico: <strong>Ouvir → Investigar → Testar → Concluir</strong>.</p>
+        <div style="background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#22d3ee;">🔍 Ferramentas de Diagnóstico</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;"><strong>Gerenciador de Tarefas</strong> (Ctrl+Shift+Esc): veja CPU, RAM, Disco e Rede em tempo real.<br>
+          <strong>Gerenciador de Dispositivos</strong>: veja todos os hardwares instalados. Um ⚠️ amarelo indica driver ausente ou falha.<br>
+          <strong>Limpeza de Disco</strong> (Cleanmgr): libera espaço removendo arquivos temporários.<br>
+          <strong>Desfragmentador</strong> (HD) e <strong>TRIM</strong> (SSD): otimizam o desempenho do disco.</p>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#10b981;">🐌 Computador Lento — O Tripé</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Analise três componentes:<br>
+          • <strong>CPU</strong> a 100% → algum programa está consumindo todo o processador.<br>
+          • <strong>RAM</strong> acima de 90% → memória cheia, Windows usa o disco lento (pagefile).<br>
+          • <strong>Disco</strong> a 100% → HD congestionado ou SSD com problemas de TRIM.</p>
+        </div>
+        <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#fbbf24;">🔵 BSOD (Tela Azul)</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Quando o Windows encontra um erro crítico, ele exibe a tela azul com um <strong>Stop Code</strong>. Anote esse código e pesquise — ele indica qual driver ou componente causou o problema. Soluções comuns: atualizar driver, testar a RAM, verificar o disco.</p>
+        </div>
+        <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:8px; padding:10px; margin:8px 0;">
+          <strong style="color:#f87171;">🚀 Startup e Programas</strong>
+          <p style="margin:4px 0 0; font-size:0.76rem;">Muitos programas configuram-se para abrir junto com o Windows, deixando o boot lento. No Gerenciador de Tarefas > Aplicativos de Inicialização, desative programas desnecessários para acelerar a inicialização.</p>
+        </div>
+      </div>`
+    }
+  ];
+
+  const abrirModal = (topic) => {
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;";
+    overlay.innerHTML = `<div style="background:#1a1a2e;border:2px solid ${topic.color}40;border-radius:16px;max-width:520px;width:90%;padding:0;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,0.5);">
+      <div style="background:linear-gradient(135deg,${topic.color}30,#0f0f23);padding:1.5rem;text-align:center;">
+        <div style="width:100%;height:180px;background:linear-gradient(145deg,${topic.color}20,#0a0a1a);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;border:1px solid ${topic.color}20;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:6px;left:8px;background:rgba(0,0,0,0.5);padding:2px 8px;border-radius:4px;font-size:0.6rem;color:rgba(255,255,255,0.4);">📷 Ilustração</div>
+          ${topic.foto}
+        </div>
+        <h3 style="margin:0;color:${topic.color};font-size:1.2rem;">${topic.icon} ${topic.title}</h3>
+      </div>
+      <div style="padding:1.2rem;max-height:300px;overflow-y:auto;">
+        ${topic.content}
+      </div>
+      <div style="padding:0.8rem 1.2rem 1.2rem;">
+        <button class="revisao-fechar-btn" style="width:100%;padding:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;cursor:pointer;font-size:0.82rem;">✕ Fechar</button>
+      </div>
+    </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+    overlay.querySelector(".revisao-fechar-btn").addEventListener("click", () => overlay.remove());
+  };
+
+  const render = () => {
+    container.innerHTML = `<div style="padding:0.5rem;">
+      <p style="font-size:0.78rem; color:rgba(255,255,255,0.4); text-align:center; margin:0 0 10px;">Clique em um card para abrir o conteúdo com foto e explicação completa.</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        ${TOPICS.map(t => {
+          const visto = sessionStorage.getItem("aula8_revisao_visto") === t.id;
+          return `
+            <div style="background:rgba(255,255,255,0.02); border:1px solid ${t.color}30; border-radius:12px; cursor:pointer; transition:all 0.15s;" class="revisao-card" data-id="${t.id}">
+              <div style="padding:14px; text-align:center;">
+                <div style="font-size:2.2rem; margin-bottom:6px;">${t.icon}</div>
+                <strong style="color:${t.color}; font-size:0.85rem;">${t.title}</strong>
+                <div style="font-size:0.68rem; color:rgba(255,255,255,0.25); margin-top:4px;">${visto ? '✔️ Revisado' : '👆 Clique para ver'}</div>
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    </div>`;
+
+    container.querySelectorAll(".revisao-card").forEach(el => {
+      el.addEventListener("click", () => {
+        const id = el.dataset.id;
+        const t = TOPICS.find(x => x.id === id);
+        if (t) {
+          sessionStorage.setItem("aula8_revisao_visto", id);
+          abrirModal(t);
+          render();
+        }
+      });
+    });
+  };
+
+  render();
+}
+
+// ==========================================================================
+// AULA 8 — QUEBRA-CABEÇA: LIGUE OS PONTOS
+// ==========================================================================
+function initAula8Puzzle(container, isReset) {
+  if (isReset) sessionStorage.removeItem("aula8_conexao");
+
+  const PAIRS = [
+    { id: "placamae", left: "🖥️ Placa-mãe", right: "Conecta todos os componentes do computador" },
+    { id: "cpu", left: "🧠 Processador (CPU)", right: "Executa cálculos e processa instruções dos programas" },
+    { id: "ram", left: "💾 Memória RAM", right: "Armazena dados temporários para acesso rápido" },
+    { id: "ssd", left: "💿 SSD", right: "Armazenamento rápido sem partes móveis" },
+    { id: "fonte", left: "🔌 Fonte de Alimentação", right: "Converte energia da tomada para os componentes" },
+    { id: "cooler", left: "❄️ Cooler", right: "Dissipa o calor gerado pelo processador" },
+    { id: "mouse", left: "🖱️ Mouse", right: "Dispositivo de entrada que controla o cursor" },
+    { id: "teclado", left: "⌨️ Teclado", right: "Dispositivo de entrada para digitar textos e comandos" },
+    { id: "monitor", left: "🖥️ Monitor", right: "Dispositivo de saída que exibe imagens" },
+    { id: "impressora", left: "🖨️ Impressora", right: "Dispositivo de saída que imprime documentos" },
+    { id: "roteador", left: "📡 Roteador", right: "Distribui o sinal de internet para dispositivos" },
+    { id: "hd", left: "💽 HD (Disco Rígido)", right: "Armazenamento magnético de grande capacidade" }
+  ];
+
+  let state = JSON.parse(sessionStorage.getItem("aula8_conexao")) || { completed: [], lives: 3 };
+
+  const render = () => {
+    if (state.lives <= 0) {
+      container.innerHTML = `<div style="text-align:center; padding:2rem;">
+        <div style="font-size:3rem;">💔</div>
+        <h3 style="color:#ef4444;">Suas vidas acabaram!</h3>
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.6); margin-bottom:1rem;">Você errou todas as conexões. Clique abaixo para tentar novamente.</p>
+        <button id="puzzle-retry-btn" class="btn btn-primary" style="padding:10px 24px;">🔄 Tentar Novamente</button>
+      </div>`;
+      document.getElementById("puzzle-retry-btn")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        sessionStorage.removeItem("aula8_conexao");
+        initAula8Puzzle(container, true);
+      });
+      return;
+    }
+
+    if (state.completed.length === PAIRS.length) {
+      container.innerHTML = `<div style="text-align:center; padding:2rem;">
+        <div style="font-size:3rem;">🏆</div>
+        <h3 style="color:#10b981;">Todas as Conexões feitas com Sucesso!</h3>
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.6);">Você provou que conhece cada componente e sua função!</p>
+      </div>`;
+      markSlideAsCompleted("aula8-puzzle");
+      addXP(50);
+      return;
+    }
+
+    const available = PAIRS.filter(p => !state.completed.includes(p.id));
+    const target = available[Math.floor(Math.random() * available.length)];
+
+    // Random fase: 0 = componente → função, 1 = função → componente
+    const fase = Math.floor(Math.random() * 2);
+
+    let wrongOptions, options;
+    if (fase === 0) {
+      wrongOptions = PAIRS
+        .filter(p => p.id !== target.id)
+        .map(p => p.right)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+      options = [target.right, ...wrongOptions].sort(() => Math.random() - 0.5);
+
+      container.innerHTML = `<div style="padding:0.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="font-size:0.75rem; color:rgba(255,255,255,0.4);">Conectados: ${state.completed.length}/${PAIRS.length}</span>
+          <span style="font-size:0.9rem;">${'❤️'.repeat(state.lives)}${'💔'.repeat(3 - state.lives)}</span>
+        </div>
+        <div style="background:rgba(15,15,30,0.5); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem; text-align:center; margin-bottom:1rem;">
+          <div style="font-size:2rem; margin-bottom:8px;">${target.left}</div>
+          <p style="font-size:0.82rem; color:rgba(255,255,255,0.5); margin:0;">Qual é a <strong style="color:#fbbf24;">função</strong> deste componente?</p>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          ${options.map((opt, idx) => `
+            <button class="con-puzzle-btn" data-opt-idx="${idx}" data-correct="${opt === target.right}" style="padding:12px 14px; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background:rgba(255,255,255,0.02); color:#fff; cursor:pointer; font-size:0.78rem; text-align:left; line-height:1.4;">
+              ${opt}
+            </button>
+          `).join("")}
+        </div>
+        <div id="con-puzzle-feedback" style="margin-top:12px; min-height:30px;"></div>
+      </div>`;
+    } else {
+      wrongOptions = PAIRS
+        .filter(p => p.id !== target.id)
+        .map(p => p.left)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+      options = [target.left, ...wrongOptions].sort(() => Math.random() - 0.5);
+
+      container.innerHTML = `<div style="padding:0.5rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <span style="font-size:0.75rem; color:rgba(255,255,255,0.4);">Conectados: ${state.completed.length}/${PAIRS.length}</span>
+          <span style="font-size:0.9rem;">${'❤️'.repeat(state.lives)}${'💔'.repeat(3 - state.lives)}</span>
+        </div>
+        <div style="background:rgba(15,15,30,0.5); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem; text-align:center; margin-bottom:1rem;">
+          <p style="font-size:0.82rem; color:rgba(255,255,255,0.5); margin:0 0 8px;">Qual componente tem esta função?</p>
+          <div style="font-size:0.9rem; color:#fbbf24; font-weight:700; line-height:1.4;">${target.right}</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+          ${options.map((opt, idx) => `
+            <button class="con-puzzle-btn" data-opt-idx="${idx}" data-correct="${opt === target.left}" style="padding:14px; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background:rgba(255,255,255,0.02); color:#fff; cursor:pointer; font-size:0.78rem; text-align:center;">
+              ${opt}
+            </button>
+          `).join("")}
+        </div>
+        <div id="con-puzzle-feedback" style="margin-top:12px; min-height:30px;"></div>
+      </div>`;
+    }
+
+    let respostaDada = false;
+    document.querySelectorAll(".con-puzzle-btn").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (respostaDada) return;
+        respostaDada = true;
+
+        const isCorrect = btn.dataset.correct === "true";
+        document.querySelectorAll(".con-puzzle-btn").forEach(b => { b.disabled = true; b.style.opacity = "0.5"; });
+        btn.style.opacity = "1";
+        btn.style.borderColor = isCorrect ? "rgba(16,185,129,0.5)" : "rgba(239,68,68,0.5)";
+
+        const fb = document.getElementById("con-puzzle-feedback");
+        let msg, btnLabel;
+        if (isCorrect) {
+          state.completed.push(target.id);
+          sessionStorage.setItem("aula8_conexao", JSON.stringify(state));
+          msg = `✅ <strong>Conexão correta!</strong><br><span style="font-size:0.7rem;color:rgba(255,255,255,0.4);">${target.left} ↔ ${target.right}</span>`;
+          btnLabel = "➡️ Próxima Pergunta";
+        } else {
+          state.lives--;
+          sessionStorage.setItem("aula8_conexao", JSON.stringify(state));
+          msg = `❌ <strong>Conexão errada! (-1 vida)</strong><br><span style="font-size:0.7rem;color:rgba(255,255,255,0.4);">${target.left} = ${target.right}</span>`;
+          btnLabel = "➡️ Continuar";
+        }
+        fb.innerHTML = `<div style="padding:12px;background:${isCorrect?'rgba(16,185,129,0.08)':'rgba(239,68,68,0.08)'};border:1px solid ${isCorrect?'rgba(16,185,129,0.2)':'rgba(239,68,68,0.2)'};border-radius:8px;color:${isCorrect?'#10b981':'#ef4444'};font-size:0.8rem;text-align:center;">${msg}</div>
+        <button class="con-next-btn" style="margin-top:8px;width:100%;padding:10px;background:linear-gradient(135deg,#6366f1,#818cf8);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:0.82rem;font-weight:600;">${btnLabel}</button>`;
+        container.querySelector(".con-next-btn")?.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          setTimeout(() => render(), 50);
+        }, { once: true });
+      });
+    });
+  };
+
+  render();
+}
+
+// ==========================================================================
+// AULA 8 — PC ASSEMBLY LAB (SIMULADOR VISUAL)
+// ==========================================================================
+function initPcAssemblyLab(container, isReset) {
+  if (isReset) sessionStorage.removeItem("aula8_assembly");
+
+  const COMPONENTS = [
+    { id: "mb", title: "Placa-mãe", icon: "🖥️", cor: "#818cf8", desc: "A base que conecta todos os componentes." },
+    { id: "cpu", title: "Processador", icon: "🧠", cor: "#fbbf24", desc: "O cérebro que executa os cálculos." },
+    { id: "thermal", title: "Pasta Térmica", icon: "🧴", cor: "#10b981", desc: "Condutor de calor entre CPU e cooler." },
+    { id: "cooler", title: "Cooler", icon: "❄️", cor: "#22d3ee", desc: "Sistema de resfriamento da CPU." },
+    { id: "ram", title: "Memória RAM", icon: "💾", cor: "#10b981", desc: "Armazena dados temporários de acesso rápido." },
+    { id: "ssd", title: "SSD", icon: "💿", cor: "#60a5fa", desc: "Armazenamento rápido sem partes móveis." },
+    { id: "psu", title: "Fonte", icon: "🔌", cor: "#f87171", desc: "Converte energia da tomada para o PC." },
+    { id: "sata", title: "Cabos SATA", icon: "🔗", cor: "#a78bfa", desc: "Cabos de dados para armazenamento." },
+    { id: "power", title: "Cabos Energia", icon: "⚡", cor: "#fbbf24", desc: "Cabos que alimentam a placa-mãe." },
+    { id: "perif", title: "Periféricos", icon: "🖱️", cor: "#34d399", desc: "Monitor, teclado, mouse externos." }
+  ];
+
+  let state = JSON.parse(sessionStorage.getItem("aula8_assembly")) || { installed: [], current: 0, errors: 0 };
+
+  // Posições visuais dentro do gabinete (em grid)
+  const SLOTS = [
+    { id: "mb", label: "Placa-mãe", row: 1, col: 1, rowspan: 2, colspan: 2, icon: "🖥️", installedIcon: "🖥️" },
+    { id: "cpu", label: "CPU", row: 1, col: 1, rowspan: 1, colspan: 1, icon: "🧠" },
+    { id: "thermal", label: "Pasta Térmica", row: 1, col: 2, rowspan: 1, colspan: 1, icon: "🧴" },
+    { id: "cooler", label: "Cooler", row: 1, col: 3, rowspan: 1, colspan: 1, icon: "❄️" },
+    { id: "ram", label: "RAM", row: 2, col: 1, rowspan: 1, colspan: 3, icon: "💾" },
+    { id: "ssd", label: "SSD", row: 3, col: 1, rowspan: 1, colspan: 2, icon: "💿" },
+    { id: "psu", label: "Fonte", row: 3, col: 3, rowspan: 1, colspan: 1, icon: "🔌" },
+    { id: "sata", label: "Cabos SATA", row: 4, col: 1, rowspan: 1, colspan: 1, icon: "🔗" },
+    { id: "power", label: "Cabos Energia", row: 4, col: 2, rowspan: 1, colspan: 1, icon: "⚡" },
+    { id: "perif", label: "Periféricos", row: 4, col: 3, rowspan: 1, colspan: 1, icon: "🖱️" }
+  ];
+
+  const currentStep = () => COMPONENTS[state.current];
+
+  const abrirModalPeca = (comp) => {
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;";
+    overlay.innerHTML = `<div style="background:#1a1a2e;border:2px solid ${comp.cor}40;border-radius:16px;max-width:380px;width:90%;padding:1.5rem;text-align:center;box-shadow:0 0 40px rgba(0,0,0,0.5);">
+      <div style="font-size:5rem;margin-bottom:12px;">${comp.icon}</div>
+      <h3 style="margin:0 0 8px;color:${comp.cor};font-size:1.1rem;">${comp.title}</h3>
+      <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;margin:0 0 16px;">${comp.desc}</p>
+      <button class="fechar-modal-peca-btn" style="width:100%;padding:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;cursor:pointer;font-size:0.82rem;">✕ Fechar</button>
+    </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+    overlay.querySelector(".fechar-modal-peca-btn").addEventListener("click", () => overlay.remove());
+  };
+
+  const shuffle = (arr) => {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  };
+
+  const render = () => {
+    if (state.installed.length === COMPONENTS.length) {
+      container.innerHTML = `<div style="text-align:center;padding:1.5rem;">
+        <div style="font-size:3rem;">🎉</div>
+        <h3 style="color:#10b981;">PC Montado com Sucesso!</h3>
+        <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);">Todos os ${COMPONENTS.length} componentes foram instalados corretamente.</p>
+      </div>`;
+      markSlideAsCompleted("aula8-montagem-lab");
+      addXP(50);
+      return;
+    }
+
+    const step = currentStep();
+    const pct = Math.round((state.installed.length / COMPONENTS.length) * 100);
+    const available = COMPONENTS.filter(c => !state.installed.includes(c.id));
+    const shuffled = shuffle(available);
+
+    container.innerHTML = `<div style="padding:0.5rem;">
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:rgba(255,255,255,0.4);margin-bottom:4px;">
+          <span>Montagem: ${state.installed.length}/${COMPONENTS.length}</span>
+          <span>${pct}%</span>
+        </div>
+        <div style="width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#10b981,#6366f1);border-radius:4px;"></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;">
+          <div style="background:rgba(15,15,30,0.5);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px;text-align:center;">
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:6px;">🔧 Instale o componente:</div>
+            <div style="font-size:2.5rem;">${step.icon}</div>
+            <strong style="color:${step.cor};font-size:0.9rem;">${step.title}</strong>
+            <p style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin:4px 0 0;">${step.desc}</p>
+          </div>
+
+          <div style="margin-top:8px;">
+            <p style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin:0 0 6px;">Clique no componente correto:</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              ${shuffled.map(c => `
+                <div class="assembly-option" data-id="${c.id}" style="flex:1;min-width:70px;max-width:90px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.15s;">
+                  <div style="font-size:1.6rem;">${c.icon}</div>
+                  <div style="font-size:0.6rem;color:rgba(255,255,255,0.5);margin-top:2px;">${c.title}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+
+          <div id="assembly-feedback" style="margin-top:8px;"></div>
+        </div>
+
+        <div style="flex:2;min-width:280px;">
+          <div style="background:linear-gradient(145deg,#1a1a2e,#0f0f23);border:2px solid rgba(255,255,255,0.08);border-radius:16px;padding:12px;position:relative;">
+            <div style="text-align:center;font-size:0.65rem;color:rgba(255,255,255,0.2);margin-bottom:8px;letter-spacing:2px;text-transform:uppercase;">🔲 Gabinete do PC</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+              ${SLOTS.map(slot => {
+                const installed = state.installed.includes(slot.id);
+                const comp = COMPONENTS.find(c => c.id === slot.id);
+                return `
+                  <div style="background:${installed ? `${comp.cor}25` : 'rgba(255,255,255,0.02)'};border:1px solid ${installed ? `${comp.cor}40` : 'rgba(255,255,255,0.06)'};border-radius:8px;padding:8px;text-align:center;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.3s;">
+                    ${installed
+                      ? `<span style="font-size:1.8rem;">${comp.icon}</span><span style="font-size:0.55rem;color:${comp.cor};margin-top:2px;">${comp.title}</span><span style="font-size:0.5rem;color:rgba(16,185,129,0.6);">✔️</span>`
+                      : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.15);">⬜</span><span style="font-size:0.55rem;color:rgba(255,255,255,0.15);">${slot.label}</span>`
+                    }
+                  </div>
+                `;
+              }).join("")}
+            </div>
+            <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;">
+              <span style="font-size:0.55rem;color:rgba(255,255,255,0.08);">🖥️ CPU</span>
+              <span style="font-size:0.55rem;color:rgba(255,255,255,0.08);">🔲 RAM</span>
+              <span style="font-size:0.55rem;color:rgba(255,255,255,0.08);">💾 SSD</span>
+              <span style="font-size:0.55rem;color:rgba(255,255,255,0.08);">🔌 Fonte</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+    container.querySelectorAll(".assembly-option").forEach(el => {
+      el.addEventListener("click", () => {
+        const id = el.dataset.id;
+        const fb = document.getElementById("assembly-feedback");
+        if (id === step.id) {
+          state.installed.push(id);
+          state.current++;
+          sessionStorage.setItem("aula8_assembly", JSON.stringify(state));
+          fb.innerHTML = `<div style="padding:10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;color:#10b981;font-size:0.78rem;text-align:center;">✅ ${step.icon} ${step.title} instalado com sucesso!</div>`;
+          setTimeout(() => render(), 600);
+        } else {
+          state.errors++;
+          sessionStorage.setItem("aula8_assembly", JSON.stringify(state));
+          const clicked = COMPONENTS.find(c => c.id === id);
+          fb.innerHTML = `<div style="padding:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#ef4444;font-size:0.78rem;text-align:center;">❌ ${clicked.icon} ${clicked.title} não é o componente correto. Tente novamente!</div>`;
+          el.style.border = "1px solid rgba(239,68,68,0.4)";
+          el.style.background = "rgba(239,68,68,0.06)";
+          setTimeout(() => { el.style.border = ""; el.style.background = ""; fb.innerHTML = ""; }, 1200);
+        }
+      });
+      el.addEventListener("dblclick", (e) => {
+        e.preventDefault();
+        const id = el.dataset.id;
+        const comp = COMPONENTS.find(c => c.id === id);
+        if (comp) abrirModalPeca(comp);
+      });
+    });
+  };
+
+  render();
+}
+
+// ==========================================================================
+// AULA 8 — BOOT LAB
+// ==========================================================================
+function initBootLab(container, isReset) {
+  if (isReset) sessionStorage.removeItem("aula8_boot");
+
+  const SCENARIOS = [
+    { id: "ram", title: "RAM mal encaixada", symptom: "O computador liga, mas emite beeps consecutivos e a tela fica preta.", solution: "Reinstale os pentes de RAM pressionando firmemente até ouvir o clique.", correctAnswer: "ram-reinstall" },
+    { id: "ssd", title: "SSD desconectado", symptom: "O computador liga, mas mostra 'Boot Device Not Found' ou 'No Bootable Device'.", solution: "Verifique o cabo SATA e o cabo de energia do SSD.", correctAnswer: "ssd-cable" },
+    { id: "cooler", title: "Cooler desligado", symptom: "O computador liga, funciona por alguns minutos e desliga sozinho.", solution: "Conecte o cabo do cooler ao header CPU_FAN na placa-mãe.", correctAnswer: "cooler-fan" },
+    { id: "monitor", title: "Monitor sem sinal", symptom: "O computador liga (ventoinhas giram, LEDs acendem), mas o monitor fica em 'Sem Sinal'.", solution: "Verifique se o cabo HDMI/DisplayPort está conectado na placa de vídeo (não na placa-mãe) e se o monitor está ligado.", correctAnswer: "monitor-cable" }
+  ];
+
+  const OPTIONS = [
+    { id: "ram-reinstall", label: "Reinstalar a RAM" },
+    { id: "ssd-cable", label: "Verificar cabos do SSD" },
+    { id: "cooler-fan", label: "Conectar o cooler à placa-mãe" },
+    { id: "monitor-cable", label: "Verificar cabo do monitor" },
+    { id: "reset-bios", label: "Resetar a BIOS" },
+    { id: "replace-psu", label: "Trocar a fonte" }
+  ];
+
+  let state = JSON.parse(sessionStorage.getItem("aula8_boot")) || { completed: [], currentScenario: 0, lives: 3 };
+
+  const render = () => {
+    if (state.completed.length === SCENARIOS.length || state.lives <= 0) {
+      const success = state.completed.length >= 3;
+      container.innerHTML = `<div style="text-align:center; padding:1.5rem;">
+        <div style="font-size:3rem;">${success ? '🎉' : '💔'}</div>
+        <h3 style="color:${success ? '#10b981' : '#ef4444'};">${success ? 'Diagnóstico Concluído!' : 'Missão Falhou'}</h3>
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.6);">
+          ${success ? 'Você diagnosticou e corrigiu todos os problemas de boot!' : 'Você perdeu todas as vidas. Tente novamente!'}
+        </p>
+        ${success ? `<div style="font-size:0.78rem; color:#10b981; margin-top:8px;">✅ BIOS detectando CPU, RAM e SSD corretamente!</div>` : `<button id="retry-boot-btn" class="btn btn-primary" style="margin-top:12px;">🔄 Tentar Novamente</button>`}
+      </div>`;
+      if (success) { markSlideAsCompleted("aula8-boot-lab"); addXP(40); }
+      const retry = document.getElementById("retry-boot-btn");
+      if (retry) retry.addEventListener("click", () => { sessionStorage.removeItem("aula8_boot"); initBootLab(container, true); });
+      return;
+    }
+
+    const scenario = SCENARIOS[state.currentScenario];
+
+    container.innerHTML = `<div style="padding:0.5rem;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+        <span style="font-size:0.75rem; color:rgba(255,255,255,0.4);">Problema ${state.completed.length + 1}/${SCENARIOS.length}</span>
+        <span style="font-size:0.85rem;">${'❤️'.repeat(state.lives)}${'💔'.repeat(3 - state.lives)}</span>
+      </div>
+
+      <div style="background:rgba(15,15,30,0.5); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem; margin-bottom:1rem; text-align:center;">
+        <div style="font-size:1rem; background:#003c8f; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:12px; margin-bottom:8px; color:#fff; font-family:monospace;">
+          <div style="font-size:0.7rem; color:rgba(255,255,255,0.4); margin-bottom:4px;">🖥️ POST / BIOS</div>
+          <div style="font-size:0.82rem;">${scenario.symptom}</div>
+        </div>
+        <strong style="color:#fbbf24;">🔍 Diagnóstico: ${scenario.title}</strong>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        ${OPTIONS.map(o => `
+          <button class="boot-option-btn" data-id="${o.id}" style="padding:12px; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background:rgba(255,255,255,0.02); color:#fff; cursor:pointer; font-size:0.78rem;">
+            ${o.label}
+          </button>
+        `).join("")}
+      </div>
+      <div id="boot-feedback" style="margin-top:10px; min-height:30px;"></div>
+    </div>`;
+
+    document.querySelectorAll(".boot-option-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const choice = btn.dataset.id;
+        const isCorrect = choice === scenario.correctAnswer;
+
+        document.querySelectorAll(".boot-option-btn").forEach(b => b.disabled = true);
+
+        const fb = document.getElementById("boot-feedback");
+        if (isCorrect) {
+          state.completed.push(scenario.id);
+          fb.innerHTML = `<div style="padding:10px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:8px; color:#10b981; font-size:0.8rem;">
+            ✅ Correto! ${scenario.solution}<br><span style="font-size:0.7rem; color:rgba(255,255,255,0.4);">Clique para continuar...</span>
+          </div>`;
+          fb.addEventListener("click", () => {
+            state.currentScenario = SCENARIOS.findIndex(s => !state.completed.includes(s.id));
+            state.currentScenario = state.currentScenario < 0 ? 0 : state.currentScenario;
+            sessionStorage.setItem("aula8_boot", JSON.stringify(state));
+            render();
+          }, { once: true });
+        } else {
+          state.lives--;
+          fb.innerHTML = `<div style="padding:10px; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:8px; color:#ef4444; font-size:0.8rem;">
+            ❌ Incorreto! (-1 vida)<br><span style="font-size:0.7rem; color:rgba(255,255,255,0.4);">Restam ${state.lives} vidas. Clique para tentar novamente.</span>
+          </div>`;
+          fb.addEventListener("click", () => {
+            sessionStorage.setItem("aula8_boot", JSON.stringify(state));
+            render();
+          }, { once: true });
+        }
+        sessionStorage.setItem("aula8_boot", JSON.stringify(state));
+      });
+    });
+  };
+
+  render();
+}
+
+// ==========================================================================
+// AULA 8 — WINDOWS INSTALLER LAB
+// ==========================================================================
+function initWindowsInstallerLab(container, isReset) {
+  if (isReset) sessionStorage.removeItem("aula8_install");
+
+  const STEPS = [
+    { id: "boot-pen", title: "Inserir Pendrive Bootável", desc: "Conecte o pendrive com o instalador do Windows na porta USB. Reinicie o computador e entre na BIOS (F2/Del) para definir a ordem de boot: USB primeiro.", icon: "💿" },
+    { id: "language", title: "Escolher Idioma", desc: "Selecione o idioma do sistema, formato de hora/moeda e teclado. Para o Brasil: Português (Brasil) e Teclado ABNT2.", icon: "🌐" },
+    { id: "disk", title: "Selecionar Disco", desc: "Escolha o SSD onde o Windows será instalado. Se houver partições antigas, clique em 'Excluir' até restar apenas 'Espaço Não Alocado'. Depois clique em 'Avançar'.", icon: "💾" },
+    { id: "progress", title: "Aguardar Instalação", desc: "O Windows copia os arquivos e reinicia algumas vezes. É normal a tela piscar e o computador reiniciar sozinho. Não desconecte o pendrive ainda.", icon: "⏳" },
+    { id: "user", title: "Criar Usuário", desc: "Digite seu nome de usuário e uma senha (opcional, mas recomendada). Escolha um nome de computador e configure as perguntas de segurança.", icon: "👤" },
+    { id: "finish", title: "Concluir Instalação", desc: "O Windows faz as configurações finais e exibe a Área de Trabalho. Pronto! O Windows está instalado.", icon: "🎉" }
+  ];
+
+  let state = JSON.parse(sessionStorage.getItem("aula8_install")) || { completed: [], current: 0 };
+
+  const render = () => {
+    if (state.completed.length === STEPS.length) {
+      container.innerHTML = `<div style="text-align:center; padding:1.5rem;">
+        <div style="font-size:3rem;">🪟</div>
+        <h3 style="color:#10b981;">Windows Instalado!</h3>
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.6);">O Windows foi instalado com sucesso no SSD. Agora vamos configurá-lo!</p>
+      </div>`;
+      markSlideAsCompleted("aula8-win-install");
+      addXP(40);
+      return;
+    }
+
+    const step = STEPS[state.current];
+    const pct = Math.round((state.completed.length / STEPS.length) * 100);
+
+    container.innerHTML = `<div style="padding:0.5rem;">
+      <div style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:rgba(255,255,255,0.4); margin-bottom:4px;">
+          <span>Instalação: ${state.completed.length}/${STEPS.length}</span>
+          <span>${pct}%</span>
+        </div>
+        <div style="width:100%; height:6px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+          <div style="height:100%; width:${pct}%; background:linear-gradient(90deg,#818cf8,#10b981); border-radius:4px;"></div>
+        </div>
+      </div>
+
+      <div style="background:rgba(15,15,30,0.5); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem; text-align:center;">
+        <div style="font-size:2rem; margin-bottom:8px;">${step.icon}</div>
+        <h4 style="margin:0 0 8px; color:#818cf8; font-size:0.9rem;">Passo ${state.current + 1}: ${step.title}</h4>
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.65); line-height:1.5; margin-bottom:1rem;">${step.desc}</p>
+        <button id="install-next-btn" class="btn btn-primary" style="padding:10px 24px;">${state.current === STEPS.length - 1 ? '🎉 Finalizar' : '✅ Avançar'}</button>
+      </div>
+
+      <div style="margin-top:12px; display:flex; gap:6px;">
+        ${STEPS.map((s, i) => `<div style="flex:1; height:4px; border-radius:2px; background:${state.completed.includes(s.id) ? '#10b981' : i === state.current ? '#818cf8' : 'rgba(255,255,255,0.06)'};"></div>`).join("")}
+      </div>
+    </div>`;
+
+    document.getElementById("install-next-btn").addEventListener("click", () => {
+      state.completed.push(step.id);
+      state.current++;
+      sessionStorage.setItem("aula8_install", JSON.stringify(state));
+      render();
+    });
+  };
+
+  render();
+}
+
+// ==========================================================================
+// AULA 8 — WINDOWS SETUP LAB
+// ==========================================================================
+function initWindowsSetupLab(container, isReset) {
+  if (isReset) sessionStorage.removeItem("aula8_setup");
+
+  const TASKS = [
+    { id: "wallpaper", title: "Alterar Papel de Parede", desc: "Clique com direito na Área de Trabalho > Personalizar > Plano de Fundo. Escolha uma imagem.", icon: "🖼️", done: false },
+    { id: "brightness", title: "Ajustar Brilho", desc: "Abra a Central de Ações (Windows + A) e ajuste o controle deslizante de brilho.", icon: "☀️", done: false },
+    { id: "volume", title: "Ajustar Volume", desc: "Clique no ícone de alto-falante na barra de tarefas e ajuste o volume para 70%.", icon: "🔊", done: false },
+    { id: "date", title: "Configurar Data e Hora", desc: "Clique com direito no relógio > Ajustar data/hora. Ative o ajuste automático.", icon: "📅", done: false },
+    { id: "folders", title: "Criar Pastas", desc: "Na Área de Trabalho, crie 3 pastas: 'Documentos', 'Fotos', 'Trabalho'.", icon: "📂", done: false },
+    { id: "organize", title: "Organizar Documentos", desc: "Mova os arquivos da Área de Trabalho para as pastas corretas (ex: fotos para 'Fotos').", icon: "🗂️", done: false }
+  ];
+
+  let state = JSON.parse(sessionStorage.getItem("aula8_setup")) || { completed: [] };
+
+  const render = () => {
+    const allDone = state.completed.length === TASKS.length;
+
+    container.innerHTML = `<div style="padding:0.5rem;">
+      <div style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:rgba(255,255,255,0.4); margin-bottom:4px;">
+          <span>Tarefas de configuração</span>
+          <span>${state.completed.length}/${TASKS.length}</span>
+        </div>
+        <div style="width:100%; height:6px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+          <div style="height:100%; width:${Math.round((state.completed.length/TASKS.length)*100)}%; background:linear-gradient(90deg,#fbbf24,#10b981); border-radius:4px;"></div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        ${TASKS.map(t => {
+          const done = state.completed.includes(t.id);
+          return `<div style="background:${done ? 'rgba(16,185,129,0.06)' : 'rgba(255,255,255,0.02)'}; border:1px solid ${done ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.06)'}; border-radius:10px; padding:12px; ${done ? '' : 'cursor:pointer;'}" data-task="${t.id}" ${done ? '' : 'class="setup-task-btn"'}>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <span style="font-size:1.3rem;">${done ? '✅' : t.icon}</span>
+              <strong style="font-size:0.82rem; color:${done ? '#10b981' : '#fbbf24'};">${t.title}</strong>
+            </div>
+            <p style="font-size:0.72rem; color:rgba(255,255,255,0.45); margin:0; line-height:1.4;">${done ? '✅ Concluído' : t.desc}</p>
+          </div>`;
+        }).join("")}
+      </div>
+
+      ${allDone ? `<div style="text-align:center; margin-top:1rem; padding:1rem; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:10px;">
+        <span style="font-size:1.5rem;">⚙️</span>
+        <h4 style="color:#10b981; margin:4px 0 0;">Windows Configurado!</h4>
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.55);">Todas as configurações iniciais foram concluídas.</p>
+      </div>` : ""}
+    </div>`;
+
+    if (!allDone) {
+      document.querySelectorAll(".setup-task-btn").forEach(el => {
+        el.addEventListener("click", () => {
+          const taskId = el.dataset.task;
+          if (!state.completed.includes(taskId)) {
+            state.completed.push(taskId);
+            sessionStorage.setItem("aula8_setup", JSON.stringify(state));
+            if (state.completed.length === TASKS.length) {
+              markSlideAsCompleted("aula8-win-setup");
+              addXP(30);
+            }
+            render();
+          }
+        });
+      });
+    }
+  };
+
+  render();
+}
+
+// ==========================================================================
+// AULA 8 — SOFTWARE CENTER LAB
+// ==========================================================================
+function initSoftwareCenterLab(container, isReset) {
+  if (isReset) sessionStorage.removeItem("aula8_software");
+
+  const APPS = [
+    { id: "browser", name: "Navegador Chrome", icon: "🌐", installed: false, isEssential: true, atalho: false },
+    { id: "pdf", name: "Leitor PDF", icon: "📄", installed: false, isEssential: true, atalho: false },
+    { id: "word", name: "Editor de Texto", icon: "📝", installed: false, isEssential: true, atalho: false },
+    { id: "sheets", name: "Planilhas", icon: "📊", installed: false, isEssential: true, atalho: false },
+    { id: "slides", name: "Apresentações", icon: "📽️", installed: false, isEssential: true, atalho: false },
+    { id: "bloat", name: "Programa Desnecessário", icon: "🗑️", installed: true, isEssential: false, atalho: false }
+  ];
+
+  let state = JSON.parse(sessionStorage.getItem("aula8_software")) || { apps: JSON.parse(JSON.stringify(APPS)), atalhosCriados: [], desinstalados: [], step: 0 };
+
+  const render = () => {
+    const allEssentialInstalled = state.apps.filter(a => a.isEssential).every(a => a.installed);
+    const allStepsDone = state.step >= 3;
+
+    if (allStepsDone && allEssentialInstalled) {
+      container.innerHTML = `<div style="text-align:center; padding:1.5rem;">
+        <div style="font-size:3rem;">💿</div>
+        <h3 style="color:#10b981;">Programas Instalados e Organizados!</h3>
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.6);">Todos os programas essenciais foram instalados, o desnecessário foi removido e os atalhos foram organizados.</p>
+      </div>`;
+      markSlideAsCompleted("aula8-software-center");
+      addXP(30);
+      return;
+    }
+
+    container.innerHTML = `<div style="padding:0.5rem;">
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="software-tab ${state.step === 0 ? 'active' : ''}" data-step="0" style="flex:1; padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.08); background:${state.step === 0 ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.02)'}; color:#fff; cursor:pointer; font-size:0.75rem;">📦 Instalar</button>
+        <button class="software-tab ${state.step === 1 ? 'active' : ''}" data-step="1" style="flex:1; padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.08); background:${state.step === 1 ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.02)'}; color:#fff; cursor:pointer; font-size:0.75rem;">🔗 Atalhos</button>
+        <button class="software-tab ${state.step === 2 ? 'active' : ''}" data-step="2" style="flex:1; padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.08); background:${state.step === 2 ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.02)'}; color:#fff; cursor:pointer; font-size:0.75rem;">🗑️ Limpeza</button>
+      </div>`;
+
+    if (state.step === 0) {
+      const toInstall = state.apps.filter(a => !a.installed && a.isEssential);
+      container.innerHTML += `<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        ${toInstall.map(a => `
+          <button class="install-app-btn" data-id="${a.id}" style="padding:14px; border:1px solid rgba(255,255,255,0.08); border-radius:10px; background:rgba(255,255,255,0.02); color:#fff; cursor:pointer; text-align:center;">
+            <div style="font-size:2rem;">${a.icon}</div>
+            <div style="font-size:0.78rem; margin-top:4px;">${a.name}</div>
+          </button>
+        `).join("")}
+        ${toInstall.length === 0 ? `<div style="grid-column:1/-1; text-align:center; padding:1rem; color:#10b981;">✅ Todos instalados!</div>` : ""}
+      </div>`;
+    } else if (state.step === 1) {
+      const installedEssential = state.apps.filter(a => a.isEssential && a.installed);
+      const noAtalho = installedEssential.filter(a => !state.atalhosCriados.includes(a.id));
+      container.innerHTML += `<p style="font-size:0.78rem; color:rgba(255,255,255,0.5); margin-bottom:8px;">Clique nos programas para criar atalhos na Área de Trabalho:</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        ${noAtalho.map(a => `
+          <button class="shortcut-btn" data-id="${a.id}" style="padding:12px; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background:rgba(255,255,255,0.02); color:#fff; cursor:pointer; text-align:center;">
+            <span style="font-size:1.2rem;">${a.icon}</span>
+            <span style="font-size:0.78rem;">${a.name}</span>
+            <span style="font-size:0.65rem; color:rgba(255,255,255,0.3); display:block;">Clique para criar atalho</span>
+          </button>
+        `).join("")}
+        ${noAtalho.length === 0 ? `<div style="grid-column:1/-1; text-align:center; padding:1rem; color:#10b981;">✅ Todos os atalhos criados!</div>` : ""}
+      </div>`;
+    } else if (state.step === 2) {
+      const toRemove = state.apps.filter(a => !a.isEssential && a.installed);
+      container.innerHTML += `<p style="font-size:0.78rem; color:rgba(255,255,255,0.5); margin-bottom:8px;">Programas desnecessários encontrados. Clique para desinstalar:</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        ${toRemove.map(a => `
+          <button class="uninstall-btn" data-id="${a.id}" style="padding:14px; border:1px solid rgba(239,68,68,0.15); border-radius:10px; background:rgba(239,68,68,0.04); color:#fff; cursor:pointer; text-align:center;">
+            <div style="font-size:1.5rem;">${a.icon}</div>
+            <div style="font-size:0.78rem;">${a.name}</div>
+            <div style="font-size:0.65rem; color:#f87171;">Clique para desinstalar</div>
+          </button>
+        `).join("")}
+        ${toRemove.length === 0 ? `<div style="grid-column:1/-1; text-align:center; padding:1rem; color:#10b981;">✅ Nenhum programa desnecessário restante!</div>` : ""}
+      </div>`;
+    }
+
+    container.innerHTML += `</div>`;
+
+    document.querySelectorAll(".software-tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.step = parseInt(btn.dataset.step);
+        sessionStorage.setItem("aula8_software", JSON.stringify(state));
+        render();
+      });
+    });
+
+    document.querySelectorAll(".install-app-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const app = state.apps.find(a => a.id === btn.dataset.id);
+        if (app) { app.installed = true; }
+        sessionStorage.setItem("aula8_software", JSON.stringify(state));
+        render();
+      });
+    });
+
+    document.querySelectorAll(".shortcut-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        if (!state.atalhosCriados.includes(id)) {
+          state.atalhosCriados.push(id);
+          sessionStorage.setItem("aula8_software", JSON.stringify(state));
+          render();
+        }
+      });
+    });
+
+    document.querySelectorAll(".uninstall-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const app = state.apps.find(a => a.id === btn.dataset.id);
+        if (app) { app.installed = false; }
+        if (!state.desinstalados.includes(btn.dataset.id)) {
+          state.desinstalados.push(btn.dataset.id);
+        }
+        sessionStorage.setItem("aula8_software", JSON.stringify(state));
+        render();
+      });
+    });
+  };
+
+  render();
+}
+
+// ==========================================================================
+// AULA 8 — MISSÃO SURPRESA
+// ==========================================================================
+function initAula8Surpresa(container, isReset) {
+  if (isReset) { sessionStorage.removeItem("aula8_surpresa"); }
+
+  const PROBLEMS = [
+    {
+      id: "internet",
+      title: "🌐 Sem Internet",
+      desc: "O usuário reporta que o navegador não abre nenhuma página. O ícone de rede na barra de tarefas mostra um globo com 'Sem Internet'.",
+      steps: [
+        { question: "Qual é o primeiro passo?", options: ["Reinstalar o Windows", "Verificar se o cabo de rede está conectado ou se o Wi-Fi está ativado", "Comprar um novo modem", "Formatar o computador"], correct: 1, explanation: "Sempre comece pela verificação física: cabo de rede solto ou Wi-Fi desativado são as causas mais comuns." },
+        { question: "Se o cabo está conectado, qual o próximo passo?", options: ["Trocar a placa-mãe", "Usar o Solucionador de Problemas de Rede do Windows", "Instalar um novo navegador", "Desligar o firewall"], correct: 1, explanation: "O Windows possui ferramentas de diagnóstico automáticas. Clique com direito no ícone de rede > Solucionar Problemas." },
+        { question: "E se o solucionador não resolver?", options: ["O problema é definitivamente o hardware", "Verificar o driver da placa de rede no Gerenciador de Dispositivos", "Jogar o computador fora", "Desativar o antivírus"], correct: 1, explanation: "Um driver de rede corrompido ou ausente pode impedir a conexão. Verifique no Gerenciador de Dispositivos se há um ponto de exclamação amarelo." }
+      ]
+    },
+    {
+      id: "audio",
+      title: "🔇 Sem Áudio",
+      desc: "O usuário reinstalou o Windows e agora não sai som nenhum do computador. O ícone de volume não está mudo.",
+      steps: [
+        { question: "Qual a causa mais provável?", options: ["O Windows não tem suporte a áudio", "Faltam os drivers de áudio", "A caixa de som queimou", "O processador está com defeito"], correct: 1, explanation: "Após reinstalar o Windows, é comum faltarem drivers. O dispositivo de áudio aparece com exclamação amarela no Gerenciador de Dispositivos." },
+        { question: "Onde verificar se o dispositivo de áudio é reconhecido?", options: ["No Explorador de Arquivos", "No Gerenciador de Dispositivos", "No Bloco de Notas", "No Prompt de Comando"], correct: 1, explanation: "O Gerenciador de Dispositivos mostra todos os hardwares. Um ponto de exclamação amarelo indica driver ausente." },
+        { question: "Como resolver?", options: ["Formatar o PC", "Usar o Windows Update para buscar drivers", "Tocar o gabinete", "Desabilitar o som"], correct: 1, explanation: "O Windows Update pode encontrar e instalar drivers de áudio automaticamente. Você também pode baixar do site do fabricante." }
+      ]
+    },
+    {
+      id: "disk",
+      title: "💽 Disco Cheio",
+      desc: "O usuário diz que o computador está lento e aparece uma mensagem 'Espaço em disco insuficiente' no drive C:.",
+      steps: [
+        { question: "Qual ferramenta usar primeiro?", options: ["Formatar o HD", "Limpeza de Disco (Cleanmgr)", "Comprar um SSD novo", "Desfragmentar"], correct: 1, explanation: "A Limpeza de Disco remove arquivos temporários, cache e pode liberar gigabytes rapidamente." },
+        { question: "O que fazer se a Limpeza de Disco não liberar espaço suficiente?", options: ["Apagar pastas aleatórias", "Usar 'Limpar arquivos do sistema' para acessar Windows.old e atualizações antigas", "Desativar o Windows", "Trocar de sistema operacional"], correct: 1, explanation: "O botão 'Limpar arquivos do sistema' permite remover a pasta Windows.old (10-25 GB) e arquivos de atualização antigos." },
+        { question: "Qual boa prática evita que o disco encha novamente?", options: ["Nunca instalar programas", "Mover documentos e downloads para outra unidade regularmente", "Deletar o System32", "Desfragmentar toda semana"], correct: 1, explanation: "Manter os dados grandes (vídeos, fotos, downloads) organizados em outra unidade ajuda a preservar espaço no C:." }
+      ]
+    },
+    {
+      id: "mouse",
+      title: "🖱️ Mouse Parou de Funcionar",
+      desc: "O mouse USB do usuário parou de funcionar do nada. O cursor não se move, mas o teclado funciona normalmente.",
+      steps: [
+        { question: "Qual o primeiro passo?", options: ["Comprar um mouse novo", "Desconectar e reconectar o cabo USB", "Reinstalar o Windows", "Abrir o computador"], correct: 1, explanation: "Muitas vezes, apenas reconectar o cabo USB resolve o problema." },
+        { question: "Se reconectar não funcionar?", options: ["Testar o mouse em outra porta USB", "Jogar o mouse fora", "Trocar a placa-mãe", "Usar só o teclado"], correct: 0, explanation: "Testar em outra porta USB ajuda a identificar se o problema é na porta ou no mouse." },
+        { question: "O mouse funciona em outro computador, mas não neste. O que pode ser?", options: ["O mouse está quebrado", "O driver do mouse pode estar corrompido — reinstale no Gerenciador de Dispositivos", "A fonte está queimada", "O Windows não suporta mouse"], correct: 1, explanation: "Se o mouse funciona em outro PC, o problema é de software no computador original. Reinstalar o driver no Gerenciador de Dispositivos resolve." }
+      ]
+    },
+    {
+      id: "driver",
+      title: "⚠️ Driver com Erro",
+      desc: "Após uma atualização do Windows, a placa de vídeo parou de funcionar. Os jogos travam e a resolução da tela está baixa.",
+      steps: [
+        { question: "Onde verificar o status da placa de vídeo?", options: ["No Explorador de Arquivos", "No Gerenciador de Dispositivos > Adaptadores de Vídeo", "No Bloco de Notas", "No Menu Iniciar"], correct: 1, explanation: "No Gerenciador de Dispositivos, a seção 'Adaptadores de Vídeo' mostra o status da placa." },
+        { question: "Qual a melhor ação corretiva?", options: ["Comprar uma placa de vídeo nova", "Reverter o driver para a versão anterior", "Desabilitar a placa de vídeo", "Usar o computador sem vídeo"], correct: 1, explanation: "Reverter o driver (Propriedades > Driver > Reverter Driver) volta para a versão estável anterior à atualização." },
+        { question: "Se reverter não for possível, qual a alternativa?", options: ["Desinstalar o driver e baixar a versão mais recente do site da NVIDIA/AMD/Intel", "Trocar de sistema operacional", "Usar o Modo de Segurança para sempre", "Remover a placa de vídeo fisicamente"], correct: 0, explanation: "Baixar o driver mais recente diretamente do site do fabricante (NVIDIA, AMD ou Intel) é a solução mais confiável." }
+      ]
+    }
+  ];
+
+  let state = JSON.parse(sessionStorage.getItem("aula8_surpresa")) || {};
+
+  const render = () => {
+    if (!state.problemId) {
+      // Show problem selection (random)
+      state.problemId = PROBLEMS[Math.floor(Math.random() * PROBLEMS.length)].id;
+      state.currentStep = 0;
+      state.lives = 3;
+      state.completed = false;
+      sessionStorage.setItem("aula8_surpresa", JSON.stringify(state));
+    }
+
+    const problem = PROBLEMS.find(p => p.id === state.problemId);
+
+    if (state.completed) {
+      container.innerHTML = `<div style="text-align:center; padding:1.5rem;">
+        <div style="font-size:3rem;">🎉</div>
+        <h3 style="color:#10b981;">Problema Resolvido!</h3>
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.6);">Você diagnosticou e resolveu o problema: ${problem.title}</p>
+      </div>`;
+      markSlideAsCompleted("aula8-surpresa");
+      addXP(50);
+      return;
+    }
+
+    if (state.lives <= 0) {
+      container.innerHTML = `<div style="text-align:center; padding:1.5rem;">
+        <div style="font-size:3rem;">💔</div>
+        <h3 style="color:#ef4444;">Missão Falhou</h3>
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.6);">Você perdeu todas as vidas. Clique abaixo para tentar um novo problema.</p>
+        <button id="retry-surpresa-btn" class="btn btn-primary" style="margin-top:12px;">🔄 Novo Problema</button>
+      </div>`;
+      document.getElementById("retry-surpresa-btn").addEventListener("click", () => {
+        sessionStorage.removeItem("aula8_surpresa");
+        render();
+      });
+      return;
+    }
+
+    const step = problem.steps[state.currentStep];
+
+    container.innerHTML = `<div style="padding:0.5rem;">
+      <div style="background:rgba(15,15,30,0.5); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:1.2rem; margin-bottom:1rem;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:0.75rem; color:rgba(255,255,255,0.4);">Problema sorteado:</span>
+          <span style="font-size:0.85rem;">${'❤️'.repeat(state.lives)}${'💔'.repeat(3 - state.lives)}</span>
+        </div>
+        <div style="font-size:1rem; color:#fbbf24; font-weight:700; margin-bottom:4px;">${problem.title}</div>
+        <p style="font-size:0.8rem; color:rgba(255,255,255,0.6); line-height:1.4;">${problem.desc}</p>
+      </div>
+
+      <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:10px; padding:1rem; margin-bottom:1rem;">
+        <strong style="color:#818cf8; font-size:0.82rem;">❓ ${step.question}</strong>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        ${step.options.map((opt, idx) => `
+          <button class="surpresa-option-btn" data-idx="${idx}" style="padding:12px; border:1px solid rgba(255,255,255,0.08); border-radius:8px; background:rgba(255,255,255,0.02); color:#fff; cursor:pointer; font-size:0.8rem; text-align:left;">
+            ${opt}
+          </button>
+        `).join("")}
+      </div>
+      <div id="surpresa-feedback" style="margin-top:10px; min-height:30px;"></div>
+    </div>`;
+
+    document.querySelectorAll(".surpresa-option-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.idx);
+        const isCorrect = idx === step.correct;
+        document.querySelectorAll(".surpresa-option-btn").forEach(b => b.disabled = true);
+
+        const fb = document.getElementById("surpresa-feedback");
+        if (isCorrect) {
+          state.currentStep++;
+          if (state.currentStep >= problem.steps.length) {
+            state.completed = true;
+          }
+          sessionStorage.setItem("aula8_surpresa", JSON.stringify(state));
+          fb.innerHTML = `<div style="padding:10px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:8px; color:#10b981; font-size:0.8rem;">
+            ✅ Correto! ${step.explanation}<br><span style="font-size:0.7rem; color:rgba(255,255,255,0.4);">Clique para continuar...</span>
+          </div>`;
+          fb.addEventListener("click", () => render(), { once: true });
+        } else {
+          state.lives--;
+          sessionStorage.setItem("aula8_surpresa", JSON.stringify(state));
+          fb.innerHTML = `<div style="padding:10px; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.2); border-radius:8px; color:#ef4444; font-size:0.8rem;">
+            ❌ Incorreto! (-1 vida)<br><span style="font-size:0.7rem; color:rgba(255,255,255,0.4);">${step.explanation}</span>
+          </div>`;
+          fb.addEventListener("click", () => render(), { once: true });
+        }
+      });
+    });
+  };
+
+  render();
+}
+
+// ==========================================================================
+// AULA 8 — CERTIFICADO
+// ==========================================================================
+function initAula8Certificado(container, isReset) {
+  container.innerHTML = `<div style="max-width:560px; margin:0 auto; padding:0.5rem;">
+    <div style="background:rgba(15,15,30,0.5); border:2px solid rgba(245,158,11,0.3); border-radius:16px; padding:2rem 1.5rem; text-align:center;">
+      <div style="font-size:3rem; margin-bottom:8px;">🏆</div>
+      <h2 style="color:#f59e0b; margin:0 0 4px; font-size:1.3rem;">Certificado de Conclusão</h2>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.4); margin:0 0 1rem;">Módulo 1 — Explorador Digital</p>
+
+      <div style="border:1px dashed rgba(245,158,11,0.2); border-radius:12px; padding:1.2rem; margin-bottom:1rem; background:rgba(245,158,11,0.02);">
+        <p style="font-size:0.85rem; color:rgba(255,255,255,0.7); line-height:1.5; margin:0;">
+          Certificamos que <strong>[Aluno]</strong> concluiu com êxito o <strong>Módulo 1 — Explorador Digital</strong>, dominando os fundamentos de hardware, periféricos, Windows, arquivos, manutenção e suporte técnico.
+        </p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:1rem;">
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:12px;">
+          <span style="font-size:1.3rem;">🥇</span>
+          <div style="font-size:0.75rem; font-weight:700; color:#10b981;">Mestre da Informática</div>
+        </div>
+        <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:8px; padding:12px;">
+          <span style="font-size:1.3rem;">⭐</span>
+          <div style="font-size:0.75rem; font-weight:700; color:#818cf8;">+1.000 XP</div>
+        </div>
+      </div>
+
+      <button id="claim-certificate-btn" class="btn" style="background:linear-gradient(135deg,#f59e0b,#fbbf24); color:#000; font-weight:700; width:100%; padding:12px; border-radius:10px; border:none; cursor:pointer; font-size:0.9rem;">
+        🏆 Receber Certificado e Conquistas
+      </button>
+    </div>
+  </div>`;
+
+  document.getElementById("claim-certificate-btn").addEventListener("click", () => {
+    if (!state.completedLessons) state.completedLessons = {};
+    state.completedLessons["aula-8"] = true;
+    unlockAchievement("windows_explorer");
+    unlockAchievement("windows_guardian");
+    addXP(1000);
+    saveState();
+    initSidebarMenu();
+
+    container.innerHTML = `<div style="text-align:center; padding:2rem;">
+      <div style="font-size:4rem; animation: bounce 1s ease-in-out infinite;">🎉</div>
+      <h2 style="color:#f59e0b; margin:1rem 0;">Parabéns, Mestre da Informática!</h2>
+      <p style="font-size:0.9rem; color:rgba(255,255,255,0.6); line-height:1.5; max-width:480px; margin:0 auto 1.5rem;">
+        Você concluiu o <strong>Módulo 1</strong> com sucesso! Sua jornada no mundo da informática está apenas começando. Continue explorando e aprendendo!
+      </p>
+      <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:10px; padding:1rem; display:inline-block;">
+        <span style="font-size:2rem; display:block;">🥇</span>
+        <strong style="color:#10b981;">Medalha "Mestre da Informática"</strong>
+      </div>
+    </div>`;
+
+    markSlideAsCompleted("aula8-certificado");
+    triggerLessonUnlockNotification("aula-8");
+  });
+}

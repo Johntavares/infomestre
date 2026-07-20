@@ -219,6 +219,111 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- ==========================================================================
+-- REDEFINIÇÃO DE SENHA DE ALUNO PELA ESCOLA/ADMIN (via RPC)
+-- Corrige o problema de "alguns alunos não conseguem trocar a senha":
+--   * Atualiza a senha criptografada em auth.users
+--   * Confirma o e-mail (email_confirmed_at) caso esteja pendente
+--   * RECRIA o registro em auth.identities caso esteja ausente/inconsistente
+--     (a falta desse registro impede login e troca de senha em versões
+--      recentes do GoTrue/Supabase Auth)
+-- ==========================================================================
+CREATE OR REPLACE FUNCTION public.reset_student_password_by_school(
+    p_student_id UUID,
+    p_new_password TEXT
+) RETURNS VOID AS $$
+DECLARE
+    caller_role public.user_role;
+    caller_school_id UUID;
+    student_school_id UUID;
+    student_email TEXT;
+BEGIN
+    -- 1. Validar o tamanho mínimo da senha
+    IF p_new_password IS NULL OR length(p_new_password) < 6 THEN
+        RAISE EXCEPTION 'A senha deve conter pelo menos 6 caracteres.';
+    END IF;
+
+    -- 2. Obter dados de quem está chamando
+    SELECT role, school_id INTO caller_role, caller_school_id
+    FROM public.profiles
+    WHERE id = auth.uid();
+
+    IF caller_role IS NULL THEN
+        RAISE EXCEPTION 'Perfil do solicitante não encontrado.';
+    END IF;
+
+    -- 3. Validar permissões
+    IF caller_role != 'school' AND caller_role != 'admin' THEN
+        RAISE EXCEPTION 'Apenas administradores de escola ou admin global podem redefinir senhas de alunos.';
+    END IF;
+
+    -- 4. Obter a escola do aluno alvo
+    SELECT school_id INTO student_school_id
+    FROM public.profiles
+    WHERE id = p_student_id;
+
+    IF student_school_id IS NULL AND caller_role = 'school' THEN
+        RAISE EXCEPTION 'Aluno não encontrado ou não vinculado a uma escola.';
+    END IF;
+
+    -- 5. Se for escola, garantir que ela só altera senha de alunos da própria escola
+    IF caller_role = 'school' AND student_school_id != caller_school_id THEN
+        RAISE EXCEPTION 'Você só pode redefinir a senha de alunos da sua própria escola.';
+    END IF;
+
+    -- 6. Buscar o e-mail atual do aluno em auth.users
+    SELECT email INTO student_email
+    FROM auth.users
+    WHERE id = p_student_id;
+
+    IF student_email IS NULL THEN
+        RAISE EXCEPTION 'Registro de autenticação do aluno não encontrado.';
+    END IF;
+
+    -- 7. Atualizar a senha e confirmar o e-mail
+    UPDATE auth.users
+    SET encrypted_password = crypt(p_new_password, gen_salt('bf')),
+        email_confirmed_at = COALESCE(email_confirmed_at, now()),
+        updated_at = now()
+    WHERE id = p_student_id;
+
+    -- 8. Garantir que exista uma identidade de e-mail válida (repara alunos antigos)
+    IF NOT EXISTS (
+        SELECT 1 FROM auth.identities
+        WHERE user_id = p_student_id AND provider = 'email'
+    ) THEN
+        INSERT INTO auth.identities (
+            id,
+            user_id,
+            identity_data,
+            provider,
+            provider_id,
+            last_sign_in_at,
+            created_at,
+            updated_at
+        ) VALUES (
+            gen_random_uuid(),
+            p_student_id,
+            jsonb_build_object('sub', p_student_id::text, 'email', student_email),
+            'email',
+            p_student_id::text,
+            now(),
+            now(),
+            now()
+        );
+    ELSE
+        -- Mantém o identity_data consistente com o e-mail atual
+        UPDATE auth.identities
+        SET identity_data = jsonb_build_object('sub', p_student_id::text, 'email', student_email),
+            provider_id = COALESCE(provider_id, p_student_id::text),
+            updated_at = now()
+        WHERE user_id = p_student_id AND provider = 'email';
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION public.reset_student_password_by_school(UUID, TEXT) TO authenticated;
+
+-- ==========================================================================
 -- ESTRUTURA DO PERFIL DA ESCOLA (MIGRAÇÃO DE DADOS)
 -- ==========================================================================
 

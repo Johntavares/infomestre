@@ -3320,3 +3320,777 @@ table tbody tr:hover {
   font-weight: 800 !important;
 }
 
+/* ==========================================================================
+   MELHORIAS GERAIS DO PORTAL: PROGRESSO DO MÓDULO E NÍVEIS
+   ========================================================================== */
+
+/* Barra Superior Fixa de Progresso */
+.module-progress-bar-top-global {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 42px;
+  background: linear-gradient(90deg, #100e26, #18153a);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  font-family: var(--font-body);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
+}
+
+/* Layout ajustado para suportar a barra fixa de progresso */
+body.has-top-bar .hub-screen {
+  top: 42px;
+  height: calc(100vh - 42px);
+}
+body.has-top-bar .app-layout {
+  margin-top: 42px;
+  min-height: calc(100vh - 42px);
+}
+body.has-top-bar .sidebar {
+  height: calc(100vh - 42px);
+  top: 42px;
+}
+
+/* Painel de Resumo Conceitual Interceptador */
+.lesson-summary-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(8, 7, 21, 0.95);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(12px);
+  padding: 1.5rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.lesson-summary-modal {
+  background: #14122b;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-lg);
+  width: 100%;
+  max-width: 680px;
+  padding: 2.2rem;
+  box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  animation: modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@keyframes modalScaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.lesson-summary-title-main {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 900;
+  text-align: center;
+  margin: 0;
+  background: linear-gradient(90deg, #a78bfa, #8352ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lesson-summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.lesson-summary-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-md);
+  padding: 1.2rem;
+}
+
+.lesson-summary-card h4 {
+  margin: 0 0 0.8rem 0;
+  font-size: 0.95rem;
+  color: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lesson-summary-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #ccc;
+}
+
+.lesson-summary-card li {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.xp-level-badge-premium {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: #fff;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+}
+
+.xp-bar-container-premium {
+  background: rgba(255, 255, 255, 0.08);
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 0.4rem;
+  width: 100%;
+}
+
+.xp-bar-fill-premium {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+/* ==========================================================================
+   WINDOWS LAB SIMULATOR — AULA 7
+   ========================================================================== */
+.winlab-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.winlab-modal {
+  background: var(--bg-sidebar); border: 1px solid var(--border-color);
+  border-radius: 14px; width: 92%; max-width: 480px;
+  max-height: 85vh; overflow-y: auto; padding: 1.5rem 1.8rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.winlab-modal h3 { margin: 0 0 6px; font-size: 1.1rem; }
+.winlab-modal p { font-size: 0.85rem; color: var(--text-muted); margin: 0 0 1rem; line-height: 1.5; }
+.winlab-modal input, .winlab-modal textarea {
+  width: 100%; padding: 0.6rem 0.75rem; border-radius: 8px;
+  border: 1px solid var(--border-color); background: var(--bg-card-dark);
+  color: var(--text-primary); font-size: 0.9rem; box-sizing: border-box;
+}
+.winlab-modal label { font-size: 0.82rem; font-weight: 600; display: block; margin-bottom: 4px; }
+.winlab-modal .form-group { margin-bottom: 1rem; }
+.winlab-modal textarea { min-height: 80px; resize: vertical; }
+
+.winlab {
+  position: relative; width: 100%; height: 560px;
+  border-radius: 10px; overflow: hidden;
+  background: linear-gradient(135deg, #0f3b5e 0%, #1a5276 30%, #2c7db8 60%, #1a3d5c 100%);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  user-select: none; font-family: 'Segoe UI', 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+}
+
+/* Desktop Icons */
+.winlab-icons {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 44px;
+  display: grid; grid-template-columns: repeat(auto-fill, 72px);
+  grid-auto-rows: 78px; gap: 6px; padding: 10px 6px;
+  align-content: start;
+}
+.winlab-icon {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center; gap: 3px;
+  padding: 4px; border-radius: 4px; cursor: pointer;
+  transition: background 0.15s;
+}
+.winlab-icon:hover { background: rgba(255,255,255,0.12); }
+.winlab-icon.selected { background: rgba(255,255,255,0.2); outline: 1px solid #fff; }
+.winlab-icon-img { font-size: 30px; line-height: 1; }
+.winlab-icon-label {
+  color: #fff; font-size: 11px; line-height: 1.2;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8); word-break: break-word;
+  max-width: 68px;
+}
+
+/* Taskbar */
+.winlab-taskbar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 44px;
+  background: rgba(20, 20, 30, 0.92); backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; padding: 0 6px; z-index: 100;
+}
+.winlab-start-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: 4px; cursor: pointer;
+  color: #fff; font-weight: 700; font-size: 13px;
+  transition: background 0.15s; border: none; background: transparent;
+  font-family: inherit;
+}
+.winlab-start-btn:hover { background: rgba(255,255,255,0.1); }
+.winlab-taskbar-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.12); margin: 0 4px; }
+.winlab-taskbar-item {
+  padding: 4px 10px; border-radius: 4px; cursor: pointer;
+  color: rgba(255,255,255,0.85); font-size: 11px; display: flex; align-items: center; gap: 5px;
+  transition: background 0.15s; border: none; background: transparent;
+  font-family: inherit;
+}
+.winlab-taskbar-item:hover { background: rgba(255,255,255,0.1); }
+.winlab-taskbar-item.active { background: rgba(255,255,255,0.15); }
+.winlab-tray {
+  margin-left: auto; display: flex; align-items: center; gap: 8px;
+  color: rgba(255,255,255,0.85); font-size: 11px;
+}
+.winlab-clock { font-weight: 500; }
+
+/* Start Menu */
+.winlab-start-menu {
+  position: absolute; bottom: 46px; left: 4px;
+  width: 300px; max-height: 380px;
+  background: rgba(28, 28, 38, 0.96); backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+  padding: 8px 0; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 110; display: none; overflow-y: auto;
+}
+.winlab-start-menu.open { display: block; }
+.winlab-start-header {
+  padding: 8px 14px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 13px; font-weight: 700; color: #fff;
+}
+.winlab-start-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px; cursor: pointer; color: rgba(255,255,255,0.85);
+  transition: background 0.1s; font-size: 12px;
+}
+.winlab-start-item:hover { background: rgba(255,255,255,0.08); }
+.winlab-start-item-icon { font-size: 18px; width: 24px; text-align: center; }
+.winlab-start-item-label { flex: 1; }
+.winlab-start-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
+
+/* Windows */
+.winlab-window {
+  position: absolute; min-width: 300px; min-height: 180px;
+  background: #1e1e2e; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  z-index: 50; display: none; overflow: hidden;
+  resize: both;
+}
+.winlab-window.open { display: flex; flex-direction: column; }
+.winlab-window.active-win { z-index: 80; }
+.winlab-win-header {
+  display: flex; align-items: center; height: 34px;
+  background: #2a2a3e; cursor: grab;
+  padding: 0 10px; flex-shrink: 0;
+}
+.winlab-win-title { flex: 1; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); }
+.winlab-win-controls { display: flex; gap: 6px; }
+.winlab-win-btn {
+  width: 14px; height: 14px; border-radius: 50%; border: none;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.winlab-win-btn:hover { opacity: 0.8; }
+.winlab-win-close { background: #ff5f56; }
+.winlab-win-min { background: #ffbd2e; }
+.winlab-win-max { background: #27c93f; }
+.winlab-win-body {
+  flex: 1; padding: 10px; overflow-y: auto;
+  background: #1a1a2c; font-size: 12px; color: rgba(255,255,255,0.85);
+  min-height: 100px;
+}
+
+/* File Explorer specifics */
+.winlab-explorer-nav {
+  display: flex; gap: 6px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 8px; flex-wrap: wrap;
+}
+.winlab-explorer-nav button {
+  background: rgba(255,255,255,0.06); border: none; color: rgba(255,255,255,0.8);
+  padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 11px;
+  font-family: inherit; transition: background 0.15s;
+}
+.winlab-explorer-nav button:hover { background: rgba(255,255,255,0.12); }
+.winlab-explorer-nav button.active-nav { background: rgba(99, 102, 241, 0.3); color: #fff; }
+
+.winlab-explorer-breadcrumb {
+  font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 6px;
+  display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+}
+.winlab-explorer-breadcrumb span { cursor: default; }
+.winlab-explorer-breadcrumb .sep { color: rgba(255,255,255,0.3); }
+
+.winlab-file-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, 80px);
+  gap: 4px; padding: 4px 0; min-height: 60px;
+}
+.winlab-file-item {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 6px 4px; border-radius: 4px;
+  cursor: pointer; transition: background 0.1s;
+}
+.winlab-file-item:hover { background: rgba(255,255,255,0.08); }
+.winlab-file-item.selected { background: rgba(99, 102, 241, 0.25); }
+.winlab-file-icon { font-size: 28px; line-height: 1; }
+.winlab-file-name { font-size: 10px; color: rgba(255,255,255,0.85); margin-top: 2px; word-break: break-all; line-height: 1.2; }
+
+/* Context Menu */
+.winlab-context-menu {
+  position: absolute; background: #252538; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px; padding: 4px 0; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  z-index: 200; min-width: 150px; display: none;
+}
+.winlab-context-menu.open { display: block; }
+.winlab-context-item {
+  padding: 6px 14px; cursor: pointer; color: rgba(255,255,255,0.85);
+  font-size: 12px; display: flex; align-items: center; gap: 8px;
+  transition: background 0.1s;
+}
+.winlab-context-item:hover { background: rgba(99, 102, 241, 0.3); }
+.winlab-context-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
+
+/* Task Manager */
+.winlab-tm-tabs { display: flex; gap: 2px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.winlab-tm-tab {
+  padding: 5px 12px; cursor: pointer; border-radius: 4px 4px 0 0;
+  color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 600;
+  transition: background 0.1s; border: none; background: transparent;
+  font-family: inherit;
+}
+.winlab-tm-tab:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.winlab-tm-tab.active { color: #fff; background: rgba(255,255,255,0.08); }
+.winlab-tm-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.winlab-tm-table th { text-align: left; padding: 4px 6px; border-bottom: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); font-weight: 600; }
+.winlab-tm-table td { padding: 4px 6px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.winlab-tm-table tr:hover td { background: rgba(255,255,255,0.04); }
+.winlab-tm-end-btn {
+  background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
+  color: #ef4444; padding: 2px 8px; border-radius: 4px; cursor: pointer;
+  font-size: 10px; font-family: inherit; font-weight: 600;
+  transition: background 0.15s;
+}
+.winlab-tm-end-btn:hover { background: rgba(239,68,68,0.3); }
+.winlab-tm-performance { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.winlab-tm-gauge { background: rgba(255,255,255,0.05); border-radius: 6px; padding: 8px; text-align: center; }
+.winlab-tm-gauge-label { font-size: 10px; color: rgba(255,255,255,0.5); }
+.winlab-tm-gauge-value { font-size: 18px; font-weight: 700; color: #fff; }
+.winlab-tm-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+.winlab-tm-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+
+/* System Properties */
+.winlab-sysprop-grid { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 11px; }
+.winlab-sysprop-label { color: rgba(255,255,255,0.5); }
+.winlab-sysprop-value { color: rgba(255,255,255,0.85); }
+
+/* Programs List */
+.winlab-prog-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.winlab-prog-item:hover { background: rgba(255,255,255,0.04); }
+.winlab-prog-name { font-size: 12px; display: flex; align-items: center; gap: 8px; }
+.winlab-prog-uninstall {
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2);
+  color: #ef4444; padding: 2px 10px; border-radius: 4px; cursor: pointer;
+  font-size: 10px; font-family: inherit; font-weight: 600;
+  transition: background 0.15s;
+}
+.winlab-prog-uninstall:hover { background: rgba(239,68,68,0.25); }
+.winlab-prog-uninstall.done { opacity: 0.3; cursor: default; pointer-events: none; }
+
+/* Disk Cleanup */
+.winlab-cleanup-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.winlab-cleanup-item input[type="checkbox"] { accent-color: #6366f1; }
+.winlab-cleanup-info { flex: 1; font-size: 11px; }
+.winlab-cleanup-size { font-size: 10px; color: rgba(255,255,255,0.4); }
+.winlab-cleanup-total {
+  text-align: right; font-size: 12px; font-weight: 700;
+  padding: 8px 0 0; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 6px;
+}
+
+/* Notification toast */
+.winlab-toast {
+  position: absolute; bottom: 52px; right: 10px;
+  background: #252538; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; padding: 10px 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  z-index: 300; max-width: 260px; display: none;
+  animation: slideInLeft 0.3s ease;
+}
+.winlab-toast.show { display: block; }
+.winlab-toast-title { font-weight: 700; font-size: 12px; color: #fff; }
+.winlab-toast-desc { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+/* Scrollbar inside windows */
+.winlab-window-body::-webkit-scrollbar { width: 6px; }
+.winlab-window-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+/* Tutorial Overlay */
+.winlab-tutorial-overlay {
+  position: absolute; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.55);
+  pointer-events: none; display: none;
+}
+.winlab-tutorial-overlay.active { display: block; }
+.winlab-tutorial-card {
+  position: absolute; bottom: 56px; left: 50%; transform: translateX(-50%);
+  z-index: 600; pointer-events: auto;
+  background: #1e1e2e; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px; padding: 16px 18px;
+  max-width: 380px; width: 92%; display: none;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.winlab-tutorial-card.active { display: block; animation: slideInUp 0.3s ease; }
+.winlab-tutorial-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.winlab-tutorial-desc { font-size: 11px; color: rgba(255,255,255,0.7); line-height: 1.5; margin-bottom: 10px; }
+.winlab-tutorial-progress { display: flex; gap: 4px; margin-bottom: 10px; }
+.winlab-tutorial-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: background 0.2s; }
+.winlab-tutorial-dot.active { background: #6366f1; }
+.winlab-tutorial-dot.done { background: #10b981; }
+.winlab-tutorial-buttons { display: flex; gap: 6px; justify-content: flex-end; }
+.winlab-tutorial-btn {
+  padding: 6px 14px; border-radius: 6px; border: none; cursor: pointer;
+  font-size: 11px; font-weight: 600; font-family: inherit;
+  transition: background 0.15s;
+}
+.winlab-tutorial-btn-skip { background: transparent; color: rgba(255,255,255,0.4); }
+.winlab-tutorial-btn-skip:hover { color: #fff; }
+.winlab-tutorial-btn-next { background: #6366f1; color: #fff; }
+.winlab-tutorial-btn-next:hover { background: #4f46e5; }
+.winlab-tutorial-btn-start { background: #10b981; color: #fff; padding: 6px 20px; font-size: 12px; }
+.winlab-tutorial-btn-start:hover { background: #059669; }
+
+.winlab-tutorial-highlight {
+  position: relative; z-index: 550 !important;
+  outline: 2px solid #6366f1; outline-offset: 3px;
+  box-shadow: 0 0 20px rgba(99,102,241,0.5);
+  border-radius: 6px; transition: outline 0.2s, box-shadow 0.2s;
+}
+.winlab-tutorial-pulse {
+  animation: tutPulse 1.5s ease-in-out infinite;
+}
+@keyframes tutPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(99,102,241,0.3); }
+  50% { box-shadow: 0 0 25px rgba(99,102,241,0.7); }
+}
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Boot Screen */
+.winlab-boot {
+  position: absolute; inset: 0; z-index: 900;
+  background: linear-gradient(135deg, #0b1a2e 0%, #1a2d45 50%, #0d1f33 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.winlab-boot-content { text-align: center; max-width: 400px; width: 90%; }
+.winlab-boot-logo { font-size: 4rem; margin-bottom: 8px; }
+.winlab-boot-title { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.winlab-boot-subtitle { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+.winlab-boot-status { font-size: 0.82rem; color: rgba(255,255,255,0.6); margin-bottom: 12px; transition: opacity 0.3s; }
+.winlab-boot-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; margin-bottom: 20px; }
+.winlab-boot-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #6366f1, #10b981); border-radius: 2px; transition: width 0.6s ease; }
+.winlab-boot-userinfo {
+  font-size: 0.75rem; color: rgba(255,255,255,0.35);
+  display: flex; flex-direction: column; gap: 2px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px; padding: 10px 14px; text-align: left;
+  opacity: 0; transition: opacity 0.5s;
+}
+.winlab-boot-userinfo.show { opacity: 1; }
+.winlab-boot-userinfo-row { display: flex; justify-content: space-between; }
+.winlab-boot-userinfo-label { color: rgba(255,255,255,0.3); }
+.winlab-boot-userinfo-value { color: rgba(255,255,255,0.7); }
+.winlab-boot-welcome {
+  font-size: 1rem; font-weight: 700; color: #10b981;
+  margin-top: 16px; opacity: 0; transition: opacity 0.5s;
+}
+.winlab-boot-welcome.show { opacity: 1; }
+
+/* Ticket Notification */
+.winlab-ticket-notif {
+  position: absolute; top: 10px; right: 10px; z-index: 450;
+  background: #1e1e2e; border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 10px; padding: 12px 14px; max-width: 280px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4); display: none;
+  cursor: pointer; animation: slideInRight 0.3s ease;
+}
+.winlab-ticket-notif.show { display: block; }
+.winlab-ticket-notif-header { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 11px; color: #6366f1; margin-bottom: 4px; }
+.winlab-ticket-notif-title { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.winlab-ticket-notif-desc { font-size: 10px; color: rgba(255,255,255,0.5); line-height: 1.4; }
+.winlab-ticket-notif-badge {
+  display: inline-block; background: #6366f1; color: #fff;
+  font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 3px;
+  margin-left: auto;
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Ticket Counter in Taskbar */
+.winlab-ticket-counter {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: rgba(239,68,68,0.15); color: #ef4444;
+  padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
+  cursor: pointer; transition: background 0.15s;
+}
+.winlab-ticket-counter:hover { background: rgba(239,68,68,0.25); }
+.winlab-ticket-counter.done { background: rgba(16,185,129,0.15); color: #10b981; }
+
+/* Quiz Modal */
+.winlab-quiz-overlay {
+  position: absolute; inset: 0; z-index: 700;
+  background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+}
+.winlab-quiz-overlay.active { display: flex; }
+.winlab-quiz-modal {
+  background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 1.5rem; max-width: 420px; width: 90%;
+  max-height: 80vh; overflow-y: auto; box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+.winlab-quiz-header { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+.winlab-quiz-question { font-size: 0.85rem; color: rgba(255,255,255,0.85); line-height: 1.5; margin-bottom: 14px; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; }
+.winlab-quiz-option {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  transition: background 0.15s; font-size: 0.82rem; color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.06); margin-bottom: 6px;
+}
+.winlab-quiz-option:hover { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.2); }
+.winlab-quiz-option.selected { background: rgba(99,102,241,0.2); border-color: #6366f1; }
+.winlab-quiz-option.correct { background: rgba(16,185,129,0.2); border-color: #10b981; }
+.winlab-quiz-option.wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+.winlab-quiz-option-radio { width: 14px; height: 14px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); flex-shrink: 0; }
+.winlab-quiz-option.selected .winlab-quiz-option-radio { border-color: #6366f1; background: #6366f1; }
+.winlab-quiz-option.correct .winlab-quiz-option-radio { border-color: #10b981; background: #10b981; }
+.winlab-quiz-option.wrong .winlab-quiz-option-radio { border-color: #ef4444; background: #ef4444; }
+.winlab-quiz-explanation {
+  padding: 10px; border-radius: 8px; font-size: 0.8rem; line-height: 1.5;
+  margin-top: 10px; display: none;
+}
+.winlab-quiz-explanation.show { display: block; }
+.winlab-quiz-explanation.correct-bg { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #10b981; }
+.winlab-quiz-explanation.wrong-bg { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; }
+.winlab-quiz-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+.winlab-quiz-counter { font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+.winlab-quiz-btn {
+  padding: 7px 18px; border-radius: 6px; border: none; cursor: pointer;
+  font-size: 0.82rem; font-weight: 600; font-family: inherit;
+  transition: background 0.15s;
+}
+.winlab-quiz-btn-next { background: #6366f1; color: #fff; }
+.winlab-quiz-btn-next:hover { background: #4f46e5; }
+.winlab-quiz-btn-next:disabled { opacity: 0.4; cursor: default; }
+.winlab-quiz-lives { display: flex; gap: 3px; font-size: 1rem; }
+
+/* Training Window */
+.winlab-training-page {
+  display: none; padding: 4px 0;
+}
+.winlab-training-page.active { display: block; }
+.winlab-training-title { font-size: 14px; font-weight: 700; color: #818cf8; margin-bottom: 6px; }
+.winlab-training-body { font-size: 12px; color: rgba(255,255,255,0.8); line-height: 1.6; }
+.winlab-training-body ul { padding-left: 16px; margin: 6px 0; }
+.winlab-training-body li { margin-bottom: 3px; }
+.winlab-training-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+.winlab-training-counter { font-size: 10px; color: rgba(255,255,255,0.3); }
+.winlab-training-btn {
+  padding: 5px 14px; border-radius: 5px; border: none; cursor: pointer;
+  font-size: 11px; font-weight: 600; font-family: inherit;
+  transition: background 0.15s;
+}
+.winlab-training-btn-prev { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
+.winlab-training-btn-prev:hover { background: rgba(255,255,255,0.1); }
+.winlab-training-btn-next { background: #6366f1; color: #fff; }
+.winlab-training-btn-next:hover { background: #4f46e5; }
+.winlab-training-btn-practice { background: #10b981; color: #fff; }
+.winlab-training-btn-practice:hover { background: #059669; }
+
+/* Completion overlay */
+.winlab-complete-overlay {
+  position: absolute; inset: 0; z-index: 800;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
+}
+.winlab-complete-overlay.active { display: flex; }
+.winlab-complete-modal {
+  background: #1e1e2e; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px; padding: 2rem; max-width: 440px; width: 90%;
+  text-align: center; box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+.winlab-complete-badge { font-size: 4rem; margin-bottom: 8px; }
+.winlab-complete-title { font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.winlab-complete-sub { font-size: 0.85rem; color: rgba(255,255,255,0.6); line-height: 1.5; margin-bottom: 16px; }
+.winlab-complete-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.winlab-complete-stat { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 10px; }
+.winlab-complete-stat-val { font-size: 1.3rem; font-weight: 700; color: #10b981; }
+.winlab-complete-stat-label { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+.winlab-complete-btn { background: #10b981; color: #fff; border: none; padding: 10px 28px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+.winlab-complete-btn:hover { background: #059669; }
+
+/* Fullscreen expand */
+.winlab-expand-btn {
+  background: transparent; border: none; color: rgba(255,255,255,0.6);
+  cursor: pointer; font-size: 14px; padding: 2px 4px; font-family: inherit;
+  transition: color 0.15s; line-height: 1;
+}
+.winlab-expand-btn:hover { color: #fff; }
+
+.winlab.winlab-expanded {
+  position: fixed !important; top: 0 !important; left: 0 !important;
+  width: 100vw !important; height: 100vh !important;
+  z-index: 99999 !important; border-radius: 0 !important;
+}
+.winlab.winlab-expanded .winlab-window {
+  min-width: 420px;
+}
+.winlab.winlab-expanded .winlab-taskbar {
+  height: 48px;
+}
+.winlab.winlab-expanded .winlab-taskbar-item,
+.winlab.winlab-expanded .winlab-start-btn {
+  font-size: 13px; padding: 4px 14px;
+}
+.winlab.winlab-expanded .winlab-win-body {
+  font-size: 13px;
+}
+.winlab.winlab-expanded .winlab-file-name {
+  font-size: 11px;
+}
+.winlab.winlab-expanded .winlab-explorer-breadcrumb,
+.winlab.winlab-expanded .winlab-sysprop-grid,
+.winlab.winlab-expanded .winlab-tm-table {
+  font-size: 12px;
+}
+.winlab.winlab-expanded .winlab-icon {
+  padding: 6px 8px;
+}
+.winlab.winlab-expanded .winlab-icon-label {
+  font-size: 12px;
+}
+.winlab-exit-expand {
+  position: absolute; top: 4px; right: 4px; z-index: 99999;
+  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; padding: 3px 10px; border-radius: 4px; cursor: pointer;
+  font-size: 11px; font-family: inherit; display: none;
+}
+.winlab.winlab-expanded .winlab-exit-expand { display: block; }
+
+/* ============ INSTALLER WIZARD ============ */
+.winlab .winlab-installer-overlay {
+  display: none; position: fixed; inset: 0; z-index: 99998;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(2px);
+  align-items: center; justify-content: center;
+}
+.winlab .winlab-installer-window {
+  width: 460px; max-width: 92vw; background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+  overflow: hidden; font-size: 13px;
+}
+.winlab .installer-title-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; background: rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.winlab .installer-title-text { font-weight: 600; font-size: 12px; color: rgba(255,255,255,0.8); }
+.winlab .installer-title-btn {
+  width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; cursor: pointer; font-size: 13px; color: rgba(255,255,255,0.5);
+}
+.winlab .installer-title-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.winlab .installer-body {
+  display: flex; gap: 16px; padding: 20px 24px;
+}
+.winlab .installer-icon-area {
+  flex-shrink: 0; width: 64px; height: 64px; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 2.2rem; background: rgba(99,102,241,0.1);
+  border-radius: 12px;
+}
+.winlab .installer-content { flex: 1; min-width: 0; }
+.winlab .installer-heading {
+  font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 6px;
+}
+.winlab .installer-desc {
+  font-size: 0.8rem; color: rgba(255,255,255,0.65); line-height: 1.5; margin: 0 0 8px;
+}
+.winlab .installer-info {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px; padding: 10px 12px; font-size: 0.78rem;
+  color: rgba(255,255,255,0.6); line-height: 1.6;
+}
+.winlab .installer-footer {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.15);
+}
+.winlab .installer-btn {
+  padding: 6px 18px; border-radius: 6px; border: none; cursor: pointer;
+  font-size: 12px; font-family: inherit; font-weight: 600;
+  transition: background 0.15s, opacity 0.15s;
+}
+.winlab .installer-btn-primary {
+  background: #6366f1; color: #fff;
+}
+.winlab .installer-btn-primary:hover { background: #5558e6; }
+.winlab .installer-btn-secondary {
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7);
+}
+.winlab .installer-btn-secondary:hover { background: rgba(255,255,255,0.14); }
+.winlab .installer-btn:disabled { opacity: 0.4; cursor: default; }
+.winlab .installer-progress-track {
+  width: 100%; height: 8px; background: rgba(255,255,255,0.08);
+  border-radius: 4px; overflow: hidden; margin: 12px 0 6px;
+}
+.winlab .installer-progress-fill {
+  height: 100%; background: linear-gradient(90deg, #6366f1, #818cf8);
+  border-radius: 4px; transition: width 0.3s ease;
+}
+.winlab .installer-progress-label {
+  font-size: 1.1rem; font-weight: 700; color: #818cf8; margin-bottom: 4px;
+}
+.winlab .installer-status {
+  font-size: 0.78rem; color: rgba(255,255,255,0.5);
+}
+.winlab.winlab-expanded .winlab-installer-window {
+  width: 520px;
+}
+.winlab.winlab-expanded .installer-body { padding: 24px 28px; }
+.winlab.winlab-expanded .installer-footer { padding: 14px 28px; }
+.winlab.winlab-expanded .installer-icon-area { width: 72px; height: 72px; font-size: 2.5rem; }
+.winlab.winlab-expanded .installer-heading { font-size: 1.1rem; }
+
+/* ============ BASTIDORES CHAPTER ============ */
+.winlab .bastidores-exercise-opt { transition: all 0.15s; }
+.winlab .bastidores-exercise-opt:hover { background: rgba(99,102,241,0.08) !important; border-color: rgba(99,102,241,0.2) !important; }
+.winlab .bastidores-risk-btn { transition: all 0.15s; }
+.winlab .bastidores-risk-btn:hover { filter: brightness(1.3); }
+.winlab.winlab-expanded .winlab-complete-modal { max-width: 560px; }
+.winlab.winlab-expanded .winlab-complete-title { font-size: 1.1rem !important; }
+.winlab.winlab-expanded .bastidores-risk-btn { font-size: 0.85rem !important; padding: 10px !important; }
+
+
