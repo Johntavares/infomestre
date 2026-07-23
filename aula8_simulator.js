@@ -671,6 +671,7 @@
           <!-- Três áreas possíveis: Canvas 3D, Virtual Monitor ou Fallback -->
           <div class="canvas-container" id="sim-canvas3d-container"></div>
           <div id="sim-fallback-container" style="display:none;width:100%;height:100%;"></div>
+          <div id="sim-html-overlay" style="display:none;width:100%;height:100%;position:absolute;top:0;left:0;z-index:5;"></div>
           
           <!-- Camada de Interface de Elementos Hover/GUI -->
           <div class="sim-overlay-ui" id="sim-gui-overlay">
@@ -737,11 +738,25 @@
 
     const canvasContainer = document.getElementById("sim-canvas3d-container");
     const fallbackContainer = document.getElementById("sim-fallback-container");
+    const htmlOverlay = document.getElementById("sim-html-overlay");
+    const guiOverlay = document.getElementById("sim-gui-overlay");
     
-    canvasContainer.innerHTML = "";
-    fallbackContainer.innerHTML = "";
-    canvasContainer.style.display = "none";
-    fallbackContainer.style.display = "none";
+    if (canvasContainer) {
+      canvasContainer.innerHTML = "";
+      canvasContainer.style.display = "none";
+    }
+    if (fallbackContainer) {
+      fallbackContainer.innerHTML = "";
+      fallbackContainer.style.display = "none";
+    }
+    if (htmlOverlay) {
+      htmlOverlay.innerHTML = "";
+      htmlOverlay.style.display = "none";
+    }
+    if (guiOverlay) {
+      guiOverlay.innerHTML = "";
+      guiOverlay.style.display = "none";
+    }
 
     if (simState.step === 1) {
       renderStep1OrdemServico();
@@ -798,7 +813,8 @@
   // ETAPA 1 — RECEBIMENTO DA ORDEM DE SERVIÇO
   // ==========================================================================
   function renderStep1OrdemServico() {
-    const main = document.getElementById("sim-workspace-main");
+    const htmlOverlay = document.getElementById("sim-html-overlay");
+    if (!htmlOverlay) return;
     
     const html = `
       <div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:radial-gradient(circle at center, #1b1a32 0%, #090915 100%);">
@@ -818,7 +834,8 @@
         </div>
       </div>
     `;
-    main.innerHTML = html;
+    htmlOverlay.innerHTML = html;
+    htmlOverlay.style.display = "block";
 
     document.getElementById("start-step1-btn").onclick = () => {
       SOUNDS.success();
@@ -832,7 +849,8 @@
   // ETAPA 2 — PREPARAÇÃO E INTRODUÇÃO À BANCADA
   // ==========================================================================
   function renderStep2Introducao() {
-    const main = document.getElementById("sim-workspace-main");
+    const htmlOverlay = document.getElementById("sim-html-overlay");
+    if (!htmlOverlay) return;
 
     const html = `
       <div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:radial-gradient(circle at center, #1b1a32 0%, #090915 100%);">
@@ -861,7 +879,8 @@
         </div>
       </div>
     `;
-    main.innerHTML = html;
+    htmlOverlay.innerHTML = html;
+    htmlOverlay.style.display = "block";
 
     document.getElementById("start-step2-btn").onclick = () => {
       SOUNDS.success();
@@ -884,8 +903,15 @@
   async function renderStep3Assembly() {
     const canvasContainer = document.getElementById("sim-canvas3d-container");
     const fallbackContainer = document.getElementById("sim-fallback-container");
-    canvasContainer.style.display = "block";
-    canvasContainer.innerHTML = "";
+    const guiOverlay = document.getElementById("sim-gui-overlay");
+
+    if (canvasContainer) {
+      canvasContainer.style.display = "block";
+      canvasContainer.innerHTML = "";
+    }
+    if (guiOverlay) {
+      guiOverlay.style.display = "flex";
+    }
 
     // Tenta carregar dependências do Three.js
     const loaded = await loadDependencies();
@@ -893,8 +919,8 @@
       initThreeAssemblyScene();
     } else {
       // Fallback pseudo-3D
-      canvasContainer.style.display = "none";
-      fallbackContainer.style.display = "block";
+      if (canvasContainer) canvasContainer.style.display = "none";
+      if (fallbackContainer) fallbackContainer.style.display = "block";
       initFallbackAssemblyScene();
     }
 
@@ -1303,21 +1329,7 @@
   // ==========================================================================
   // AMBIENTE MONITOR VIRTUAL — ETAPAS 4 A 10 (Boot, OS, Drivers, Apps, Diag)
   // ==========================================================================
-  function renderStepMonitorVirtual() {
-    const main = document.getElementById("sim-workspace-main");
-    
-    main.innerHTML = `
-      <div style="display:flex;width:100%;height:100%;background:#090912;align-items:center;justify-content:center;position:relative;">
-        <div class="virtual-monitor-wrapper">
-          <div class="virtual-screen" id="virtual-screen-content">
-            <!-- Renderizado dinamicamente com base nas Etapas 4-10 -->
-          </div>
-        </div>
-      </div>
-    `;
-
-    updateVirtualScreen();
-  }
+  // Primeira definicao removida para evitar duplicidade com a definicao abaixo
 
   function updateVirtualScreen() {
     const screen = document.getElementById("virtual-screen-content");
@@ -2054,9 +2066,10 @@
   }
 
   function renderStepMonitorVirtual() {
-    const main = document.getElementById("sim-workspace-main");
+    const htmlOverlay = document.getElementById("sim-html-overlay");
+    if (!htmlOverlay) return;
     
-    main.innerHTML = `
+    htmlOverlay.innerHTML = `
       <div style="display:flex;width:100%;height:100%;background:#090912;align-items:center;justify-content:center;position:relative;">
         <div class="virtual-monitor-wrapper">
           <div class="virtual-screen" id="virtual-screen-content">
@@ -2065,6 +2078,7 @@
         </div>
       </div>
     `;
+    htmlOverlay.style.display = "block";
 
     const screen = document.getElementById("virtual-screen-content");
     if (!screen) return;
