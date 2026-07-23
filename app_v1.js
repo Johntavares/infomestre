@@ -612,8 +612,6 @@ function isLessonCompleted(lesson) {
     if (slides.length > 0) {
       const todosConcluidos = slides.every(s => state.completedSlides[s.id] === true);
       if (todosConcluidos) {
-        if (!state.completedLessons) state.completedLessons = {};
-        state.completedLessons[lesson.id] = true;
         return true;
       }
     }
@@ -1015,12 +1013,17 @@ function initSidebarMenu() {
           bgStyle = "rgba(16, 185, 129, 0.08)";
           borderStyle = "rgba(16, 185, 129, 0.25)";
           colorStyle = "#10b981";
-        } else if (status === "in_progress" || status === "available") {
-          icon = "🟡";
-          bgStyle = "rgba(124, 58, 237, 0.12)";
-          borderStyle = "rgba(124, 58, 237, 0.4)";
-          colorStyle = "#a78bfa";
+        } else if (status === "in_progress") {
+          icon = "▶️";
+          bgStyle = "rgba(99, 102, 241, 0.15)";
+          borderStyle = "rgba(99, 102, 241, 0.5)";
+          colorStyle = "#818cf8";
           isPulsing = true;
+        } else if (status === "available") {
+          icon = "🟡";
+          bgStyle = "rgba(124, 58, 237, 0.06)";
+          borderStyle = "rgba(124, 58, 237, 0.2)";
+          colorStyle = "#a78bfa";
         } else if (status === "locked") {
           icon = "🔒";
           bgStyle = "rgba(255,255,255,0.01)";
@@ -1031,8 +1034,8 @@ function initSidebarMenu() {
         if (aula.isDesafio) {
           if (status === "completed") {
             icon = "🏆";
-          } else if (status !== "locked") {
-            icon = "🏆";
+          } else if (status === "in_progress" || status === "available") {
+            icon = status === "in_progress" ? "⚔️" : "🏆";
             isDesafioEffect = true;
             bgStyle = "rgba(245, 158, 11, 0.15)";
             borderStyle = "rgba(245, 158, 11, 0.5)";
@@ -1043,6 +1046,7 @@ function initSidebarMenu() {
         }
 
         const linkEl = document.createElement("div");
+        linkEl.id = `menu-item-${aula.id}`;
         linkEl.className = "menu-item-link" + (status === "completed" ? " completed" : "") + (isPulsing ? " pulse-active" : "") + (isDesafioEffect ? " desafio-active" : "");
         linkEl.style.cssText = `
           display: flex;
@@ -1058,6 +1062,7 @@ function initSidebarMenu() {
           cursor: pointer;
           transition: all 0.2s;
           opacity: ${status === "locked" ? "0.55" : "1"};
+          ${status === "in_progress" ? "border-left: 3px solid #818cf8;" : ""}
         `;
 
         linkEl.addEventListener("mouseenter", () => {
@@ -1454,13 +1459,24 @@ function proceedLoadingSlide(index) {
   // Rebuild sidebar menu to reflect current progress
   initSidebarMenu();
   
-  // Highlight active menu item
+  // Highlight active menu item by matching slide chapter to aula
   document.querySelectorAll(".menu-item-link").forEach(link => link.classList.remove("active"));
-  const currentLink = document.getElementById(`menu-item-${index}`);
-  if (currentLink) {
-    currentLink.classList.add("active");
-    // Scroll menu list into view if overflowed
-    currentLink.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  let currentAulaId = null;
+  for (const mod of COURSE_JORNADA) {
+    for (const aula of mod.lessons) {
+      if (aula.chapter && aula.chapter === item.chapter) {
+        currentAulaId = aula.id;
+        break;
+      }
+    }
+    if (currentAulaId) break;
+  }
+  if (currentAulaId) {
+    const currentLink = document.getElementById(`menu-item-${currentAulaId}`);
+    if (currentLink) {
+      currentLink.classList.add("active");
+      currentLink.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
   }
   
   // Enable/Disable next/prev controls
