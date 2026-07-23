@@ -943,6 +943,17 @@ function initSidebarMenu() {
   if (!menuNav) return;
   menuNav.innerHTML = "";
 
+  // Determinar a aula ativa correspondente ao slide atual
+  const currentSlide = COURSE_CONTENT[state.currentSlideIndex];
+  let activeAulaId = null;
+  for (const mod of COURSE_JORNADA) {
+    const found = mod.lessons.find(l => l.chapter === currentSlide?.chapter);
+    if (found) {
+      activeAulaId = found.id;
+      break;
+    }
+  }
+
   COURSE_JORNADA.forEach(modulo => {
     const groupDiv = document.createElement("div");
     groupDiv.className = "menu-chapter-group";
@@ -1034,25 +1045,29 @@ function initSidebarMenu() {
         if (aula.isDesafio) {
           if (status === "completed") {
             icon = "🏆";
-          } else if (status === "in_progress") {
-            icon = "⚔️";
+          } else if (status !== "locked") {
+            icon = "🏆";
             isDesafioEffect = true;
             bgStyle = "rgba(245, 158, 11, 0.15)";
             borderStyle = "rgba(245, 158, 11, 0.5)";
             colorStyle = "#fbbf24";
-          } else if (status === "available") {
-            icon = "🏆";
-            bgStyle = "rgba(245, 158, 11, 0.06)";
-            borderStyle = "rgba(245, 158, 11, 0.15)";
-            colorStyle = "#d4a017";
           } else {
             icon = "🏆";
           }
         }
 
+        const isCurrentLesson = (aula.id === activeAulaId);
+        if (isCurrentLesson) {
+          bgStyle = "var(--color-primary, #7c3aed)";
+          borderStyle = "var(--color-primary-dark, #6d28d9)";
+          colorStyle = "#ffffff";
+          isPulsing = false;
+          isDesafioEffect = false;
+        }
+
         const linkEl = document.createElement("div");
         linkEl.id = `menu-item-${aula.id}`;
-        linkEl.className = "menu-item-link" + (status === "completed" ? " completed" : "") + (isPulsing ? " pulse-active" : "") + (isDesafioEffect ? " desafio-active" : "");
+        linkEl.className = "menu-item-link" + (status === "completed" ? " completed" : "") + (isPulsing ? " pulse-active" : "") + (isDesafioEffect ? " desafio-active" : "") + (isCurrentLesson ? " active" : "");
         linkEl.style.cssText = `
           display: flex;
           align-items: center;
@@ -1067,11 +1082,14 @@ function initSidebarMenu() {
           cursor: pointer;
           transition: all 0.2s;
           opacity: ${status === "locked" ? "0.55" : "1"};
-          ${status === "in_progress" ? "border-left: 3px solid #818cf8;" : ""}
         `;
 
         linkEl.addEventListener("mouseenter", () => {
-          if (status !== "locked") {
+          if (isCurrentLesson) {
+            linkEl.style.background = "var(--color-primary-light, #9061f9)";
+            linkEl.style.borderColor = "var(--color-primary, #7c3aed)";
+            linkEl.style.color = "#fff";
+          } else if (status !== "locked") {
             linkEl.style.background = "rgba(124, 58, 237, 0.2)";
             linkEl.style.borderColor = "rgba(124, 58, 237, 0.6)";
             linkEl.style.color = "#fff";
@@ -1453,6 +1471,24 @@ function proceedLoadingSlide(index) {
   // UI header breadcrumbs
   document.getElementById("header-breadcrumb-chapter").textContent = item.chapter || "Boas-vindas";
   
+  // Highlight active menu item
+  document.querySelectorAll(".menu-item-link").forEach(link => link.classList.remove("active"));
+  const currentSlide = COURSE_CONTENT[index];
+  let activeAulaId = null;
+  for (const mod of COURSE_JORNADA) {
+    const found = mod.lessons.find(l => l.chapter === currentSlide?.chapter);
+    if (found) {
+      activeAulaId = found.id;
+      break;
+    }
+  }
+  const currentLink = document.getElementById(`menu-item-${activeAulaId}`);
+  if (currentLink) {
+    currentLink.classList.add("active");
+    // Scroll menu list into view if overflowed
+    currentLink.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
   // Render inner slide content
   const slideInner = document.getElementById("slide-inner-content");
   slideInner.innerHTML = item.content;
@@ -8068,7 +8104,16 @@ function initSupabaseIntegration() {
         showScreen("hub");
 
         // Busca o perfil detalhado no banco de dados
-        const profile = await window.getUserProfile(session.user.id);
+        let profile = await window.getUserProfile(session.user.id);
+        if (!profile && session.user.user_metadata) {
+          profile = {
+            id: session.user.id,
+            role: session.user.user_metadata.role || 'student',
+            full_name: session.user.user_metadata.full_name || session.user.email,
+            school_id: session.user.user_metadata.school_id || null,
+            schools: session.user.user_metadata.school_name ? { name: session.user.user_metadata.school_name } : null
+          };
+        }
         window.currentUserProfile = profile;
         teacherMode = (profile && (profile.role === 'school' || profile.role === 'admin'));
         
@@ -15220,6 +15265,10 @@ function initAula8Puzzle(container, isReset) {
 // AULA 8 — PC ASSEMBLY LAB (SIMULADOR VISUAL)
 // ==========================================================================
 function initPcAssemblyLab(container, isReset) {
+  if (window.initAula8UnifiedSimulator) {
+    window.initAula8UnifiedSimulator(container, isReset);
+    return;
+  }
   if (isReset) sessionStorage.removeItem("aula8_assembly");
 
   const COMPONENTS = [
@@ -15349,111 +15398,263 @@ function initPcAssemblyLab(container, isReset) {
       </div>
 
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <!-- PAINEL DIREITO: BANCADA DE PEÇAS -->
-        <div style="flex:1;min-width:120px;max-width:160px;">
-          <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:6px;text-align:center;text-transform:uppercase;letter-spacing:1px;">🧰 Peças</div>
+        <!-- PAINEL ESQUERDO: BANCADA DE PEÇAS -->
+        <div style="flex:1;min-width:130px;max-width:170px;">
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.25);margin-bottom:6px;text-align:center;text-transform:uppercase;letter-spacing:2px;">🧰 Bancada de Peças</div>
           <div style="display:flex;flex-direction:column;gap:5px;">
-            ${available.map(c => `
-              <div draggable="true" class="drag-component" data-id="${c.id}" style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;cursor:grab;user-select:none;transition:all 0.15s;"
-                ondragstart="event.dataTransfer.setData('text/plain','${c.id}');this.style.opacity='0.4';"
-                ondragend="this.style.opacity='1';">
-                <span style="font-size:1.3rem;">${c.icon}</span>
-                <span style="font-size:0.62rem;color:rgba(255,255,255,0.5);">${c.title}</span>
-              </div>
-            `).join("")}
-            ${available.length === 0 ? "<div style='font-size:0.7rem;color:rgba(255,255,255,0.2);text-align:center;padding:10px;'>✅ Todas as peças instaladas!</div>" : ""}
+            ${available.map(c => {
+              const gradColors = {
+                mb: "linear-gradient(135deg,#6366f1,#4338ca)",
+                cpu: "linear-gradient(135deg,#fbbf24,#d97706)",
+                thermal: "linear-gradient(135deg,#34d399,#059669)",
+                cooler: "linear-gradient(135deg,#22d3ee,#0891b2)",
+                ram: "linear-gradient(135deg,#10b981,#047857)",
+                ssd: "linear-gradient(135deg,#60a5fa,#2563eb)",
+                psu: "linear-gradient(135deg,#f87171,#dc2626)",
+                sata: "linear-gradient(135deg,#a78bfa,#7c3aed)",
+                power: "linear-gradient(135deg,#fbbf24,#d97706)",
+                perif: "linear-gradient(135deg,#34d399,#059669)"
+              };
+              return `
+              <div draggable="true" class="drag-component" data-id="${c.id}"
+                style="display:flex;align-items:center;gap:8px;padding:7px 10px;
+                  background:linear-gradient(135deg,rgba(30,30,50,0.8),rgba(20,20,40,0.8));
+                  border:1px solid ${c.cor}40;
+                  border-left:3px solid ${c.cor};
+                  border-radius:8px;cursor:grab;user-select:none;
+                  transition:all 0.15s;
+                  box-shadow:0 2px 8px rgba(0,0,0,0.3);"
+                ondragstart="event.dataTransfer.setData('text/plain','${c.id}');this.style.opacity='0.4';this.style.transform='scale(0.95)';"
+                ondragend="this.style.opacity='1';this.style.transform='scale(1)';">
+                <div style="width:32px;height:32px;border-radius:6px;background:${gradColors[c.id]};display:flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 2px 6px rgba(0,0,0,0.3);">${c.icon}</div>
+                <div>
+                  <div style="font-size:0.65rem;color:${c.cor};font-weight:600;">${c.title}</div>
+                  <div style="font-size:0.55rem;color:rgba(255,255,255,0.25);">Arraste para o gabinete</div>
+                </div>
+              </div>`;
+            }).join("")}
+            ${available.length === 0 ? "<div style='font-size:0.7rem;color:rgba(255,255,255,0.2);text-align:center;padding:14px;background:rgba(16,185,129,0.06);border:1px dashed rgba(16,185,129,0.2);border-radius:8px;'>✅ Todas as peças instaladas!</div>" : ""}
           </div>
 
-          <div style="margin-top:10px;">
-            <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:4px;">📋 Instruções</div>
-            <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);line-height:1.4;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.12);border-radius:8px;padding:8px;">
-              Arraste cada peça para o local correto dentro do gabinete.
+          <div style="margin-top:10px;padding:8px;background:rgba(99,102,241,0.04);border:1px solid rgba(99,102,241,0.1);border-radius:8px;">
+            <div style="font-size:0.55rem;color:rgba(255,255,255,0.2);margin-bottom:4px;">💡 Dica</div>
+            <div style="font-size:0.62rem;color:rgba(255,255,255,0.35);line-height:1.4;">
+              Arraste cada peça da bancada para o local correspondente dentro do gabinete.
             </div>
           </div>
         </div>
 
-        <!-- GABINETE DO PC -->
+        <!-- GABINETE DO PC (DIREITA) -->
         <div style="flex:3;min-width:300px;">
-          <div style="background:linear-gradient(180deg,#1e1e2e,#0f0f23);border:2px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px;box-shadow:inset 0 0 30px rgba(0,0,0,0.5),0 4px 20px rgba(0,0,0,0.3);">
-            <div style="text-align:center;font-size:0.6rem;color:rgba(255,255,255,0.12);margin-bottom:8px;letter-spacing:3px;text-transform:uppercase;">💻 Gabinete — Área Interna</div>
+          <div style="background:linear-gradient(180deg,#2a2a3e 0%,#1a1a2e 40%,#12121e 100%);
+            border:1px solid rgba(255,255,255,0.06);
+            border-radius:10px;
+            padding:12px;
+            box-shadow:
+              inset 0 0 40px rgba(0,0,0,0.7),
+              0 8px 32px rgba(0,0,0,0.4),
+              0 0 0 1px rgba(255,255,255,0.03);
+            position:relative;">
             
-            <!-- Área da Placa-mãe (destaque) -->
-            <div style="background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(16,185,129,0.01));border:1px solid rgba(16,185,129,0.12);border-radius:8px;padding:8px;margin-bottom:6px;">
-              <div style="font-size:0.55rem;color:rgba(16,185,129,0.25);text-align:center;margin-bottom:6px;letter-spacing:1px;">🔲 PLACA-MÃE</div>
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-                <div class="drop-slot" id="slot-cpu" style="min-height:55px;background:${state.placed.cpu ? "rgba(251,191,36,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.cpu ? "rgba(251,191,36,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
-                  ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                  ondragleave="this.style.borderColor='';this.style.background='${state.placed.cpu ? "rgba(251,191,36,0.15)" : "rgba(255,255,255,0.02)"}';">
-                  ${state.placed.cpu ? `<span style="font-size:1.6rem;">🧠</span><span style="font-size:0.5rem;color:#fbbf24;margin-top:2px;">CPU</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">🧠</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">CPU</span>`}
+            <!-- Botão Power do gabinete (decorativo) -->
+            <div style="position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 6px rgba(16,185,129,0.4);"></div>
+            <div style="position:absolute;top:6px;right:22px;font-size:0.4rem;color:rgba(255,255,255,0.08);letter-spacing:1px;">PWR</div>
+
+            <div style="text-align:center;font-size:0.55rem;color:rgba(255,255,255,0.08);margin-bottom:8px;letter-spacing:4px;">GABINETE — VISÃO INTERNA</div>
+            
+            <!-- Área da Placa-mãe (PCB verde) -->
+            <div style="background:linear-gradient(180deg,rgba(16,80,40,0.3) 0%,rgba(8,40,20,0.25) 100%);
+              border:1px solid rgba(16,185,129,0.12);
+              border-radius:6px;
+              padding:10px;
+              margin-bottom:8px;
+              box-shadow:inset 0 0 20px rgba(0,0,0,0.3);">
+              
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:2px 0;border-bottom:1px solid rgba(16,185,129,0.06);">
+                <span style="font-size:0.45rem;color:rgba(16,185,129,0.15);letter-spacing:2px;">PLACA-MÃE</span>
+                <span style="flex:1;border-top:1px solid rgba(16,185,129,0.04);"></span>
+              </div>
+
+              <!-- CPU + Pasta + Cooler row -->
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;">
+                <div class="drop-slot" id="slot-cpu"
+                  style="min-height:60px;
+                    background:${state.placed.cpu ? "linear-gradient(135deg,rgba(251,191,36,0.2),rgba(217,119,6,0.1))" : "linear-gradient(135deg,rgba(139,115,85,0.1),rgba(90,70,50,0.05))"};
+                    border:1px solid ${state.placed.cpu ? "rgba(251,191,36,0.4)" : "rgba(139,115,85,0.15)"};
+                    border-radius:4px;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    transition:all 0.2s;
+                    box-shadow:${state.placed.cpu ? "0 0 12px rgba(251,191,36,0.15)" : "inset 0 0 10px rgba(0,0,0,0.3)"};"
+                  ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='linear-gradient(135deg,rgba(99,102,241,0.15),rgba(67,56,202,0.08))';"
+                  ondragleave="this.style.borderColor='';this.style.background='${state.placed.cpu ? "linear-gradient(135deg,rgba(251,191,36,0.2),rgba(217,119,6,0.1))" : "linear-gradient(135deg,rgba(139,115,85,0.1),rgba(90,70,50,0.05))"}'">
+                  ${state.placed.cpu
+                    ? `<span style="font-size:1.8rem;">🧠</span><span style="font-size:0.5rem;color:#fbbf24;margin-top:2px;font-weight:600;">CPU</span>`
+                    : `<span style="font-size:0.8rem;color:rgba(139,115,85,0.2);margin-bottom:2px;">SOQUETE</span><span style="font-size:0.5rem;color:rgba(139,115,85,0.2);">Processador</span>`}
+                  ${state.placed.cpu ? "" : `<div style="margin-top:3px;display:flex;gap:2px;">${Array(4).fill(0).map(() => '<span style="width:3px;height:3px;border-radius:50%;background:rgba(139,115,85,0.15);"></span>').join("")}</div>`}
                 </div>
-                <div class="drop-slot" id="slot-thermal" style="min-height:55px;background:${state.placed.thermal ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.thermal ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
-                  ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                  ondragleave="this.style.borderColor='';this.style.background='${state.placed.thermal ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.02)"}';">
-                  ${state.placed.thermal ? `<span style="font-size:1.6rem;">🧴</span><span style="font-size:0.5rem;color:#10b981;margin-top:2px;">Pasta</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">🧴</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Pasta</span>`}
+
+                <div class="drop-slot" id="slot-thermal"
+                  style="min-height:60px;
+                    background:${state.placed.thermal ? "linear-gradient(135deg,rgba(52,211,153,0.2),rgba(5,150,105,0.1))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"};
+                    border:1px solid ${state.placed.thermal ? "rgba(52,211,153,0.4)" : "rgba(255,255,255,0.06)"};
+                    border-radius:4px;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    transition:all 0.2s;
+                    box-shadow:${state.placed.thermal ? "0 0 12px rgba(52,211,153,0.15)" : "inset 0 0 10px rgba(0,0,0,0.2)"};"
+                  ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='linear-gradient(135deg,rgba(99,102,241,0.15),rgba(67,56,202,0.08))';"
+                  ondragleave="this.style.borderColor='';this.style.background='${state.placed.thermal ? "linear-gradient(135deg,rgba(52,211,153,0.2),rgba(5,150,105,0.1))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"}'">
+                  ${state.placed.thermal
+                    ? `<span style="font-size:1.8rem;">🧴</span><span style="font-size:0.5rem;color:#10b981;margin-top:2px;font-weight:600;">Pasta Térmica</span>`
+                    : `<span style="font-size:0.8rem;color:rgba(255,255,255,0.08);margin-bottom:2px;">⭕</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.1);">Pasta Térmica</span>`}
                 </div>
-                <div class="drop-slot" id="slot-cooler" style="min-height:55px;background:${state.placed.cooler ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.cooler ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
-                  ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                  ondragleave="this.style.borderColor='';this.style.background='${state.placed.cooler ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.02)"}';">
-                  ${state.placed.cooler ? `<span style="font-size:1.6rem;">❄️</span><span style="font-size:0.5rem;color:#22d3ee;margin-top:2px;">Cooler</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">❄️</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Cooler</span>`}
+
+                <div class="drop-slot" id="slot-cooler"
+                  style="min-height:60px;
+                    background:${state.placed.cooler ? "linear-gradient(135deg,rgba(34,211,238,0.2),rgba(8,145,178,0.1))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"};
+                    border:1px solid ${state.placed.cooler ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.06)"};
+                    border-radius:4px;
+                    display:flex;flex-direction:column;align-items:center;justify-content:center;
+                    transition:all 0.2s;
+                    box-shadow:${state.placed.cooler ? "0 0 12px rgba(34,211,238,0.15)" : "inset 0 0 10px rgba(0,0,0,0.2)"};"
+                  ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='linear-gradient(135deg,rgba(99,102,241,0.15),rgba(67,56,202,0.08))';"
+                  ondragleave="this.style.borderColor='';this.style.background='${state.placed.cooler ? "linear-gradient(135deg,rgba(34,211,238,0.2),rgba(8,145,178,0.1))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"}'">
+                  ${state.placed.cooler
+                    ? `<span style="font-size:1.8rem;">❄️</span><span style="font-size:0.5rem;color:#22d3ee;margin-top:2px;font-weight:600;">Cooler</span>`
+                    : `<span style="font-size:0.8rem;color:rgba(255,255,255,0.08);margin-bottom:2px;">◎</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.1);">Cooler</span>`}
                 </div>
               </div>
-              <div id="slot-ram" class="drop-slot" style="margin-top:6px;min-height:45px;background:${state.placed.ram ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.ram ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
-                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                ondragleave="this.style.borderColor='';this.style.background='${state.placed.ram ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.02)"}';">
-                ${state.placed.ram ? `<span style="font-size:1.4rem;">💾</span><span style="font-size:0.5rem;color:#10b981;margin-top:2px;">RAM</span>` : `<span style="font-size:0.8rem;color:rgba(255,255,255,0.12);">💾</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Slot RAM</span>`}
+
+              <!-- RAM -->
+              <div id="slot-ram" class="drop-slot"
+                style="margin-bottom:6px;min-height:40px;
+                  background:${state.placed.ram ? "linear-gradient(90deg,rgba(16,185,129,0.15),rgba(4,120,87,0.08))" : "linear-gradient(90deg,rgba(16,185,129,0.03),rgba(16,185,129,0.01))"};
+                  border:1px solid ${state.placed.ram ? "rgba(16,185,129,0.35)" : "rgba(16,185,129,0.08)"};
+                  border-radius:4px;
+                  display:flex;align-items:center;justify-content:center;gap:8px;
+                  transition:all 0.2s;
+                  box-shadow:${state.placed.ram ? "0 0 10px rgba(16,185,129,0.1)" : "inset 0 0 8px rgba(0,0,0,0.2)"};"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='linear-gradient(90deg,rgba(99,102,241,0.12),rgba(67,56,202,0.06))';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.ram ? "linear-gradient(90deg,rgba(16,185,129,0.15),rgba(4,120,87,0.08))" : "linear-gradient(90deg,rgba(16,185,129,0.03),rgba(16,185,129,0.01))"}'">
+                ${state.placed.ram
+                  ? `<span style="font-size:1.5rem;">💾</span><span style="font-size:0.55rem;color:#10b981;font-weight:600;">Memória RAM instalada</span>`
+                  : `<span style="font-size:0.7rem;color:rgba(16,185,129,0.12);">━━━</span><span style="font-size:0.5rem;color:rgba(16,185,129,0.1);">Slot RAM (DIMM)</span><span style="font-size:0.7rem;color:rgba(16,185,129,0.12);">━━━</span>`}
               </div>
-              <div id="slot-mb" class="drop-slot" style="margin-top:6px;min-height:35px;background:${state.placed.mb ? "rgba(129,140,248,0.12)" : "rgba(255,255,255,0.01)"};border:1px dashed ${state.placed.mb ? "rgba(129,140,248,0.3)" : "rgba(255,255,255,0.04)"};border-radius:6px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;"
+
+              <!-- Placa-mãe (slot principal) -->
+              <div id="slot-mb" class="drop-slot"
+                style="min-height:30px;
+                  background:${state.placed.mb ? "linear-gradient(90deg,rgba(99,102,241,0.12),rgba(67,56,202,0.06))" : "rgba(255,255,255,0.01)"};
+                  border:1px dashed ${state.placed.mb ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.03)"};
+                  border-radius:4px;
+                  display:flex;align-items:center;justify-content:center;gap:6px;
+                  transition:all 0.2s;"
                 ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                ondragleave="this.style.borderColor='';this.style.background='${state.placed.mb ? "rgba(129,140,248,0.12)" : "rgba(255,255,255,0.01)"}';">
-                ${state.placed.mb ? `<span style="font-size:1.2rem;">🖥️</span><span style="font-size:0.5rem;color:#818cf8;">Placa-mãe instalada ✅</span>` : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.08);">🖥️</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.08);">Placa-mãe</span>`}
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.mb ? "linear-gradient(90deg,rgba(99,102,241,0.12),rgba(67,56,202,0.06))" : "rgba(255,255,255,0.01)"}'">
+                ${state.placed.mb
+                  ? `<span style="font-size:1rem;">🖥️</span><span style="font-size:0.5rem;color:#818cf8;">Placa-mãe instalada ✅</span>`
+                  : `<span style="font-size:0.5rem;color:rgba(255,255,255,0.06);">🖥️</span><span style="font-size:0.45rem;color:rgba(255,255,255,0.06);">Placa-mãe (base)</span>`}
               </div>
             </div>
 
-            <!-- Área inferior -->
+            <!-- Área inferior: SSD + Fonte -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
-              <div id="slot-ssd" class="drop-slot" style="min-height:50px;background:${state.placed.ssd ? "rgba(96,165,250,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.ssd ? "rgba(96,165,250,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
-                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                ondragleave="this.style.borderColor='';this.style.background='${state.placed.ssd ? "rgba(96,165,250,0.15)" : "rgba(255,255,255,0.02)"}';">
-                ${state.placed.ssd ? `<span style="font-size:1.6rem;">💿</span><span style="font-size:0.5rem;color:#60a5fa;margin-top:2px;">SSD</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">💿</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">SSD</span>`}
+              <div id="slot-ssd" class="drop-slot"
+                style="min-height:55px;
+                  background:${state.placed.ssd ? "linear-gradient(135deg,rgba(96,165,250,0.2),rgba(37,99,235,0.1))" : "linear-gradient(135deg,rgba(60,80,120,0.05),rgba(40,50,80,0.02))"};
+                  border:1px solid ${state.placed.ssd ? "rgba(96,165,250,0.4)" : "rgba(60,80,120,0.12)"};
+                  border-radius:5px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;
+                  transition:all 0.2s;
+                  box-shadow:${state.placed.ssd ? "0 0 12px rgba(96,165,250,0.1)" : "inset 0 0 10px rgba(0,0,0,0.3)"};"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='linear-gradient(135deg,rgba(99,102,241,0.15),rgba(67,56,202,0.08))';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.ssd ? "linear-gradient(135deg,rgba(96,165,250,0.2),rgba(37,99,235,0.1))" : "linear-gradient(135deg,rgba(60,80,120,0.05),rgba(40,50,80,0.02))"}'">
+                ${state.placed.ssd
+                  ? `<span style="font-size:1.6rem;">💿</span><span style="font-size:0.5rem;color:#60a5fa;margin-top:2px;font-weight:600;">SSD</span>`
+                  : `<span style="font-size:0.7rem;color:rgba(60,80,120,0.15);margin-bottom:2px;">⊞</span><span style="font-size:0.5rem;color:rgba(60,80,120,0.12);">Baia SSD</span>`}
               </div>
-              <div id="slot-psu" class="drop-slot" style="min-height:50px;background:${state.placed.psu ? "rgba(248,113,113,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.psu ? "rgba(248,113,113,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
-                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                ondragleave="this.style.borderColor='';this.style.background='${state.placed.psu ? "rgba(248,113,113,0.15)" : "rgba(255,255,255,0.02)"}';">
-                ${state.placed.psu ? `<span style="font-size:1.6rem;">🔌</span><span style="font-size:0.5rem;color:#f87171;margin-top:2px;">Fonte</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">🔌</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Fonte</span>`}
+
+              <div id="slot-psu" class="drop-slot"
+                style="min-height:55px;
+                  background:${state.placed.psu ? "linear-gradient(135deg,rgba(248,113,113,0.2),rgba(220,38,38,0.1))" : "linear-gradient(135deg,rgba(60,40,40,0.05),rgba(40,25,25,0.02))"};
+                  border:1px solid ${state.placed.psu ? "rgba(248,113,113,0.4)" : "rgba(60,40,40,0.12)"};
+                  border-radius:5px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;
+                  transition:all 0.2s;
+                  box-shadow:${state.placed.psu ? "0 0 12px rgba(248,113,113,0.1)" : "inset 0 0 10px rgba(0,0,0,0.3)"};"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='linear-gradient(135deg,rgba(99,102,241,0.15),rgba(67,56,202,0.08))';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.psu ? "linear-gradient(135deg,rgba(248,113,113,0.2),rgba(220,38,38,0.1))" : "linear-gradient(135deg,rgba(60,40,40,0.05),rgba(40,25,25,0.02))"}'">
+                ${state.placed.psu
+                  ? `<span style="font-size:1.6rem;">🔌</span><span style="font-size:0.5rem;color:#f87171;margin-top:2px;font-weight:600;">Fonte</span>`
+                  : `<span style="font-size:0.7rem;color:rgba(60,40,40,0.15);margin-bottom:2px;">◻</span><span style="font-size:0.5rem;color:rgba(60,40,40,0.12);">Compartimento Fonte</span>`}
               </div>
             </div>
 
             <!-- Cabos e Periféricos -->
-            <div style="display:flex;gap:6px;">
-              <div id="slot-sata" class="drop-slot" style="flex:1;min-height:40px;background:${state.placed.sata ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.sata ? "rgba(167,139,250,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;">
+              <div id="slot-sata" class="drop-slot"
+                style="min-height:42px;
+                  background:${state.placed.sata ? "linear-gradient(135deg,rgba(167,139,250,0.18),rgba(124,58,237,0.08))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"};
+                  border:1px solid ${state.placed.sata ? "rgba(167,139,250,0.35)" : "rgba(255,255,255,0.05)"};
+                  border-radius:4px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;
+                  transition:all 0.2s;"
                 ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                ondragleave="this.style.borderColor='';this.style.background='${state.placed.sata ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.02)"}';">
-                ${state.placed.sata ? `<span style="font-size:1.3rem;">🔗</span><span style="font-size:0.5rem;color:#a78bfa;margin-top:1px;">SATA</span>` : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.12);">🔗</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">SATA</span>`}
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.sata ? "linear-gradient(135deg,rgba(167,139,250,0.18),rgba(124,58,237,0.08))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"}'">
+                ${state.placed.sata
+                  ? `<span style="font-size:1.3rem;">🔗</span><span style="font-size:0.5rem;color:#a78bfa;margin-top:1px;font-weight:600;">SATA</span>`
+                  : `<span style="font-size:0.6rem;color:rgba(255,255,255,0.08);">━</span><span style="font-size:0.45rem;color:rgba(255,255,255,0.08);">Cabos SATA</span>`}
               </div>
-              <div id="slot-power" class="drop-slot" style="flex:1;min-height:40px;background:${state.placed.power ? "rgba(251,191,36,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.power ? "rgba(251,191,36,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+
+              <div id="slot-power" class="drop-slot"
+                style="min-height:42px;
+                  background:${state.placed.power ? "linear-gradient(135deg,rgba(251,191,36,0.18),rgba(217,119,6,0.08))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"};
+                  border:1px solid ${state.placed.power ? "rgba(251,191,36,0.35)" : "rgba(255,255,255,0.05)"};
+                  border-radius:4px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;
+                  transition:all 0.2s;"
                 ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                ondragleave="this.style.borderColor='';this.style.background='${state.placed.power ? "rgba(251,191,36,0.15)" : "rgba(255,255,255,0.02)"}';">
-                ${state.placed.power ? `<span style="font-size:1.3rem;">⚡</span><span style="font-size:0.5rem;color:#fbbf24;margin-top:1px;">Energia</span>` : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.12);">⚡</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Energia</span>`}
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.power ? "linear-gradient(135deg,rgba(251,191,36,0.18),rgba(217,119,6,0.08))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"}'">
+                ${state.placed.power
+                  ? `<span style="font-size:1.3rem;">⚡</span><span style="font-size:0.5rem;color:#fbbf24;margin-top:1px;font-weight:600;">Energia</span>`
+                  : `<span style="font-size:0.6rem;color:rgba(255,255,255,0.08);">⚡</span><span style="font-size:0.45rem;color:rgba(255,255,255,0.08);">Cabos Energia</span>`}
               </div>
-              <div id="slot-perif" class="drop-slot" style="flex:1;min-height:40px;background:${state.placed.perif ? "rgba(52,211,153,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.perif ? "rgba(52,211,153,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+
+              <div id="slot-perif" class="drop-slot"
+                style="min-height:42px;
+                  background:${state.placed.perif ? "linear-gradient(135deg,rgba(52,211,153,0.18),rgba(5,150,105,0.08))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"};
+                  border:1px solid ${state.placed.perif ? "rgba(52,211,153,0.35)" : "rgba(255,255,255,0.05)"};
+                  border-radius:4px;
+                  display:flex;flex-direction:column;align-items:center;justify-content:center;
+                  transition:all 0.2s;"
                 ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
-                ondragleave="this.style.borderColor='';this.style.background='${state.placed.perif ? "rgba(52,211,153,0.15)" : "rgba(255,255,255,0.02)"}';">
-                ${state.placed.perif ? `<span style="font-size:1.3rem;">🖱️</span><span style="font-size:0.5rem;color:#34d399;margin-top:1px;">Perif.</span>` : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.12);">🖱️</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Perif.</span>`}
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.perif ? "linear-gradient(135deg,rgba(52,211,153,0.18),rgba(5,150,105,0.08))" : "linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))"}'">
+                ${state.placed.perif
+                  ? `<span style="font-size:1.3rem;">🖱️</span><span style="font-size:0.5rem;color:#34d399;margin-top:1px;font-weight:600;">Perif.</span>`
+                  : `<span style="font-size:0.6rem;color:rgba(255,255,255,0.08);">⌨️</span><span style="font-size:0.45rem;color:rgba(255,255,255,0.08);">Portas Perif.</span>`}
               </div>
             </div>
 
-            <div style="margin-top:8px;display:flex;gap:4px;justify-content:center;">
-              <span style="font-size:0.5rem;color:rgba(255,255,255,0.06);">🖥️ CPU ▸ 🧴 Pasta ▸ ❄️ Cooler ▸ 💾 RAM ▸ 💿 SSD ▸ 🔌 Fonte ▸ 🔗 SATA ▸ ⚡ Energia ▸ 🖱️ Perif.</span>
+            <!-- Rodapé do gabinete -->
+            <div style="margin-top:8px;display:flex;gap:8px;justify-content:center;">
+              <span style="font-size:0.45rem;color:rgba(255,255,255,0.04);">🖥️ CPU 🧴 Pasta ❄️ Cooler 💾 RAM 💿 SSD 🔌 Fonte 🔗 SATA ⚡ Energia 🖱️ Perif.</span>
             </div>
 
             <!-- Botão Ligar -->
             ${allPlaced() ? `
-              <button id="power-on-btn" style="width:100%;margin-top:10px;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:8px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all 0.2s;box-shadow:0 0 20px rgba(16,185,129,0.3);"
-                onmouseenter="this.style.transform='scale(1.02)'" onmouseleave="this.style.transform='scale(1)'">
+              <button id="power-on-btn" style="width:100%;margin-top:12px;padding:16px;
+                background:linear-gradient(135deg,#10b981,#059669);
+                border:none;border-radius:8px;color:#fff;font-size:0.9rem;font-weight:800;
+                cursor:pointer;letter-spacing:1px;transition:all 0.2s;
+                box-shadow:0 0 24px rgba(16,185,129,0.3),0 4px 12px rgba(0,0,0,0.3);
+                text-transform:uppercase;"
+                onmouseenter="this.style.transform='scale(1.03)';this.style.boxShadow='0 0 32px rgba(16,185,129,0.5)'"
+                onmouseleave="this.style.transform='scale(1)';this.style.boxShadow='0 0 24px rgba(16,185,129,0.3)'">
                 🔌 LIGAR COMPUTADOR
               </button>
             ` : `
-              <div style="width:100%;margin-top:10px;padding:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:8px;text-align:center;font-size:0.65rem;color:rgba(255,255,255,0.12);">⬆️ Arraste todas as peças para o gabinete</div>
+              <div style="width:100%;margin-top:12px;padding:12px;background:rgba(255,255,255,0.01);border:1px dashed rgba(255,255,255,0.04);border-radius:8px;text-align:center;font-size:0.6rem;color:rgba(255,255,255,0.06);">
+                ⬆️ Arraste todas as peças para o gabinete para ligar o computador
+              </div>
             `}
           </div>
         </div>
@@ -15501,6 +15702,20 @@ function initPcAssemblyLab(container, isReset) {
 // AULA 8 — BOOT LAB
 // ==========================================================================
 function initBootLab(container, isReset) {
+  const assemblySlideIdx = COURSE_CONTENT.findIndex(s => s.id === "aula8-montagem-lab");
+  container.innerHTML = `
+    <div style="padding: 2.5rem; text-align: center; background: rgba(30, 30, 50, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; backdrop-filter: blur(20px);">
+      <span style="font-size: 3.5rem; display: block; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.4));">⚙️</span>
+      <h3 style="color: #fbbf24; margin: 0 0 12px; font-size: 1.3rem;">Laboratório Unificado de Montagem e Configuração</h3>
+      <p style="font-size: 0.88rem; color: rgba(255,255,255,0.7); max-width: 480px; margin: 0 auto 20px; line-height: 1.6;">
+        Esta etapa agora faz parte do novo simulador de montagem e configuração física integrada. Para realizar esta atividade, acesse o painel principal na página da <strong>Oficina de Montagem</strong>.
+      </p>
+      <button onclick="loadSlide(${assemblySlideIdx})" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+        🔧 Ir para a Oficina de Montagem
+      </button>
+    </div>
+  `;
+  return;
   if (isReset) sessionStorage.removeItem("aula8_boot");
 
   const SCENARIOS = [
@@ -15605,6 +15820,20 @@ function initBootLab(container, isReset) {
 // AULA 8 — WINDOWS INSTALLER LAB
 // ==========================================================================
 function initWindowsInstallerLab(container, isReset) {
+  const assemblySlideIdx = COURSE_CONTENT.findIndex(s => s.id === "aula8-montagem-lab");
+  container.innerHTML = `
+    <div style="padding: 2.5rem; text-align: center; background: rgba(30, 30, 50, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; backdrop-filter: blur(20px);">
+      <span style="font-size: 3.5rem; display: block; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.4));">⚙️</span>
+      <h3 style="color: #fbbf24; margin: 0 0 12px; font-size: 1.3rem;">Laboratório Unificado de Montagem e Configuração</h3>
+      <p style="font-size: 0.88rem; color: rgba(255,255,255,0.7); max-width: 480px; margin: 0 auto 20px; line-height: 1.6;">
+        Esta etapa agora faz parte do novo simulador de montagem e configuração física integrada. Para realizar esta atividade, acesse o painel principal na página da <strong>Oficina de Montagem</strong>.
+      </p>
+      <button onclick="loadSlide(${assemblySlideIdx})" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+        🔧 Ir para a Oficina de Montagem
+      </button>
+    </div>
+  `;
+  return;
   if (isReset) sessionStorage.removeItem("aula8_install");
 
   const STEPS = [
@@ -15671,6 +15900,20 @@ function initWindowsInstallerLab(container, isReset) {
 // AULA 8 — WINDOWS SETUP LAB
 // ==========================================================================
 function initWindowsSetupLab(container, isReset) {
+  const assemblySlideIdx = COURSE_CONTENT.findIndex(s => s.id === "aula8-montagem-lab");
+  container.innerHTML = `
+    <div style="padding: 2.5rem; text-align: center; background: rgba(30, 30, 50, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; backdrop-filter: blur(20px);">
+      <span style="font-size: 3.5rem; display: block; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.4));">⚙️</span>
+      <h3 style="color: #fbbf24; margin: 0 0 12px; font-size: 1.3rem;">Laboratório Unificado de Montagem e Configuração</h3>
+      <p style="font-size: 0.88rem; color: rgba(255,255,255,0.7); max-width: 480px; margin: 0 auto 20px; line-height: 1.6;">
+        Esta etapa agora faz parte do novo simulador de montagem e configuração física integrada. Para realizar esta atividade, acesse o painel principal na página da <strong>Oficina de Montagem</strong>.
+      </p>
+      <button onclick="loadSlide(${assemblySlideIdx})" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+        🔧 Ir para a Oficina de Montagem
+      </button>
+    </div>
+  `;
+  return;
   if (isReset) sessionStorage.removeItem("aula8_setup");
 
   const TASKS = [
@@ -15743,6 +15986,20 @@ function initWindowsSetupLab(container, isReset) {
 // AULA 8 — SOFTWARE CENTER LAB
 // ==========================================================================
 function initSoftwareCenterLab(container, isReset) {
+  const assemblySlideIdx = COURSE_CONTENT.findIndex(s => s.id === "aula8-montagem-lab");
+  container.innerHTML = `
+    <div style="padding: 2.5rem; text-align: center; background: rgba(30, 30, 50, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; backdrop-filter: blur(20px);">
+      <span style="font-size: 3.5rem; display: block; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.4));">⚙️</span>
+      <h3 style="color: #fbbf24; margin: 0 0 12px; font-size: 1.3rem;">Laboratório Unificado de Montagem e Configuração</h3>
+      <p style="font-size: 0.88rem; color: rgba(255,255,255,0.7); max-width: 480px; margin: 0 auto 20px; line-height: 1.6;">
+        Esta etapa agora faz parte do novo simulador de montagem e configuração física integrada. Para realizar esta atividade, acesse o painel principal na página da <strong>Oficina de Montagem</strong>.
+      </p>
+      <button onclick="loadSlide(${assemblySlideIdx})" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+        🔧 Ir para a Oficina de Montagem
+      </button>
+    </div>
+  `;
+  return;
   if (isReset) sessionStorage.removeItem("aula8_software");
 
   const APPS = [
@@ -15868,6 +16125,20 @@ function initSoftwareCenterLab(container, isReset) {
 // AULA 8 — MISSÃO SURPRESA
 // ==========================================================================
 function initAula8Surpresa(container, isReset) {
+  const assemblySlideIdx = COURSE_CONTENT.findIndex(s => s.id === "aula8-montagem-lab");
+  container.innerHTML = `
+    <div style="padding: 2.5rem; text-align: center; background: rgba(30, 30, 50, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; backdrop-filter: blur(20px);">
+      <span style="font-size: 3.5rem; display: block; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.4));">⚙️</span>
+      <h3 style="color: #fbbf24; margin: 0 0 12px; font-size: 1.3rem;">Laboratório Unificado de Montagem e Configuração</h3>
+      <p style="font-size: 0.88rem; color: rgba(255,255,255,0.7); max-width: 480px; margin: 0 auto 20px; line-height: 1.6;">
+        Esta etapa agora faz parte do novo simulador de montagem e configuração física integrada. Para realizar esta atividade, acesse o painel principal na página da <strong>Oficina de Montagem</strong>.
+      </p>
+      <button onclick="loadSlide(${assemblySlideIdx})" class="btn btn-primary" style="padding: 0.75rem 2rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+        🔧 Ir para a Oficina de Montagem
+      </button>
+    </div>
+  `;
+  return;
   if (isReset) { sessionStorage.removeItem("aula8_surpresa"); }
 
   const PROBLEMS = [

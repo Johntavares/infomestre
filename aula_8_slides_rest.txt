@@ -1,0 +1,521 @@
+id: "aula8-revisao",
+    title: "Revisão Geral dos Conceitos",
+    page: 127,
+    type: "challenge",
+    chapter: "AULA 8",
+    interactiveId: "aula8-revisao-cards",
+    content: `<div style="padding:0.5rem; text-align:center;">
+      <span style="font-size:2rem; display:block; margin-bottom:4px;">📚</span>
+      <h3 style="margin:0 0 4px; color:#fbbf24;">Revisão Geral dos Conceitos</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0;">Clique em cada card para revisar o conteúdo completo de cada matéria estudada.</p>
+    </div>`
+  },
+  {
+    id: "aula8-regras",
+    title: "Regras da Missão",
+    page: 128,
+    type: "theory",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; max-width:600px; margin:0 auto;">
+      <div style="text-align:center; margin-bottom:1rem;">
+        <span style="font-size:3rem; display:block;">📋</span>
+        <h3 style="margin:0.5rem 0 0; color:#fbbf24;">Regras da Missão Final</h3>
+      </div>
+
+      <p style="font-size:0.82rem; color:rgba(255,255,255,0.6); line-height:1.5; text-align:center; margin-bottom:1rem;">
+        Esta é uma prova dividida em fases. Preste atenção nas regras:
+      </p>
+
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:1.2rem;">
+        <div style="display:flex; align-items:center; gap:12px; background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:10px; padding:12px;">
+          <span style="font-size:1.5rem;">🎯</span>
+          <div>
+            <strong style="color:#fbbf24; font-size:0.82rem;">5 Fases</strong>
+            <p style="font-size:0.75rem; color:rgba(255,255,255,0.45); margin:2px 0 0;">A prova possui 5 fases principais. Cada fase libera a próxima ao ser concluída.</p>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:10px; padding:12px;">
+          <span style="font-size:1.5rem;">❤️</span>
+          <div>
+            <strong style="color:#f87171; font-size:0.82rem;">3 Vidas</strong>
+            <p style="font-size:0.75rem; color:rgba(255,255,255,0.45); margin:2px 0 0;">Você tem 3 vidas. Erros graves em desafios removem vidas. Perdeu todas? A missão pode ser retomada depois.</p>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:10px; padding:12px;">
+          <span style="font-size:1.5rem;">📊</span>
+          <div>
+            <strong style="color:#818cf8; font-size:0.82rem;">Progresso Salvo</strong>
+            <p style="font-size:0.75rem; color:rgba(255,255,255,0.45); margin:2px 0 0;">Seu progresso é salvo automaticamente. Você pode parar e continuar depois.</p>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:10px; padding:12px;">
+          <span style="font-size:1.5rem;">🏆</span>
+          <div>
+            <strong style="color:#10b981; font-size:0.82rem;">Certificado</strong>
+            <p style="font-size:0.75rem; color:rgba(255,255,255,0.45); margin:2px 0 0;">Ao concluir todas as fases, você receberá seu Certificado do Módulo 1, a Medalha "Mestre da Informática" e +1000 XP!</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:10px; padding:10px; text-align:center; font-size:0.78rem;">
+        <span style="color:#10b981;">✅</span> Boa sorte! Você está pronto para esta jornada.
+      </div>
+    </div>`
+  },
+  // ---- CAPÍTULO 2: DESAFIO TEÓRICO (slides 129-133) ----
+  {
+    id: "aula8-quiz-p1",
+    title: "Desafio Teórico — Perguntas 1 a 10",
+    page: 129,
+    type: "challenge",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; text-align:center;">
+      <span style="font-size:2.5rem; display:block; margin-bottom:8px;">📝</span>
+      <h3 style="margin:0 0 4px; color:#fbbf24;">Desafio Teórico — Parte 1</h3>
+      <p style="font-size:0.82rem; color:rgba(255,255,255,0.6); margin:0 0 8px;">Responda às perguntas abaixo. Você tem 3 vidas — cada erro custa uma tentativa.</p>
+      <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:8px; display:inline-block;">
+        <span style="font-size:0.72rem; color:#fbbf24;">❤️❤️❤️</span>
+      </div>
+    </div>`,
+    quiz: [
+      { question: "Qual componente é considerado o 'cérebro' do computador?", options: ["Placa-mãe", "Processador (CPU)", "Memória RAM", "HD"], correct: 1, explanation: "A CPU (Unidade Central de Processamento) é responsável por executar todas as instruções dos programas." },
+      { question: "O que significa a sigla RAM?", options: ["Random Access Memory", "Read Access Memory", "Rapid Application Module", "Real Audio Machine"], correct: 0, explanation: "RAM significa Random Access Memory (Memória de Acesso Aleatório), usada para armazenar dados temporários enquanto o computador está ligado." },
+      { question: "Qual é a principal diferença entre HD e SSD?", options: ["HD é mais rápido que SSD", "SSD usa partes móveis, HD não", "SSD é mais rápido e não tem partes móveis", "HD armazena menos dados"], correct: 2, explanation: "O SSD (Solid State Drive) é mais rápido, silencioso e não possui partes móveis, ao contrário do HD tradicional que usa discos magnéticos giratórios." },
+      { question: "Qual tecla de atalho abre o Gerenciador de Tarefas no Windows?", options: ["Ctrl + C", "Ctrl + Alt + Del", "Alt + Tab", "Windows + R"], correct: 1, explanation: "Ctrl + Alt + Del abre uma tela de segurança com acesso ao Gerenciador de Tarefas. Ctrl + Shift + Esc abre diretamente." },
+      { question: "O que é um driver de dispositivo?", options: ["Um programa que traduz comandos entre o hardware e o SO", "Um tipo de memória", "Um cabo de conexão", "Um componente da placa-mãe"], correct: 0, explanation: "O driver é um software que permite que o sistema operacional se comunique corretamente com o hardware." },
+      { question: "Qual das opções é um dispositivo de ENTRADA?", options: ["Monitor", "Impressora", "Teclado", "Caixa de som"], correct: 2, explanation: "Dispositivos de entrada enviam dados para o computador. Teclado, mouse e microfone são exemplos." },
+      { question: "O que é a área de trabalho (Desktop) no Windows?", options: ["A tela inicial do sistema operacional", "O processador", "A memória RAM", "Um tipo de arquivo"], correct: 0, explanation: "A Área de Trabalho é a tela principal exibida após o login no Windows." },
+      { question: "Qual formato de arquivo é usado para documentos de texto no Word?", options: [".jpg", ".mp3", ".docx", ".exe"], correct: 2, explanation: "Arquivos .docx são documentos do Microsoft Word. .jpg é imagem, .mp3 é áudio e .exe é executável." },
+      { question: "O que significa a sigla USB?", options: ["Universal Serial Bus", "United Serial Board", "Universal System Base", "User Serial Block"], correct: 0, explanation: "USB (Universal Serial Bus) é o padrão de conexão mais comum para periféricos." },
+      { question: "Qual a função do nobreak?", options: ["Apenas estabilizar a voltagem", "Proteger contra descargas elétricas", "Manter o computador ligado por um tempo durante queda de energia", "Acelerar o processador"], correct: 2, explanation: "O nobreak possui baterias internas que mantêm o computador funcionando temporariamente durante uma queda de energia, permitindo salvar o trabalho." }
+    ]
+  },
+  {
+    id: "aula8-quiz-p2",
+    title: "Desafio Teórico — Perguntas 11 a 20",
+    page: 130,
+    type: "challenge",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; text-align:center;">
+      <span style="font-size:2.5rem; display:block; margin-bottom:8px;">📝</span>
+      <h3 style="margin:0 0 4px; color:#fbbf24;">Desafio Teórico — Parte 2</h3>
+      <p style="font-size:0.82rem; color:rgba(255,255,255,0.6); margin:0 0 8px;">Continue respondendo. A dificuldade aumenta progressivamente.</p>
+      <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:8px; display:inline-block;">
+        <span style="font-size:0.72rem; color:#fbbf24;">❤️❤️❤️</span>
+      </div>
+    </div>`,
+    quiz: [
+      { question: "Qual a diferença entre software e hardware?", options: ["Software é físico, hardware é digital", "Hardware são as peças físicas; software são os programas", "São a mesma coisa", "Hardware são aplicativos, software são componentes"], correct: 1, explanation: "Hardware são os componentes físicos do computador. Software são os programas e sistemas operacionais executados no hardware." },
+      { question: "O que acontece quando a memória RAM está cheia?", options: ["O computador desliga sozinho", "O Windows usa memória virtual no disco", "O processador para de funcionar", "O sistema formata o HD"], correct: 1, explanation: "Quando a RAM esgota, o Windows utiliza uma área do disco como memória virtual (pagefile.sys). Isso deixa o computador mais lento." },
+      { question: "Qual ferramenta do Windows permite ver o consumo de CPU, RAM e Disco?", options: ["Bloco de Notas", "Gerenciador de Tarefas", "Painel de Controle", "Explorador de Arquivos"], correct: 1, explanation: "O Gerenciador de Tarefas (Ctrl+Shift+Esc) mostra o consumo de CPU, RAM, Disco e Rede em tempo real." },
+      { question: "O que é um adware?", options: ["Um programa que acelera o PC", "Um software que exibe anúncios indesejados", "Um tipo de processador", "Um programa de edição de imagens"], correct: 1, explanation: "Adware é um tipo de software indesejado que exibe anúncios excessivos e geralmente vem instalado junto com outros programas." },
+      { question: "Qual a maneira CORRETA de remover um programa do Windows?", options: ["Deletar a pasta do programa", "Usar o Painel de Controle > Programas e Recursos", "Apagar os atalhos do desktop", "Renomear o executável"], correct: 1, explanation: "A desinstalação oficial deve ser feita pelo Painel de Controle > Programas e Recursos ou Configurações > Aplicativos." },
+      { question: "O que significa o código de erro BSOD?", options: ["Um aviso de atualização disponível", "Uma falha crítica do sistema", "Um programa sendo instalado", "A inicialização do Windows"], correct: 1, explanation: "BSOD (Blue Screen of Death) significa que o Windows encontrou uma falha crítica e precisa ser reiniciado." },
+      { question: "Qual o atalho para alternar entre janelas abertas?", options: ["Ctrl + W", "Alt + Tab", "Windows + D", "Ctrl + Shift + Esc"], correct: 1, explanation: "Alt + Tab permite alternar rapidamente entre as janelas e programas abertos." },
+      { question: "O que é um arquivo com extensão .exe?", options: ["Uma imagem", "Um documento de texto", "Um arquivo executável (programa)", "Uma música"], correct: 2, explanation: "Arquivos .exe são executáveis — eles iniciam programas no Windows." },
+      { question: "O que significa 'desfragmentar' um HD?", options: ["Apagar todos os arquivos", "Reorganizar os dados para leitura mais rápida", "Instalar um novo sistema operacional", "Aumentar a capacidade do disco"], correct: 1, explanation: "A desfragmentação reorganiza fisicamente os arquivos fragmentados no HD para que o cabeçote leia em sequência, acelerando o acesso." },
+      { question: "O que o comando TRIM faz em um SSD?", options: ["Aumenta a velocidade do processador", "Sinaliza blocos de dados apagados para limpeza interna", "Formata o disco", "Desfragmenta o SSD"], correct: 1, explanation: "O TRIM informa ao controlador do SSD quais blocos de dados não são mais necessários, permitindo limpeza interna para manter a velocidade." }
+    ]
+  },
+  {
+    id: "aula8-quiz-p3",
+    title: "Desafio Teórico — Perguntas 21 a 25",
+    page: 131,
+    type: "challenge",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; text-align:center;">
+      <span style="font-size:2.5rem; display:block; margin-bottom:8px;">🎯</span>
+      <h3 style="margin:0 0 4px; color:#fbbf24;">Desafio Teórico — Final</h3>
+      <p style="font-size:0.82rem; color:rgba(255,255,255,0.6); margin:0 0 8px;">Últimas 5 perguntas! A dificuldade está no máximo.</p>
+      <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:8px; padding:8px; display:inline-block;">
+        <span style="font-size:0.72rem; color:#fbbf24;">❤️❤️❤️</span>
+      </div>
+    </div>`,
+    quiz: [
+      { question: "O que é a pasta Windows.old?", options: ["A pasta de downloads do Windows", "Cópia da instalação anterior do Windows", "Uma pasta de sistema vazia", "Um atalho para documentos"], correct: 1, explanation: "Ao atualizar o Windows, o sistema cria a pasta Windows.old com os arquivos da instalação anterior. Pode ocupar 10-25 GB." },
+      { question: "O que significa 'boot' do computador?", options: ["O processo de inicialização do sistema", "O desligamento do PC", "A instalação de um programa", "A formatação do HD"], correct: 0, explanation: "Boot é o processo de inicialização do computador, desde o momento em que é ligado até o carregamento completo do sistema operacional." },
+      { question: "Qual a finalidade da pasta térmica no processador?", options: ["Esfriar o gabinete", "Melhorar a transferência de calor entre CPU e cooler", "Lubrificar as ventoinhas", "Aumentar a velocidade do processador"], correct: 1, explanation: "A pasta térmica preenche microimperfeições entre a CPU e o cooler, garantindo melhor condução de calor." },
+      { question: "Qual programa padrão do Windows permite navegar em pastas e arquivos?", options: ["Gerenciador de Tarefas", "Explorador de Arquivos", "Painel de Controle", "Bloco de Notas"], correct: 1, explanation: "O Explorador de Arquivos (antigo Windows Explorer) permite navegar, copiar, mover e organizar arquivos e pastas." },
+      { question: "O que é necessário para instalar o Windows em um computador novo?", options: ["Apenas ligar o computador", "Um pendrive ou DVD com o instalador do Windows", "Uma conta da Microsoft", "Conexão com a internet"], correct: 1, explanation: "Para instalar o Windows, é necessário um meio de instalação (pendrive ou DVD) com os arquivos do sistema operacional." }
+    ]
+  },
+  // ---- PUZZLE (slide 132) ----
+  {
+    id: "aula8-puzzle",
+    title: "Quebra-Cabeça Técnico",
+    page: 132,
+    type: "challenge",
+    chapter: "AULA 8",
+    interactiveId: "aula8-puzzle",
+    content: `<div style="padding:0.5rem; text-align:center;">
+      <span style="font-size:2rem; display:block; margin-bottom:4px;">🧩</span>
+      <h3 style="margin:0 0 4px; color:#10b981;">Quebra-Cabeça Técnico</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0;">Arraste cada peça para sua posição correta na placa-mãe.</p>
+    </div>`
+  },
+  // ---- CAPÍTULO 3: OFICINA DE MONTAGEM (slides 133-138) ----
+  {
+    id: "aula8-montagem-intro",
+    title: "Oficina de Montagem",
+    page: 133,
+    type: "theory",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; text-align:center;">
+      <span style="font-size:3rem; display:block; margin-bottom:8px;">🔧</span>
+      <h3 style="margin:0 0 8px; color:#10b981;">Oficina de Montagem</h3>
+      <p style="font-size:0.85rem; color:rgba(255,255,255,0.65); max-width:560px; margin:0 auto 1.5rem; line-height:1.6;">
+        Agora você vai montar um computador completo! Siga as instruções e encaixe cada componente no lugar correto.
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; max-width:500px; margin:0 auto 1rem;">
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px;">
+          <span style="font-size:1.3rem;">🖥️</span>
+          <div style="font-size:0.7rem; color:rgba(255,255,255,0.45);">Gabinete</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px;">
+          <span style="font-size:1.3rem;">🧠</span>
+          <div style="font-size:0.7rem; color:rgba(255,255,255,0.45);">Placa-mãe</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px;">
+          <span style="font-size:1.3rem;">⚡</span>
+          <div style="font-size:0.7rem; color:rgba(255,255,255,0.45);">CPU</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px;">
+          <span style="font-size:1.3rem;">❄️</span>
+          <div style="font-size:0.7rem; color:rgba(255,255,255,0.45);">Cooler</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px;">
+          <span style="font-size:1.3rem;">💾</span>
+          <div style="font-size:0.7rem; color:rgba(255,255,255,0.45);">RAM + SSD</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px;">
+          <span style="font-size:1.3rem;">🔌</span>
+          <div style="font-size:0.7rem; color:rgba(255,255,255,0.45);">Fonte</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:10px; padding:12px; max-width:480px; margin:0 auto;">
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.6); margin:0; line-height:1.5;">
+          ⚠️ <strong style="color:#fbbf24;">Preparação:</strong> Certifique-se de que você tem uma pulseira antiestática (ou toque em uma superfície metálica aterrada) antes de tocar nos componentes.
+        </p>
+      </div>
+    </div>`
+  },
+  {
+    id: "aula8-montagem-lab",
+    title: "Laboratório de Montagem",
+    page: 134,
+    type: "challenge",
+    chapter: "AULA 8",
+    interactiveId: "aula8-pc-assembly",
+    content: `<div style="padding:0.5rem; text-align:center;">
+      <span style="font-size:2rem; display:block; margin-bottom:4px;">🔧</span>
+      <h3 style="margin:0 0 4px; color:#10b981;">Monte o Computador</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0;">Siga as instruções passo a passo para montar o PC.</p>
+    </div>`
+  },
+  // ---- CAPÍTULO 4: PRIMEIRO BOOT (slides 135-137) ----
+  {
+    id: "aula8-boot-intro",
+    title: "Primeiro Boot",
+    page: 135,
+    type: "theory",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; text-align:center;">
+      <span style="font-size:3rem; display:block; margin-bottom:8px;">🔌</span>
+      <h3 style="margin:0 0 8px; color:#10b981;">Primeiro Boot</h3>
+      <p style="font-size:0.85rem; color:rgba(255,255,255,0.65); max-width:560px; margin:0 auto 1rem; line-height:1.6;">
+        Após montar o computador, você precisa ligá-lo e verificar se tudo foi instalado corretamente.
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:520px; margin:0 auto 1rem;">
+        <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:10px; padding:12px;">
+          <strong style="color:#ef4444; font-size:0.82rem;">❌ Problemas comuns</strong>
+          <div style="font-size:0.72rem; color:rgba(255,255,255,0.45); margin-top:4px; line-height:1.5;">
+            <div>• RAM mal encaixada (beeps)</div>
+            <div>• SSD desconectado</div>
+            <div>• Cooler desligado (superaquecimento)</div>
+            <div>• Monitor sem sinal</div>
+          </div>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:10px; padding:12px;">
+          <strong style="color:#10b981; font-size:0.82rem;">✅ Sucesso</strong>
+          <div style="font-size:0.72rem; color:rgba(255,255,255,0.45); margin-top:4px; line-height:1.5;">
+            <div>• CPU detectada na BIOS</div>
+            <div>• Quantidade de RAM reconhecida</div>
+            <div>• SSD identificado na lista</div>
+            <div>• Ordem de boot configurada</div>
+          </div>
+        </div>
+      </div>
+    </div>`
+  },
+  {
+    id: "aula8-boot-lab",
+    title: "Laboratório de Boot",
+    page: 136,
+    type: "challenge",
+    chapter: "AULA 8",
+    interactiveId: "aula8-boot-lab",
+    content: `<div style="padding:0.5rem; text-align:center;">
+      <span style="font-size:2rem; display:block; margin-bottom:4px;">🔌</span>
+      <h3 style="margin:0 0 4px; color:#fbbf24;">Diagnóstico de Inicialização</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0;">Identifique e corrija os problemas de boot.</p>
+    </div>`
+  },
+  // ---- CAPÍTULO 5: INSTALAÇÃO DO WINDOWS (slides 137-141) ----
+  {
+    id: "aula8-win-install-intro",
+    title: "Instalação do Windows",
+    page: 137,
+    type: "theory",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; text-align:center;">
+      <span style="font-size:3rem; display:block; margin-bottom:8px;">🪟</span>
+      <h3 style="margin:0 0 8px; color:#818cf8;">Instalação do Windows</h3>
+      <p style="font-size:0.85rem; color:rgba(255,255,255,0.65); max-width:560px; margin:0 auto 1.2rem; line-height:1.6;">
+        O sistema operacional é o software mais importante do computador. Sem ele, o hardware não consegue funcionar. Agora vamos instalar o Windows passo a passo.
+      </p>
+
+      <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:10px; padding:12px; max-width:560px; margin:0 auto;">
+        <strong style="color:#818cf8;">📌 O que é um Sistema Operacional?</strong>
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.55); margin:6px 0 0; line-height:1.4;">
+          O Sistema Operacional (SO) é o software que gerencia todos os recursos do computador — hardware, programas, arquivos e a interface que você usa. O Windows é o SO mais popular do mundo.
+        </p>
+      </div>
+    </div>`
+  },
+  {
+    id: "aula8-win-install-lab",
+    title: "Instalador do Windows",
+    page: 138,
+    type: "challenge",
+    chapter: "AULA 8",
+    interactiveId: "aula8-win-install",
+    content: `<div style="padding:0.5rem; text-align:center;">
+      <span style="font-size:2rem; display:block; margin-bottom:4px;">🪟</span>
+      <h3 style="margin:0 0 4px; color:#818cf8;">Instalação do Windows</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0;">Siga as etapas para instalar o Windows no computador.</p>
+    </div>`
+  },
+  // ---- CAPÍTULO 6: CONFIGURAÇÃO INICIAL (slides 139-141) ----
+  {
+    id: "aula8-setup-intro",
+    title: "Configuração Inicial do Windows",
+    page: 139,
+    type: "theory",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; text-align:center;">
+      <span style="font-size:3rem; display:block; margin-bottom:8px;">⚙️</span>
+      <h3 style="margin:0 0 8px; color:#10b981;">Configuração Inicial</h3>
+      <p style="font-size:0.85rem; color:rgba(255,255,255,0.65); max-width:540px; margin:0 auto 1.2rem; line-height:1.6;">
+        Com o Windows instalado, é hora de personalizar o sistema e organizar o ambiente de trabalho.
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:480px; margin:0 auto;">
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; text-align:center;">
+          <span style="font-size:1.5rem;">🖼️</span>
+          <div style="font-size:0.72rem; color:rgba(255,255,255,0.5); margin-top:2px;">Papel de parede</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; text-align:center;">
+          <span style="font-size:1.5rem;">☀️</span>
+          <div style="font-size:0.72rem; color:rgba(255,255,255,0.5); margin-top:2px;">Brilho + Volume</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; text-align:center;">
+          <span style="font-size:1.5rem;">📅</span>
+          <div style="font-size:0.72rem; color:rgba(255,255,255,0.5); margin-top:2px;">Data e Hora</div>
+        </div>
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:8px; padding:10px; text-align:center;">
+          <span style="font-size:1.5rem;">📂</span>
+          <div style="font-size:0.72rem; color:rgba(255,255,255,0.5); margin-top:2px;">Pastas e Documentos</div>
+        </div>
+      </div>
+    </div>`
+  },
+  {
+    id: "aula8-setup-lab",
+    title: "Laboratório de Configuração",
+    page: 140,
+    type: "challenge",
+    chapter: "AULA 8",
+    interactiveId: "aula8-win-setup",
+    content: `<div style="padding:0.5rem; text-align:center;">
+      <span style="font-size:2rem; display:block; margin-bottom:4px;">⚙️</span>
+      <h3 style="margin:0 0 4px; color:#10b981;">Configure o Windows</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0;">Personalize e organize o sistema.</p>
+    </div>`
+  },
+  // ---- CAPÍTULO 7: INSTALAÇÃO DE PROGRAMAS (slides 141-143) ----
+  {
+    id: "aula8-software-intro",
+    title: "Instalação de Programas",
+    page: 141,
+    type: "theory",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; text-align:center;">
+      <span style="font-size:3rem; display:block; margin-bottom:8px;">💿</span>
+      <h3 style="margin:0 0 8px; color:#fbbf24;">Instalação de Programas</h3>
+      <p style="font-size:0.85rem; color:rgba(255,255,255,0.65); max-width:540px; margin:0 auto 1.2rem; line-height:1.6;">
+        Com o Windows configurado, você precisa instalar os programas essenciais para o trabalho: navegador, editor de texto, leitor de PDF e mais.
+      </p>
+
+      <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:10px; padding:12px; max-width:480px; margin:0 auto;">
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.6); margin:0; line-height:1.5;">
+          💡 <strong>Dica:</strong> Sempre baixe programas dos sites oficiais. Cuidado com instaladores que tentam incluir adwares e programas indesejados.
+        </p>
+      </div>
+    </div>`
+  },
+  {
+    id: "aula8-software-lab",
+    title: "Central de Programas",
+    page: 142,
+    type: "challenge",
+    chapter: "AULA 8",
+    interactiveId: "aula8-software-center",
+    content: `<div style="padding:0.5rem; text-align:center;">
+      <span style="font-size:2rem; display:block; margin-bottom:4px;">💿</span>
+      <h3 style="margin:0 0 4px; color:#fbbf24;">Central de Programas</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0;">Instale, organize e remova programas.</p>
+    </div>`
+  },
+  // ---- CAPÍTULO 8: MISSÃO SURPRESA (slides 143-145) ----
+  {
+    id: "aula8-surpresa-intro",
+    title: "Missão Surpresa!",
+    page: 143,
+    type: "theory",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; text-align:center;">
+      <span style="font-size:3rem; display:block; margin-bottom:8px;">🎲</span>
+      <h3 style="margin:0 0 8px; color:#ef4444;">Missão Surpresa!</h3>
+      <p style="font-size:0.85rem; color:rgba(255,255,255,0.65); max-width:540px; margin:0 auto 1rem; line-height:1.6;">
+        Um problema inesperado surgiu no computador! Você precisará usar todo o seu conhecimento para diagnosticar e resolver a situação.
+      </p>
+
+      <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:10px; padding:12px; max-width:480px; margin:0 auto;">
+        <p style="font-size:0.78rem; color:rgba(255,255,255,0.6); margin:0; line-height:1.5;">
+          🎯 <strong>Problemas possíveis:</strong> Sem internet, sem áudio, disco cheio, mouse desconectado, driver com erro. Saiba identificar cada um!
+        </p>
+      </div>
+    </div>`
+  },
+  {
+    id: "aula8-surpresa-lab",
+    title: "Diagnóstico Surpresa",
+    page: 144,
+    type: "challenge",
+    chapter: "AULA 8",
+    interactiveId: "aula8-surpresa",
+    content: `<div style="padding:0.5rem; text-align:center;">
+      <span style="font-size:2rem; display:block; margin-bottom:4px;">🎲</span>
+      <h3 style="margin:0 0 4px; color:#ef4444;">Resolva o Problema</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0;">Diagnostique e corrija o problema gerado aleatoriamente.</p>
+    </div>`
+  },
+  // ---- CAPÍTULO 9: ENCERRAMENTO (slides 145-147) ----
+  {
+    id: "aula8-certificado",
+    title: "Certificado e Conquistas",
+    page: 145,
+    type: "challenge",
+    chapter: "AULA 8",
+    interactiveId: "aula8-certificado",
+    content: `<div style="padding:0.5rem; text-align:center;">
+      <span style="font-size:2rem; display:block; margin-bottom:4px;">🏆</span>
+      <h3 style="margin:0 0 4px; color:#f59e0b;">Certificado do Módulo 1</h3>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0;">Sua certificação está sendo gerada...</p>
+    </div>`
+  },
+  {
+    id: "aula8-estatisticas",
+    title: "Estatísticas da Missão",
+    page: 146,
+    type: "theory",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; max-width:580px; margin:0 auto;">
+      <div style="text-align:center; margin-bottom:1rem;">
+        <span style="font-size:3rem; display:block;">📊</span>
+        <h2 style="font-family:var(--font-display); font-size:1.5rem; font-weight:900; margin:0.5rem 0; background:linear-gradient(90deg,#10b981,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Estatísticas da Missão</h2>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:1rem;">
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:10px; padding:14px; text-align:center;">
+          <span style="font-size:1.5rem;">⏱️</span>
+          <div style="font-size:0.9rem; font-weight:700; color:#10b981; margin-top:4px;">8h 45min</div>
+          <div style="font-size:0.65rem; color:rgba(255,255,255,0.35);">Tempo total estudado</div>
+        </div>
+        <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:10px; padding:14px; text-align:center;">
+          <span style="font-size:1.5rem;">🎯</span>
+          <div style="font-size:0.9rem; font-weight:700; color:#818cf8; margin-top:4px;">25 / 25</div>
+          <div style="font-size:0.65rem; color:rgba(255,255,255,0.35);">Perguntas respondidas</div>
+        </div>
+        <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:10px; padding:14px; text-align:center;">
+          <span style="font-size:1.5rem;">🏅</span>
+          <div style="font-size:0.9rem; font-weight:700; color:#fbbf24; margin-top:4px;">7</div>
+          <div style="font-size:0.65rem; color:rgba(255,255,255,0.35);">Aulas concluídas</div>
+        </div>
+        <div style="background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.15); border-radius:10px; padding:14px; text-align:center;">
+          <span style="font-size:1.5rem;">❤️</span>
+          <div style="font-size:0.9rem; font-weight:700; color:#f87171; margin-top:4px;">3</div>
+          <div style="font-size:0.65rem; color:rgba(255,255,255,0.35);">Vidas restantes</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:12px; padding:1rem; text-align:center;">
+        <span style="font-size:2rem; display:block; margin-bottom:8px;">⭐</span>
+        <div style="font-size:1.1rem; font-weight:700; color:#10b981;">+1.000 XP</div>
+        <div style="font-size:0.72rem; color:rgba(255,255,255,0.4); margin-top:2px;">XP total: 4.450</div>
+      </div>
+    </div>`
+  },
+  {
+    id: "aula8-reflexao",
+    title: "Reflexão Final",
+    page: 147,
+    type: "theory",
+    chapter: "AULA 8",
+    content: `<div style="padding:1rem; max-width:600px; margin:0 auto;">
+      <div style="text-align:center; margin-bottom:1.2rem;">
+        <span style="font-size:3.5rem; display:block;">🌟</span>
+        <h2 style="font-family:var(--font-display); font-size:1.6rem; font-weight:900; margin:0.5rem 0; background:linear-gradient(90deg,#10b981,#6366f1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Parabéns, Mestre da Informática!</h2>
+      </div>
+
+      <p style="font-size:0.88rem; color:rgba(255,255,255,0.7); line-height:1.6; text-align:center; margin-bottom:1.2rem;">
+        Você concluiu o <strong>Módulo 1 — Explorador Digital</strong>! Agora você entende os fundamentos da informática e está preparado para o próximo nível.
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1.2rem;">
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15); border-radius:10px; padding:12px;">
+          <strong style="color:#10b981; font-size:0.82rem;">🤔 O que você aprendeu?</strong>
+          <p style="font-size:0.75rem; color:rgba(255,255,255,0.5); margin:4px 0 0; line-height:1.4;">
+            Desde identificar componentes de hardware até diagnosticar problemas de software, você construiu uma base sólida em informática.
+          </p>
+        </div>
+        <div style="background:rgba(99,102,241,0.06); border:1px solid rgba(99,102,241,0.15); border-radius:10px; padding:12px;">
+          <strong style="color:#818cf8; font-size:0.82rem;">💪 Qual foi o maior desafio?</strong>
+          <p style="font-size:0.75rem; color:rgba(255,255,255,0.5); margin:4px 0 0; line-height:1.4;">
+            A montagem do computador e o diagnóstico de problemas exigem atenção aos detalhes — e você mostrou que consegue!
+          </p>
+        </div>
+      </div>
+
+      <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15); border-radius:10px; padding:12px; margin-bottom:1.2rem; text-align:center;">
+        <p style="font-size:0.82rem; color:rgba(255,255,255,0.7); margin:0; line-height:1.5;">
+          🚀 Pronto para o <strong>Módulo 2 — Produtividade Profissional</strong>? Lá você vai aprender digitação, Word, Excel e PowerPoint!
+        </p>
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:10px;">
+        <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.2); border-radius:10px; padding:12px 20px; text-align:center;">
+          <span style="font-size:1.5rem;">🥇</span>
+          <div style="font-size:0.85rem; font-weight:700; color:#10b981;">Mestre da Informática</div>
+        </div>
+      </div>
+    </div>`
+  }
+];
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { COURSE_CONTENT };
+}
