@@ -1034,12 +1034,17 @@ function initSidebarMenu() {
         if (aula.isDesafio) {
           if (status === "completed") {
             icon = "🏆";
-          } else if (status === "in_progress" || status === "available") {
-            icon = status === "in_progress" ? "⚔️" : "🏆";
+          } else if (status === "in_progress") {
+            icon = "⚔️";
             isDesafioEffect = true;
             bgStyle = "rgba(245, 158, 11, 0.15)";
             borderStyle = "rgba(245, 158, 11, 0.5)";
             colorStyle = "#fbbf24";
+          } else if (status === "available") {
+            icon = "🏆";
+            bgStyle = "rgba(245, 158, 11, 0.06)";
+            borderStyle = "rgba(245, 158, 11, 0.15)";
+            colorStyle = "#d4a017";
           } else {
             icon = "🏆";
           }

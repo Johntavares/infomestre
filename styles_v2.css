@@ -376,9 +376,11 @@ li {
 }
 
 .menu-item-link.active {
-  background-color: var(--color-primary);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(131, 82, 255, 0.3);
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(131, 82, 255, 0.3) !important;
+  border-color: var(--color-primary) !important;
+  border-left: none !important;
 }
 .menu-item-link.active.desafio-active {
   animation: none;
