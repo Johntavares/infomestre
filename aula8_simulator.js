@@ -87,7 +87,7 @@
     .unified-sim-wrapper {
       display: flex;
       width: 100%;
-      height: 620px;
+      height: 540px;
       background: #090915;
       border-radius: 16px;
       overflow: hidden;
@@ -99,13 +99,13 @@
     }
     
     .unified-sim-sidebar {
-      width: 320px;
+      width: 280px;
       background: rgba(18, 18, 35, 0.85);
       backdrop-filter: blur(20px);
       border-right: 1px solid rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
-      padding: 1.5rem;
+      padding: 1rem;
       box-sizing: border-box;
       z-index: 10;
     }
@@ -554,6 +554,23 @@
       height: 75%;
       filter: drop-shadow(0 15px 35px rgba(0,0,0,0.6));
     }
+
+    /* Estilos do Dock de arrastar */
+    .hardware-dock .dock-item {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .hardware-dock .dock-item[draggable="true"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .hardware-dock .dock-item[draggable="true"]:active {
+      cursor: grabbing;
+      transform: scale(0.95);
+    }
+    .hardware-dock .dock-item.installed {
+      pointer-events: none;
+    }
   `;
 
   // Função de carregamento das bibliotecas de animação e WebGL
@@ -899,70 +916,99 @@
   let threeRenderer = null;
   let threeMeshes = {}; // Peças em 3D
   let threeAnimFinished = true;
+  let dockHintEl = null;
+  let caseZoom = 0.75;
 
   async function renderStep3Assembly() {
     const canvasContainer = document.getElementById("sim-canvas3d-container");
     const fallbackContainer = document.getElementById("sim-fallback-container");
     const guiOverlay = document.getElementById("sim-gui-overlay");
 
-    // Mostra a bancada (fallback) imediatamente sem esperar o Three.js
+    // Reconfigura layout ANTES de renderizar: flex column, case flex:1, dock estático
+    const mainEl = document.getElementById("sim-workspace-main");
+    if (mainEl) {
+      mainEl.style.display = "flex";
+      mainEl.style.flexDirection = "column";
+    }
     if (fallbackContainer) {
       fallbackContainer.style.display = "block";
-      initFallbackAssemblyScene();
+      fallbackContainer.style.flex = "1";
+      fallbackContainer.style.width = "100%";
+      fallbackContainer.style.height = "auto";
+      fallbackContainer.style.minHeight = "0";
     }
     if (guiOverlay) {
       guiOverlay.style.display = "flex";
+      guiOverlay.style.position = "static";
+      guiOverlay.style.height = "auto";
+      guiOverlay.style.width = "100%";
+      guiOverlay.style.flexShrink = "0";
+      guiOverlay.style.justifyContent = "flex-start";
+      guiOverlay.style.padding = "4px 8px";
+      guiOverlay.style.pointerEvents = "auto";
     }
+
+    initFallbackAssemblyScene();
     renderAssemblyGUI();
 
-    // Tenta carregar o Three.js em background — se carregar, substitui o fallback
-    loadDependencies().then(loaded => {
-      if (loaded && window.THREE) {
-        if (fallbackContainer) fallbackContainer.style.display = "none";
-        if (canvasContainer) {
-          canvasContainer.style.display = "block";
-          canvasContainer.innerHTML = "";
-        }
-        initThreeAssemblyScene();
-      }
-    });
+    // Aplica zoom inicial
+    requestAnimationFrame(() => applyCaseZoom());
   }
 
   function renderAssemblyGUI() {
     const gui = document.getElementById("sim-gui-overlay");
     if (!gui) return;
 
-    // Componentes que faltam ser instalados
     const remaining = HARDWARE_PIECES.filter(p => !simState.placed[p.id]);
 
     gui.innerHTML = `
-      <div style="background:rgba(15,23,42,0.85);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 12px;font-size:0.72rem;color:rgba(255,255,255,0.7);display:flex;justify-content:space-between;width:95%;margin:0 auto;">
-        <span>🔨 Progresso da Montagem: <strong>${simState.assemblyStep}/10</strong> peças instaladas</span>
-        <span>Selecione a peça no dock e clique no local correspondente na placa-mãe</span>
+      <div style="background:rgba(15,23,42,0.9);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:6px 10px;font-size:0.7rem;color:rgba(255,255,255,0.7);display:flex;justify-content:space-between;align-items:center;width:95%;margin:0 auto 6px;">
+        <span>🔨 <strong style="color:#10b981;">${simState.assemblyStep}/10</strong></span>
+        <span id="dock-hint" style="font-size:0.65rem;">Arraste a peça para o slot</span>
+        <div style="display:flex;gap:4px;align-items:center;">
+          <span style="font-size:0.55rem;color:rgba(255,255,255,0.3);">Zoom</span>
+          <button id="zoom-out-btn" style="width:22px;height:22px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;">−</button>
+          <span id="zoom-label" style="font-size:0.6rem;color:rgba(255,255,255,0.4);min-width:28px;text-align:center;">${Math.round(caseZoom*100)}%</span>
+          <button id="zoom-in-btn" style="width:22px;height:22px;border-radius:4px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;">+</button>
+        </div>
       </div>
 
-      <div class="hardware-dock">
+      <div class="hardware-dock" style="display:flex;gap:4px;flex-wrap:wrap;justify-content:center;padding:0 8px;">
         ${HARDWARE_PIECES.map(p => {
           const isInstalled = simState.placed[p.id];
-          const isSelected = activeSelectedPart === p.id;
-          
           return `
-            <div class="dock-item ${isInstalled ? 'installed' : ''} ${isSelected ? 'selected' : ''}" data-id="${p.id}">
-              <div style="font-size:1.5rem;">${p.icon}</div>
-              <div style="font-size:0.55rem;font-weight:700;color:${p.color};text-transform:uppercase;text-align:center;">${p.title.split(" ")[0]}</div>
+            <div class="dock-item ${isInstalled ? 'installed' : ''}"
+              draggable="${!isInstalled}"
+              data-id="${p.id}"
+              style="display:flex;align-items:center;gap:5px;padding:6px 10px;
+                background:${isInstalled ? 'rgba(16,185,129,0.12)' : 'linear-gradient(135deg,rgba(30,30,55,0.9),rgba(20,20,40,0.9))'};
+                border:1px solid ${isInstalled ? 'rgba(16,185,129,0.3)' : `${p.color}30`};
+                border-left:3px solid ${isInstalled ? '#10b981' : p.color};
+                border-radius:8px;${isInstalled ? '' : 'cursor:grab;'};
+                user-select:none;transition:all 0.15s;
+                opacity:${isInstalled ? '0.45' : '1'};
+                box-shadow:${isInstalled ? 'none' : '0 2px 6px rgba(0,0,0,0.3)'};"
+              ondragstart="event.dataTransfer.setData('text/plain','${p.id}');event.dataTransfer.effectAllowed='move';this.style.opacity='0.3';this.style.transform='scale(0.92)';"
+              ondragend="this.style.opacity='1';this.style.transform='scale(1)';"
+              ${isInstalled ? '' : `title="Arraste ${p.title} para o gabinete"`}>
+              <div style="width:28px;height:28px;border-radius:5px;
+                background:${isInstalled ? 'rgba(16,185,129,0.3)' : `linear-gradient(135deg,${p.color},${p.color}88)`};
+                display:flex;align-items:center;justify-content:center;font-size:1rem;
+                box-shadow:${isInstalled ? 'none' : '0 1px 4px rgba(0,0,0,0.2)'};">${p.icon}</div>
+              <div style="font-size:0.6rem;font-weight:700;color:${isInstalled ? 'rgba(255,255,255,0.3)' : p.color};text-transform:uppercase;">${p.title.split(" ")[0]}</div>
+              ${isInstalled ? '<span style="font-size:0.5rem;color:rgba(16,185,129,0.5);">✓</span>' : ''}
             </div>
           `;
         }).join("")}
       </div>
     `;
 
-    // Bind cliques no dock
-    gui.querySelectorAll(".dock-item").forEach(item => {
-      item.onclick = (e) => {
+    dockHintEl = document.getElementById("dock-hint");
+
+    gui.querySelectorAll(".dock-item:not(.installed)").forEach(item => {
+      item.addEventListener("click", (e) => {
         const id = item.dataset.id;
         if (simState.placed[id] || !threeAnimFinished) return;
-
-        // Se clicar em um item do dock, exibe a explicação didática correspondente
         const piece = HARDWARE_PIECES.find(p => p.id === id);
         triggerModal(
           piece.title,
@@ -972,12 +1018,26 @@
           () => {
             activeSelectedPart = id;
             renderAssemblyGUI();
-            // Destaca a peça no 3D
             highlightTargetIn3D(id);
+            if (dockHintEl) dockHintEl.textContent = "Clique no slot correspondente no gabinete";
           }
         );
-      };
+      });
     });
+
+    // Zoom controls
+    const zoomIn = document.getElementById("zoom-in-btn");
+    const zoomOut = document.getElementById("zoom-out-btn");
+    if (zoomIn) zoomIn.onclick = (e) => { e.stopPropagation(); caseZoom = Math.min(2, caseZoom + 0.15); applyCaseZoom(); };
+    if (zoomOut) zoomOut.onclick = (e) => { e.stopPropagation(); caseZoom = Math.max(0.4, caseZoom - 0.15); applyCaseZoom(); };
+  }
+
+  function applyCaseZoom() {
+    const el = document.getElementById("case-zoom-target");
+    if (el) el.style.transform = `scale(${caseZoom})`;
+    const label = document.getElementById("zoom-label");
+    if (label) label.textContent = `${Math.round(caseZoom*100)}%`;
+    sessionStorage.setItem("aula8_case_zoom", caseZoom);
   }
 
   // Inicializa a cena 3D usando Three.js e malhas geométricas procedurais
@@ -990,52 +1050,86 @@
     const height = container.clientHeight || 620;
 
     threeScene = new THREE.Scene();
-    threeScene.background = new THREE.Color(0x0a0a16);
+    threeScene.background = new THREE.Color(0x0d0b1a);
 
-    threeCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-    threeCamera.position.set(0, 5, 10);
+    threeCamera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+    threeCamera.position.set(2, 4, 9);
+    threeCamera.lookAt(0, 0, 0);
 
     threeRenderer = new THREE.WebGLRenderer({ antialias: true });
     threeRenderer.setSize(width, height);
     threeRenderer.shadowMap.enabled = true;
+    threeRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    threeRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+    threeRenderer.toneMappingExposure = 1.2;
     container.appendChild(threeRenderer.domElement);
 
-    // Luzes
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+    // Iluminação aprimorada — mais brilho e contraste
+    const ambientLight = new THREE.AmbientLight(0x8888ff, 0.5);
     threeScene.add(ambientLight);
 
-    const dirLight1 = new THREE.DirectionalLight(0x8352ff, 0.85); // Luz azulada/roxa
-    dirLight1.position.set(5, 10, 5);
+    const hemiLight = new THREE.HemisphereLight(0x8888ff, 0x444422, 0.6);
+    threeScene.add(hemiLight);
+
+    const dirLight1 = new THREE.DirectionalLight(0xaa88ff, 1.2);
+    dirLight1.position.set(6, 12, 8);
     dirLight1.castShadow = true;
     threeScene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0xffb84d, 0.4); // Luz quente de preenchimento
-    dirLight2.position.set(-5, 5, -5);
+    const dirLight2 = new THREE.DirectionalLight(0xffcc88, 0.7);
+    dirLight2.position.set(-4, 6, -3);
     threeScene.add(dirLight2);
 
-    // Mesa de Manutenção
-    const tableGeo = new THREE.BoxGeometry(10, 0.2, 6);
-    const tableMat = new THREE.MeshStandardMaterial({ color: 0x1f1d2b, roughness: 0.8, metalness: 0.1 });
+    const rimLight = new THREE.DirectionalLight(0x6666ff, 0.4);
+    rimLight.position.set(-2, -1, -5);
+    threeScene.add(rimLight);
+
+    const pointLight = new THREE.PointLight(0x6666ff, 0.3, 15);
+    pointLight.position.set(0, 3, 2);
+    threeScene.add(pointLight);
+
+    // Mesa de Manutenção — textura mais rica
+    const tableGeo = new THREE.BoxGeometry(10, 0.25, 6);
+    const tableMat = new THREE.MeshStandardMaterial({ 
+      color: 0x2a2440, 
+      roughness: 0.7, 
+      metalness: 0.15 
+    });
     const table = new THREE.Mesh(tableGeo, tableMat);
     table.position.y = -1.5;
     table.receiveShadow = true;
     threeScene.add(table);
 
-    // Gabinete ATX
+    // Gabinete ATX — visual metálico com detalhes
     const caseGroup = new THREE.Group();
-    caseGroup.position.set(0, -0.5, 0);
+    caseGroup.position.set(0, -0.45, 0);
 
-    const caseFrameGeo = new THREE.BoxGeometry(4.2, 4.5, 2.2);
-    const caseFrameMat = new THREE.MeshStandardMaterial({ color: 0x111116, roughness: 0.5, metalness: 0.8, wireframe: false });
+    // Moldura principal do gabinete
+    const caseFrameGeo = new THREE.BoxGeometry(4.2, 4.6, 2.4);
+    const caseFrameMat = new THREE.MeshStandardMaterial({ 
+      color: 0x1a1a2e, 
+      roughness: 0.35, 
+      metalness: 0.75 
+    });
     const caseFrame = new THREE.Mesh(caseFrameGeo, caseFrameMat);
+    caseFrame.castShadow = true;
     caseGroup.add(caseFrame);
 
-    // Interior do gabinete (reentrância traseira para placa-mãe)
-    const mbBackingGeo = new THREE.PlaneGeometry(3.6, 3.8);
-    const mbBackingMat = new THREE.MeshStandardMaterial({ color: 0x06060c });
+    // Reentrância interna — área da placa-mãe
+    const mbBackingGeo = new THREE.PlaneGeometry(3.6, 3.9);
+    const mbBackingMat = new THREE.MeshStandardMaterial({ color: 0x080812 });
     const mbBacking = new THREE.Mesh(mbBackingGeo, mbBackingMat);
-    mbBacking.position.set(-0.1, 0, 0.95);
+    mbBacking.position.set(-0.05, 0, 0.85);
     caseGroup.add(mbBacking);
+
+    // Grade decorativa frontal (ventilação)
+    const ventGeo = new THREE.BoxGeometry(3.8, 0.06, 0.05);
+    const ventMat = new THREE.MeshStandardMaterial({ color: 0x222233, roughness: 0.9 });
+    for (let i = 0; i < 6; i++) {
+      const vent = new THREE.Mesh(ventGeo, ventMat);
+      vent.position.set(0, 1.2 - i * 0.4, 1.2);
+      caseGroup.add(vent);
+    }
     threeScene.add(caseGroup);
 
     // Modelagem procedural das peças de hardware em 3D
@@ -1047,24 +1141,25 @@
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
       controls.minDistance = 3;
-      controls.maxDistance = 15;
-      controls.maxPolarAngle = Math.PI / 2; // Impede descer abaixo da mesa
+      controls.maxDistance = 18;
+      controls.maxPolarAngle = Math.PI / 2;
+      controls.target.set(0, 0.2, 0);
+      controls.update();
     }
 
     // Loop de Renderização
-    let animate = function () {
+    function animate() {
       requestAnimationFrame(animate);
 
-      // Rotação dos coolers se o PC estiver montado e ligado
       if (simState.biosBooted && threeMeshes.coolerFan) {
-        threeMeshes.coolerFan.rotation.y += 0.2;
+        threeMeshes.coolerFan.rotation.y += 0.3;
       }
 
       threeRenderer.render(threeScene, threeCamera);
-    };
+    }
     animate();
 
-    // Event Listener do clique no Canvas 3D para encaixar a peça selecionada
+    // Raycaster para clique no canvas 3D
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -1077,63 +1172,108 @@
 
       raycaster.setFromCamera(mouse, threeCamera);
       
-      // Procuramos interseções com o painel da placa-mãe ou slots correspondentes
       const intersects = raycaster.intersectObjects(threeScene.children, true);
       
       if (intersects.length > 0) {
-        // Encaixa a peça selecionada via animação GSAP
         snapSelectedPartTo3D();
       }
     });
+
+    // Janela resize
+    const resizeHandler = () => {
+      const w = container.clientWidth || 550;
+      const h = container.clientHeight || 620;
+      threeCamera.aspect = w / h;
+      threeCamera.updateProjectionMatrix();
+      threeRenderer.setSize(w, h);
+    };
+    window.addEventListener("resize", resizeHandler);
   }
 
   function buildProceduralComponents() {
     const THREE = window.THREE;
 
-    // Placa-mãe (Chassis)
+    // Placa-mãe (Chassis) — verde PCB realista com detalhes
     const mbGeo = new THREE.BoxGeometry(3.2, 3.4, 0.08);
-    const mbMat = new THREE.MeshStandardMaterial({ color: 0x054010, roughness: 0.7 }); // Verde clássico PCB
+    const mbMat = new THREE.MeshStandardMaterial({ 
+      color: 0x054010, 
+      roughness: 0.65,
+      metalness: 0.05
+    });
     const motherboard = new THREE.Mesh(mbGeo, mbMat);
-    motherboard.position.set(-0.1, 0, 0.9);
+    motherboard.position.set(-0.05, 0, 0.9);
     motherboard.castShadow = true;
     motherboard.receiveShadow = true;
+    threeScene.add(motherboard);
     threeMeshes.motherboard = motherboard;
 
+    // Trilhas decorativas da placa-mãe (linhas finas)
+    const traceMat = new THREE.MeshStandardMaterial({ color: 0x0a7020, roughness: 0.8 });
+    for (let i = 0; i < 12; i++) {
+      const traceGeo = new THREE.BoxGeometry(0.01, 0.4 + (i % 3) * 0.15, 0.001);
+      const trace = new THREE.Mesh(traceGeo, traceMat);
+      trace.position.set(-1.2 + i * 0.22, -0.8 + (i % 4) * 0.3, 0.93);
+      motherboard.add(trace);
+    }
+
     // Soquete da CPU
-    const socketGeo = new THREE.BoxGeometry(0.7, 0.7, 0.04);
-    const socketMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.9 });
+    const socketGeo = new THREE.BoxGeometry(0.7, 0.7, 0.05);
+    const socketMat = new THREE.MeshStandardMaterial({ color: 0xbbbbbb, metalness: 0.85, roughness: 0.3 });
     const socket = new THREE.Mesh(socketGeo, socketMat);
-    socket.position.set(0, 0.6, 0.07);
+    socket.position.set(0.05, 0.55, 0.07);
     motherboard.add(socket);
     threeMeshes.socket = socket;
 
     // Processador (CPU)
-    const cpuGeo = new THREE.BoxGeometry(0.55, 0.55, 0.05);
-    const cpuMat = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.9, roughness: 0.2 });
+    const cpuGeo = new THREE.BoxGeometry(0.55, 0.55, 0.06);
+    const cpuMat = new THREE.MeshStandardMaterial({ 
+      color: 0x999999, 
+      metalness: 0.8, 
+      roughness: 0.15,
+      emissive: 0x222222,
+      emissiveIntensity: 0.05
+    });
     const cpu = new THREE.Mesh(cpuGeo, cpuMat);
-    cpu.position.set(-2, -1.2, 1.5); // Posicionado na mesa inicialmente
+    cpu.position.set(-2, -1.2, 1.5);
     threeScene.add(cpu);
     threeMeshes.cpu = cpu;
 
-    // Pasta Térmica (Drop procedural)
-    const pasteGeo = new THREE.SphereGeometry(0.12, 8, 8);
-    const pasteMat = new THREE.MeshStandardMaterial({ color: 0x777777, roughness: 0.9 });
+    // Pasta Térmica
+    const pasteGeo = new THREE.SphereGeometry(0.14, 8, 8);
+    const pasteMat = new THREE.MeshStandardMaterial({ 
+      color: 0x888888, 
+      roughness: 0.95,
+      metalness: 0.05
+    });
     const paste = new THREE.Mesh(pasteGeo, pasteMat);
     paste.position.set(-2.5, -1.3, 1.2);
     threeScene.add(paste);
     threeMeshes.paste = paste;
 
-    // Cooler
+    // Cooler — mais detalhado
     const coolerGroup = new THREE.Group();
-    const coolBaseGeo = new THREE.BoxGeometry(0.8, 0.8, 0.4);
-    const coolBaseMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
+    const coolBaseGeo = new THREE.BoxGeometry(0.85, 0.85, 0.35);
+    const coolBaseMat = new THREE.MeshStandardMaterial({ color: 0x2a2a3a, roughness: 0.8, metalness: 0.4 });
     const coolBase = new THREE.Mesh(coolBaseGeo, coolBaseMat);
     coolerGroup.add(coolBase);
 
-    const fanGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.1, 16);
-    const fanMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+    const fanHub = new THREE.CylinderGeometry(0.12, 0.12, 0.12, 8);
+    const fanHubMat = new THREE.MeshStandardMaterial({ color: 0x444455, metalness: 0.6 });
+    const hub = new THREE.Mesh(fanHub, fanHubMat);
+    hub.position.z = 0.22;
+    hub.rotation.x = Math.PI / 2;
+    coolerGroup.add(hub);
+
+    const fanGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.06, 16);
+    const fanMat = new THREE.MeshStandardMaterial({ 
+      color: 0x0a0a14, 
+      roughness: 0.4, 
+      metalness: 0.7,
+      transparent: true,
+      opacity: 0.7
+    });
     const fan = new THREE.Mesh(fanGeo, fanMat);
-    fan.position.z = 0.25;
+    fan.position.z = 0.22;
     fan.rotation.x = Math.PI / 2;
     coolerGroup.add(fan);
     threeMeshes.coolerFan = fan;
@@ -1142,41 +1282,70 @@
     threeScene.add(coolerGroup);
     threeMeshes.cooler = coolerGroup;
 
-    // Memória RAM
-    const ramGeo = new THREE.BoxGeometry(0.1, 1.0, 0.15);
-    const ramMat = new THREE.MeshStandardMaterial({ color: 0xaa2222, metalness: 0.8 }); // Dissipador vermelho
+    // Memória RAM — dissipador
+    const ramGeo = new THREE.BoxGeometry(0.08, 1.0, 0.15);
+    const ramMat = new THREE.MeshStandardMaterial({ 
+      color: 0xcc3333, 
+      metalness: 0.7, 
+      roughness: 0.3,
+      emissive: 0x441111,
+      emissiveIntensity: 0.05
+    });
     const ram = new THREE.Mesh(ramGeo, ramMat);
     ram.position.set(1.5, -1.2, 1.5);
     threeScene.add(ram);
     threeMeshes.ram = ram;
 
     // SSD M.2
-    const ssdGeo = new THREE.BoxGeometry(0.2, 0.7, 0.04);
-    const ssdMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+    const ssdGeo = new THREE.BoxGeometry(0.18, 0.7, 0.04);
+    const ssdMat = new THREE.MeshStandardMaterial({ color: 0x0a0a14, roughness: 0.3, metalness: 0.6 });
     const ssd = new THREE.Mesh(ssdGeo, ssdMat);
     ssd.position.set(2.2, -1.3, 1.1);
     threeScene.add(ssd);
     threeMeshes.ssd = ssd;
 
-    // Fonte de Alimentação
+    // Fonte de Alimentação — com detalhes
     const psuGeo = new THREE.BoxGeometry(1.2, 1.2, 1.4);
-    const psuMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.6 });
+    const psuMat = new THREE.MeshStandardMaterial({ 
+      color: 0x1a1a2a, 
+      roughness: 0.5, 
+      metalness: 0.6 
+    });
     const psu = new THREE.Mesh(psuGeo, psuMat);
     psu.position.set(3.2, -1.0, 2.0);
     threeScene.add(psu);
     threeMeshes.psu = psu;
+    // Ventoinha da fonte
+    const psuFanGeo = new THREE.CircleGeometry(0.25, 12);
+    const psuFanMat = new THREE.MeshStandardMaterial({ color: 0x333344, side: THREE.DoubleSide });
+    const psuFan = new THREE.Mesh(psuFanGeo, psuFanMat);
+    psuFan.position.set(3.2, -0.4, 2.7);
+    threeScene.add(psuFan);
 
-    // GPU (Placa de Vídeo)
-    const gpuGeo = new THREE.BoxGeometry(0.4, 1.6, 0.8);
-    const gpuMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.4 });
-    const gpu = new THREE.Mesh(gpuGeo, gpuMat);
-    gpu.position.set(0.5, -1.0, 2.5);
-    threeScene.add(gpu);
-    threeMeshes.gpu = gpu;
+    // GPU (Placa de Vídeo) — mais realista
+    const gpuGroup = new THREE.Group();
+    const gpuPcbGeo = new THREE.BoxGeometry(0.35, 1.5, 0.7);
+    const gpuPcbMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.4 });
+    const gpuPcb = new THREE.Mesh(gpuPcbGeo, gpuPcbMat);
+    gpuGroup.add(gpuPcb);
+
+    const gpuShroudGeo = new THREE.BoxGeometry(0.42, 1.3, 0.5);
+    const gpuShroudMat = new THREE.MeshStandardMaterial({ color: 0x111122, roughness: 0.6, metalness: 0.5 });
+    const gpuShroud = new THREE.Mesh(gpuShroudGeo, gpuShroudMat);
+    gpuShroud.position.z = 0.1;
+    gpuGroup.add(gpuShroud);
+
+    gpuGroup.position.set(0.5, -1.0, 2.5);
+    threeScene.add(gpuGroup);
+    threeMeshes.gpu = gpuGroup;
 
     // HD
     const hdGeo = new THREE.BoxGeometry(0.7, 1.0, 0.25);
-    const hdMat = new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.9 });
+    const hdMat = new THREE.MeshStandardMaterial({ 
+      color: 0x555566, 
+      metalness: 0.8, 
+      roughness: 0.2 
+    });
     const hd = new THREE.Mesh(hdGeo, hdMat);
     hd.position.set(-3.2, -1.2, 2.2);
     threeScene.add(hd);
@@ -1191,7 +1360,12 @@
         new THREE.Vector3(-0.2, 0.2 + i*0.2, 0.95)
       ]);
       const tubeGeo = new THREE.TubeGeometry(curve, 20, 0.03 + i*0.01, 8, false);
-      const tubeMat = new THREE.MeshStandardMaterial({ color: i % 2 === 0 ? 0xcc1111 : 0xffdd00 });
+      const tubeMat = new THREE.MeshStandardMaterial({ 
+        color: i % 2 === 0 ? 0xcc1111 : 0xffdd00,
+        roughness: 0.6,
+        emissive: i % 2 === 0 ? 0x441111 : 0x443300,
+        emissiveIntensity: 0.1
+      });
       const cable = new THREE.Mesh(tubeGeo, tubeMat);
       cableGroup.add(cable);
     }
@@ -1282,167 +1456,308 @@
     }
   }
 
-  // Fallback Pseudo-3D SVG (Caso o Three.js falhe)
-  // Bancada visual HTML/CSS — Exibida imediatamente e serve como fallback permanente
+  // ==========================================================================
+  // GABINETE 3D CSS REALISTA — Exibido imediatamente + drag-and-drop
+  // ==========================================================================
   function initFallbackAssemblyScene() {
     const container = document.getElementById("sim-fallback-container");
     if (!container) return;
 
-    // Gera o estado visual de cada slot baseado em simState.placed
-    function slotStyle(id, base) {
-      const placed = simState.placed[id];
-      const selected = activeSelectedPart === id;
-      if (placed) return base + 'opacity:1;box-shadow:0 0 12px rgba(16,185,129,0.6);border-color:#10b981;';
-      if (selected) return base + 'opacity:1;box-shadow:0 0 18px rgba(167,139,250,0.8);border-color:#a78bfa;animation:slotPulse 1s infinite alternate;';
-      return base + 'opacity:0.35;border-style:dashed;';
-    }
+    // Restaura zoom salvo
+    const savedZoom = sessionStorage.getItem("aula8_case_zoom");
+    if (savedZoom) caseZoom = parseFloat(savedZoom);
 
-    container.innerHTML = `
-      <style>
-        @keyframes slotPulse { from { box-shadow: 0 0 12px rgba(167,139,250,0.5); } to { box-shadow: 0 0 24px rgba(167,139,250,1); } }
-        @keyframes fanSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes cablePulse { 0%,100% { opacity:0.4; } 50% { opacity:1; } }
-        .pc-slot { transition: all 0.3s ease; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 1.1rem; position: relative; }
-        .pc-slot:hover:not(.placed) { opacity: 0.8 !important; transform: scale(1.05); }
-        .pc-slot.placed { cursor: default; }
-        .pc-slot-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 0.5rem; font-weight: 700; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255,255,255,0.45); }
-        .fan-blade { animation: fanSpin ${simState.biosBooted ? '0.15' : '2'}s linear infinite; transform-origin: center; }
-        .cable-line { animation: cablePulse 2s ease-in-out infinite; }
-      </style>
-
-      <div style="width:100%;height:100%;background:radial-gradient(ellipse at 30% 20%, #0d0b1e 0%, #040408 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
-        
-        <!-- Luz ambiente / reflexo na mesa -->
-        <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:80%;height:30%;background:radial-gradient(ellipse, rgba(131,82,255,0.06) 0%, transparent 70%);pointer-events:none;"></div>
-        
-        <!-- GABINETE ATX ABERTO (Perspectiva 2.5D) -->
-        <div style="position:relative;width:520px;height:430px;">
-          
-          <!-- Corpo do gabinete - lateral direita (profundidade) -->
-          <div style="position:absolute;top:18px;right:0;width:18px;height:392px;background:linear-gradient(to right, #1a1a26, #0e0e18);border-radius:0 6px 6px 0;border:1px solid rgba(255,255,255,0.06);"></div>
-          
-          <!-- Corpo do gabinete - base (profundidade) -->
-          <div style="position:absolute;bottom:0;left:18px;right:0;height:18px;background:linear-gradient(to bottom, #1a1a26, #0e0e18);border-radius:0 0 6px 0;border:1px solid rgba(255,255,255,0.04);"></div>
-          
-          <!-- PAINEL FRONTAL DO GABINETE -->
-          <div style="position:absolute;top:0;left:0;right:18px;bottom:18px;background:linear-gradient(135deg, #111120 0%, #0a0a15 100%);border:1px solid rgba(255,255,255,0.08);border-radius:8px;overflow:hidden;">
-            
-            <!-- Grade superior do gabinete -->
-            <div style="height:18px;background:rgba(0,0,0,0.3);border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;padding:0 12px;gap:6px;">
-              <div style="width:8px;height:8px;border-radius:50%;background:#1c1c28;border:1px solid rgba(255,255,255,0.08);"></div>
-              <div style="flex:1;height:1px;background:rgba(255,255,255,0.04);"></div>
-              <span style="font-size:0.45rem;color:rgba(255,255,255,0.15);letter-spacing:2px;text-transform:uppercase;">ATX FULL TOWER</span>
-            </div>
-            
-            <!-- INTERIOR DO GABINETE -->
-            <div style="padding:12px;position:relative;height:calc(100% - 18px);box-sizing:border-box;">
-              
-              <!-- PLACA-MÃE -->
-              <div id="slot-motherboard" class="pc-slot ${simState.placed.motherboard ? 'placed' : ''}" style="${slotStyle('motherboard', 'position:absolute;top:12px;left:12px;right:12px;bottom:80px;background:#050e08;border:2px solid #10b981;border-radius:8px;')}">
-                ${simState.placed.motherboard ? `
-                  <!-- PCB textura -->
-                  <div style="width:100%;height:100%;background:repeating-linear-gradient(0deg, rgba(16,185,129,0.02) 0px, rgba(16,185,129,0.02) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, rgba(16,185,129,0.02) 0px, rgba(16,185,129,0.02) 1px, transparent 1px, transparent 20px);position:absolute;inset:0;"></div>
-                ` : ''}
-                <div class="pc-slot-label">🖥️ PLACA-MÃE</div>
-                
-                ${simState.placed.motherboard ? `
-                  <!-- SOQUETE CPU -->
-                  <div id="slot-cpu" class="pc-slot ${simState.placed.cpu ? 'placed' : ''}" style="${slotStyle('cpu', 'position:absolute;top:18%;left:22%;width:80px;height:80px;background:#0a1a0e;border:2px solid #fbbf24;')}">
-                    ${simState.placed.cpu ? '<span style="font-size:1.8rem;filter:drop-shadow(0 0 8px rgba(251,191,36,0.5));">🧠</span>' : '<span style="font-size:1.4rem;opacity:0.4;">🧠</span>'}
-                    <div class="pc-slot-label">CPU</div>
-                    
-                    ${simState.placed.paste ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:rgba(200,200,200,0.7);filter:blur(2px);pointer-events:none;"></div>' : ''}
-                    ${simState.placed.cooler ? `
-                      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;background:rgba(34,211,238,0.15);border-radius:50%;border:2px solid rgba(34,211,238,0.4);display:flex;align-items:center;justify-content:center;">
-                        <div class="fan-blade" style="font-size:2rem;">❄️</div>
-                      </div>
-                    ` : ''}
-                  </div>
-                  
-                  <!-- SLOTS RAM -->
-                  <div id="slot-ram" class="pc-slot ${simState.placed.ram ? 'placed' : ''}" style="${slotStyle('ram', 'position:absolute;top:15%;right:12%;width:16px;height:65%;background:#180a00;border:2px solid #a78bfa;flex-direction:column;gap:2px;')}">
-                    ${simState.placed.ram ? '<div style="width:12px;height:100%;background:linear-gradient(to bottom, #a78bfa, #7c3aed);border-radius:2px;"></div>' : '<div style="font-size:0.8rem;">💾</div>'}
-                    <div class="pc-slot-label" style="bottom:-18px;">RAM</div>
-                  </div>
-                  
-                  <!-- SLOT SSD M.2 -->
-                  <div id="slot-ssd" class="pc-slot ${simState.placed.ssd ? 'placed' : ''}" style="${slotStyle('ssd', 'position:absolute;bottom:22%;left:28%;width:70px;height:18px;background:#080818;border:2px solid #60a5fa;border-radius:3px;')}">
-                    ${simState.placed.ssd ? '<div style="width:100%;height:100%;background:linear-gradient(to right,#1e3a5f,#60a5fa,#1e3a5f);border-radius:2px;"></div>' : '<span style="font-size:0.7rem;">💿</span>'}
-                    <div class="pc-slot-label" style="bottom:-18px;">SSD M.2</div>
-                  </div>
-                  
-                  <!-- SLOT GPU (PCIe) -->
-                  <div id="slot-gpu" class="pc-slot ${simState.placed.gpu ? 'placed' : ''}" style="${slotStyle('gpu', 'position:absolute;bottom:10%;left:8%;right:25%;height:26px;background:#160008;border:2px solid #ec4899;border-radius:3px;')}">
-                    ${simState.placed.gpu ? '<div style="width:100%;height:100%;background:linear-gradient(to right,#4c0020,#ec4899,#4c0020);border-radius:2px;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.8rem;">🎮</span></div>' : '<span style="font-size:0.9rem;">🎮</span>'}
-                    <div class="pc-slot-label" style="bottom:-18px;">GPU PCIe x16</div>
-                  </div>
-                  
-                  <!-- CABOS -->
-                  ${simState.placed.cables ? `
-                    <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 280 320">
-                      <path class="cable-line" d="M 140 180 Q 200 220 240 280" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="4"/>
-                      <path class="cable-line" d="M 60 180 Q 30 230 20 290" stroke="#ef4444" stroke-width="2" fill="none" stroke-dasharray="4" style="animation-delay:0.5s;"/>
-                      <path class="cable-line" d="M 200 120 Q 240 140 260 180" stroke="#22d3ee" stroke-width="1.5" fill="none" stroke-dasharray="3" style="animation-delay:1s;"/>
-                    </svg>
-                  ` : ''}
-                  
-                ` : `
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0.25;">
-                    <span style="font-size:2.5rem;">🖥️</span>
-                    <span style="font-size:0.6rem;color:rgba(255,255,255,0.5);text-align:center;">Instale a placa-mãe primeiro</span>
-                  </div>
-                `}
-              </div>
-              
-              <!-- ÁREA DA FONTE (PSU) -->
-              <div id="slot-psu" class="pc-slot ${simState.placed.psu ? 'placed' : ''}" style="${slotStyle('psu', 'position:absolute;bottom:0;left:12px;width:130px;height:65px;background:#0a0005;border:2px solid #f87171;border-radius:6px;')}">
-                ${simState.placed.psu ? `
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-                    <span style="font-size:1.3rem;">🔌</span>
-                    <div style="font-size:0.5rem;color:#f87171;font-weight:700;">PSU 750W</div>
-                    <div style="width:50px;height:4px;background:linear-gradient(to right,#f87171,#dc2626);border-radius:2px;"></div>
-                  </div>
-                ` : '<span style="font-size:1.4rem;">🔌</span>'}
-                <div class="pc-slot-label">FONTE ATX</div>
-              </div>
-              
-              <!-- BAIA DO HD -->
-              <div id="slot-hd" class="pc-slot ${simState.placed.hd ? 'placed' : ''}" style="${slotStyle('hd', 'position:absolute;bottom:0;right:12px;width:100px;height:65px;background:#000818;border:2px solid #3b82f6;border-radius:6px;')}">
-                ${simState.placed.hd ? `
-                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-                    <span style="font-size:1.2rem;">💽</span>
-                    <div style="font-size:0.45rem;color:#3b82f6;font-weight:700;">2TB SATA</div>
-                    <div style="width:35px;height:3px;background:linear-gradient(to right,#3b82f6,#1d4ed8);border-radius:2px;"></div>
-                  </div>
-                ` : '<span style="font-size:1.2rem;">💽</span>'}
-                <div class="pc-slot-label">HD 3.5"</div>
-              </div>
-              
-            </div><!-- /interior -->
-          </div><!-- /painel frontal -->
-        </div><!-- /gabinete -->
-        
-        <!-- Instrução central (só aparece se nenhuma peça selecionada) -->
-        ${!activeSelectedPart ? `<div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:0.7rem;color:rgba(255,255,255,0.3);text-align:center;pointer-events:none;">Selecione uma peça no dock abaixo e clique no slot correspondente na bancada</div>` : ''}
-      </div>
-    `;
-
-    // Bind cliques nos slots do gabinete para snap
-    // paste e cooler são instalados clicando no slot da CPU
     const SLOT_MAPPING = {
       motherboard: 'motherboard',
       cpu: 'cpu',
-      paste: 'cpu',    // Pasta térmica é aplicada na área da CPU
-      cooler: 'cpu',   // Cooler fica sobre a CPU
+      paste: 'cpu',
+      cooler: 'cpu',
       ram: 'ram',
       ssd: 'ssd',
       psu: 'psu',
       gpu: 'gpu',
-      cables: 'motherboard', // Cabos conectam na placa-mãe
+      cables: 'motherboard',
       hd: 'hd'
     };
 
-    ['motherboard', 'cpu', 'ram', 'ssd', 'psu', 'gpu', 'hd'].forEach(slotId => {
+    function getSlotDisplay(slotId) {
+      const placed = simState.placed[slotId];
+      if (placed) return 'opacity:1;border-color:#10b981;background:rgba(16,185,129,0.08);box-shadow:0 0 12px rgba(16,185,129,0.15),inset 0 0 8px rgba(16,185,129,0.03);';
+      const selected = activeSelectedPart && SLOT_MAPPING[activeSelectedPart] === slotId;
+      if (selected) return 'opacity:1;border-color:#a78bfa;background:rgba(167,139,250,0.08);box-shadow:0 0 18px rgba(167,139,250,0.2);animation:slotPulse 1s infinite alternate;';
+      return 'opacity:0.25;border-color:rgba(255,255,255,0.08);border-style:dashed;background:rgba(255,255,255,0.01);';
+    }
+
+    const assemblyComplete = simState.assemblyStep === HARDWARE_PIECES.length;
+
+    container.innerHTML = `
+      <style>
+        @keyframes slotPulse { from { box-shadow: 0 0 8px rgba(167,139,250,0.3); } to { box-shadow: 0 0 20px rgba(167,139,250,0.6); } }
+        @keyframes fanSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes cablePulse { 0%,100% { opacity:0.2; } 50% { opacity:0.8; } }
+        @keyframes ledPulse { 0%,100% { box-shadow:0 0 4px rgba(16,185,129,0.4); } 50% { box-shadow:0 0 10px rgba(16,185,129,0.8); } }
+        .pc-slot { transition: all 0.25s ease; display:flex; align-items:center; justify-content:center; border-radius:4px; position:relative; }
+        .pc-slot.drag-over { opacity:1 !important; border-color:#818cf8 !important; background:rgba(99,102,241,0.15) !important; box-shadow:0 0 25px rgba(99,102,241,0.3) !important; }
+        .pc-slot.placed { cursor:default; }
+        .pc-slot-label { position:absolute; bottom:-14px; left:50%; transform:translateX(-50%); font-size:0.45rem; font-weight:700; white-space:nowrap; text-transform:uppercase; letter-spacing:0.3px; color:rgba(255,255,255,0.25); pointer-events:none; }
+        .pc-slot.drag-over .pc-slot-label { color:#a78bfa; }
+        .fan-blade { animation: fanSpin ${simState.biosBooted ? '0.15' : '2'}s linear infinite; transform-origin:center; }
+        .cable-line { animation: cablePulse 2s ease-in-out infinite; }
+      </style>
+
+      <div style="width:100%;height:100%;background:radial-gradient(ellipse at 40% 30%, #12101f 0%, #06060c 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        
+        <!-- Reflexo iluminado na mesa -->
+        <div style="position:absolute;bottom:0;left:0;right:0;height:25%;background:linear-gradient(to top, rgba(99,102,241,0.04) 0%, transparent 100%);pointer-events:none;"></div>
+        
+        <!-- GABINETE ATX — VISÃO INTERNA REALISTA -->
+        <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+          <div id="case-zoom-target" style="position:relative;max-width:100%;max-height:100%;width:540px;aspect-ratio:28/23;overflow:visible;transform-origin:center center;">
+          
+          <!-- SOMBRA EXTERNA DO GABINETE -->
+          <div style="position:absolute;top:5px;left:5px;right:5px;bottom:5px;background:rgba(0,0,0,0.5);filter:blur(20px);border-radius:12px;"></div>
+          
+          <!-- LATERAL DIREITA (PROFUNDIDADE 3D) -->
+          <div style="position:absolute;top:16px;right:-4px;width:20px;height:424px;background:linear-gradient(to right, #2a2a3e, #0d0d18);border-radius:0 8px 8px 0;border:1px solid rgba(255,255,255,0.04);"></div>
+          
+          <!-- BASE (PROFUNDIDADE 3D) -->
+          <div style="position:absolute;bottom:-4px;left:16px;right:-4px;height:20px;background:linear-gradient(to bottom, #2a2a3e, #0d0d18);border-radius:0 0 8px 8px;border:1px solid rgba(255,255,255,0.04);"></div>
+          
+          <!-- PAINEL PRINCIPAL DO GABINETE -->
+          <div style="position:absolute;top:0;left:0;right:16px;bottom:16px;
+            background:linear-gradient(180deg, #1e1e30 0%, #141421 40%, #0a0a14 100%);
+            border:1px solid rgba(255,255,255,0.06);border-radius:10px;
+            box-shadow:inset 0 0 60px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.4);
+            overflow:hidden;">
+            
+            <!-- TOP BAR — PAINEL I/O E BOTÃO POWER -->
+            <div style="height:5%;min-height:20px;max-height:28px;background:linear-gradient(to bottom, #252540 0%, #181830 100%);border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;padding:0 14px;gap:8px;">
+              <!-- LED POWER -->
+              <div style="width:8px;height:8px;border-radius:50%;
+                background:${assemblyComplete || simState.biosBooted ? '#10b981' : '#1c1c28'};
+                border:1px solid ${assemblyComplete || simState.biosBooted ? 'rgba(16,185,129,0.5)' : 'rgba(255,255,255,0.06)'};
+                animation:${assemblyComplete || simState.biosBooted ? 'ledPulse 1.5s ease-in-out infinite' : 'none'};
+                box-shadow:${assemblyComplete || simState.biosBooted ? '0 0 6px rgba(16,185,129,0.5)' : 'none'};"></div>
+              <!-- BOTÃO POWER -->
+              <div style="width:20px;height:12px;background:linear-gradient(to bottom, #3a3a50, #1a1a2e);border:1px solid rgba(255,255,255,0.06);border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;"
+                title="Botão Power" onclick="document.getElementById('virtual-pwr-btn')?.click();">
+                <span style="font-size:0.35rem;color:#888;transform:rotate(90deg);">⏻</span>
+              </div>
+              <div style="flex:1;height:1px;background:rgba(255,255,255,0.03);"></div>
+              <span style="font-size:0.4rem;color:rgba(255,255,255,0.12);letter-spacing:3px;text-transform:uppercase;">ATX MID TOWER</span>
+              <div style="width:8px;height:8px;border-radius:50%;background:#1c1c28;border:1px solid rgba(255,255,255,0.06);"></div>
+            </div>
+            
+            <!-- INTERIOR DO GABINETE -->
+            <div style="padding:3% 3% 0;position:relative;height:calc(100% - 28px);box-sizing:border-box;">
+              
+              <!-- ÁREA DA PLACA-MÃE (MOTHERBOARD TRAY) -->
+              <div id="slot-motherboard"
+                style="position:absolute;top:3%;left:3%;right:3%;bottom:22%;
+                  ${getSlotDisplay('motherboard')}
+                  border:2px solid ${simState.placed.motherboard ? '#10b981' : 'rgba(255,255,255,0.06)'};
+                  border-radius:6px;background:${simState.placed.motherboard ? 'rgba(5,40,16,0.4)' : 'rgba(255,255,255,0.01)'};
+                  ${simState.placed.motherboard ? 'box-shadow:inset 0 0 20px rgba(5,40,16,0.3),0 0 12px rgba(16,185,129,0.1);' : ''}"
+                ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';this.classList.add('drag-over');"
+                ondragleave="this.classList.remove('drag-over');"
+                ondrop="handleSlotDrop(event,'motherboard')">
+                
+                ${simState.placed.motherboard ? `
+                  <!-- PCB DA PLACA-MÃE (mais detalhado) -->
+                  <div style="position:absolute;inset:0;border-radius:4px;
+                    background:
+                      repeating-linear-gradient(0deg, transparent 0px, transparent 18px, rgba(16,185,129,0.03) 18px, rgba(16,185,129,0.03) 19px),
+                      repeating-linear-gradient(90deg, transparent 0px, transparent 18px, rgba(16,185,129,0.03) 18px, rgba(16,185,129,0.03) 19px);">
+                  </div>
+                  <!-- Capacitores e detalhes da placa-mãe -->
+                  <div style="position:absolute;left:6px;bottom:6px;display:flex;gap:3px;">
+                    ${Array(5).fill(0).map(() => '<div style="width:4px;height:6px;border-radius:1px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.02);"></div>').join('')}
+                  </div>
+                  <!-- Chipset sul -->
+                  <div style="position:absolute;right:8px;bottom:8px;width:18px;height:18px;background:rgba(50,50,60,0.4);border:1px solid rgba(255,255,255,0.04);border-radius:2px;"></div>
+                ` : `
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.2;">
+                    <span style="font-size:1.8rem;">🖥️</span>
+                    <span style="font-size:0.55rem;color:rgba(255,255,255,0.4);">Instale a Placa-mãe</span>
+                  </div>
+                `}
+                <div class="pc-slot-label" style="bottom:-14px;color:${simState.placed.motherboard ? '#10b981' : 'rgba(255,255,255,0.25)'};">PLACA-MÃE</div>
+
+                <!-- SUB-SLOTS DENTRO DA PLACA-MÃE (só visíveis se placa-mãe instalada) -->
+                ${simState.placed.motherboard ? `
+                  <!-- CPU -->
+                  <div id="slot-cpu" class="pc-slot ${simState.placed.cpu ? 'placed' : ''}"
+                    style="position:absolute;top:18%;left:20%;width:76px;height:76px;${getSlotDisplay('cpu')}border:2px solid ${simState.placed.cpu ? '#fbbf24' : activeSelectedPart === 'cpu' ? '#a78bfa' : 'rgba(251,191,36,0.15)'};border-radius:4px;background:${simState.placed.cpu ? 'rgba(251,191,36,0.06)' : 'rgba(251,191,36,0.02)'};"
+                    ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';this.classList.add('drag-over');"
+                    ondragleave="this.classList.remove('drag-over');"
+                    ondrop="handleSlotDrop(event,'cpu')">
+                    ${simState.placed.cpu ? `
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+                        <span style="font-size:1.6rem;filter:drop-shadow(0 0 6px rgba(251,191,36,0.4));">🧠</span>
+                        <span style="font-size:0.4rem;color:#fbbf24;font-weight:700;">CPU</span>
+                        <!-- Pasta Térmica -->
+                        ${simState.placed.paste ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50%;background:rgba(200,200,200,0.5);filter:blur(3px);pointer-events:none;"></div>' : ''}
+                        <!-- Cooler -->
+                        ${simState.placed.cooler ? `
+                          <div style="position:absolute;inset:-8px;background:rgba(34,211,238,0.06);border-radius:50%;border:1px solid rgba(34,211,238,0.15);display:flex;align-items:center;justify-content:center;">
+                            <div class="fan-blade" style="font-size:1.4rem;">❄️</div>
+                          </div>
+                        ` : ''}
+                      </div>
+                    ` : `
+                      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;opacity:0.3;">
+                        <span style="font-size:1.2rem;">🧠</span>
+                        <span style="font-size:0.4rem;color:rgba(251,191,36,0.3);">Soquete</span>
+                        <!-- Pinos -->
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;">
+                          ${Array(12).fill(0).map(() => '<div style="width:2px;height:2px;border-radius:50%;background:rgba(200,200,200,0.1);"></div>').join('')}
+                        </div>
+                      </div>
+                    `}
+                    <div class="pc-slot-label" style="color:${simState.placed.cpu ? '#fbbf24' : 'rgba(251,191,36,0.25)'};">CPU</div>
+                  </div>
+
+                  <!-- RAM -->
+                  <div id="slot-ram" class="pc-slot ${simState.placed.ram ? 'placed' : ''}"
+                    style="position:absolute;top:14%;right:6%;width:14px;height:68%;${getSlotDisplay('ram')}border:2px solid ${simState.placed.ram ? '#a78bfa' : activeSelectedPart === 'ram' ? '#a78bfa' : 'rgba(167,139,250,0.15)'};border-radius:2px;background:${simState.placed.ram ? 'rgba(167,139,250,0.06)' : 'rgba(167,139,250,0.02)'};flex-direction:column;"
+                    ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';this.classList.add('drag-over');"
+                    ondragleave="this.classList.remove('drag-over');"
+                    ondrop="handleSlotDrop(event,'ram')">
+                    ${simState.placed.ram ? `
+                      <div style="width:10px;height:100%;background:linear-gradient(to bottom,#a78bfa,#7c3aed);border-radius:1px;box-shadow:0 0 4px rgba(167,139,250,0.2);"></div>
+                    ` : `<span style="font-size:0.6rem;opacity:0.3;">💾</span>`}
+                    <div class="pc-slot-label" style="bottom:-14px;color:${simState.placed.ram ? '#a78bfa' : 'rgba(167,139,250,0.25)'};">RAM</div>
+                  </div>
+
+                  <!-- SSD M.2 -->
+                  <div id="slot-ssd" class="pc-slot ${simState.placed.ssd ? 'placed' : ''}"
+                    style="position:absolute;bottom:24%;left:26%;width:76px;height:16px;${getSlotDisplay('ssd')}border:2px solid ${simState.placed.ssd ? '#60a5fa' : activeSelectedPart === 'ssd' ? '#a78bfa' : 'rgba(96,165,250,0.15)'};border-radius:2px;background:${simState.placed.ssd ? 'rgba(96,165,250,0.06)' : 'rgba(96,165,250,0.02)'};"
+                    ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';this.classList.add('drag-over');"
+                    ondragleave="this.classList.remove('drag-over');"
+                    ondrop="handleSlotDrop(event,'ssd')">
+                    ${simState.placed.ssd ? `
+                      <div style="width:100%;height:100%;background:linear-gradient(to right,#1a3a6f,#60a5fa,#1a3a6f);border-radius:1px;display:flex;align-items:center;justify-content:center;gap:2px;">
+                        <span style="font-size:0.5rem;">💿</span>
+                      </div>
+                    ` : `<span style="font-size:0.6rem;opacity:0.3;">💿</span>`}
+                    <div class="pc-slot-label" style="bottom:-14px;color:${simState.placed.ssd ? '#60a5fa' : 'rgba(96,165,250,0.25)'};">SSD M.2</div>
+                  </div>
+
+                  <!-- GPU (PCIe) -->
+                  <div id="slot-gpu" class="pc-slot ${simState.placed.gpu ? 'placed' : ''}"
+                    style="position:absolute;bottom:10%;left:4%;right:28%;height:22px;${getSlotDisplay('gpu')}border:2px solid ${simState.placed.gpu ? '#ec4899' : activeSelectedPart === 'gpu' ? '#a78bfa' : 'rgba(236,72,153,0.15)'};border-radius:2px;background:${simState.placed.gpu ? 'rgba(236,72,153,0.06)' : 'rgba(236,72,153,0.02)'};"
+                    ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';this.classList.add('drag-over');"
+                    ondragleave="this.classList.remove('drag-over');"
+                    ondrop="handleSlotDrop(event,'gpu')">
+                    ${simState.placed.gpu ? `
+                      <div style="width:100%;height:100%;background:linear-gradient(to right,#2a0015,#ec4899,#2a0015);border-radius:1px;display:flex;align-items:center;justify-content:center;">
+                        <span style="font-size:0.7rem;">🎮</span>
+                      </div>
+                    ` : `<span style="font-size:0.7rem;opacity:0.3;">🎮</span>`}
+                    <div class="pc-slot-label" style="bottom:-14px;color:${simState.placed.gpu ? '#ec4899' : 'rgba(236,72,153,0.25)'};">GPU PCIe</div>
+                  </div>
+
+                  <!-- CABOS (conectam na placa-mãe) -->
+                  ${simState.placed.cables ? `
+                    <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 280 300">
+                      <path class="cable-line" d="M 60 200 Q 120 240 190 270" stroke="#f59e0b" stroke-width="2.5" fill="none"/>
+                      <path class="cable-line" d="M 80 180 Q 50 230 30 280" stroke="#ef4444" stroke-width="2" fill="none" style="animation-delay:0.5s;"/>
+                      <path class="cable-line" d="M 220 120 Q 250 140 260 180" stroke="#22d3ee" stroke-width="1.5" fill="none" style="animation-delay:1s;"/>
+                      <path class="cable-line" d="M 120 220 Q 150 260 200 280" stroke="#34d399" stroke-width="1.5" fill="none" style="animation-delay:0.3s;"/>
+                    </svg>
+                  ` : ''}
+                ` : ''}
+              </div>
+
+              <!-- COMPARTIMENTO PSU (FONTE) — parte inferior esquerda -->
+              <div id="slot-psu" class="pc-slot ${simState.placed.psu ? 'placed' : ''}"
+                style="position:absolute;bottom:2%;left:3%;width:22%;height:17%;min-height:50px;max-height:80px;${getSlotDisplay('psu')}border:2px solid ${simState.placed.psu ? '#f87171' : 'rgba(248,113,113,0.12)'};border-radius:6px;background:${simState.placed.psu ? 'rgba(248,113,113,0.06)' : 'rgba(255,255,255,0.01)'};"
+                ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';this.classList.add('drag-over');"
+                ondragleave="this.classList.remove('drag-over');"
+                ondrop="handleSlotDrop(event,'psu')">
+                ${simState.placed.psu ? `
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                    <span style="font-size:1.2rem;">🔌</span>
+                    <span style="font-size:0.45rem;color:#f87171;font-weight:700;">FONTE 750W</span>
+                    <!-- Ventoinha da fonte -->
+                    <div style="width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,0.4);border:1px solid rgba(248,113,113,0.2);display:flex;align-items:center;justify-content:center;">
+                      <div class="fan-blade" style="width:14px;height:14px;border-radius:50%;background:conic-gradient(from 0deg, transparent 0deg, rgba(248,113,113,0.1) 30deg, transparent 30deg, transparent 180deg, rgba(248,113,113,0.1) 210deg, transparent 210deg);animation-duration:1.5s;"></div>
+                    </div>
+                  </div>
+                ` : `
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;opacity:0.3;">
+                    <span style="font-size:1.2rem;">🔌</span>
+                    <span style="font-size:0.45rem;color:rgba(248,113,113,0.3);">Fonte ATX</span>
+                  </div>
+                `}
+                <div class="pc-slot-label" style="bottom:-14px;color:${simState.placed.psu ? '#f87171' : 'rgba(248,113,113,0.25)'};">FONTE ATX</div>
+              </div>
+
+              <!-- BAIA HD — parte inferior direita -->
+              <div id="slot-hd" class="pc-slot ${simState.placed.hd ? 'placed' : ''}"
+                style="position:absolute;bottom:2%;right:3%;width:18%;height:17%;min-height:50px;max-height:80px;${getSlotDisplay('hd')}border:2px solid ${simState.placed.hd ? '#3b82f6' : 'rgba(59,130,246,0.12)'};border-radius:6px;background:${simState.placed.hd ? 'rgba(59,130,246,0.06)' : 'rgba(255,255,255,0.01)'};"
+                ondragover="event.preventDefault();event.dataTransfer.dropEffect='move';this.classList.add('drag-over');"
+                ondragleave="this.classList.remove('drag-over');"
+                ondrop="handleSlotDrop(event,'hd')">
+                ${simState.placed.hd ? `
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+                    <span style="font-size:1.1rem;">💽</span>
+                    <span style="font-size:0.45rem;color:#3b82f6;font-weight:700;">1TB SATA</span>
+                    <!-- Detalhe do braço do HD -->
+                    <div style="width:28px;height:2px;background:linear-gradient(to right,transparent,rgba(59,130,246,0.2),transparent);"></div>
+                  </div>
+                ` : `
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:3px;opacity:0.3;">
+                    <span style="font-size:1.1rem;">💽</span>
+                    <span style="font-size:0.45rem;color:rgba(59,130,246,0.3);">HD 3.5"</span>
+                  </div>
+                `}
+                <div class="pc-slot-label" style="bottom:-14px;color:${simState.placed.hd ? '#3b82f6' : 'rgba(59,130,246,0.25)'};">HD</div>
+              </div>
+
+            </div><!-- /interior -->
+          </div><!-- /painel frontal -->
+        </div><!-- /gabinete -->
+        
+        <!-- Dica de ação -->
+        ${!activeSelectedPart && !assemblyComplete ? `<div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:0.65rem;color:rgba(255,255,255,0.2);text-align:center;pointer-events:none;">Arraste as peças do dock para os slots no gabinete</div>` : ''}
+        ${activeSelectedPart && !assemblyComplete ? `<div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:0.65rem;color:#a78bfa;text-align:center;pointer-events:none;">⏳ Solte a peça no slot destacado no gabinete</div>` : ''}
+      </div>
+    `;
+
+    // Handler de drop global
+    window.handleSlotDrop = function(e, slotId) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      const compId = e.dataTransfer.getData('text/plain');
+      if (!compId) return;
+      if (simState.placed[compId]) return;
+
+      const expectedSlot = SLOT_MAPPING[compId];
+      const el = e.currentTarget;
+
+      if (expectedSlot === slotId) {
+        SOUNDS.snap();
+        completeAssemblyStep(compId);
+        if (dockHintEl) dockHintEl.textContent = '✅ Peça instalada!';
+        initFallbackAssemblyScene();
+      } else {
+        SOUNDS.error();
+        el.style.borderColor = 'rgba(239,68,68,0.8)';
+        el.style.background = 'rgba(239,68,68,0.12)';
+        el.style.boxShadow = '0 0 15px rgba(239,68,68,0.5)';
+        setTimeout(() => {
+          el.style.borderColor = '';
+          el.style.background = '';
+          el.style.boxShadow = '';
+        }, 600);
+        if (dockHintEl) dockHintEl.textContent = '❌ Slot errado! Tente outro local.';
+      }
+    };
+
+    // Bind clique nos slots para fallback de interação
+    const slotIds = ['motherboard', 'cpu', 'ram', 'ssd', 'psu', 'gpu', 'hd'];
+    slotIds.forEach(slotId => {
       const el = document.getElementById('slot-' + slotId);
       if (!el) return;
       el.addEventListener('click', (e) => {
@@ -1454,16 +1769,20 @@
         if (expectedSlot === slotId) {
           SOUNDS.snap();
           completeAssemblyStep(activeSelectedPart);
+          if (dockHintEl) dockHintEl.textContent = '✅ Peça instalada!';
           initFallbackAssemblyScene();
         } else {
-          // Peça errada — dá feedback visual de erro
           SOUNDS.error();
           el.style.boxShadow = '0 0 15px rgba(239,68,68,0.8)';
           el.style.borderColor = 'rgba(239,68,68,0.8)';
           setTimeout(() => { el.style.boxShadow = ''; el.style.borderColor = ''; }, 700);
+          if (dockHintEl) dockHintEl.textContent = '❌ Slot errado! Clique no local correto.';
         }
       });
     });
+
+    // Aplica zoom salvo
+    requestAnimationFrame(() => applyCaseZoom());
   }
 
 
@@ -1477,13 +1796,20 @@
     if (!screen) return;
 
     screen.innerHTML = "";
+    const desktop = document.getElementById("winlab-desktop");
+    const iconsArea = document.getElementById("winlab-desktop-icons");
 
     if (simState.step === 4) {
+      screen.style.display = "block";
+      if (iconsArea) iconsArea.style.display = "none";
       renderVirtualStep4Boot(screen);
     } else if (simState.step === 5) {
+      screen.style.display = "block";
+      if (iconsArea) iconsArea.style.display = "none";
       renderVirtualStep5OSInstall(screen);
     } else {
-      renderVirtualDesktop(screen);
+      screen.style.display = "none";
+      renderVirtualDesktop(desktop);
     }
   }
 
@@ -1729,41 +2055,28 @@
   // ==========================================================================
   let activeWindowId = null;
 
-  function renderVirtualDesktop(screen) {
-    // Se o driver de vídeo foi instalado, usamos uma imagem limpa, caso contrário usamos um fundo esticado de baixa qualidade
-    const dVideo = simState.driversUpdated.video;
-    const desktopStyle = dVideo 
-      ? "linear-gradient(135deg, #1e1b4b 0%, #311042 50%, #030712 100%)" 
-      : "repeating-linear-gradient(45deg, #2d3748, #2d3748 10px, #1a202c 10px, #1a202c 20px)"; // Listrado feio representativo de driver genérico
+  function renderVirtualDesktop(desktop) {
+    if (!desktop) return;
 
-    screen.innerHTML = `
-      <div class="virtual-desktop" style="background-image:${desktopStyle};">
-        <!-- Ícones da Área de Trabalho -->
-        <div class="desktop-icons">
-          <div class="desktop-icon sim-interactive-element" id="icon-dev-manager">
-            <span class="desktop-icon-img">⚙️</span>
-            <span class="desktop-icon-label">Gerenciador Dispositivos</span>
-          </div>
-          <div class="desktop-icon sim-interactive-element" id="icon-store">
-            <span class="desktop-icon-img">Central de Softwares</span>
-          </div>
-          <div class="desktop-icon sim-interactive-element" id="icon-explorer">
-            <span class="desktop-icon-img">Explorador de Arquivos</span>
-          </div>
-          <div class="desktop-icon sim-interactive-element" id="icon-diag">
-            <span class="desktop-icon-img">Diagnósticos Finais</span>
-          </div>
-        </div>
-
-        <!-- Janela Ativa -->
-        <div id="desktop-window-container" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
-          <!-- Janela do OS injetada aqui -->
-        </div>
-
-        <!-- Barra de Tarefas -->
-        <div class="virtual-taskbar">
-          <div class="start-button sim-interactive-element" id="win11-start-trigger">🪟</div>
-        </div>
+    const iconsArea = document.getElementById("winlab-desktop-icons");
+    if (!iconsArea) return;
+    iconsArea.style.display = "";
+    iconsArea.innerHTML = `
+      <div class="winlab-icon" id="icon-dev-manager">
+        <div class="winlab-icon-img">⚙️</div>
+        <div class="winlab-icon-label">Gerenciador Dispositivos</div>
+      </div>
+      <div class="winlab-icon" id="icon-store">
+        <div class="winlab-icon-img">💿</div>
+        <div class="winlab-icon-label">Central de Softwares</div>
+      </div>
+      <div class="winlab-icon" id="icon-explorer">
+        <div class="winlab-icon-img">📁</div>
+        <div class="winlab-icon-label">Explorador de Arquivos</div>
+      </div>
+      <div class="winlab-icon" id="icon-diag">
+        <div class="winlab-icon-img">🩺</div>
+        <div class="winlab-icon-label">Diagnósticos Finais</div>
       </div>
     `;
 
@@ -1771,7 +2084,6 @@
     document.getElementById("icon-store").onclick = () => openOSWindow("store");
     document.getElementById("icon-explorer").onclick = () => openOSWindow("explorer");
     document.getElementById("icon-diag").onclick = () => openOSWindow("diag");
-    document.getElementById("win11-start-trigger").onclick = () => alert("Windows 11 InforMestre Edition v1.0");
 
     if (activeWindowId) {
       drawOSWindow(activeWindowId);
@@ -1782,6 +2094,10 @@
     SOUNDS.click();
     activeWindowId = id;
     drawOSWindow(id);
+    const bar = document.getElementById("winlab-taskbar-items");
+    if (bar) {
+      bar.innerHTML = `<div class="winlab-taskbar-item active">${id === "dev-manager" ? "⚙️" : id === "store" ? "💿" : id === "explorer" ? "📁" : "🩺"} ${id === "dev-manager" ? "Gerenciador Dispositivos" : id === "store" ? "Central de Softwares" : id === "explorer" ? "Explorador de Arquivos" : "Diagnósticos"}</div>`;
+    }
   }
 
   function closeOSWindow() {
@@ -1789,6 +2105,8 @@
     activeWindowId = null;
     const container = document.getElementById("desktop-window-container");
     if (container) container.innerHTML = "";
+    const bar = document.getElementById("winlab-taskbar-items");
+    if (bar) bar.innerHTML = "";
   }
 
   function drawOSWindow(id) {
@@ -1816,12 +2134,16 @@
     }
 
     container.innerHTML = `
-      <div class="os-window">
-        <div class="os-window-header">
-          <span>${title}</span>
-          <span class="os-window-close" id="btn-close-os-win">×</span>
+      <div class="winlab-window open" style="width:420px;max-height:360px;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:auto;">
+        <div class="winlab-win-header">
+          <div class="winlab-win-title">${title}</div>
+          <div class="winlab-win-controls">
+            <button class="winlab-win-btn winlab-win-min" disabled></button>
+            <button class="winlab-win-btn winlab-win-max" disabled></button>
+            <button class="winlab-win-btn winlab-win-close" id="btn-close-os-win"></button>
+          </div>
         </div>
-        <div class="os-window-body">
+        <div class="winlab-win-body">
           ${bodyHtml}
         </div>
       </div>
@@ -2000,63 +2322,144 @@
     `;
   }
 
+  function showProgressInBody(bodyEl, stages, onDone) {
+    if (!bodyEl) { onDone(); return; }
+    let stepIdx = 0, pct = 0;
+    bodyEl.innerHTML = `
+      <div style="text-align:center;padding:20px 12px;">
+        <div style="font-size:2rem;margin-bottom:6px;">${stages.icon}</div>
+        <div style="font-size:0.75rem;font-weight:600;color:rgba(255,255,255,0.8);margin-bottom:4px;">${stages.device}</div>
+        <div id="prog-status" style="font-size:0.6rem;color:#a78bfa;margin-bottom:12px;">${stages.steps[0].label}</div>
+        <div style="width:90%;margin:0 auto;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;">
+          <div id="prog-bar" style="width:0%;height:100%;background:linear-gradient(90deg,#818cf8,#6366f1);border-radius:4px;transition:width 0.15s;"></div>
+        </div>
+        <div id="prog-pct" style="font-size:0.55rem;color:rgba(255,255,255,0.4);margin-top:4px;">0%</div>
+        <div id="prog-detail" style="font-size:0.5rem;color:rgba(255,255,255,0.2);margin-top:8px;"></div>
+      </div>
+    `;
+    function tick() {
+      const bar = document.getElementById("prog-bar");
+      const status = document.getElementById("prog-status");
+      const pctEl = document.getElementById("prog-pct");
+      const detail = document.getElementById("prog-detail");
+      if (!bar || !status || !pctEl) { onDone(); return; }
+      const currentStep = stages.steps[stepIdx];
+      pct += currentStep.speed || 2;
+      if (pct >= currentStep.end) {
+        pct = currentStep.end;
+        status.textContent = currentStep.doneLabel || currentStep.label;
+        if (currentStep.detail) detail.textContent = currentStep.detail;
+        stepIdx++;
+        if (stepIdx >= stages.steps.length) {
+          bar.style.width = "100%";
+          pctEl.textContent = "100%";
+          status.textContent = stages.doneLabel || "✓ Concluído";
+          status.style.color = "#10b981";
+          if (stages.doneDetail) detail.textContent = stages.doneDetail;
+          setTimeout(onDone, 600);
+          return;
+        }
+      }
+      bar.style.width = pct + "%";
+      pctEl.textContent = Math.round(pct) + "%";
+      const nextStep = stages.steps[stepIdx];
+      status.textContent = nextStep.label;
+      if (nextStep.detail) detail.textContent = nextStep.detail;
+      setTimeout(tick, 60 + Math.random() * 60);
+    }
+    tick();
+  }
+
   function bindWindowActions(id) {
     if (id === "dev-manager") {
       document.querySelectorAll(".btn-update-driver").forEach(btn => {
         btn.onclick = () => {
           const did = btn.dataset.id;
+          const names = { chipset: "Chipset Placa-mãe", video: "GPU NVIDIA GeForce", net: "Adaptador Ethernet Realtek", audio: "Codec Áudio Realtek" };
+          const icons = { chipset: "🧠", video: "🖥️", net: "🌐", audio: "🔊" };
+          const body = document.querySelector(".winlab-win-body");
           SOUNDS.snap();
-          simState.driversUpdated[did] = true;
-          saveLocalState();
-          drawOSWindow("dev-manager");
 
-          const allDrivers = Object.values(simState.driversUpdated).every(x => x);
-          if (allDrivers && simState.step === 6) {
-            setTimeout(() => {
-              SOUNDS.success();
-              triggerModal(
-                "⚙️ Drivers Instalados com Sucesso",
-                "O chipset, a GPU (placa de vídeo), o som e o controlador de rede foram atualizados com os drivers corretos. O computador agora reconhece as peças físicas perfeitamente e pode rodar em resolução nativa.",
-                "Drivers de dispositivos são códigos específicos que fazem a tradução entre as instruções genéricas do sistema operacional e o comportamento elétrico exato de um chip de marca específica (ex: Nvidia, Realtek).",
-                "Instalar drivers incorretos ou incompatíveis com o chipset pode causar travamentos intermitentes e a temida Tela Azul da Morte (BSOD).",
-                () => {
-                  simState.step = 7;
-                  saveLocalState();
-                  closeOSWindow();
-                  runCurrentStep();
-                }
-              );
-            }, 1000);
-          }
+          showProgressInBody(body, {
+            icon: icons[did] || "⚙️",
+            device: names[did] || did,
+            steps: [
+              { label: `Baixando driver ${names[did]}...`, end: 55, speed: 4, detail: "Fonte: drivers.infortech.com.br/repo" },
+              { label: "Extraindo pacote de instalação...", end: 72, speed: 3, detail: "Verificando integridade do arquivo CAB" },
+              { label: "Instalando driver no sistema...", end: 90, speed: 2, detail: "Gravando chaves no registro do Windows" },
+              { label: "Verificando compatibilidade...", end: 100, speed: 1.5, doneLabel: "✓ Driver instalado com sucesso!", detail: "Dispositivo reconhecido pelo sistema operacional" }
+            ],
+            doneLabel: "✓ Driver instalado com sucesso!"
+          }, () => {
+            SOUNDS.snap();
+            simState.driversUpdated[did] = true;
+            saveLocalState();
+            drawOSWindow("dev-manager");
+
+            const allDrivers = Object.values(simState.driversUpdated).every(x => x);
+            if (allDrivers && simState.step === 6) {
+              setTimeout(() => {
+                SOUNDS.success();
+                triggerModal(
+                  "⚙️ Drivers Instalados com Sucesso",
+                  "O chipset, a GPU (placa de vídeo), o som e o controlador de rede foram atualizados com os drivers corretos. O computador agora reconhece as peças físicas perfeitamente e pode rodar em resolução nativa.",
+                  "Drivers de dispositivos são códigos específicos que fazem a tradução entre as instruções genéricas do sistema operacional e o comportamento elétrico exato de um chip de marca específica (ex: Nvidia, Realtek).",
+                  "Instalar drivers incorretos ou incompatíveis com o chipset pode causar travamentos intermitentes e a temida Tela Azul da Morte (BSOD).",
+                  () => {
+                    simState.step = 7;
+                    saveLocalState();
+                    closeOSWindow();
+                    runCurrentStep();
+                  }
+                );
+              }, 600);
+            }
+          });
         };
       });
     } else if (id === "store") {
       document.querySelectorAll(".btn-install-app").forEach(btn => {
         btn.onclick = () => {
           const appid = btn.dataset.id;
+          const appInfo = APPS.find(a => a.id === appid);
+          const body = document.querySelector(".winlab-win-body");
           SOUNDS.snap();
-          simState.installedApps[appid] = true;
-          saveLocalState();
-          drawOSWindow("store");
 
-          const allApps = Object.values(simState.installedApps).every(x => x);
-          if (allApps && simState.step === 7) {
-            setTimeout(() => {
-              SOUNDS.success();
-              triggerModal(
-                "💿 Aplicativos Instalados",
-                "Todos os programas solicitados pelo cliente foram baixados das fontes oficiais e instalados na partição de sistema. A máquina agora está pronta para produtividade doméstica e empresarial.",
-                "Instalar softwares de fontes desconhecidas ou modificados (piratas) é um dos vetores principais de invasão de malwares, adwares e trojans na atualidade.",
-                "Sempre leia atentamente as caixas de verificação ao instalar novos aplicativos para evitar a instalação oculta de barras de ferramentas ou navegadores extras indesejados.",
-                () => {
-                  simState.step = 8;
-                  saveLocalState();
-                  closeOSWindow();
-                  runCurrentStep();
-                }
-              );
-            }, 1000);
-          }
+          showProgressInBody(body, {
+            icon: appInfo ? appInfo.icon : "📦",
+            device: appInfo ? appInfo.name : appid,
+            steps: [
+              { label: "Baixando instalador...", end: 40, speed: 5, detail: appInfo ? `Fonte: ${appInfo.name}.org/downloads` : "" },
+              { label: "Copiando arquivos do programa...", end: 70, speed: 3, detail: "Extraindo para C:\\Program Files" },
+              { label: "Registrando componentes no sistema...", end: 92, speed: 2, detail: "Gravando atalhos no Menu Iniciar" },
+              { label: "Verificando instalação...", end: 100, speed: 1.5, doneLabel: "✓ Instalação concluída!", detail: appInfo ? `${appInfo.name} pronto para uso` : "" }
+            ],
+            doneLabel: "✓ Instalação concluída!"
+          }, () => {
+            SOUNDS.snap();
+            simState.installedApps[appid] = true;
+            saveLocalState();
+            drawOSWindow("store");
+
+            const allApps = Object.values(simState.installedApps).every(x => x);
+            if (allApps && simState.step === 7) {
+              setTimeout(() => {
+                SOUNDS.success();
+                triggerModal(
+                  "💿 Aplicativos Instalados",
+                  "Todos os programas solicitados pelo cliente foram baixados das fontes oficiais e instalados na partição de sistema. A máquina agora está pronta para produtividade doméstica e empresarial.",
+                  "Instalar softwares de fontes desconhecidas ou modificados (piratas) é um dos vetores principais de invasão de malwares, adwares e trojans na atualidade.",
+                  "Sempre leia atentamente as caixas de verificação ao instalar novos aplicativos para evitar a instalação oculta de barras de ferramentas ou navegadores extras indesejados.",
+                  () => {
+                    simState.step = 8;
+                    saveLocalState();
+                    closeOSWindow();
+                    runCurrentStep();
+                  }
+                );
+              }, 600);
+            }
+          });
         };
       });
     } else if (id === "explorer") {
@@ -2144,10 +2547,16 @@
   // ETAPA 10 — RELATÓRIO TÉCNICO E CERTIFICADO
   // ==========================================================================
   function renderStep10Report(screen) {
+    if (!screen) screen = document.getElementById("virtual-screen-content");
+    if (!screen) return;
+    const iconsArea = document.getElementById("winlab-desktop-icons");
+    if (iconsArea) iconsArea.style.display = "none";
+    screen.style.display = "block";
+
     const durationMin = Math.round((Date.now() - simState.startTime) / 60000) || 5;
 
     screen.innerHTML = `
-      <div style="background:#090915;width:100%;height:100%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:12px;font-family:'Segoe UI', sans-serif;">
+      <div style="background:#090915;width:100%;height:100%;display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:12px;">
         <div style="background:rgba(30,30,55,0.9);border:1px solid rgba(131,82,255,0.25);border-radius:12px;width:95%;height:95%;box-sizing:border-box;padding:16px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;">
           
           <div style="text-align:center;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:8px;">
@@ -2175,7 +2584,7 @@
           </div>
 
           <div style="text-align:center;margin-top:12px;">
-            <button class="fluent-btn sim-interactive-element" id="btn-finish-os-report" style="padding:10px;width:auto;margin:0 auto;display:inline-flex;">
+            <button class="fluent-btn" id="btn-finish-os-report" style="padding:10px;width:auto;margin:0 auto;display:inline-flex;">
               🎓 Entregar PC e Gerar Certificado
             </button>
           </div>
@@ -2209,23 +2618,66 @@
   function renderStepMonitorVirtual() {
     const htmlOverlay = document.getElementById("sim-html-overlay");
     if (!htmlOverlay) return;
-    
+
     htmlOverlay.innerHTML = `
-      <div style="display:flex;width:100%;height:100%;background:#090912;align-items:center;justify-content:center;position:relative;">
-        <div class="virtual-monitor-wrapper">
-          <div class="virtual-screen" id="virtual-screen-content">
-            <!-- Conteúdo dinâmico -->
-          </div>
+      <div id="winlab-desktop" style="width:100%;height:100%;position:relative;overflow:hidden;background:linear-gradient(135deg,#1e1b4b 0%,#311042 50%,#030712 100%);user-select:none;">
+        <div class="winlab-icons" id="winlab-desktop-icons"></div>
+        <div id="virtual-screen-content" style="display:none;width:100%;height:100%;position:absolute;top:0;left:0;z-index:200;"></div>
+        <div id="desktop-window-container" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50;"></div>
+        <div class="winlab-taskbar" style="z-index:100;">
+          <button class="winlab-start-btn" id="winlab-start-btn"><span style="font-size:16px;">🪟</span> Iniciar</button>
+          <div class="winlab-taskbar-divider"></div>
+          <div class="winlab-taskbar-items" id="winlab-taskbar-items" style="display:flex;gap:2px;flex:1;"></div>
+          <div class="winlab-tray"><span>🔊</span><span>🔌</span><span class="winlab-clock" id="winlab-clock">--:--</span></div>
+        </div>
+        <div class="winlab-start-menu" id="winlab-start-menu">
+          <div class="winlab-start-header">🪟 Iniciar</div>
+          <div class="winlab-start-item" data-start-app="dev-manager"><span class="winlab-start-item-icon">⚙️</span><span class="winlab-start-item-label">Gerenciador Dispositivos</span></div>
+          <div class="winlab-start-item" data-start-app="store"><span class="winlab-start-item-icon">💿</span><span class="winlab-start-item-label">Central de Softwares</span></div>
+          <div class="winlab-start-item" data-start-app="explorer"><span class="winlab-start-item-icon">📁</span><span class="winlab-start-item-label">Explorador de Arquivos</span></div>
+          <div class="winlab-start-item" data-start-app="diag"><span class="winlab-start-item-icon">🩺</span><span class="winlab-start-item-label">Diagnósticos Finais</span></div>
         </div>
       </div>
     `;
     htmlOverlay.style.display = "block";
 
-    const screen = document.getElementById("virtual-screen-content");
-    if (!screen) return;
+    // Clock
+    (function updateClock() {
+      const now = new Date();
+      const el = document.getElementById("winlab-clock");
+      if (el) el.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    })();
+    const clockInt = setInterval(() => {
+      const now = new Date();
+      const el = document.getElementById("winlab-clock");
+      if (el) el.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    }, 10000);
 
+    // Start menu
+    const startBtn = document.getElementById("winlab-start-btn");
+    const startMenu = document.getElementById("winlab-start-menu");
+    if (startBtn) {
+      startBtn.onclick = (e) => { e.stopPropagation(); startMenu?.classList.toggle("open"); };
+    }
+    document.getElementById("winlab-desktop")?.addEventListener("click", (e) => {
+      if (!e.target.closest("#winlab-start-menu") && !e.target.closest("#winlab-start-btn")) {
+        startMenu?.classList.remove("open");
+      }
+    });
+    startMenu?.querySelectorAll("[data-start-app]").forEach(item => {
+      item.onclick = () => {
+        startMenu?.classList.remove("open");
+        const app = item.dataset.startApp;
+        if (app === "dev-manager") openOSWindow("dev-manager");
+        else if (app === "store") openOSWindow("store");
+        else if (app === "explorer") openOSWindow("explorer");
+        else if (app === "diag") openOSWindow("diag");
+      };
+    });
+
+    const desktop = document.getElementById("winlab-desktop");
     if (simState.step === 10) {
-      renderStep10Report(screen);
+      renderStep10Report(null);
     } else {
       updateVirtualScreen();
     }
