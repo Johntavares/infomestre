@@ -15223,163 +15223,275 @@ function initPcAssemblyLab(container, isReset) {
   if (isReset) sessionStorage.removeItem("aula8_assembly");
 
   const COMPONENTS = [
-    { id: "mb", title: "Placa-mãe", icon: "🖥️", cor: "#818cf8", desc: "A base que conecta todos os componentes." },
-    { id: "cpu", title: "Processador", icon: "🧠", cor: "#fbbf24", desc: "O cérebro que executa os cálculos." },
+    { id: "mb", title: "Placa-mãe", icon: "🖥️", cor: "#818cf8", desc: "A base que conecta todos os componentes do computador." },
+    { id: "cpu", title: "Processador", icon: "🧠", cor: "#fbbf24", desc: "O cérebro que executa cálculos e processa instruções." },
     { id: "thermal", title: "Pasta Térmica", icon: "🧴", cor: "#10b981", desc: "Condutor de calor entre CPU e cooler." },
-    { id: "cooler", title: "Cooler", icon: "❄️", cor: "#22d3ee", desc: "Sistema de resfriamento da CPU." },
+    { id: "cooler", title: "Cooler", icon: "❄️", cor: "#22d3ee", desc: "Sistema de resfriamento que evita superaquecimento." },
     { id: "ram", title: "Memória RAM", icon: "💾", cor: "#10b981", desc: "Armazena dados temporários de acesso rápido." },
-    { id: "ssd", title: "SSD", icon: "💿", cor: "#60a5fa", desc: "Armazenamento rápido sem partes móveis." },
-    { id: "psu", title: "Fonte", icon: "🔌", cor: "#f87171", desc: "Converte energia da tomada para o PC." },
-    { id: "sata", title: "Cabos SATA", icon: "🔗", cor: "#a78bfa", desc: "Cabos de dados para armazenamento." },
-    { id: "power", title: "Cabos Energia", icon: "⚡", cor: "#fbbf24", desc: "Cabos que alimentam a placa-mãe." },
-    { id: "perif", title: "Periféricos", icon: "🖱️", cor: "#34d399", desc: "Monitor, teclado, mouse externos." }
+    { id: "ssd", title: "SSD", icon: "💿", cor: "#60a5fa", desc: "Armazenamento rápido para sistema e arquivos." },
+    { id: "psu", title: "Fonte", icon: "🔌", cor: "#f87171", desc: "Converte energia da tomada para alimentar o PC." },
+    { id: "sata", title: "Cabos SATA", icon: "🔗", cor: "#a78bfa", desc: "Conectam o SSD à placa-mãe para transferir dados." },
+    { id: "power", title: "Cabos Energia", icon: "⚡", cor: "#fbbf24", desc: "Alimentam a placa-mãe com energia da fonte." },
+    { id: "perif", title: "Periféricos", icon: "🖱️", cor: "#34d399", desc: "Monitor, teclado e mouse para interagir com o PC." }
   ];
 
-  let state = JSON.parse(sessionStorage.getItem("aula8_assembly")) || { installed: [], current: 0, errors: 0 };
-
-  // Posições visuais dentro do gabinete (em grid)
-  const SLOTS = [
-    { id: "mb", label: "Placa-mãe", row: 1, col: 1, rowspan: 2, colspan: 2, icon: "🖥️", installedIcon: "🖥️" },
-    { id: "cpu", label: "CPU", row: 1, col: 1, rowspan: 1, colspan: 1, icon: "🧠" },
-    { id: "thermal", label: "Pasta Térmica", row: 1, col: 2, rowspan: 1, colspan: 1, icon: "🧴" },
-    { id: "cooler", label: "Cooler", row: 1, col: 3, rowspan: 1, colspan: 1, icon: "❄️" },
-    { id: "ram", label: "RAM", row: 2, col: 1, rowspan: 1, colspan: 3, icon: "💾" },
-    { id: "ssd", label: "SSD", row: 3, col: 1, rowspan: 1, colspan: 2, icon: "💿" },
-    { id: "psu", label: "Fonte", row: 3, col: 3, rowspan: 1, colspan: 1, icon: "🔌" },
-    { id: "sata", label: "Cabos SATA", row: 4, col: 1, rowspan: 1, colspan: 1, icon: "🔗" },
-    { id: "power", label: "Cabos Energia", row: 4, col: 2, rowspan: 1, colspan: 1, icon: "⚡" },
-    { id: "perif", label: "Periféricos", row: 4, col: 3, rowspan: 1, colspan: 1, icon: "🖱️" }
-  ];
-
-  const currentStep = () => COMPONENTS[state.current];
-
-  const abrirModalPeca = (comp) => {
-    const overlay = document.createElement("div");
-    overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;";
-    overlay.innerHTML = `<div style="background:#1a1a2e;border:2px solid ${comp.cor}40;border-radius:16px;max-width:380px;width:90%;padding:1.5rem;text-align:center;box-shadow:0 0 40px rgba(0,0,0,0.5);">
-      <div style="font-size:5rem;margin-bottom:12px;">${comp.icon}</div>
-      <h3 style="margin:0 0 8px;color:${comp.cor};font-size:1.1rem;">${comp.title}</h3>
-      <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;margin:0 0 16px;">${comp.desc}</p>
-      <button class="fechar-modal-peca-btn" style="width:100%;padding:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;cursor:pointer;font-size:0.82rem;">✕ Fechar</button>
-    </div>`;
-    document.body.appendChild(overlay);
-    overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
-    overlay.querySelector(".fechar-modal-peca-btn").addEventListener("click", () => overlay.remove());
+  // Mapa: slot aceita qual componente
+  const SLOT_ACCEPTS = {
+    "slot-mb": "mb", "slot-cpu": "cpu", "slot-thermal": "thermal", "slot-cooler": "cooler",
+    "slot-ram": "ram", "slot-ssd": "ssd", "slot-psu": "psu", "slot-sata": "sata",
+    "slot-power": "power", "slot-perif": "perif"
   };
+
+  let state = JSON.parse(sessionStorage.getItem("aula8_assembly")) || { placed: {}, phase: "assembly", bootAttempts: 0 };
+
+  const getPlacedCount = () => Object.keys(state.placed).length;
+  const allPlaced = () => getPlacedCount() === COMPONENTS.length;
 
   const shuffle = (arr) => {
     const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
     return a;
   };
 
+  const getSlotFor = (compId) => Object.entries(SLOT_ACCEPTS).find(([, c]) => c === compId)?.[0];
+
   const render = () => {
-    if (state.installed.length === COMPONENTS.length) {
-      container.innerHTML = `<div style="text-align:center;padding:1.5rem;">
-        <div style="font-size:3rem;">🎉</div>
-        <h3 style="color:#10b981;">PC Montado com Sucesso!</h3>
-        <p style="font-size:0.82rem;color:rgba(255,255,255,0.6);">Todos os ${COMPONENTS.length} componentes foram instalados corretamente.</p>
+    if (state.phase === "complete") {
+      container.innerHTML = `<div style="text-align:center;padding:2rem;">
+        <div style="font-size:4rem;margin-bottom:12px;">🎉</div>
+        <h3 style="color:#10b981;">PC Montado e Funcionando!</h3>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.6);">Todos os componentes foram instalados corretamente. O computador ligou com sucesso!</p>
+        <div style="margin-top:16px;font-size:0.75rem;color:rgba(255,255,255,0.3);">✅ Placa-mãe • ✅ CPU • ✅ Pasta Térmica • ✅ Cooler • ✅ RAM • ✅ SSD • ✅ Fonte • ✅ Cabos SATA • ✅ Cabos de Energia • ✅ Periféricos</div>
       </div>`;
       markSlideAsCompleted("aula8-montagem-lab");
-      addXP(50);
+      addXP(80);
       return;
     }
 
-    const step = currentStep();
-    const pct = Math.round((state.installed.length / COMPONENTS.length) * 100);
-    const available = COMPONENTS.filter(c => !state.installed.includes(c.id));
-    const shuffled = shuffle(available);
+    if (state.phase === "powerOn") {
+      const correct = Object.entries(state.placed).every(([compId, slotId]) => getSlotFor(compId) === slotId);
+      const placedComps = Object.keys(state.placed);
+      const missing = COMPONENTS.filter(c => !placedComps.includes(c.id));
+      const wrong = Object.entries(state.placed).filter(([compId, slotId]) => getSlotFor(compId) !== slotId);
+
+      if (correct && missing.length === 0) {
+        state.phase = "complete";
+        sessionStorage.setItem("aula8_assembly", JSON.stringify(state));
+        render();
+        return;
+      }
+
+      container.innerHTML = `<div style="padding:1rem;text-align:center;">
+        <div style="font-size:3rem;margin-bottom:8px;">⚠️</div>
+        <h3 style="color:#ef4444;margin:0 0 8px;">Falha na Inicialização!</h3>
+        <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin:0 0 16px;">O computador não ligou. Verifique os problemas abaixo e tente novamente.</p>
+        ${missing.length > 0 ? `<div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:10px;margin-bottom:8px;text-align:left;">
+          <strong style="color:#ef4444;font-size:0.8rem;">❌ Componentes não instalados:</strong>
+          ${missing.map(c => `<div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:4px;">${c.icon} ${c.title}</div>`).join("")}
+        </div>` : ""}
+        ${wrong.length > 0 ? `<div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px;margin-bottom:12px;text-align:left;">
+          <strong style="color:#fbbf24;font-size:0.8rem;">⚠️ Componentes em local errado:</strong>
+          ${wrong.map(([compId, slotId]) => {
+            const comp = COMPONENTS.find(c => c.id === compId);
+            const slotLabel = slotId.replace("slot-","").toUpperCase();
+            return `<div style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:4px;">${comp.icon} ${comp.title} → posição "${slotLabel}" incorreta</div>`;
+          }).join("")}
+        </div>` : ""}
+        <button id="power-retry-btn" style="width:100%;padding:12px;background:linear-gradient(135deg,#6366f1,#818cf8);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:0.85rem;font-weight:600;">🔄 Voltar para a Montagem</button>
+      </div>`;
+
+      container.querySelector("#power-retry-btn")?.addEventListener("click", () => {
+        state.phase = "assembly";
+        sessionStorage.setItem("aula8_assembly", JSON.stringify(state));
+        render();
+      });
+      return;
+    }
+
+    // FASE DE MONTAGEM
+    const available = shuffle(COMPONENTS.filter(c => !state.placed[c.id]));
+    const pct = Math.round((getPlacedCount() / COMPONENTS.length) * 100);
+    const bootAttempts = state.bootAttempts || 0;
+
+    // Função de drop
+    const handleDrop = (e, slotId) => {
+      e.preventDefault();
+      const compId = e.dataTransfer?.getData("text/plain");
+      if (!compId || state.placed[compId]) return;
+      const targetSlot = e.currentTarget;
+      const accepted = SLOT_ACCEPTS[slotId];
+      if (compId === accepted) {
+        state.placed[compId] = slotId;
+        sessionStorage.setItem("aula8_assembly", JSON.stringify(state));
+        targetSlot.style.borderColor = "#10b981";
+        targetSlot.style.background = "rgba(16,185,129,0.12)";
+        render();
+      } else {
+        targetSlot.style.borderColor = "#ef4444";
+        targetSlot.style.background = "rgba(239,68,68,0.12)";
+        setTimeout(() => {
+          targetSlot.style.borderColor = "";
+          targetSlot.style.background = "";
+        }, 400);
+      }
+    };
 
     container.innerHTML = `<div style="padding:0.5rem;">
-      <div style="margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:rgba(255,255,255,0.4);margin-bottom:4px;">
-          <span>Montagem: ${state.installed.length}/${COMPONENTS.length}</span>
-          <span>${pct}%</span>
-        </div>
-        <div style="width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#10b981,#6366f1);border-radius:4px;"></div>
-        </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:rgba(255,255,255,0.4);margin-bottom:6px;">
+        <span>🔧 Montagem: ${getPlacedCount()}/${COMPONENTS.length}</span>
+        <span>${pct}%</span>
+      </div>
+      <div style="width:100%;height:5px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;margin-bottom:10px;">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#10b981,#6366f1);border-radius:4px;transition:width 0.3s;"></div>
       </div>
 
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <div style="flex:1;min-width:200px;">
-          <div style="background:rgba(15,15,30,0.5);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px;text-align:center;">
-            <div style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin-bottom:6px;">🔧 Instale o componente:</div>
-            <div style="font-size:2.5rem;">${step.icon}</div>
-            <strong style="color:${step.cor};font-size:0.9rem;">${step.title}</strong>
-            <p style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin:4px 0 0;">${step.desc}</p>
+        <!-- PAINEL DIREITO: BANCADA DE PEÇAS -->
+        <div style="flex:1;min-width:120px;max-width:160px;">
+          <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:6px;text-align:center;text-transform:uppercase;letter-spacing:1px;">🧰 Peças</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            ${available.map(c => `
+              <div draggable="true" class="drag-component" data-id="${c.id}" style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;cursor:grab;user-select:none;transition:all 0.15s;"
+                ondragstart="event.dataTransfer.setData('text/plain','${c.id}');this.style.opacity='0.4';"
+                ondragend="this.style.opacity='1';">
+                <span style="font-size:1.3rem;">${c.icon}</span>
+                <span style="font-size:0.62rem;color:rgba(255,255,255,0.5);">${c.title}</span>
+              </div>
+            `).join("")}
+            ${available.length === 0 ? "<div style='font-size:0.7rem;color:rgba(255,255,255,0.2);text-align:center;padding:10px;'>✅ Todas as peças instaladas!</div>" : ""}
           </div>
 
-          <div style="margin-top:8px;">
-            <p style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin:0 0 6px;">Clique no componente correto:</p>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              ${shuffled.map(c => `
-                <div class="assembly-option" data-id="${c.id}" style="flex:1;min-width:70px;max-width:90px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 6px;text-align:center;cursor:pointer;transition:all 0.15s;">
-                  <div style="font-size:1.6rem;">${c.icon}</div>
-                  <div style="font-size:0.6rem;color:rgba(255,255,255,0.5);margin-top:2px;">${c.title}</div>
-                </div>
-              `).join("")}
+          <div style="margin-top:10px;">
+            <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:4px;">📋 Instruções</div>
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);line-height:1.4;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.12);border-radius:8px;padding:8px;">
+              Arraste cada peça para o local correto dentro do gabinete.
             </div>
           </div>
-
-          <div id="assembly-feedback" style="margin-top:8px;"></div>
         </div>
 
-        <div style="flex:2;min-width:280px;">
-          <div style="background:linear-gradient(145deg,#1a1a2e,#0f0f23);border:2px solid rgba(255,255,255,0.08);border-radius:16px;padding:12px;position:relative;">
-            <div style="text-align:center;font-size:0.65rem;color:rgba(255,255,255,0.2);margin-bottom:8px;letter-spacing:2px;text-transform:uppercase;">🔲 Gabinete do PC</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-              ${SLOTS.map(slot => {
-                const installed = state.installed.includes(slot.id);
-                const comp = COMPONENTS.find(c => c.id === slot.id);
-                return `
-                  <div style="background:${installed ? `${comp.cor}25` : 'rgba(255,255,255,0.02)'};border:1px solid ${installed ? `${comp.cor}40` : 'rgba(255,255,255,0.06)'};border-radius:8px;padding:8px;text-align:center;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.3s;">
-                    ${installed
-                      ? `<span style="font-size:1.8rem;">${comp.icon}</span><span style="font-size:0.55rem;color:${comp.cor};margin-top:2px;">${comp.title}</span><span style="font-size:0.5rem;color:rgba(16,185,129,0.6);">✔️</span>`
-                      : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.15);">⬜</span><span style="font-size:0.55rem;color:rgba(255,255,255,0.15);">${slot.label}</span>`
-                    }
-                  </div>
-                `;
-              }).join("")}
+        <!-- GABINETE DO PC -->
+        <div style="flex:3;min-width:300px;">
+          <div style="background:linear-gradient(180deg,#1e1e2e,#0f0f23);border:2px solid rgba(255,255,255,0.06);border-radius:12px;padding:10px;box-shadow:inset 0 0 30px rgba(0,0,0,0.5),0 4px 20px rgba(0,0,0,0.3);">
+            <div style="text-align:center;font-size:0.6rem;color:rgba(255,255,255,0.12);margin-bottom:8px;letter-spacing:3px;text-transform:uppercase;">💻 Gabinete — Área Interna</div>
+            
+            <!-- Área da Placa-mãe (destaque) -->
+            <div style="background:linear-gradient(135deg,rgba(16,185,129,0.04),rgba(16,185,129,0.01));border:1px solid rgba(16,185,129,0.12);border-radius:8px;padding:8px;margin-bottom:6px;">
+              <div style="font-size:0.55rem;color:rgba(16,185,129,0.25);text-align:center;margin-bottom:6px;letter-spacing:1px;">🔲 PLACA-MÃE</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+                <div class="drop-slot" id="slot-cpu" style="min-height:55px;background:${state.placed.cpu ? "rgba(251,191,36,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.cpu ? "rgba(251,191,36,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+                  ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                  ondragleave="this.style.borderColor='';this.style.background='${state.placed.cpu ? "rgba(251,191,36,0.15)" : "rgba(255,255,255,0.02)"}';">
+                  ${state.placed.cpu ? `<span style="font-size:1.6rem;">🧠</span><span style="font-size:0.5rem;color:#fbbf24;margin-top:2px;">CPU</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">🧠</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">CPU</span>`}
+                </div>
+                <div class="drop-slot" id="slot-thermal" style="min-height:55px;background:${state.placed.thermal ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.thermal ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+                  ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                  ondragleave="this.style.borderColor='';this.style.background='${state.placed.thermal ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.02)"}';">
+                  ${state.placed.thermal ? `<span style="font-size:1.6rem;">🧴</span><span style="font-size:0.5rem;color:#10b981;margin-top:2px;">Pasta</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">🧴</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Pasta</span>`}
+                </div>
+                <div class="drop-slot" id="slot-cooler" style="min-height:55px;background:${state.placed.cooler ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.cooler ? "rgba(34,211,238,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+                  ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                  ondragleave="this.style.borderColor='';this.style.background='${state.placed.cooler ? "rgba(34,211,238,0.15)" : "rgba(255,255,255,0.02)"}';">
+                  ${state.placed.cooler ? `<span style="font-size:1.6rem;">❄️</span><span style="font-size:0.5rem;color:#22d3ee;margin-top:2px;">Cooler</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">❄️</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Cooler</span>`}
+                </div>
+              </div>
+              <div id="slot-ram" class="drop-slot" style="margin-top:6px;min-height:45px;background:${state.placed.ram ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.ram ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.ram ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.02)"}';">
+                ${state.placed.ram ? `<span style="font-size:1.4rem;">💾</span><span style="font-size:0.5rem;color:#10b981;margin-top:2px;">RAM</span>` : `<span style="font-size:0.8rem;color:rgba(255,255,255,0.12);">💾</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Slot RAM</span>`}
+              </div>
+              <div id="slot-mb" class="drop-slot" style="margin-top:6px;min-height:35px;background:${state.placed.mb ? "rgba(129,140,248,0.12)" : "rgba(255,255,255,0.01)"};border:1px dashed ${state.placed.mb ? "rgba(129,140,248,0.3)" : "rgba(255,255,255,0.04)"};border-radius:6px;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.mb ? "rgba(129,140,248,0.12)" : "rgba(255,255,255,0.01)"}';">
+                ${state.placed.mb ? `<span style="font-size:1.2rem;">🖥️</span><span style="font-size:0.5rem;color:#818cf8;">Placa-mãe instalada ✅</span>` : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.08);">🖥️</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.08);">Placa-mãe</span>`}
+              </div>
             </div>
-            <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;">
-              <span style="font-size:0.55rem;color:rgba(255,255,255,0.08);">🖥️ CPU</span>
-              <span style="font-size:0.55rem;color:rgba(255,255,255,0.08);">🔲 RAM</span>
-              <span style="font-size:0.55rem;color:rgba(255,255,255,0.08);">💾 SSD</span>
-              <span style="font-size:0.55rem;color:rgba(255,255,255,0.08);">🔌 Fonte</span>
+
+            <!-- Área inferior -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+              <div id="slot-ssd" class="drop-slot" style="min-height:50px;background:${state.placed.ssd ? "rgba(96,165,250,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.ssd ? "rgba(96,165,250,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.ssd ? "rgba(96,165,250,0.15)" : "rgba(255,255,255,0.02)"}';">
+                ${state.placed.ssd ? `<span style="font-size:1.6rem;">💿</span><span style="font-size:0.5rem;color:#60a5fa;margin-top:2px;">SSD</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">💿</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">SSD</span>`}
+              </div>
+              <div id="slot-psu" class="drop-slot" style="min-height:50px;background:${state.placed.psu ? "rgba(248,113,113,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.psu ? "rgba(248,113,113,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.psu ? "rgba(248,113,113,0.15)" : "rgba(255,255,255,0.02)"}';">
+                ${state.placed.psu ? `<span style="font-size:1.6rem;">🔌</span><span style="font-size:0.5rem;color:#f87171;margin-top:2px;">Fonte</span>` : `<span style="font-size:0.9rem;color:rgba(255,255,255,0.12);">🔌</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Fonte</span>`}
+              </div>
             </div>
+
+            <!-- Cabos e Periféricos -->
+            <div style="display:flex;gap:6px;">
+              <div id="slot-sata" class="drop-slot" style="flex:1;min-height:40px;background:${state.placed.sata ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.sata ? "rgba(167,139,250,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.sata ? "rgba(167,139,250,0.15)" : "rgba(255,255,255,0.02)"}';">
+                ${state.placed.sata ? `<span style="font-size:1.3rem;">🔗</span><span style="font-size:0.5rem;color:#a78bfa;margin-top:1px;">SATA</span>` : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.12);">🔗</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">SATA</span>`}
+              </div>
+              <div id="slot-power" class="drop-slot" style="flex:1;min-height:40px;background:${state.placed.power ? "rgba(251,191,36,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.power ? "rgba(251,191,36,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.power ? "rgba(251,191,36,0.15)" : "rgba(255,255,255,0.02)"}';">
+                ${state.placed.power ? `<span style="font-size:1.3rem;">⚡</span><span style="font-size:0.5rem;color:#fbbf24;margin-top:1px;">Energia</span>` : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.12);">⚡</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Energia</span>`}
+              </div>
+              <div id="slot-perif" class="drop-slot" style="flex:1;min-height:40px;background:${state.placed.perif ? "rgba(52,211,153,0.15)" : "rgba(255,255,255,0.02)"};border:1px dashed ${state.placed.perif ? "rgba(52,211,153,0.4)" : "rgba(255,255,255,0.08)"};border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.2s;"
+                ondragover="event.preventDefault();this.style.borderColor='#818cf8';this.style.background='rgba(99,102,241,0.08)';"
+                ondragleave="this.style.borderColor='';this.style.background='${state.placed.perif ? "rgba(52,211,153,0.15)" : "rgba(255,255,255,0.02)"}';">
+                ${state.placed.perif ? `<span style="font-size:1.3rem;">🖱️</span><span style="font-size:0.5rem;color:#34d399;margin-top:1px;">Perif.</span>` : `<span style="font-size:0.7rem;color:rgba(255,255,255,0.12);">🖱️</span><span style="font-size:0.5rem;color:rgba(255,255,255,0.12);">Perif.</span>`}
+              </div>
+            </div>
+
+            <div style="margin-top:8px;display:flex;gap:4px;justify-content:center;">
+              <span style="font-size:0.5rem;color:rgba(255,255,255,0.06);">🖥️ CPU ▸ 🧴 Pasta ▸ ❄️ Cooler ▸ 💾 RAM ▸ 💿 SSD ▸ 🔌 Fonte ▸ 🔗 SATA ▸ ⚡ Energia ▸ 🖱️ Perif.</span>
+            </div>
+
+            <!-- Botão Ligar -->
+            ${allPlaced() ? `
+              <button id="power-on-btn" style="width:100%;margin-top:10px;padding:14px;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:8px;color:#fff;font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all 0.2s;box-shadow:0 0 20px rgba(16,185,129,0.3);"
+                onmouseenter="this.style.transform='scale(1.02)'" onmouseleave="this.style.transform='scale(1)'">
+                🔌 LIGAR COMPUTADOR
+              </button>
+            ` : `
+              <div style="width:100%;margin-top:10px;padding:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:8px;text-align:center;font-size:0.65rem;color:rgba(255,255,255,0.12);">⬆️ Arraste todas as peças para o gabinete</div>
+            `}
           </div>
         </div>
       </div>
     </div>`;
 
-    container.querySelectorAll(".assembly-option").forEach(el => {
-      el.addEventListener("click", () => {
-        const id = el.dataset.id;
-        const fb = document.getElementById("assembly-feedback");
-        if (id === step.id) {
-          state.installed.push(id);
-          state.current++;
-          sessionStorage.setItem("aula8_assembly", JSON.stringify(state));
-          fb.innerHTML = `<div style="padding:10px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;color:#10b981;font-size:0.78rem;text-align:center;">✅ ${step.icon} ${step.title} instalado com sucesso!</div>`;
-          setTimeout(() => render(), 600);
-        } else {
-          state.errors++;
-          sessionStorage.setItem("aula8_assembly", JSON.stringify(state));
-          const clicked = COMPONENTS.find(c => c.id === id);
-          fb.innerHTML = `<div style="padding:10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;color:#ef4444;font-size:0.78rem;text-align:center;">❌ ${clicked.icon} ${clicked.title} não é o componente correto. Tente novamente!</div>`;
-          el.style.border = "1px solid rgba(239,68,68,0.4)";
-          el.style.background = "rgba(239,68,68,0.06)";
-          setTimeout(() => { el.style.border = ""; el.style.background = ""; fb.innerHTML = ""; }, 1200);
-        }
-      });
-      el.addEventListener("dblclick", (e) => {
-        e.preventDefault();
-        const id = el.dataset.id;
-        const comp = COMPONENTS.find(c => c.id === id);
-        if (comp) abrirModalPeca(comp);
-      });
+    // Conecta eventos de drop nos slots
+    Object.keys(SLOT_ACCEPTS).forEach(slotId => {
+      const el = container.querySelector(`#${slotId}`);
+      if (el) {
+        el.addEventListener("drop", (e) => {
+          e.preventDefault();
+          const compId = e.dataTransfer?.getData("text/plain");
+          if (!compId || state.placed[compId]) return;
+          const accepted = SLOT_ACCEPTS[slotId];
+          if (compId === accepted) {
+            state.placed[compId] = slotId;
+            sessionStorage.setItem("aula8_assembly", JSON.stringify(state));
+            render();
+          } else {
+            el.style.borderColor = "#ef4444";
+            el.style.background = "rgba(239,68,68,0.12)";
+            setTimeout(() => { el.style.borderColor = ""; el.style.background = ""; }, 400);
+          }
+        });
+      }
     });
+
+    // Botão Power On
+    const powerBtn = container.querySelector("#power-on-btn");
+    if (powerBtn) {
+      powerBtn.addEventListener("click", () => {
+        state.bootAttempts = (state.bootAttempts || 0) + 1;
+        state.phase = "powerOn";
+        sessionStorage.setItem("aula8_assembly", JSON.stringify(state));
+        render();
+      });
+    }
   };
 
   render();
