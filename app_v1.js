@@ -72,14 +72,14 @@ const COURSE_JORNADA = [
     descMessage: "Videoaulas interativas do Microsoft Office: Word, Excel, PowerPoint e Projeto Integrado.",
     isLmsModule: true,
     lessons: [
-      { id: "m2-aula-1", title: "Aula 01 — Introdução ao Microsoft Office", desc: "Suíte Office, Word, Excel, PowerPoint e extensões." },
-      { id: "m2-aula-2", title: "Aula 02 — Microsoft Word", desc: "Interface do Word, digitação e documentos." },
-      { id: "m2-aula-3", title: "Aula 03 — Formatação Profissional", desc: "Estilos, tabelas e criação de currículos." },
-      { id: "m2-aula-4", title: "Aula 04 — Microsoft Excel", desc: "Planilhas, células e controle financeiro." },
-      { id: "m2-aula-5", title: "Aula 05 — Fórmulas e Funções", desc: "Fórmulas matemáticas =SOMA, =MÉDIA, =SE e =PROCV." },
-      { id: "m2-aula-6", title: "Aula 06 — Microsoft PowerPoint", desc: "Design de slides e apresentações visuais." },
-      { id: "m2-aula-7", title: "Aula 07 — Apresentações Profissionais", desc: "Transições, animações e oratória." },
-      { id: "m2-aula-8", title: "Aula 08 — Projeto Final Integrado", isDesafio: true, desc: "Projeto Integrado conectando Word, Excel e PowerPoint." }
+      { id: "m2-aula-1", title: "Aula 1 — Conhecendo o Microsoft Word", desc: "Interface, digitação correta, quebra de linha, Enter e salvar arquivos." },
+      { id: "m2-aula-2", title: "Aula 2 — Formatação Profissional de Documentos", desc: "Fonte, tamanho, cor, alinhamentos, recuos, marcadores e numeração." },
+      { id: "m2-aula-3", title: "Aula 3 — Projeto Prático: Currículo e Contrato", desc: "Estrutura de currículo, tabelas, contrato simples e exportação PDF." },
+      { id: "m2-aula-4", title: "Aula 4 — Introdução ao Excel", desc: "Interface do Excel, linhas, colunas, células e tabela de despesas." },
+      { id: "m2-aula-5", title: "Aula 5 — Fórmulas e Funções", desc: "Soma, Média, Máximo, Mínimo, Contagem e controle financeiro." },
+      { id: "m2-aula-6", title: "Aula 6 — Organização e Análise de Dados", desc: "Formatação de moeda/datas, filtros, gráficos e orçamento familiar." },
+      { id: "m2-aula-7", title: "Aula 7 — Criando Apresentações", desc: "Interface do PowerPoint, temas, layouts, ícones e SmartArt." },
+      { id: "m2-aula-8", title: "Aula 8 — Projeto Final", isDesafio: true, desc: "Animações, transições e apresentação profissional completa." }
     ]
   },
   {
@@ -1110,6 +1110,22 @@ function initSidebarMenu() {
         linkEl.addEventListener("click", () => {
           if (status === "locked") {
             abrirModalCuriosidade(aula);
+          } else if (aula.id.startsWith("m2-aula-") || modulo.isLmsModule || modulo.id === "modulo-2") {
+            const screenLanding = document.getElementById("screen-landing");
+            const screenApp = document.getElementById("screen-app");
+            const screenHub = document.getElementById("screen-hub");
+            if (screenLanding) screenLanding.classList.add("screen-hidden");
+            if (screenApp) screenApp.classList.add("screen-hidden");
+            if (screenHub) screenHub.classList.remove("screen-hidden");
+
+            if (window.switchHubTab) {
+              window.switchHubTab(aula.id);
+            } else if (window.InforMestreLMS) {
+              const mainPanel = document.getElementById("hub-main-panel-content");
+              if (mainPanel) {
+                window.InforMestreLMS.renderStudentLmsLessonView(mainPanel, aula.id, window.currentUser);
+              }
+            }
           } else {
             if (aula.chapter) {
               const chapterSlides = COURSE_CONTENT.map((s, idx) => ({ ...s, idx })).filter(s => s.chapter === aula.chapter);
