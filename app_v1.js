@@ -67,16 +67,19 @@ const COURSE_JORNADA = [
   },
   {
     id: "modulo-2",
-    title: "Produtividade Profissional",
+    title: "Módulo 2 — Pacote Office (Videoaulas)",
     icon: "🥈",
-    descMessage: "Conclua o Módulo 1 para desbloquear novas ferramentas profissionais.",
+    descMessage: "Videoaulas interativas do Microsoft Office: Word, Excel, PowerPoint e Projeto Integrado.",
+    isLmsModule: true,
     lessons: [
-      { id: "aula-9", title: "Digitação Inteligente", desc: "Técnicas de digitação rápida, ergonomia das mãos e uso inteligente do teclado." },
-      { id: "aula-10", title: "Introdução ao Word", desc: "Aprenda a criar documentos de texto formatados, margens e estilos de fonte." },
-      { id: "aula-11", title: "Criando um Currículo", desc: "Aplicação prática para estruturar e exportar seu próprio currículo profissional." },
-      { id: "aula-12", title: "PowerPoint", desc: "Criação de apresentações impactantes, transições de slides e organização de ideias." },
-      { id: "aula-13", title: "Excel", desc: "Entenda tabelas, células, fórmulas matemáticas básicas e gráficos interativos." },
-      { id: "aula-14", title: "Projeto Profissional", isDesafio: true, desc: "Uma atividade prática integrada aplicando Word, Excel e PowerPoint em conjunto." }
+      { id: "m2-aula-1", title: "Aula 01 — Introdução ao Microsoft Office", desc: "Suíte Office, Word, Excel, PowerPoint e extensões." },
+      { id: "m2-aula-2", title: "Aula 02 — Microsoft Word", desc: "Interface do Word, digitação e documentos." },
+      { id: "m2-aula-3", title: "Aula 03 — Formatação Profissional", desc: "Estilos, tabelas e criação de currículos." },
+      { id: "m2-aula-4", title: "Aula 04 — Microsoft Excel", desc: "Planilhas, células e controle financeiro." },
+      { id: "m2-aula-5", title: "Aula 05 — Fórmulas e Funções", desc: "Fórmulas matemáticas =SOMA, =MÉDIA, =SE e =PROCV." },
+      { id: "m2-aula-6", title: "Aula 06 — Microsoft PowerPoint", desc: "Design de slides e apresentações visuais." },
+      { id: "m2-aula-7", title: "Aula 07 — Apresentações Profissionais", desc: "Transições, animações e oratória." },
+      { id: "m2-aula-8", title: "Aula 08 — Projeto Final Integrado", isDesafio: true, desc: "Projeto Integrado conectando Word, Excel e PowerPoint." }
     ]
   },
   {
@@ -8392,18 +8395,21 @@ function renderHubHeader() {
       tabsNav.innerHTML = `
         <button class="tab-nav-btn active" data-tab="dashboard">📊 Meu Painel</button>
         <button class="tab-nav-btn" data-tab="curriculum">📚 Módulos</button>
+        <button class="tab-nav-btn" data-tab="m2-aula-1">🎬 Módulo 2 (Office)</button>
         <button class="tab-nav-btn" data-tab="achievements">🏆 Conquistas</button>
         <button class="tab-nav-btn" data-tab="settings">⚙️ Configurações</button>
       `;
     } else if (role === 'school') {
       tabsNav.innerHTML = `
         <button class="tab-nav-btn active" data-tab="school-dashboard">🏫 Painel da Escola</button>
+        <button class="tab-nav-btn" data-tab="tutor-lms">👨‍🏫 LMS & Vídeos (Office)</button>
         <button class="tab-nav-btn" data-tab="school-profile">🏢 Perfil da Escola</button>
         <button class="tab-nav-btn" data-tab="settings">⚙️ Configurações</button>
       `;
     } else if (role === 'admin') {
       tabsNav.innerHTML = `
         <button class="tab-nav-btn active" data-tab="admin-dashboard">🔑 Painel Admin</button>
+        <button class="tab-nav-btn" data-tab="tutor-lms">👨‍🏫 LMS & Vídeos (Office)</button>
         <button class="tab-nav-btn" data-tab="settings">⚙️ Configurações</button>
       `;
     }
@@ -8439,6 +8445,14 @@ function switchHubTab(tabName) {
     renderStudentAchievementsTab(mainPanel);
   } else if (tabName === "settings") {
     renderSettingsTab(mainPanel);
+  } else if (tabName === "tutor-lms") {
+    if (window.InforMestreLMS) {
+      window.InforMestreLMS.renderTeacherLmsPanel(mainPanel);
+    }
+  } else if (tabName.startsWith("m2-aula-")) {
+    if (window.InforMestreLMS) {
+      window.InforMestreLMS.renderStudentLmsLessonView(mainPanel, tabName, window.currentUser);
+    }
   } else if (tabName === "school-dashboard") {
     renderSchoolDashboardTab(mainPanel);
   } else if (tabName === "school-profile") {
@@ -8553,19 +8567,24 @@ function renderStudentDashboardTab(container) {
       </div>
 
       <div class="hub-progress-section">
-        <div class="progress-details">
-          <div style="display:flex; flex-direction:column; gap:0.2rem;">
-            <h4 style="margin: 0; font-size: 1.1rem;">Seu Progresso de Jornada</h4>
-            <span style="font-size:0.8rem; color:var(--text-muted);">Última página estudada: <strong>${lastLessonTitle}</strong></span>
+      </div>
+
+      <!-- Módulo 2 LMS Progress Card -->
+      <div class="hub-progress-section" style="background: rgba(30, 25, 56, 0.95); border: 1px solid var(--color-primary); border-radius: var(--border-radius-lg); padding: 1.5rem;">
+        <div class="progress-details" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h4 style="margin: 0; font-size: 1.2rem; font-weight:700;">🎬 Módulo 2 — Pacote Office (Videoaulas)</h4>
+            <span style="font-size:0.85rem; color:var(--text-muted);">${(window.InforMestreLMS ? window.InforMestreLMS.getModule2Stats(window.currentUser?.id || 'guest_student').completed : 0)} de 8 aulas concluídas</span>
           </div>
-          <span style="font-weight: 800; font-size: 1.4rem; color: var(--color-primary-light);">${progressPercent}%</span>
+          <span style="font-weight: 800; font-size: 1.5rem; color: var(--color-primary-light);">${(window.InforMestreLMS ? window.InforMestreLMS.getModule2Stats(window.currentUser?.id || 'guest_student').percent : 0)}%</span>
         </div>
-        <div class="progress-bar-large-track">
-          <div class="progress-bar-large-fill" style="width: ${progressPercent}%;"></div>
+        <div class="progress-bar-large-track" style="margin-top: 0.8rem;">
+          <div class="progress-bar-large-fill" style="width: ${(window.InforMestreLMS ? window.InforMestreLMS.getModule2Stats(window.currentUser?.id || 'guest_student').percent : 0)}%;"></div>
         </div>
-        <div style="display: flex; justify-content: center; margin-top: 1rem;">
-          <button class="btn btn-primary btn-large" id="student-hub-start-btn" style="padding: 0.8rem 2.5rem; font-size: 1.05rem;">
-            🚀 ${progressPercent > 0 ? "Continuar de Onde Parei" : "Começar o Curso de Informática"}
+        <div style="display: flex; justify-content: space-between; align-items:center; margin-top: 1rem; flex-wrap:wrap; gap:0.5rem;">
+          <span class="text-small text-muted">Aulas 1 a 8 preparadas no player LMS responsivo</span>
+          <button class="btn btn-primary" onclick="if(window.switchHubTab) window.switchHubTab('m2-aula-1');" style="padding: 0.6rem 1.5rem;">
+            ▶️ Acessar Módulo 2 (Videoaulas)
           </button>
         </div>
       </div>
