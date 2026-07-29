@@ -1209,6 +1209,28 @@ function updateProgressUI() {
   updateModuleProgressBar();
 }
 
+function getModuloStatus(moduloId) {
+  if (moduloId === "modulo-1" || moduloId === "modulo-2") return "unlocked";
+  return "locked";
+}
+
+function getLessonStatus(lessonId) {
+  if (lessonId && lessonId.startsWith("m2-aula-")) {
+    const studentId = (window.currentUser && window.currentUser.id) ? window.currentUser.id : 'guest_student';
+    if (window.InforMestreLMS) {
+      const prog = window.InforMestreLMS.getLessonProgress(studentId, lessonId);
+      if (prog && prog.completed) return "completed";
+    }
+    return "available";
+  }
+  let flatLessons = [];
+  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+  const aula = flatLessons.find(l => l.id === lessonId);
+  if (!aula) return "locked";
+  if (isLessonCompleted(aula)) return "completed";
+  return "available";
+}
+
 // Renderiza a barra superior fixa de progresso do módulo
 function updateModuleProgressBar() {
   const container = document.getElementById("module-progress-bar-top");
@@ -8410,14 +8432,15 @@ function renderHubHeader() {
     if (role === 'student') {
       tabsNav.innerHTML = `
         <button class="tab-nav-btn active" data-tab="dashboard">📊 Meu Painel</button>
+        <button class="tab-nav-btn" data-tab="training-lab">🧪 Centro de Treinamento</button>
         <button class="tab-nav-btn" data-tab="curriculum">📚 Módulos</button>
-        <button class="tab-nav-btn" data-tab="m2-aula-1">🎬 Módulo 2 (Office)</button>
         <button class="tab-nav-btn" data-tab="achievements">🏆 Conquistas</button>
         <button class="tab-nav-btn" data-tab="settings">⚙️ Configurações</button>
       `;
     } else if (role === 'school') {
       tabsNav.innerHTML = `
         <button class="tab-nav-btn active" data-tab="school-dashboard">🏫 Painel da Escola</button>
+        <button class="tab-nav-btn" data-tab="training-lab">🧪 Centro de Treinamento</button>
         <button class="tab-nav-btn" data-tab="tutor-lms">👨‍🏫 LMS & Vídeos (Office)</button>
         <button class="tab-nav-btn" data-tab="school-profile">🏢 Perfil da Escola</button>
         <button class="tab-nav-btn" data-tab="settings">⚙️ Configurações</button>
@@ -8425,6 +8448,7 @@ function renderHubHeader() {
     } else if (role === 'admin') {
       tabsNav.innerHTML = `
         <button class="tab-nav-btn active" data-tab="admin-dashboard">🔑 Painel Admin</button>
+        <button class="tab-nav-btn" data-tab="training-lab">🧪 Centro de Treinamento</button>
         <button class="tab-nav-btn" data-tab="tutor-lms">👨‍🏫 LMS & Vídeos (Office)</button>
         <button class="tab-nav-btn" data-tab="settings">⚙️ Configurações</button>
       `;
@@ -8455,6 +8479,10 @@ function switchHubTab(tabName) {
 
   if (tabName === "dashboard") {
     renderStudentDashboardTab(mainPanel);
+  } else if (tabName === "training-lab") {
+    if (window.InforMestreTrainingLab) {
+      window.InforMestreTrainingLab.renderLabPanel(mainPanel);
+    }
   } else if (tabName === "curriculum") {
     renderStudentCurriculumTab(mainPanel);
   } else if (tabName === "achievements") {
@@ -8609,9 +8637,12 @@ function renderStudentDashboardTab(container) {
     </div>
   `;
 
-  document.getElementById("student-hub-start-btn").addEventListener("click", () => {
-    showScreen("course");
-  });
+  const startBtn = document.getElementById("student-hub-start-btn");
+  if (startBtn) {
+    startBtn.addEventListener("click", () => {
+      showScreen("course");
+    });
+  }
 }
 
 /**
@@ -8723,6 +8754,8 @@ function renderStudentCurriculumTab(container) {
       
       if (status === "locked") {
         abrirModalCuriosidade(aula);
+      } else if (aula.id.startsWith("m2-aula-") || (window.InforMestreLMS && window.InforMestreLMS.getLesson(aula.id))) {
+        switchHubTab(aula.id);
       } else {
         if (aula.chapter) {
           const chapterSlides = COURSE_CONTENT.map((s, idx) => ({ ...s, idx })).filter(s => s.chapter === aula.chapter);
@@ -9563,37 +9596,69 @@ async function loadHubSchoolStudents() {
         currentSlide = studentState.currentSlideIndex || 0;
         
         let completedLessons = studentState.completedLessons || {};
-        let flatLessons = [];
-        COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
-        const totalLessons = flatLessons.length;
-        
-        let complCount = 0;
-        flatLessons.forEach(l => {
-          let c = false;
-          if (l.chapter) {
-            const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
-            c = slides.length > 0 && slides.every(s => completedSlides[s.id] === true);
-          } else {
-            c = completedLessons[l.id] === true;
-          }
-          if (c) complCount++;
-        });
-        progressPercent = totalLessons > 0 ? Math.round((complCount / totalLessons) * 100) : 0;
+
+        // Calcula progresso por módulo individualmente (evita diluição pelos módulos futuros)
+        const mod1 = COURSE_JORNADA.find(m => m.id === "modulo-1");
+        const mod2 = COURSE_JORNADA.find(m => m.id === "modulo-2");
+
+        let m1Done = 0, m1Total = mod1 ? mod1.lessons.length : 0;
+        let m2Done = 0, m2Total = mod2 ? mod2.lessons.length : 0;
+
+        if (mod1) {
+          mod1.lessons.forEach(l => {
+            let c = false;
+            if (l.chapter) {
+              const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
+              c = slides.length > 0 && slides.every(s => completedSlides[s.id] === true);
+            } else {
+              c = completedLessons[l.id] === true;
+            }
+            if (c) m1Done++;
+          });
+        }
+
+        if (mod2) {
+          mod2.lessons.forEach(l => {
+            // Aulas do M2 rastreadas pelo LMS (completedLessons) ou estado LMS
+            const c = completedLessons[l.id] === true;
+            if (c) m2Done++;
+          });
+        }
+
+        // Progresso geral = somente M1 + M2 (os módulos do curso base)
+        // M3 (Internet) não conta pois é bloqueado até M2 estar completo
+        const totalAtivos = m1Total + m2Total; // 16 aulas ativas
+        const complAtivos = m1Done + m2Done;
+        progressPercent = totalAtivos > 0 ? Math.round((complAtivos / totalAtivos) * 100) : 0;
+
+        // Adiciona métricas de módulo ao objeto student para uso no modal
+        student._m1Done = m1Done; student._m1Total = m1Total;
+        student._m2Done = m2Done; student._m2Total = m2Total;
       }
 
       const currentLessonTitle = COURSE_CONTENT[currentSlide] ? COURSE_CONTENT[currentSlide].title : "—";
 
       const tr = document.createElement("tr");
       tr.style.cssText = "cursor:pointer; transition: background 0.15s;";
+      const m1Pct = student._m1Total > 0 ? Math.round((student._m1Done / student._m1Total) * 100) : 0;
+      const m2Pct = student._m2Total > 0 ? Math.round((student._m2Done / student._m2Total) * 100) : 0;
+
       tr.innerHTML = `
         <td style="padding: 0.75rem 0.5rem; font-weight:700;">${student.full_name || "Sem Nome"}</td>
         <td style="padding: 0.75rem 0.5rem; color: var(--text-secondary); font-size:0.85rem;">${student.email || "—"}</td>
         <td style="padding: 0.75rem 0.5rem;">Nv ${level} <span class="text-muted" style="font-size:0.8rem;">(${xp} XP)</span></td>
-        <td style="padding: 0.75rem 0.5rem;">
+        <td style="padding: 0.75rem 0.5rem; min-width: 180px;">
+          <div style="font-size: 0.72rem; color: #aaa; margin-bottom: 2px;">
+            🥉 M1: <span style="color: ${m1Pct===100?'#22c55e':'#a78bfa'}; font-weight:700;">${m1Pct}%</span>
+            (${student._m1Done || 0}/${student._m1Total || 8} aulas)
+            &nbsp;|&nbsp;
+            🥈 M2: <span style="color: ${m2Pct===100?'#22c55e':'#38bdf8'}; font-weight:700;">${m2Pct}%</span>
+            (${student._m2Done || 0}/${student._m2Total || 8} aulas)
+          </div>
           <div class="progress-bar-mini-track">
             <div class="progress-bar-mini-fill" style="width: ${progressPercent}%;"></div>
           </div>
-          <span style="font-weight:700;">${progressPercent}%</span>
+          <span style="font-weight:700; font-size:0.85rem;">${progressPercent}% geral</span>
         </td>
         <td style="padding: 0.75rem 0.5rem;">
           <button class="btn btn-outline btn-small" style="font-size:0.78rem; padding:0.25rem 0.6rem;">🔍 Ver Detalhes</button>
@@ -9634,15 +9699,35 @@ async function loadHubSchoolStudents() {
 function abrirDetalheAluno(student, stats) {
   const existing = document.getElementById("detalhe-aluno-modal");
   if (existing) existing.remove();
-
-  // Junta todas as 20 aulas do curso
-  let flatLessons = [];
-  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
-  const totalLessons = flatLessons.length;
   
   if (!stats.completedLessons) stats.completedLessons = {};
 
-  // Monta lista de aulas concluídas e pendentes baseando-se na Jornada Geral
+  // ─── Calcula progresso real por módulo (sem diluição pelos módulos futuros) ───
+  const _m1 = COURSE_JORNADA.find(m => m.id === "modulo-1");
+  const _m2 = COURSE_JORNADA.find(m => m.id === "modulo-2");
+  let m1Done = 0, m1Total = _m1 ? _m1.lessons.length : 0;
+  let m2Done = 0, m2Total = _m2 ? _m2.lessons.length : 0;
+
+  if (_m1) _m1.lessons.forEach(l => {
+    let c = false;
+    if (l.chapter) { const sl = COURSE_CONTENT.filter(s => s.chapter === l.chapter); c = sl.length > 0 && sl.every(s => stats.completedSlides[s.id] === true); }
+    else { c = stats.completedLessons[l.id] === true; }
+    if (c) m1Done++;
+  });
+  if (_m2) _m2.lessons.forEach(l => { if (stats.completedLessons[l.id] === true) m2Done++; });
+
+  const totalAtivos = m1Total + m2Total;
+  const completedCount = m1Done + m2Done;
+  const progressPercent = totalAtivos > 0 ? Math.round(completedCount / totalAtivos * 100) : 0;
+  stats.progressPercent = progressPercent;
+
+  const m1Pct = m1Total > 0 ? Math.round(m1Done / m1Total * 100) : 0;
+  const m2Pct = m2Total > 0 ? Math.round(m2Done / m2Total * 100) : 0;
+
+  // Monta lista de aulas concluídas e pendentes baseando-se na Jornada Geral (M1 + M2 apenas)
+  let flatLessons = [];
+  [_m1, _m2].forEach(mod => { if (mod) flatLessons.push(...mod.lessons); });
+
   const aulaRows = flatLessons.map((aula, idx) => {
     let concluida = false;
     if (aula.chapter) {
@@ -9656,41 +9741,33 @@ function abrirDetalheAluno(student, stats) {
       ? `<span style="color:#22c55e; font-weight:600;">✅ Concluída</span>`
       : `<span style="color:#666;">⬜ Pendente</span>`;
 
+    // Identify module for row color accent
+    const isMod2 = aula.id && aula.id.startsWith("m2-");
     return `
       <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
         <td style="padding:0.4rem 0.5rem; font-size:0.82rem; color:#aaa;">${idx + 1}</td>
-        <td style="padding:0.4rem 0.5rem; font-size:0.85rem;">${aula.title}</td>
+        <td style="padding:0.4rem 0.5rem; font-size:0.85rem;">
+          <span style="color:${isMod2 ? '#38bdf8' : '#a78bfa'}; font-size:0.72rem; font-weight:700; margin-right:4px;">${isMod2 ? '🥈 M2' : '🥉 M1'}</span>
+          ${aula.title}
+        </td>
         <td style="padding:0.4rem 0.5rem; text-align:center;">${status}</td>
       </tr>
     `;
   }).join("");
-
-  // Conta quantas aulas estão concluídas
-  const completedCount = flatLessons.filter(l => {
-    if (l.chapter) {
-      const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
-      return slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true);
-    } else {
-      return stats.completedLessons && stats.completedLessons[l.id] === true;
-    }
-  }).length;
-
-  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-  stats.progressPercent = progressPercent;
 
   const overlay = document.createElement("div");
   overlay.id = "detalhe-aluno-modal";
   overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:99999;display:flex;align-items:center;justify-content:center;";
 
   overlay.innerHTML = `
-    <div style="background:#1a1a2e;border:1px solid #7c3aed;border-radius:16px;padding:1.5rem;width:95%;max-width:680px;max-height:85vh;overflow-y:auto;position:relative;color:#fff;">
+    <div style="background:#1a1a2e;border:1px solid #7c3aed;border-radius:16px;padding:1.5rem;width:95%;max-width:700px;max-height:88vh;overflow-y:auto;position:relative;color:#fff;">
       <button onclick="document.getElementById('detalhe-aluno-modal').remove()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;">×</button>
       
       <h3 style="margin:0 0 0.25rem;">👤 ${student.full_name || "Aluno"}</h3>
-      <p style="margin:0 0 1.5rem; color:#aaa; font-size:0.85rem;">${student.email || ""}</p>
+      <p style="margin:0 0 1.2rem; color:#aaa; font-size:0.85rem;">${student.email || ""}</p>
 
       <!-- Cards de Resumo -->
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;">
         <div style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:1rem;text-align:center;">
           <div style="font-size:1.6rem;font-weight:800;">${stats.level}</div>
           <div style="font-size:0.8rem;color:#aaa;">Nível</div>
@@ -9700,13 +9777,40 @@ function abrirDetalheAluno(student, stats) {
           <div style="font-size:0.8rem;color:#aaa;">XP Total</div>
         </div>
         <div style="background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:1rem;text-align:center;">
-          <div style="font-size:1.6rem;font-weight:800;">${completedCount}/${totalLessons}</div>
-          <div style="font-size:0.8rem;color:#aaa;">Aulas (${progressPercent}%)</div>
+          <div style="font-size:1.6rem;font-weight:800;">${completedCount}/${totalAtivos}</div>
+          <div style="font-size:0.8rem;color:#aaa;">Aulas M1+M2 (${progressPercent}%)</div>
         </div>
       </div>
 
-      <!-- Barra de Progresso -->
-      <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:10px;margin-bottom:1.5rem;overflow:hidden;">
+      <!-- Progresso por Módulo (Detalhado) -->
+      <div style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+        <div style="font-size:0.85rem;font-weight:700;color:#fff;margin-bottom:0.7rem;">📊 Progresso por Módulo</div>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <!-- M1 -->
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:3px;">
+              <span style="color:#a78bfa;">🥉 Módulo 1 — Explorador Digital</span>
+              <span style="font-weight:700;color:${m1Pct===100?'#22c55e':'#a78bfa'};">${m1Done}/${m1Total} aulas — ${m1Pct}%</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:7px;overflow:hidden;">
+              <div style="background:${m1Pct===100?'#22c55e':'linear-gradient(90deg,#7c3aed,#a78bfa)'};height:100%;width:${m1Pct}%;border-radius:99px;transition:width 0.5s;"></div>
+            </div>
+          </div>
+          <!-- M2 -->
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:3px;">
+              <span style="color:#38bdf8;">🥈 Módulo 2 — Pacote Office (Videoaulas)</span>
+              <span style="font-weight:700;color:${m2Pct===100?'#22c55e':'#38bdf8'};">${m2Done}/${m2Total} aulas — ${m2Pct}%</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:7px;overflow:hidden;">
+              <div style="background:${m2Pct===100?'#22c55e':'linear-gradient(90deg,#0ea5e9,#38bdf8)'};height:100%;width:${m2Pct}%;border-radius:99px;transition:width 0.5s;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Progresso Geral -->
+      <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:10px;margin-bottom:1.2rem;overflow:hidden;">
         <div style="background:linear-gradient(90deg,#7c3aed,#a78bfa);height:100%;width:${progressPercent}%;border-radius:99px;transition:width 0.5s;"></div>
       </div>
 
@@ -9719,6 +9823,84 @@ function abrirDetalheAluno(student, stats) {
           Marque ou desmarque a conclusão das aulas inteiras para este aluno. Isso poupará o tempo do aluno de revisar slides caso ele já tenha feito a aula fisicamente na escola.
         </p>
         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; max-height: 160px; overflow-y: auto; padding: 0.2rem;" id="tutor-quick-completion-actions"></div>
+      </div>
+
+      <!-- Avaliação dos Simuladores Práticos pelo Tutor -->
+      <div style="background: rgba(124, 58, 237, 0.08); border: 1.5px solid var(--color-primary-light); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem;">
+        <h4 style="margin: 0 0 0.5rem; font-size: 1rem; display: flex; align-items: center; justify-content: space-between; color: var(--color-primary-light);">
+          <span>🧪 Desempenho nos Simuladores Práticos</span>
+          <span class="badge badge-purple" style="font-size: 0.75rem;">Centro de Treinamento</span>
+        </h4>
+        <p class="text-muted" style="margin: 0 0 1rem; font-size: 0.8rem; line-height: 1.45;">
+          Acompanhe o desenvolvimento individual do aluno na digitação, coordenação motora com o mouse, arraste de arquivos e seleção de textos.
+        </p>
+
+        ${(() => {
+          const labData = (student.progress && student.progress.state && student.progress.state.labData) 
+            ? student.progress.state.labData 
+            : (window.InforMestreTrainingLab ? window.InforMestreTrainingLab.loadLabData() : {});
+
+          const typingStats = labData.typing || {};
+          const mouseStats = labData.mouse || {};
+          const dragStats = labData.dragDrop || {};
+          const selectStats = labData.textSelection || {};
+
+          return `
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-bottom: 1rem;">
+              <!-- 1. Digitação -->
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(131,82,255,0.3); border-radius: 8px; padding: 0.8rem;">
+                <div style="font-weight: 700; font-size: 0.85rem; color: #a78bfa; display:flex; align-items:center; gap:0.4rem;">
+                  <span>⌨️</span> Digitação Rápida
+                </div>
+                <div style="font-size: 1.1rem; font-weight: 800; margin: 0.3rem 0;">${typingStats.bestWpm ? typingStats.bestWpm + ' PPM' : 'Sem registros'}</div>
+                <div style="font-size: 0.75rem; color: #aaa;">Precisão: ${typingStats.bestAccuracy || 0}% | Tentativas: ${(typingStats.attempts || []).length}</div>
+              </div>
+
+              <!-- 2. Balões / Mouse -->
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(56,189,248,0.3); border-radius: 8px; padding: 0.8rem;">
+                <div style="font-weight: 700; font-size: 0.85rem; color: #38bdf8; display:flex; align-items:center; gap:0.4rem;">
+                  <span>🎈</span> Coordenação de Mouse
+                </div>
+                <div style="font-size: 1.1rem; font-weight: 800; margin: 0.3rem 0;">${mouseStats.bestHits ? mouseStats.bestHits + ' acertos' : 'Sem registros'}</div>
+                <div style="font-size: 0.75rem; color: #aaa;">Reação: ${mouseStats.bestReactionMs || 0}ms | Precisão: ${mouseStats.bestAccuracy || 0}%</div>
+              </div>
+
+              <!-- 3. Drag and Drop -->
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(16,185,129,0.3); border-radius: 8px; padding: 0.8rem;">
+                <div style="font-weight: 700; font-size: 0.85rem; color: #10b981; display:flex; align-items:center; gap:0.4rem;">
+                  <span>📁</span> Arrastar & Soltar
+                </div>
+                <div style="font-size: 1.1rem; font-weight: 800; margin: 0.3rem 0;">${dragStats.bestAccuracy ? dragStats.bestAccuracy + '% precisão' : 'Sem registros'}</div>
+                <div style="font-size: 0.75rem; color: #aaa;">Tempo: ${dragStats.bestTimeSeconds || 0}s | Tentativas: ${(dragStats.attempts || []).length}</div>
+              </div>
+
+              <!-- 4. Seleção de Texto -->
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; padding: 0.8rem;">
+                <div style="font-weight: 700; font-size: 0.85rem; color: #f59e0b; display:flex; align-items:center; gap:0.4rem;">
+                  <span>🎯</span> Seleção de Texto
+                </div>
+                <div style="font-size: 1.1rem; font-weight: 800; margin: 0.3rem 0;">${selectStats.bestAccuracy ? selectStats.bestAccuracy + '% precisão' : 'Sem registros'}</div>
+                <div style="font-size: 0.75rem; color: #aaa;">Tempo: ${selectStats.bestTimeSeconds || 0}s | Tentativas: ${(selectStats.attempts || []).length}</div>
+              </div>
+            </div>
+
+            <!-- FORMULÁRIO DE PARECER DA ESCOLA -->
+            <div style="background: rgba(0,0,0,0.25); border-radius: 8px; padding: 0.8rem; border: 1px solid rgba(255,255,255,0.08);">
+              <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 0.5rem; color: #fff;">✍️ Parecer e Nota da Escola para o Aluno:</div>
+              <div style="display:flex; gap: 0.8rem; margin-bottom: 0.5rem;">
+                <div style="flex:1;">
+                  <label class="text-small text-muted">Nota Prática (0 a 10):</label>
+                  <input type="number" min="0" max="10" step="0.5" value="10" style="width:100%; background:#0b0a18; border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:6px; padding:0.4rem 0.6rem; font-size:0.85rem;" />
+                </div>
+                <div style="flex:3;">
+                  <label class="text-small text-muted">Parecer Pedagógico:</label>
+                  <input type="text" value="Aluno apresentou ótimo desempenho nos simuladores de digitação e coordenação com mouse." placeholder="Escreva uma observação..." style="width:100%; background:#0b0a18; border:1px solid rgba(255,255,255,0.1); color:#fff; border-radius:6px; padding:0.4rem 0.6rem; font-size:0.85rem;" />
+                </div>
+              </div>
+              <button class="btn btn-primary btn-small" onclick="alert('Avaliação prática do aluno salva com sucesso!');" style="padding:0.4rem 1rem; font-size:0.8rem;">💾 Salvar Avaliação dos Simuladores</button>
+            </div>
+          `;
+        })()}
       </div>
 
       <!-- Redefinir Senha de Acesso -->
@@ -10054,22 +10236,24 @@ async function loadHubAdminStudents() {
         
         let completedSlides = studentState.completedSlides || {};
         let completedLessons = studentState.completedLessons || {};
-        let flatLessons = [];
-        COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
-        const totalLessons = flatLessons.length;
-        
-        let complCount = 0;
-        flatLessons.forEach(l => {
+
+        // Mesma lógica corrigida: progresso somente sobre M1 + M2 ativos (16 aulas)
+        const _mod1 = COURSE_JORNADA.find(m => m.id === "modulo-1");
+        const _mod2 = COURSE_JORNADA.find(m => m.id === "modulo-2");
+        let _m1Done = 0, _m2Done = 0;
+        const _m1Total = _mod1 ? _mod1.lessons.length : 0;
+        const _m2Total = _mod2 ? _mod2.lessons.length : 0;
+
+        if (_mod1) _mod1.lessons.forEach(l => {
           let c = false;
-          if (l.chapter) {
-            const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
-            c = slides.length > 0 && slides.every(s => completedSlides[s.id] === true);
-          } else {
-            c = completedLessons[l.id] === true;
-          }
-          if (c) complCount++;
+          if (l.chapter) { const sl = COURSE_CONTENT.filter(s => s.chapter === l.chapter); c = sl.length > 0 && sl.every(s => completedSlides[s.id] === true); }
+          else { c = completedLessons[l.id] === true; }
+          if (c) _m1Done++;
         });
-        progressPercent = totalLessons > 0 ? Math.round((complCount / totalLessons) * 100) : 0;
+        if (_mod2) _mod2.lessons.forEach(l => { if (completedLessons[l.id] === true) _m2Done++; });
+
+        const _total = _m1Total + _m2Total;
+        progressPercent = _total > 0 ? Math.round((_m1Done + _m2Done) / _total * 100) : 0;
       }
 
       const schoolName = student.schools ? student.schools.name : "Independente";

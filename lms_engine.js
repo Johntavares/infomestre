@@ -639,128 +639,162 @@
           `).join('')}
         </div>
 
-        <!-- GRID PRINCIPAL: VÍDEO & ANOTAÇÕES -->
-        <div class="lms-content-grid">
-          <!-- ÁREA DO PLAYER DE VÍDEO 16:9 -->
-          <div class="lms-card lms-video-card">
-            <div class="lms-card-header">
-              <h3>🎬 Videoaula Principal</h3>
-              <span class="text-muted text-small">${isPublished ? 'Hospedado via YouTube (Não Listado)' : 'Status: Em breve'}</span>
-            </div>
-            
-            <div class="lms-video-wrapper">
-              ${isPublished ? `
-                <iframe src="${embedUrl}" title="${lesson.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-              ` : `
-                <div class="lms-video-placeholder">
-                  <div class="placeholder-icon">🎬</div>
-                  <h4>Vídeo ainda não disponível</h4>
-                  <p>Esta aula será publicada em breve pelo professor. Você já pode ler o resumo, praticar os exercícios e tirar dúvidas abaixo!</p>
-                </div>
-              `}
-            </div>
-          </div>
+        <!-- BARRA DE NAVEGAÇÃO DE ETAPAS / SLIDES DA AULA -->
+        <div class="lms-lesson-tabs-bar mt-2">
+          <button class="lms-tab-btn active" id="ltab-video" onclick="InforMestreLMS.switchLessonTab('video')">
+            🎬 Etapa 1: Videoaula & Conteúdo
+          </button>
+          <button class="lms-tab-btn" id="ltab-exercise" onclick="InforMestreLMS.switchLessonTab('exercise')">
+            📂 Etapa 2: Atividade Prática & Anotações
+          </button>
+          <button class="lms-tab-btn" id="ltab-simulators" onclick="InforMestreLMS.switchLessonTab('simulators')">
+            🧪 Etapa 3: Simuladores Práticos (Centro de Treinamento)
+          </button>
+        </div>
 
-          <!-- 2. RESUMO E 3. OBJETIVOS DE APRENDIZADO -->
-          <div class="lms-card lms-info-card">
-            <h3>📖 Resumo da Aula</h3>
-            <p style="line-height: 1.6; color: var(--text-primary); font-size: 0.95rem;">${lesson.summary}</p>
-            
-            <h4 class="mt-2" style="color: var(--color-primary-light);">🎯 Objetivos Pedagógicos</h4>
-            <ul class="lms-objectives-list mt-1">
-              ${(lesson.objectives || []).map(obj => `<li><span class="check-icon">✓</span> <span>${obj}</span></li>`).join('')}
-            </ul>
+        <!-- ETAPA 1: VIDEOAULA & RESUMO DA AULA -->
+        <div id="lms-step-video" class="lms-step-panel mt-2">
+          <div class="lms-content-grid">
+            <!-- ÁREA DO PLAYER DE VÍDEO 16:9 -->
+            <div class="lms-card lms-video-card">
+              <div class="lms-card-header">
+                <h3>🎬 Videoaula Principal</h3>
+                <span class="text-muted text-small">${isPublished ? 'Hospedado via YouTube (Não Listado)' : 'Status: Em breve'}</span>
+              </div>
+              
+              <div class="lms-video-wrapper">
+                ${isPublished ? `
+                  <iframe src="${embedUrl}" title="${lesson.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                ` : `
+                  <div class="lms-video-placeholder">
+                    <div class="placeholder-icon">🎬</div>
+                    <h4>Vídeo ainda não disponível</h4>
+                    <p>Esta aula será publicada em breve pelo professor. Você já pode ler o resumo, praticar os exercícios e tirar dúvidas!</p>
+                  </div>
+                `}
+              </div>
+            </div>
+
+            <!-- RESUMO E OBJETIVOS DE APRENDIZADO -->
+            <div class="lms-card lms-info-card">
+              <h3>📖 Resumo da Aula</h3>
+              <p style="line-height: 1.6; color: var(--text-primary); font-size: 0.95rem;">${lesson.summary}</p>
+              
+              <h4 class="mt-2" style="color: var(--color-primary-light);">🎯 Objetivos Pedagógicos</h4>
+              <ul class="lms-objectives-list mt-1">
+                ${(lesson.objectives || []).map(obj => `<li><span class="check-icon">✓</span> <span>${obj}</span></li>`).join('')}
+              </ul>
+
+              <div class="mt-3 text-right">
+                <button class="btn btn-primary btn-sm" onclick="InforMestreLMS.switchLessonTab('exercise')">
+                  Avançar para a Etapa 2: Atividade ➡️
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- SEGUNDA SEÇÃO: ANOTAÇÕES E ATIVIDADE PRÁTICA -->
-        <div class="lms-content-grid mt-2">
-          <!-- 4. BLOCO DE ANOTAÇÕES PRIVADAS -->
-          <div class="lms-card lms-notes-card">
-            <div class="lms-card-header">
-              <h3>📝 Minhas Anotações Privadas</h3>
-              <span class="text-muted text-small">Salvo automaticamente</span>
+        <!-- ETAPA 2: ANOTAÇÕES, ATIVIDADE PRÁTICA & DÚVIDAS -->
+        <div id="lms-step-exercise" class="lms-step-panel screen-hidden mt-2">
+          <div class="lms-content-grid">
+            <!-- BLOCO DE ANOTAÇÕES PRIVADAS -->
+            <div class="lms-card lms-notes-card">
+              <div class="lms-card-header">
+                <h3>📝 Minhas Anotações Privadas</h3>
+                <span class="text-muted text-small">Salvo automaticamente</span>
+              </div>
+              <textarea id="lms-student-notes-input" placeholder="Digite suas anotações pessoais desta aula aqui..." oninput="InforMestreLMS.saveStudentNote('${studentId}', '${lesson.id}', this.value)">${notes}</textarea>
+              <div class="notes-footer text-muted text-small mt-1">💡 Suas anotações são privadas e ficam salvas para sua consulta rápida.</div>
             </div>
-            <textarea id="lms-student-notes-input" placeholder="Digite suas anotações pessoais desta aula aqui..." oninput="InforMestreLMS.saveStudentNote('${studentId}', '${lesson.id}', this.value)">${notes}</textarea>
-            <div class="notes-footer text-muted text-small mt-1">💡 Suas anotações são privadas e ficam salvas para sua consulta rápida.</div>
+
+            <!-- ATIVIDADE PRÁTICA & UPLOAD DE ARQUIVOS -->
+            <div class="lms-card lms-exercise-card">
+              <div class="lms-card-header">
+                <h3>📂 Atividade Prática & Envio de Trabalhos</h3>
+                ${subStatusBadge}
+              </div>
+
+              <div class="exercise-details">
+                <h4>${lesson.exercise?.title || 'Atividade Prática'}</h4>
+                <p class="text-muted mt-1">${lesson.exercise?.instructions || 'Reproduza o exercício apresentado e envie seu arquivo.'}</p>
+                <div class="allowed-exts-tag mt-1">Formatos aceitos: <strong>.docx, .xlsx, .pptx, .pdf</strong></div>
+              </div>
+
+              <!-- ZONA DE UPLOAD -->
+              <div class="lms-upload-box mt-2">
+                <input type="file" id="lms-file-input-${lesson.id}" accept=".docx,.xlsx,.pptx,.pdf" style="display:none;" onchange="InforMestreLMS.handleFileUpload('${studentId}', '${lesson.id}', this)">
+                <button class="btn btn-primary btn-full" onclick="document.getElementById('lms-file-input-${lesson.id}').click()">
+                  📤 Selecionar Arquivo para Enviar (Nova Versão)
+                </button>
+                <p class="text-small text-muted text-center mt-1">Envios anteriores não são sobrescritos. O tutor poderá ver o histórico de versões.</p>
+              </div>
+
+              <!-- HISTÓRICO DE VERSÕES ENVIADAS -->
+              ${submissions.length > 0 ? `
+                <div class="lms-submission-history mt-2">
+                  <h5>📜 Histórico de Envios (${submissions.length} versão/ões)</h5>
+                  <div class="submissions-timeline">
+                    ${submissions.map(sub => `
+                      <div class="sub-timeline-item ${sub.status}">
+                        <div class="sub-version-badge">v${sub.version}</div>
+                        <div class="sub-info">
+                          <strong>${sub.file_name}</strong>
+                          <span class="text-muted text-small">${new Date(sub.created_at).toLocaleString('pt-BR')}</span>
+                          ${sub.feedback ? `<div class="sub-feedback-quote">💬 <em>"${sub.feedback}"</em> — Tutor</div>` : ''}
+                        </div>
+                        <span class="sub-status-pill status-${sub.status}">${sub.status.toUpperCase()}</span>
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              ` : ''}
+
+              <div class="mt-3 text-right">
+                <button class="btn btn-primary btn-sm" onclick="InforMestreLMS.switchLessonTab('simulators')">
+                  Avançar para a Etapa 3: Simuladores 🧪 ➡️
+                </button>
+              </div>
+            </div>
           </div>
 
-          <!-- 5. ATIVIDADE PRÁTICA & UPLOAD DE ARQUIVOS (VERSIONADO) -->
-          <div class="lms-card lms-exercise-card">
+          <!-- FÓRUM DE DÚVIDAS COM O TUTOR (Q&A) -->
+          <div class="lms-card lms-qa-card mt-2">
             <div class="lms-card-header">
-              <h3>📂 Atividade Prática & Envio de Trabalhos</h3>
-              ${subStatusBadge}
+              <h3>💬 Dúvidas ao Tutor desta Aula</h3>
+              <span class="text-muted text-small">${questions.length} pergunta(s)</span>
             </div>
 
-            <div class="exercise-details">
-              <h4>${lesson.exercise?.title || 'Atividade Prática'}</h4>
-              <p class="text-muted mt-1">${lesson.exercise?.instructions || 'Reproduza o exercício apresentado e envie seu arquivo.'}</p>
-              <div class="allowed-exts-tag mt-1">Formatos aceitos: <strong>.docx, .xlsx, .pptx, .pdf</strong></div>
-            </div>
-
-            <!-- ZONA DE UPLOAD -->
-            <div class="lms-upload-box mt-2">
-              <input type="file" id="lms-file-input-${lesson.id}" accept=".docx,.xlsx,.pptx,.pdf" style="display:none;" onchange="InforMestreLMS.handleFileUpload('${studentId}', '${lesson.id}', this)">
-              <button class="btn btn-primary btn-full" onclick="document.getElementById('lms-file-input-${lesson.id}').click()">
-                📤 Selecionar Arquivo para Enviar (Nova Versão)
+            <div class="qa-ask-form mt-1">
+              <textarea id="lms-question-text-${lesson.id}" rows="2" placeholder="Ficou com alguma dúvida sobre esta aula? Pergunte ao tutor..."></textarea>
+              <button class="btn btn-secondary btn-sm mt-1" onclick="InforMestreLMS.handlePostQuestion('${studentId}', '${studentName}', '${lesson.id}')">
+                ❓ Enviar Dúvida ao Tutor
               </button>
-              <p class="text-small text-muted text-center mt-1">Envios anteriores não são sobrescritos. O tutor poderá ver o histórico de versões.</p>
             </div>
 
-            <!-- HISTÓRICO DE VERSÕES ENVIADAS -->
-            ${submissions.length > 0 ? `
-              <div class="lms-submission-history mt-2">
-                <h5>📜 Histórico de Envios (${submissions.length} versão/ões)</h5>
-                <div class="submissions-timeline">
-                  ${submissions.map(sub => `
-                    <div class="sub-timeline-item ${sub.status}">
-                      <div class="sub-version-badge">v${sub.version}</div>
-                      <div class="sub-info">
-                        <strong>${sub.file_name}</strong>
-                        <span class="text-muted text-small">${new Date(sub.created_at).toLocaleString('pt-BR')}</span>
-                        ${sub.feedback ? `<div class="sub-feedback-quote">💬 <em>"${sub.feedback}"</em> — Tutor</div>` : ''}
-                      </div>
-                      <span class="sub-status-pill status-${sub.status}">${sub.status.toUpperCase()}</span>
+            <div class="qa-questions-list mt-2">
+              ${questions.length === 0 ? '<p class="text-muted text-small">Nenhuma dúvida enviada ainda. Seja o primeiro a perguntar!</p>' : ''}
+              ${questions.map(q => `
+                <div class="qa-question-item">
+                  <div class="qa-q-header">
+                    <strong>👤 ${q.student_name}</strong>
+                    <span class="text-muted text-small">${new Date(q.created_at).toLocaleDateString('pt-BR')}</span>
+                  </div>
+                  <p class="qa-q-text">"${q.question}"</p>
+                  ${(q.answers || []).map(a => `
+                    <div class="qa-answer-box">
+                      <strong>👨‍🏫 ${a.teacher_name}:</strong>
+                      <p>${a.answer}</p>
                     </div>
                   `).join('')}
                 </div>
-              </div>
-            ` : ''}
+              `).join('')}
+            </div>
           </div>
         </div>
 
-        <!-- TERCEIRA SEÇÃO: FÓRUM DE DÚVIDAS COM O TUTOR (Q&A) -->
-        <div class="lms-card lms-qa-card mt-2">
-          <div class="lms-card-header">
-            <h3>💬 Dúvidas ao Tutor desta Aula</h3>
-            <span class="text-muted text-small">${questions.length} pergunta(s)</span>
-          </div>
-
-          <div class="qa-ask-form mt-1">
-            <textarea id="lms-question-text-${lesson.id}" rows="2" placeholder="Ficou com alguma dúvida sobre esta aula? Pergunte ao tutor..."></textarea>
-            <button class="btn btn-secondary btn-sm mt-1" onclick="InforMestreLMS.handlePostQuestion('${studentId}', '${studentName}', '${lesson.id}')">
-              ❓ Enviar Dúvida ao Tutor
-            </button>
-          </div>
-
-          <div class="qa-questions-list mt-2">
-            ${questions.length === 0 ? '<p class="text-muted text-small">Nenhuma dúvida enviada ainda. Seja o primeiro a perguntar!</p>' : ''}
-            ${questions.map(q => `
-              <div class="qa-question-item">
-                <div class="qa-q-header">
-                  <strong>👤 ${q.student_name}</strong>
-                  <span class="text-muted text-small">${new Date(q.created_at).toLocaleDateString('pt-BR')}</span>
-                </div>
-                <p class="qa-q-text">"${q.question}"</p>
-                ${(q.answers || []).map(a => `
-                  <div class="qa-answer-box">
-                    <strong>👨‍🏫 ${a.teacher_name}:</strong>
-                    <p>${a.answer}</p>
-                  </div>
-                `).join('')}
-              </div>
-            `).join('')}
-          </div>
+        <!-- ETAPA 3: CENTRO DE TREINAMENTO / SIMULADORES PRÁTICOS -->
+        <div id="lms-step-simulators" class="lms-step-panel screen-hidden mt-2">
+          <div id="lms-lesson-simulators-panel"></div>
         </div>
       </div>
     `;
@@ -818,6 +852,7 @@
         <div class="teacher-tabs-bar mt-2">
           <button class="teacher-tab-btn active" id="ttab-videos" onclick="InforMestreLMS.switchTeacherTab('videos')">🎬 Gerenciador de Vídeos & Aulas</button>
           <button class="teacher-tab-btn" id="ttab-subs" onclick="InforMestreLMS.switchTeacherTab('subs')">📑 Avaliação de Trabalhos (${allSubs.length})</button>
+          <button class="teacher-tab-btn" id="ttab-simulators" onclick="InforMestreLMS.switchTeacherTab('simulators')">🧪 Desempenho nos Simuladores Práticos</button>
         </div>
 
         <!-- ABA 1: GERENCIADOR DE VÍDEOS -->
@@ -843,7 +878,7 @@
           </div>
         </div>
 
-        <!-- ABA 2: AVALIAÇÃO DE TRABALHOS -->
+        <!-- ABA 2: AVALIAÇÃO DE TRABALHOS ENVIADOS -->
         <div id="teacher-content-subs" class="teacher-tab-content mt-2 screen-hidden">
           <h3>📑 Submissões de Alunos para Avaliação</h3>
           ${allSubs.length === 0 ? '<div class="alert alert-info mt-1">Nenhum trabalho enviado até o momento.</div>' : ''}
@@ -899,6 +934,85 @@
             }).join('')}
           </div>
         </div>
+
+        <!-- ABA 3: AVALIAÇÃO E MONITORAMENTO DOS SIMULADORES -->
+        <div id="teacher-content-simulators" class="teacher-tab-content mt-2 screen-hidden">
+          <div class="lms-card p-2" style="background: rgba(124, 58, 237, 0.08); border: 1.5px solid var(--color-primary-light);">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <h3>🧪 Monitoramento e Avaliação de Simuladores (Centro de Treinamento)</h3>
+              <span class="badge badge-purple">Painel do Tutor</span>
+            </div>
+            <p class="text-muted text-small mb-2">Acompanhe as estatísticas individuais de digitação, velocidade do mouse, arrasta-e-solta e seleção de texto de cada aluno.</p>
+
+            <div id="teacher-simulators-list-container">
+              ${(() => {
+                const labData = (window.InforMestreTrainingLab ? window.InforMestreTrainingLab.loadLabData() : {});
+                const tStats = labData.typing || {};
+                const mStats = labData.mouse || {};
+                const dStats = labData.dragDrop || {};
+                const sStats = labData.textSelection || {};
+
+                return `
+                  <div class="lab-performance-summary-card mb-2" style="background: var(--bg-surface);">
+                    <h4>📊 Métricas Gerais do Aluno de Demonstração (Localhost)</h4>
+                    <div class="lab-stats-grid compact-grid mt-1">
+                      <div class="lab-stat-box purple compact">
+                        <div class="stat-top"><span class="stat-icon">⌨️</span> <strong>${tStats.bestWpm || 0} PPM</strong></div>
+                        <div class="stat-label">Digitação Rápida</div>
+                        <div class="stat-sub">Precisão: ${tStats.bestAccuracy || 0}% | Tentativas: ${(tStats.attempts || []).length}</div>
+                      </div>
+
+                      <div class="lab-stat-box blue compact">
+                        <div class="stat-top"><span class="stat-icon">🎈</span> <strong>${mStats.bestHits || 0} acertos</strong></div>
+                        <div class="stat-label">Coordenação de Mouse</div>
+                        <div class="stat-sub">Reação: ${mStats.bestReactionMs || 0}ms | Precisão: ${mStats.bestAccuracy || 0}%</div>
+                      </div>
+
+                      <div class="lab-stat-box green compact">
+                        <div class="stat-top"><span class="stat-icon">📁</span> <strong>${dStats.bestAccuracy || 0}%</strong></div>
+                        <div class="stat-label">Arrastar & Soltar</div>
+                        <div class="stat-sub">Tempo: ${dStats.bestTimeSeconds || 0}s | Tentativas: ${(dStats.attempts || []).length}</div>
+                      </div>
+
+                      <div class="lab-stat-box orange compact">
+                        <div class="stat-top"><span class="stat-icon">🎯</span> <strong>${sStats.bestAccuracy || 0}%</strong></div>
+                        <div class="stat-label">Seleção de Texto</div>
+                        <div class="stat-sub">Tempo: ${sStats.bestTimeSeconds || 0}s | Tentativas: ${(sStats.attempts || []).length}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- FORMULÁRIO DE PARECER DA ESCOLA -->
+                  <div class="lms-card p-2" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-soft);">
+                    <h4>✍️ Registrar Avaliação Prática para o Aluno</h4>
+                    <div class="form-group-row mt-1" style="display:flex; gap:1rem;">
+                      <div style="flex:1;">
+                        <label class="text-small">Nota da Prática (0 a 10):</label>
+                        <input type="number" id="tsim-grade" min="0" max="10" step="0.5" value="10" class="input-custom">
+                      </div>
+                      <div style="flex:2;">
+                        <label class="text-small">Decisão Pedagógica:</label>
+                        <select id="tsim-status" class="input-custom">
+                          <option value="approved">✅ Desempenho Aprovado (Competência Adquirida)</option>
+                          <option value="practice_more">🔄 Orientar Mais Prática nos Simuladores</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="mt-1">
+                      <label class="text-small">Observações e Parecer Técnico do Tutor:</label>
+                      <textarea id="tsim-feedback" rows="2" class="input-custom" placeholder="Ex: O aluno apresentou excelente evolução na velocidade de digitação e ótima agilidade de mouse.">Aluno apresentou ótimo desempenho prático no laboratório de informática.</textarea>
+                    </div>
+
+                    <button class="btn btn-primary btn-sm mt-1" onclick="if(window.showToastNotification) window.showToastNotification('✅ Avaliação Salva!', 'A nota da prática e parecer do tutor foram salvos com sucesso.'); else alert('Avaliação prática salva com sucesso!');">
+                      💾 Salvar Avaliação dos Simuladores
+                    </button>
+                  </div>
+                `;
+              })()}
+            </div>
+          </div>
+        </div>
       </div>
     `;
 
@@ -911,19 +1025,24 @@
   function switchTeacherTab(tab) {
     const vBox = document.getElementById("teacher-content-videos");
     const sBox = document.getElementById("teacher-content-subs");
+    const simBox = document.getElementById("teacher-content-simulators");
+
     const btnV = document.getElementById("ttab-videos");
     const btnS = document.getElementById("ttab-subs");
+    const btnSim = document.getElementById("ttab-simulators");
+
+    [vBox, sBox, simBox].forEach(b => b && b.classList.add("screen-hidden"));
+    [btnV, btnS, btnSim].forEach(b => b && b.classList.remove("active"));
 
     if (tab === 'videos') {
-      vBox.classList.remove("screen-hidden");
-      sBox.classList.add("screen-hidden");
-      btnV.classList.add("active");
-      btnS.classList.remove("active");
-    } else {
-      sBox.classList.remove("screen-hidden");
-      vBox.classList.add("screen-hidden");
-      btnS.classList.add("active");
-      btnV.classList.remove("active");
+      vBox && vBox.classList.remove("screen-hidden");
+      btnV && btnV.classList.add("active");
+    } else if (tab === 'subs') {
+      sBox && sBox.classList.remove("screen-hidden");
+      btnS && btnS.classList.add("active");
+    } else if (tab === 'simulators') {
+      simBox && simBox.classList.remove("screen-hidden");
+      btnSim && btnSim.classList.add("active");
     }
   }
 
@@ -1038,6 +1157,35 @@
     renderTeacherLmsPanel(document.getElementById("hub-main-panel-content"));
   }
 
+  function switchLessonTab(tabName) {
+    const vStep = document.getElementById("lms-step-video");
+    const eStep = document.getElementById("lms-step-exercise");
+    const sStep = document.getElementById("lms-step-simulators");
+
+    const btnV = document.getElementById("ltab-video");
+    const btnE = document.getElementById("ltab-exercise");
+    const btnS = document.getElementById("ltab-simulators");
+
+    [vStep, eStep, sStep].forEach(el => el && el.classList.add("screen-hidden"));
+    [btnV, btnE, btnS].forEach(btn => btn && btn.classList.remove("active"));
+
+    if (tabName === 'video') {
+      vStep && vStep.classList.remove("screen-hidden");
+      btnV && btnV.classList.add("active");
+    } else if (tabName === 'exercise') {
+      eStep && eStep.classList.remove("screen-hidden");
+      btnE && btnE.classList.add("active");
+    } else if (tabName === 'simulators') {
+      sStep && sStep.classList.remove("screen-hidden");
+      btnS && btnS.classList.add("active");
+
+      const simContainer = document.getElementById("lms-lesson-simulators-panel");
+      if (simContainer && window.InforMestreTrainingLab) {
+        window.InforMestreTrainingLab.renderLabPanel(simContainer, { isInsideLesson: true });
+      }
+    }
+  }
+
   // Exportação Pública Completa
   const api = {
     extractVideoId,
@@ -1063,6 +1211,7 @@
     handleFileUpload,
     handlePostQuestion,
     switchTeacherTab,
+    switchLessonTab,
     loadLessonEditForm,
     previewTeacherVideo,
     saveLessonFromTeacherForm,

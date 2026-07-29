@@ -4602,3 +4602,474 @@ body.has-top-bar .sidebar {
   border-color: var(--color-primary-light);
   box-shadow: 0 0 0 3px rgba(131, 82, 255, 0.2);
 }
+
+/* ============================================================================
+   CENTRO DE TREINAMENTO — ESTILOS DO LABORATÓRIO (MD3 DARK MODE)
+   ============================================================================ */
+.lab-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+.lab-header-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(56, 189, 248, 0.15) 100%);
+  border: 1px solid rgba(131, 82, 255, 0.3);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.lab-badge {
+  display: inline-block;
+  background: rgba(131, 82, 255, 0.2);
+  color: var(--color-primary-light);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  border: 1px solid rgba(131, 82, 255, 0.4);
+  margin-bottom: 0.5rem;
+}
+
+.lab-header-badge-icon {
+  font-size: 4rem;
+  filter: drop-shadow(0 0 20px rgba(131, 82, 255, 0.5));
+}
+
+.lab-performance-summary-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.5rem;
+}
+
+.lab-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lab-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.lab-stat-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-md);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.lab-stat-box.purple { border-left: 4px solid var(--color-primary); }
+.lab-stat-box.blue { border-left: 4px solid #3b82f6; }
+.lab-stat-box.green { border-left: 4px solid #10b981; }
+.lab-stat-box.orange { border-left: 4px solid #f59e0b; }
+
+.lab-stat-box .stat-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.lab-stat-box .stat-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.lab-stat-box .stat-value small {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.lab-stat-box .stat-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.lab-stat-box .stat-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.lab-simulators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.lab-sim-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.lab-sim-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primary-light);
+}
+
+.sim-card-top {
+  padding: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sim-card-top.purple-theme { background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(124, 58, 237, 0.1)); }
+.sim-card-top.blue-theme { background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(59, 130, 246, 0.1)); }
+.sim-card-top.green-theme { background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(16, 185, 129, 0.1)); }
+.sim-card-top.orange-theme { background: linear-gradient(135deg, rgba(245, 158, 11, 0.4), rgba(245, 158, 11, 0.1)); }
+
+.sim-icon { font-size: 2.2rem; }
+.sim-tag { font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.6rem; background: rgba(0,0,0,0.4); border-radius: 12px; color: #fff; }
+
+.sim-card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.sim-card-body h4 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; }
+.sim-card-body p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 1rem; flex: 1; }
+
+.sim-meta-box {
+  background: rgba(12, 10, 24, 0.5);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-md);
+  padding: 0.8rem;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+/* Simulador de Digitação */
+.typing-stats-bar {
+  display: flex;
+  gap: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-md);
+  padding: 0.8rem 1.2rem;
+  font-size: 0.9rem;
+}
+
+.typing-display-box {
+  background: #0d0b1a;
+  border: 2px solid var(--color-primary-dark);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
+  user-select: none;
+}
+
+.char-span {
+  transition: background 0.1s, color 0.1s;
+  border-radius: 2px;
+}
+.char-pending { color: #666; }
+.char-correct { color: #10b981; background: rgba(16, 185, 129, 0.15); }
+.char-wrong { color: #ef4444; background: rgba(239, 68, 68, 0.25); font-weight: bold; }
+.char-current { background: var(--color-primary); color: #fff; animation: pulse 1s infinite; }
+
+.typing-textarea {
+  font-family: var(--font-mono, monospace);
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+/* Jogo de Balões (Mouse) */
+.balloon-game-arena {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  background: radial-gradient(circle at center, #1e1b4b 0%, #0f172a 100%);
+  border: 2px solid rgba(124, 58, 237, 0.4);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.balloon-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  padding: 2rem;
+  z-index: 10;
+}
+
+.balloon-target {
+  position: absolute;
+  width: 55px;
+  height: 65px;
+  border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+  cursor: pointer;
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+  user-select: none;
+}
+
+.balloon-target::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 10px;
+  background: rgba(255,255,255,0.4);
+}
+
+/* Drag and Drop */
+.drag-source-container {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-lg);
+  padding: 1.2rem;
+}
+
+.drag-items-flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.8rem;
+}
+
+.drag-item-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--color-primary-light);
+  border-radius: var(--border-radius-md);
+  padding: 0.7rem 1.1rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.drag-item-card:active { cursor: grabbing; }
+.drag-item-card.dragging { opacity: 0.4; transform: scale(0.95); }
+.drag-item-card.dropped-success { border-color: #10b981; background: rgba(16, 185, 129, 0.15); cursor: default; }
+.drag-item-card.dropped-error { border-color: #ef4444; animation: shake 0.3s; }
+
+.drop-zones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.2rem;
+}
+
+.drop-zone-card {
+  background: var(--bg-surface);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: 1.2rem;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.drop-zone-card.drag-over {
+  border-color: var(--color-primary-light);
+  background: rgba(131, 82, 255, 0.1);
+}
+
+.drop-zone-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 0.8rem;
+}
+
+.drop-zone-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+/* Seleção de Texto */
+.selection-task-banner {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+  font-size: 0.95rem;
+}
+
+.selection-task-banner .task-step { font-weight: 800; color: #f59e0b; margin-right: 0.5rem; }
+
+.selection-text-box {
+  background: #0d0b1a;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.selection-text-box ::selection {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+/* Card de Resultado */
+.lab-result-card {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(15, 23, 42, 0.95));
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--border-radius-lg);
+  padding: 2rem;
+  text-align: center;
+}
+
+.result-trophy { font-size: 3.5rem; display: block; margin-bottom: 0.5rem; }
+.result-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
+.r-item { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 1rem; }
+.r-val { font-size: 1.6rem; font-weight: 800; color: var(--color-primary-light); display: block; }
+.r-lbl { font-size: 0.78rem; color: var(--text-muted); }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* ============================================================================
+   ESTAPAS DA AULA (NAVBAR DE SLIDES INTERNOS DO MÓDULO 2) & CONTROLES DOS SIMULADORES
+   ============================================================================ */
+.lms-lesson-tabs-bar {
+  display: flex;
+  gap: 0.75rem;
+  background: rgba(12, 10, 24, 0.6);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--border-radius-lg);
+  padding: 0.5rem;
+  overflow-x: auto;
+}
+
+.lms-tab-btn {
+  flex: 1;
+  padding: 0.75rem 1.2rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.lms-tab-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.lms-tab-btn.active {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary-light);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.4);
+}
+
+/* BARRA FIXA DE CONTROLE DO SIMULADOR (SAIR / REINICIAR) */
+.sim-control-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(12, 10, 24, 0.9);
+  border: 1.5px solid var(--color-primary-dark);
+  border-radius: var(--border-radius-md);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.sim-control-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* MODO COMPACTO DE CARDS DO SIMULADOR */
+.lab-header-banner.compact {
+  padding: 1.2rem 1.5rem;
+}
+
+.lab-simulators-grid.compact-grid-2x2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.lab-sim-card.compact {
+  border-radius: var(--border-radius-md);
+}
+
+.sim-card-top.compact {
+  padding: 0.8rem 1rem;
+}
+
+.sim-card-body.compact {
+  padding: 1rem;
+}
+
+.sim-card-body.compact h4 {
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.sim-meta-box.compact {
+  padding: 0.5rem 0.7rem;
+  font-size: 0.78rem;
+}
+
+.btn-xs {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+}
+
+.typing-level-selector {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
