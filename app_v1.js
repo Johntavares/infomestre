@@ -73,7 +73,7 @@ const COURSE_JORNADA = [
     isLmsModule: true,
     lessons: [
       { id: "m2-aula-1", title: "Aula 1 — Conhecendo o Microsoft Word", desc: "Interface, digitação correta, quebra de linha, Enter e salvar arquivos." },
-      { id: "m2-aula-2", title: "Aula 2 — Formatação Profissional de Documentos", desc: "Fonte, tamanho, cor, alinhamentos, recuos, marcadores e numeração." },
+      { id: "m2-aula-2", title: "Aula 2 — Principais Atalhos do Microsoft Word", desc: "Aprenda os atalhos essenciais (Ctrl+N, Ctrl+I, Ctrl+S, Ctrl+C/V, Ctrl+Z, Ctrl+J, Ctrl+B) para aumentar sua produtividade." },
       { id: "m2-aula-3", title: "Aula 3 — Projeto Prático: Currículo e Contrato", desc: "Estrutura de currículo, tabelas, contrato simples e exportação PDF." },
       { id: "m2-aula-4", title: "Aula 4 — Introdução ao Excel", desc: "Interface do Excel, linhas, colunas, células e tabela de despesas." },
       { id: "m2-aula-5", title: "Aula 5 — Fórmulas e Funções", desc: "Soma, Média, Máximo, Mínimo, Contagem e controle financeiro." },

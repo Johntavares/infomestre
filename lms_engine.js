@@ -88,13 +88,13 @@
       module_id: "modulo-2",
       order_index: 2,
       unit: "Unidade 1 — Microsoft Word",
-      title: "Aula 2 — Formatação Profissional de Documentos",
-      description: "Fonte, tamanho, cor, negrito, itálico, sublinhado, alinhamentos, espaçamento, recuos, marcadores e numeração.",
-      summary: "Ensinar a deixar documentos organizados e profissionais aplicando técnicas de alinhamento, estilização e formatação de texto no Microsoft Word.",
+      title: "Aula 2 — Principais Atalhos do Microsoft Word",
+      description: "Aprenda os atalhos de teclado mais importantes do Word para editar, formatar e navegar em documentos com rapidez e produtividade.",
+      summary: "Nesta aula você aprenderá a dominar os atalhos de teclado fundamentais do Microsoft Word. Descubra como economizar tempo ao agilizar a formatação (Ctrl+N, Ctrl+I, Ctrl+S), navegação, edição de texto (Ctrl+C, Ctrl+V, Ctrl+Z), alinhamento (Ctrl+J, Ctrl+E) e salvamento (Ctrl+B) sem depender exclusivamente do mouse.",
       objectives: [
-        "Fonte, tamanho, cor, negrito, itálico e sublinhado",
-        "Alinhamentos, espaçamento de parágrafos e recuos",
-        "Uso de marcadores e numeração de listas"
+        "Atalhos de Edição Básica: Ctrl+C (Copiar), Ctrl+V (Colar), Ctrl+X (Recortar) e Ctrl+Z (Desfazer)",
+        "Atalhos de Formatação Rápida: Ctrl+N (Negrito), Ctrl+I (Itálico) e Ctrl+S (Sublinhado)",
+        "Atalhos de Alinhamento e Arquivo: Ctrl+J (Justificar), Ctrl+E (Centralizar), Ctrl+T (Selecionar Tudo) e Ctrl+B (Salvar)"
       ],
       duration: "35 min",
       status: "published",
@@ -102,8 +102,8 @@
       video_url: "https://youtu.be/9i3aB-6AofE",
       video_id: "9i3aB-6AofE",
       exercise: {
-        title: "Desafio 02 — Formatação de Documento",
-        instructions: "Formatar um texto fornecido pelo professor aplicando negrito, itálico, alinhamentos e listas. Envie em .docx ou .pdf."
+        title: "Desafio 02 — Prática dos Atalhos do Word",
+        instructions: "Abra o Microsoft Word no seu computador e digite um parágrafo. Utilize os atalhos aprendidos para aplicar Negrito (Ctrl+N), Itálico (Ctrl+I), Alinhamento Justificado (Ctrl+J) e salve o documento usando o atalho (Ctrl+B). Envie seu arquivo formatado nos formatos .docx ou .pdf."
       },
       allowed_extensions: [".docx", ".xlsx", ".pptx", ".pdf"],
       unlock_rule: "previous_completed",
