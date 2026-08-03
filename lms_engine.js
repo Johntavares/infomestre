@@ -309,6 +309,19 @@
       });
     }
 
+    // LIBERAÇÃO: restaura o vídeo cadastrado como padrão quando os dados
+    // gravados (localStorage ou Supabase) estiverem sem vídeo, evitando que
+    // registros antigos com status draft/vídeo vazio bloqueiem a aula.
+    DEFAULT_MODULE_2_LESSONS.forEach(def => {
+      const l = parsed.lessons[def.id];
+      if (!l) return;
+      if (!l.video_url && !l.video_id && (def.video_url || def.video_id)) {
+        l.video_url = def.video_url || '';
+        l.video_id = def.video_id || '';
+        l.video_provider = def.video_provider || 'youtube';
+      }
+    });
+
     // LIBERAÇÃO: toda aula que possui vídeo configurado é tratada como
     // publicada, mesmo que um status antigo (draft/scheduled) tenha ficado
     // gravado no localStorage ou venha sincronizado do Supabase.
