@@ -190,16 +190,16 @@ VALUES
 (
   'm2-aula-2',
   'modulo-2',
-  'Aula 2 — Principais Atalhos do Microsoft Word',
-  'Aprenda os atalhos de teclado mais importantes do Word para editar, formatar e navegar em documentos com rapidez e produtividade.',
-  'Nesta aula você aprenderá a dominar os atalhos de teclado fundamentais do Microsoft Word. Descubra como economizar tempo ao agilizar a formatação (Ctrl+N, Ctrl+I, Ctrl+S), navegação, edição de texto (Ctrl+C, Ctrl+V, Ctrl+Z), alinhamento (Ctrl+J, Ctrl+E) e salvamento (Ctrl+B) sem depender exclusivamente do mouse.',
-  '["Atalhos de Edição Básica: Ctrl+C (Copiar), Ctrl+V (Colar), Ctrl+X (Recortar) e Ctrl+Z (Desfazer)", "Atalhos de Formatação Rápida: Ctrl+N (Negrito), Ctrl+I (Itálico) e Ctrl+S (Sublinhado)", "Atalhos de Alinhamento e Arquivo: Ctrl+J (Justificar), Ctrl+E (Centralizar), Ctrl+T (Selecionar Tudo) e Ctrl+B (Salvar)"]'::jsonb,
+  'Aula 2 — Atalhos Básicos no Microsoft Word',
+  'Aprenda os 5 atalhos essenciais do Word (Ctrl+Z, Ctrl+C, Ctrl+V, Ctrl+L e Ctrl+A) para copiar, colar, desfazer, localizar e selecionar textos.',
+  'Nesta aula você aprenderá a dominar os atalhos de teclado mais utilizados no dia a dia do Microsoft Word: Ctrl+Z (Desfazer), Ctrl+C (Copiar), Ctrl+V (Colar), Ctrl+L (Localizar palavras) e Ctrl+A (Selecionar Tudo). Aprenda a editar e organizar seus documentos com muito mais praticidade.',
+  '["Ctrl+C e Ctrl+V: Copiar e Colar textos e trechos sem precisar reescrever", "Ctrl+Z: Desfazer a última ação rapidamente em caso de erro", "Ctrl+L e Ctrl+A: Localizar palavras específicas no documento e Selecionar todo o conteúdo"]'::jsonb,
   '35 min',
   2,
   'published',
   'youtube',
   'https://youtu.be/9i3aB-6AofE',
-  '{"title": "Desafio 02 — Prática dos Atalhos do Word", "instructions": "Abra o Microsoft Word no seu computador e digite um parágrafo. Utilize os atalhos aprendidos para aplicar Negrito (Ctrl+N), Itálico (Ctrl+I), Alinhamento Justificado (Ctrl+J) e salve o documento usando o atalho (Ctrl+B). Envie seu arquivo formatado nos formatos .docx ou .pdf."}'::jsonb,
+  '{"title": "Desafio 02 — Prática dos Atalhos Básicos (Ctrl+Z, Ctrl+C, Ctrl+V, Ctrl+L, Ctrl+A)", "instructions": "Abra o Microsoft Word e digite um pequeno texto. Treine a utilização de Ctrl+C e Ctrl+V para duplicar trechos, use Ctrl+Z para desfazer uma digitação, use Ctrl+L para buscar uma palavra e Ctrl+A para selecionar todo o texto. Envie seu arquivo nos formatos .docx ou .pdf."}'::jsonb,
   '[".docx", ".xlsx", ".pptx", ".pdf"]'::jsonb
 ),
 (
