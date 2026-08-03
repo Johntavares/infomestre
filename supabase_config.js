@@ -22,8 +22,9 @@ window.supabase = supabaseClient;
  * Cadastra um aluno independente (externo à escola)
  */
 window.signUpIndependentStudent = async function(email, password, fullName) {
+  const cleanEmail = (email || '').trim().toLowerCase();
   const { data, error } = await supabaseClient.auth.signUp({
-    email: email,
+    email: cleanEmail,
     password: password,
     options: {
       data: {
@@ -39,8 +40,9 @@ window.signUpIndependentStudent = async function(email, password, fullName) {
  * Faz login do usuário (Admin, Escola ou Aluno)
  */
 window.signInUser = async function(email, password) {
+  const cleanEmail = (email || '').trim().toLowerCase();
   const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email,
+    email: cleanEmail,
     password: password
   });
   if (error) throw error;
@@ -135,8 +137,9 @@ window.saveProgressToDb = async function(studentId, state) {
  * Utiliza o RPC `create_student_by_school` criado via SQL
  */
 window.registerStudentBySchool = async function(email, password, fullName, schoolId) {
+  const cleanEmail = (email || '').trim().toLowerCase();
   const { data, error } = await supabaseClient.rpc("create_student_by_school", {
-    p_email: email,
+    p_email: cleanEmail,
     p_password: password,
     p_full_name: fullName,
     p_school_id: schoolId
@@ -291,8 +294,9 @@ window.updateSchoolProfile = async function(schoolId, updates) {
  * Cadastra um tutor e cria uma escola vinculada usando os metadados do auth.signUp
  */
 window.signUpSchoolTutor = async function(email, password, fullName, schoolName) {
+  const cleanEmail = (email || '').trim().toLowerCase();
   const { data, error } = await supabaseClient.auth.signUp({
-    email: email,
+    email: cleanEmail,
     password: password,
     options: {
       data: {

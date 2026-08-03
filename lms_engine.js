@@ -573,6 +573,25 @@
     };
   }
 
+  function markLessonCompleted(studentId, lessonId) {
+    if (typeof window !== 'undefined' && window.state) {
+      if (!window.state.completedLessons) window.state.completedLessons = {};
+      window.state.completedLessons[lessonId] = true;
+      if (typeof window.saveState === 'function') window.saveState();
+      if (typeof window.initSidebarMenu === 'function') window.initSidebarMenu();
+    }
+    const db = getLmsDb();
+    if (!db.progress[studentId]) db.progress[studentId] = {};
+    if (!db.progress[studentId][lessonId]) db.progress[studentId][lessonId] = {};
+    db.progress[studentId][lessonId].completed = true;
+    db.progress[studentId][lessonId].completedAt = new Date().toISOString();
+    saveLmsDb(db);
+
+    if (typeof window !== 'undefined' && typeof window.showToastNotification === 'function') {
+      window.showToastNotification("🎉 Aula Concluída!", "Seu progresso foi salvo e a próxima aula está liberada!");
+    }
+  }
+
   // --------------------------------------------------------------------------
   // 5. COMPONENTES VISUAIS (INTERFACE DO ALUNO & PAINEL DO PROFESSOR)
   // --------------------------------------------------------------------------
@@ -605,6 +624,11 @@
     const videoSource = lesson.video_url || lesson.video_id || '';
     const isPublished = lesson.status === 'published' && Boolean(videoSource);
     const embedUrl = isPublished ? getEmbedUrl(videoSource, lesson.video_provider) : '';
+
+    const allMod2 = getAllLessons("modulo-2");
+    const currentIdx = allMod2.findIndex(l => l.id === lesson.id);
+    const nextLesson = allMod2[currentIdx + 1] || lesson;
+    const nextLessonId = nextLesson.id;
 
     // HTML da Página Única da Aula (10 Seções)
     container.innerHTML = `
@@ -685,7 +709,10 @@
                 ${(lesson.objectives || []).map(obj => `<li><span class="check-icon">✓</span> <span>${obj}</span></li>`).join('')}
               </ul>
 
-              <div class="mt-3 text-right">
+              <div class="mt-3" style="display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;">
+                <button class="btn btn-success btn-sm" onclick="InforMestreLMS.markLessonCompleted('${studentId}', '${lesson.id}'); InforMestreLMS.renderStudentLmsLessonView(document.getElementById('hub-main-panel-content'), '${nextLessonId}', window.currentUser);">
+                  ✅ Concluir Aula & Liberar Próxima
+                </button>
                 <button class="btn btn-primary btn-sm" onclick="InforMestreLMS.switchLessonTab('exercise')">
                   Avançar para a Etapa 2: Atividade ➡️
                 </button>
@@ -1205,6 +1232,7 @@
     addQuestion,
     answerQuestion,
     getModule2Stats,
+    markLessonCompleted,
     renderStudentLmsLessonView,
     renderTeacherLmsPanel,
     toggleFavorite,

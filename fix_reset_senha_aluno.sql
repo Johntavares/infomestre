@@ -100,3 +100,10 @@ WHERE p.role = 'student'
       SELECT 1 FROM auth.identities i
       WHERE i.user_id = u.id AND i.provider = 'email'
   );
+
+-- Garante que todas as contas ativas de alunos tenham o e-mail marcado como confirmado
+UPDATE auth.users
+SET email_confirmed_at = COALESCE(email_confirmed_at, now()),
+    updated_at = now()
+WHERE email IS NOT NULL AND email_confirmed_at IS NULL;
+

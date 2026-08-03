@@ -640,6 +640,18 @@ function getLessonStatus(lessonId) {
     return "available";
   }
 
+  // Trata separadamente o Módulo 2 (Videoaulas do LMS)
+  if (lessonId.startsWith("m2-aula-")) {
+    if (state.completedLessons && state.completedLessons[lessonId] === true) return "completed";
+    const mod2Lessons = (COURSE_JORNADA.find(m => m.id === "modulo-2") || {}).lessons || [];
+    const m2Idx = mod2Lessons.findIndex(l => l.id === lessonId);
+    if (m2Idx <= 0) return "available";
+    const prevMod2 = mod2Lessons[m2Idx - 1];
+    if (isLessonCompleted(prevMod2)) return "available";
+    // Módulo 2 videoaulas liberadas para navegação contínua
+    return "available";
+  }
+
   if (idx === 0) {
     return isLessonCompleted(flatLessons[0]) ? "completed" : "in_progress";
   }
@@ -668,12 +680,9 @@ function getModuloStatus(moduloId) {
   const role = (window.currentUserProfile && window.currentUserProfile.role) ? window.currentUserProfile.role : 'tutor';
   if (role !== 'student') return "unlocked";
 
-  if (moduloId === "modulo-1") return "unlocked";
-  if (moduloId === "modulo-2") {
-    return isLessonCompleted({ id: "aula-8" }) ? "unlocked" : "locked";
-  }
+  if (moduloId === "modulo-1" || moduloId === "modulo-2") return "unlocked";
   if (moduloId === "modulo-3") {
-    return isLessonCompleted({ id: "aula-14" }) ? "unlocked" : "locked";
+    return isLessonCompleted({ id: "aula-8" }) || isLessonCompleted({ id: "m2-aula-8" }) ? "unlocked" : "locked";
   }
   return "locked";
 }
@@ -8217,7 +8226,7 @@ function initSupabaseIntegration() {
   if (formLogin) {
     formLogin.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = document.getElementById("landing-login-email").value.trim();
+      const email = document.getElementById("landing-login-email").value.trim().toLowerCase();
       const password = document.getElementById("landing-login-password").value;
       const btn = formLogin.querySelector("button[type='submit']");
 
