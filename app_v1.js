@@ -622,69 +622,87 @@ function isLessonCompleted(lesson) {
   return false;
 }
 
+function isLessonAvailable(lessonOrId) {
+  const lessonId = typeof lessonOrId === 'string' ? lessonOrId : lessonOrId?.id;
+  if (!lessonId) return false;
+
+  // 1. Módulo 2 / Videoaulas LMS
+  if (lessonId.startsWith("m2-aula-") || lessonId.startsWith("lms-")) {
+    if (window.InforMestreLMS && typeof window.InforMestreLMS.getLesson === 'function') {
+      const lmsLesson = window.InforMestreLMS.getLesson(lessonId);
+      if (lmsLesson) {
+        // Vídeo já configurado → liberado para todos os alunos assistirem agora
+        const hasVideo = Boolean(lmsLesson.video_url || lmsLesson.video_id);
+        if (hasVideo) return true;
+        // Sem vídeo e com status draft/scheduled → continua bloqueado ("Em breve")
+        if (lmsLesson.status === 'draft' || lmsLesson.status === 'scheduled') {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  // 2. Módulos do Curso (Módulo 1, Módulo 3, etc.)
+  let flatLessons = [];
+  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+  const aula = flatLessons.find(l => l.id === lessonId);
+  if (!aula) return false;
+
+  // Se a aula possui slides configurados no COURSE_CONTENT (ex: Aulas 1 a 7)
+  if (aula.chapter) {
+    const slides = COURSE_CONTENT.filter(s => s.chapter === aula.chapter);
+    return slides.length > 0;
+  }
+
+  // Se for o Desafio Final (ex: aula-8 do Módulo 1)
+  if (aula.isDesafio) {
+    return true;
+  }
+
+  // Aulas sem slides nem vídeo (ex: Aulas 15 a 20 do Módulo 3) ainda não estão disponíveis
+  return false;
+}
+
 function getLessonStatus(lessonId) {
   let flatLessons = [];
-  COURSE_JORNADA.forEach(mod => {
-    flatLessons.push(...mod.lessons);
-  });
-  
-  const idx = flatLessons.findIndex(l => l.id === lessonId);
-  if (idx === -1) return "locked";
+  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
+  const aula = flatLessons.find(l => l.id === lessonId);
+  if (!aula) return "locked";
 
-  const role = (window.currentUserProfile && window.currentUserProfile.role) ? window.currentUserProfile.role : 'tutor';
-  const isStudent = (role === 'student');
-
-  if (!isStudent) {
-    const atual = flatLessons[idx];
-    if (isLessonCompleted(atual)) return "completed";
-    return "available";
-  }
-
-  // Trata separadamente o Módulo 2 (Videoaulas do LMS)
-  if (lessonId.startsWith("m2-aula-")) {
+  // 1. Verificar se a aula foi concluída
+  if (lessonId && lessonId.startsWith("m2-aula-")) {
+    const studentId = (window.currentUser && window.currentUser.id) ? window.currentUser.id : 'guest_student';
+    if (window.InforMestreLMS && typeof window.InforMestreLMS.getLessonProgress === 'function') {
+      const prog = window.InforMestreLMS.getLessonProgress(studentId, lessonId);
+      if (prog && prog.completed) return "completed";
+    }
     if (state.completedLessons && state.completedLessons[lessonId] === true) return "completed";
-    const mod2Lessons = (COURSE_JORNADA.find(m => m.id === "modulo-2") || {}).lessons || [];
-    const m2Idx = mod2Lessons.findIndex(l => l.id === lessonId);
-    if (m2Idx <= 0) return "available";
-    const prevMod2 = mod2Lessons[m2Idx - 1];
-    if (isLessonCompleted(prevMod2)) return "available";
-    // Módulo 2 videoaulas liberadas para navegação contínua
-    return "available";
+  } else {
+    if (isLessonCompleted(aula)) return "completed";
   }
 
-  if (idx === 0) {
-    return isLessonCompleted(flatLessons[0]) ? "completed" : "in_progress";
-  }
-
-  const anterior = flatLessons[idx - 1];
-  if (!isLessonCompleted(anterior)) {
+  // 2. Verificar se a aula está disponível
+  if (!isLessonAvailable(aula)) {
     return "locked";
   }
 
-  const atual = flatLessons[idx];
-  if (isLessonCompleted(atual)) {
-    return "completed";
-  }
-
-  if (atual.chapter) {
+  // 3. Se a aula estiver disponível e em andamento
+  if (aula.chapter && typeof state !== 'undefined' && state.currentSlideIndex !== undefined) {
     const currentSlide = COURSE_CONTENT[state.currentSlideIndex];
-    if (currentSlide && currentSlide.chapter === atual.chapter) {
+    if (currentSlide && currentSlide.chapter === aula.chapter) {
       return "in_progress";
     }
   }
 
+  // 4. Aula disponível para acesso livre a todos os alunos logados
   return "available";
 }
 
 function getModuloStatus(moduloId) {
-  const role = (window.currentUserProfile && window.currentUserProfile.role) ? window.currentUserProfile.role : 'tutor';
-  if (role !== 'student') return "unlocked";
-
-  if (moduloId === "modulo-1" || moduloId === "modulo-2") return "unlocked";
-  if (moduloId === "modulo-3") {
-    return isLessonCompleted({ id: "aula-8" }) || isLessonCompleted({ id: "m2-aula-8" }) ? "unlocked" : "locked";
-  }
-  return "locked";
+  // Todos os módulos são desbloqueados para visualização no catálogo,
+  // enquanto aulas individuais não disponíveis permanecerão bloqueadas.
+  return "unlocked";
 }
 
 function triggerLessonUnlockNotification(aulaId) {
@@ -799,7 +817,7 @@ function abrirModalCuriosidade(lesson) {
     <div style="text-align: center; padding: 0.5rem 0;">
       <span style="font-size: 3rem; display: block; margin-bottom: 0.8rem;">🔒</span>
       <h4 style="margin: 0 0 0.5rem; color: #f59e0b; font-size: 1.1rem;">Aula Bloqueada</h4>
-      <p style="font-size: 0.85rem; color: #aaa; margin: 0 0 1.2rem;">Conclua as missões anteriores para desbloquear esta etapa.</p>
+      <p style="font-size: 0.85rem; color: #aaa; margin: 0 0 1.2rem;">Esta aula ainda não está disponível no sistema.</p>
       
       <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 1rem; text-align: left; font-size: 0.82rem;">
         <strong style="color: #fff; display: block; margin-bottom: 0.5rem;">📖 O que você aprenderá nesta aula em breve:</strong>
@@ -1218,27 +1236,7 @@ function updateProgressUI() {
   updateModuleProgressBar();
 }
 
-function getModuloStatus(moduloId) {
-  if (moduloId === "modulo-1" || moduloId === "modulo-2") return "unlocked";
-  return "locked";
-}
-
-function getLessonStatus(lessonId) {
-  if (lessonId && lessonId.startsWith("m2-aula-")) {
-    const studentId = (window.currentUser && window.currentUser.id) ? window.currentUser.id : 'guest_student';
-    if (window.InforMestreLMS) {
-      const prog = window.InforMestreLMS.getLessonProgress(studentId, lessonId);
-      if (prog && prog.completed) return "completed";
-    }
-    return "available";
-  }
-  let flatLessons = [];
-  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
-  const aula = flatLessons.find(l => l.id === lessonId);
-  if (!aula) return "locked";
-  if (isLessonCompleted(aula)) return "completed";
-  return "available";
-}
+// Status das aulas e módulos gerenciados por isLessonAvailable, getLessonStatus e getModuloStatus.
 
 // Renderiza a barra superior fixa de progresso do módulo
 function updateModuleProgressBar() {

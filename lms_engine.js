@@ -309,6 +309,16 @@
       });
     }
 
+    // LIBERAÇÃO: toda aula que possui vídeo configurado é tratada como
+    // publicada, mesmo que um status antigo (draft/scheduled) tenha ficado
+    // gravado no localStorage ou venha sincronizado do Supabase.
+    Object.values(parsed.lessons).forEach(l => {
+      const hasVideo = Boolean(l.video_url || l.video_id);
+      if (hasVideo && l.status !== 'published') {
+        l.status = 'published';
+      }
+    });
+
     return parsed;
   }
 
@@ -581,10 +591,15 @@
       if (typeof window.initSidebarMenu === 'function') window.initSidebarMenu();
     }
     const db = getLmsDb();
-    if (!db.progress[studentId]) db.progress[studentId] = {};
-    if (!db.progress[studentId][lessonId]) db.progress[studentId][lessonId] = {};
-    db.progress[studentId][lessonId].completed = true;
-    db.progress[studentId][lessonId].completedAt = new Date().toISOString();
+    const key = `${studentId}_${lessonId}`;
+    const current = db.lessonProgress[key] || { watch_completed: false, completed: false, favorite: false, video_progress: 0 };
+    db.lessonProgress[key] = {
+      ...current,
+      watch_completed: true,
+      completed: true,
+      completedAt: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
     saveLmsDb(db);
 
     if (typeof window !== 'undefined' && typeof window.showToastNotification === 'function') {
