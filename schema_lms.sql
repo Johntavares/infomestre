@@ -192,14 +192,14 @@ VALUES
   'modulo-2',
   'Aula 2 — Formatação Profissional de Documentos',
   'Fonte, tamanho, cor, negrito, itálico, sublinhado, alinhamentos, espaçamento, recuos, marcadores e numeração.',
-  'Ensinar a deixar documentos organizados e profissionais aplicandos técnicas de alinhamento e estilização.',
+  'Ensinar a deixar documentos organizados e profissionais aplicando técnicas de alinhamento, estilização e formatação de texto no Microsoft Word.',
   '["Fonte, tamanho, cor, negrito, itálico e sublinhado", "Alinhamentos, espaçamento de parágrafos e recuos", "Uso de marcadores e numeração de listas"]'::jsonb,
   '35 min',
   2,
-  'draft',
+  'published',
   'youtube',
-  '',
-  '{"title": "Desafio 02 — Formatação de Documento", "instructions": "Formatar um texto fornecido pelo professor aplicandos negrito, itálico, alinhamentos e listas. Envie em .docx ou .pdf."}'::jsonb,
+  'https://youtu.be/9i3aB-6AofE',
+  '{"title": "Desafio 02 — Formatação de Documento", "instructions": "Formatar um texto fornecido pelo professor aplicando negrito, itálico, alinhamentos e listas. Envie em .docx ou .pdf."}'::jsonb,
   '[".docx", ".xlsx", ".pptx", ".pdf"]'::jsonb
 ),
 (

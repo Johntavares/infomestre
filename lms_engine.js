@@ -90,20 +90,20 @@
       unit: "Unidade 1 — Microsoft Word",
       title: "Aula 2 — Formatação Profissional de Documentos",
       description: "Fonte, tamanho, cor, negrito, itálico, sublinhado, alinhamentos, espaçamento, recuos, marcadores e numeração.",
-      summary: "Ensinar a deixar documentos organizados e profissionais aplicandos técnicas de alinhamento e estilização.",
+      summary: "Ensinar a deixar documentos organizados e profissionais aplicando técnicas de alinhamento, estilização e formatação de texto no Microsoft Word.",
       objectives: [
         "Fonte, tamanho, cor, negrito, itálico e sublinhado",
         "Alinhamentos, espaçamento de parágrafos e recuos",
         "Uso de marcadores e numeração de listas"
       ],
       duration: "35 min",
-      status: "draft",
+      status: "published",
       video_provider: "youtube",
-      video_url: "",
-      video_id: "",
+      video_url: "https://youtu.be/9i3aB-6AofE",
+      video_id: "9i3aB-6AofE",
       exercise: {
         title: "Desafio 02 — Formatação de Documento",
-        instructions: "Formatar um texto fornecido pelo professor aplicandos negrito, itálico, alinhamentos e listas. Envie em .docx ou .pdf."
+        instructions: "Formatar um texto fornecido pelo professor aplicando negrito, itálico, alinhamentos e listas. Envie em .docx ou .pdf."
       },
       allowed_extensions: [".docx", ".xlsx", ".pptx", ".pdf"],
       unlock_rule: "previous_completed",
