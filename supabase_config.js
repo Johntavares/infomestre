@@ -18,26 +18,11 @@ try {
 // Expõe globalmente
 window.supabase = supabaseClient;
 
-/**
- * Cadastra um aluno independente (externo à escola)
- */
-window.signUpIndependentStudent = async function(email, password, fullName) {
-  const cleanEmail = (email || '').trim().toLowerCase();
-  const { data, error } = await supabaseClient.auth.signUp({
-    email: cleanEmail,
-    password: password,
-    options: {
-      data: {
-        full_name: fullName
-      }
-    }
-  });
-  if (error) throw error;
-  return data;
-};
+// ID fixo da linha singleton do perfil da escola (plataforma de escola única)
+const SCHOOL_PROFILE_ID = "00000000-0000-0000-0000-000000000001";
 
 /**
- * Faz login do usuário (Admin, Escola ou Aluno)
+ * Faz login do usuário (Admin, Tutor ou Aluno)
  */
 window.signInUser = async function(email, password) {
   const cleanEmail = (email || '').trim().toLowerCase();
@@ -58,17 +43,34 @@ window.signOutUser = async function() {
 };
 
 /**
- * Obtém o perfil detalhado do usuário atual (incluindo cargo e escola)
+ * Obtém o perfil detalhado do usuário atual (incluindo cargo)
  */
 window.getUserProfile = async function(userId) {
   const { data, error } = await supabaseClient
     .from("profiles")
-    .select("id, role, full_name, school_id, avatar_url, banner_url, schools(name, description, logo_url, banner_url, contact_email, contact_phone, address)")
+    .select("id, role, full_name, avatar_url, banner_url")
     .eq("id", userId)
     .single();
   
   if (error) {
     console.error("Erro ao carregar perfil do usuário:", error);
+    return null;
+  }
+  return data;
+};
+
+/**
+ * Obtém o perfil público da escola (linha singleton)
+ */
+window.getSchoolProfile = async function() {
+  const { data, error } = await supabaseClient
+    .from("school_profile")
+    .select("id, name, description, logo_url, banner_url, contact_email, contact_phone, address")
+    .eq("id", SCHOOL_PROFILE_ID)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Erro ao carregar perfil da escola:", error);
     return null;
   }
   return data;
@@ -133,16 +135,15 @@ window.saveProgressToDb = async function(studentId, state) {
 };
 
 /**
- * Função executada por uma Escola para cadastrar um novo aluno
+ * Função executada por um Tutor para cadastrar um novo aluno
  * Utiliza o RPC `create_student_by_school` criado via SQL
  */
-window.registerStudentBySchool = async function(email, password, fullName, schoolId) {
+window.registerStudentBySchool = async function(email, password, fullName) {
   const cleanEmail = (email || '').trim().toLowerCase();
   const { data, error } = await supabaseClient.rpc("create_student_by_school", {
     p_email: cleanEmail,
     p_password: password,
-    p_full_name: fullName,
-    p_school_id: schoolId
+    p_full_name: fullName
   });
 
   if (error) throw error;
@@ -150,14 +151,13 @@ window.registerStudentBySchool = async function(email, password, fullName, schoo
 };
 
 /**
- * Obtém a lista de alunos de uma escola específica junto com o progresso deles
+ * Obtém a lista de todos os alunos da escola junto com o progresso deles
  */
-window.getSchoolStudents = async function(schoolId) {
-  // 1. Busca perfis de alunos associados a esta escola
+window.getSchoolStudents = async function() {
+  // 1. Busca perfis de todos os alunos
   const { data: profiles, error: profileError } = await supabaseClient
     .from("profiles")
     .select("id, full_name, role, created_at")
-    .eq("school_id", schoolId)
     .eq("role", "student")
     .order("full_name");
 
@@ -167,9 +167,7 @@ window.getSchoolStudents = async function(schoolId) {
   // 2. Busca e-mails dos alunos de forma segura via RPC
   let emailMap = {};
   try {
-    const { data: emails, error: emailError } = await supabaseClient.rpc("get_school_students_emails", {
-      p_school_id: schoolId
-    });
+    const { data: emails, error: emailError } = await supabaseClient.rpc("get_school_students_emails");
     if (!emailError && emails) {
       emails.forEach(e => {
         emailMap[e.student_id] = e.email;
@@ -204,40 +202,13 @@ window.getSchoolStudents = async function(schoolId) {
 };
 
 /**
- * Obtém todas as escolas cadastradas (Apenas Admin)
- */
-window.getAllSchools = async function() {
-  const { data, error } = await supabaseClient
-    .from("schools")
-    .select("id, name, created_at")
-    .order("name");
-
-  if (error) throw error;
-  return data;
-};
-
-/**
- * Cadastra uma nova escola (Apenas Admin)
- */
-window.createSchool = async function(name) {
-  const { data, error } = await supabaseClient
-    .from("schools")
-    .insert([{ name: name }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-};
-
-/**
  * Obtém todos os alunos cadastrados no sistema globalmente (Apenas Admin)
  */
 window.getAllStudentsAdmin = async function() {
   // Busca perfis de alunos
   const { data: profiles, error: profileError } = await supabaseClient
     .from("profiles")
-    .select("id, full_name, role, school_id, schools(name), created_at")
+    .select("id, full_name, role, created_at")
     .eq("role", "student")
     .order("full_name");
 
@@ -279,21 +250,21 @@ window.updateUserProfile = async function(userId, updates) {
 };
 
 /**
- * Atualiza campos customizados do perfil da escola (ex: Nome, Descrição, Logo, Banner, Contatos)
+ * Atualiza campos do perfil da escola (linha singleton)
  */
-window.updateSchoolProfile = async function(schoolId, updates) {
+window.updateSchoolProfile = async function(updates) {
   const { error } = await supabaseClient
-    .from("schools")
+    .from("school_profile")
     .update(updates)
-    .eq("id", schoolId);
+    .eq("id", SCHOOL_PROFILE_ID);
   
   if (error) throw error;
 };
 
 /**
- * Cadastra um tutor e cria uma escola vinculada usando os metadados do auth.signUp
+ * Cadastra um tutor vinculado à escola única da plataforma
  */
-window.signUpSchoolTutor = async function(email, password, fullName, schoolName) {
+window.signUpSchoolTutor = async function(email, password, fullName) {
   const cleanEmail = (email || '').trim().toLowerCase();
   const { data, error } = await supabaseClient.auth.signUp({
     email: cleanEmail,
@@ -301,8 +272,7 @@ window.signUpSchoolTutor = async function(email, password, fullName, schoolName)
     options: {
       data: {
         full_name: fullName,
-        role: 'school',
-        school_name: schoolName
+        role: 'school'
       }
     }
   });

@@ -631,10 +631,10 @@ function isLessonAvailable(lessonOrId) {
     if (window.InforMestreLMS && typeof window.InforMestreLMS.getLesson === 'function') {
       const lmsLesson = window.InforMestreLMS.getLesson(lessonId);
       if (lmsLesson) {
-        // Vídeo já configurado → liberado para todos os alunos assistirem agora
+        // Se possui vídeo ou status published -> liberado para todos os alunos assistirem
         const hasVideo = Boolean(lmsLesson.video_url || lmsLesson.video_id);
-        if (hasVideo) return true;
-        // Sem vídeo e com status draft/scheduled → continua bloqueado ("Em breve")
+        if (hasVideo || lmsLesson.status === 'published') return true;
+        // Sem vídeo e com status draft/scheduled -> bloqueado ("Em breve")
         if (lmsLesson.status === 'draft' || lmsLesson.status === 'scheduled') {
           return false;
         }
@@ -8157,13 +8157,21 @@ function initSupabaseIntegration() {
           profile = {
             id: session.user.id,
             role: session.user.user_metadata.role || 'student',
-            full_name: session.user.user_metadata.full_name || session.user.email,
-            school_id: session.user.user_metadata.school_id || null,
-            schools: session.user.user_metadata.school_name ? { name: session.user.user_metadata.school_name } : null
+            full_name: session.user.user_metadata.full_name || session.user.email
           };
         }
         window.currentUserProfile = profile;
         teacherMode = (profile && (profile.role === 'school' || profile.role === 'admin'));
+
+        // Carrega o perfil público da escola (linha singleton)
+        window.schoolProfile = null;
+        if (window.getSchoolProfile) {
+          try {
+            window.schoolProfile = await window.getSchoolProfile();
+          } catch (err) {
+            console.warn("Erro ao carregar perfil da escola:", err);
+          }
+        }
         
         // Se for um aluno, carrega o progresso do banco
         if (profile && profile.role === 'student') {
@@ -8197,28 +8205,8 @@ function initSupabaseIntegration() {
     });
   }
 
-  // 2. Abas da Landing Page (Login vs Cadastro)
-  const tabLogin = document.getElementById("landing-tab-login");
-  const tabRegister = document.getElementById("landing-tab-register");
+  // 2. Formulário de Login da Landing Page (cadastro de alunos é feito apenas pela escola)
   const formLogin = document.getElementById("landing-login-form");
-  const formRegister = document.getElementById("landing-register-form");
-  const registerTabContent = document.getElementById("register-tab-content");
-
-  if (tabLogin && tabRegister && formLogin && registerTabContent) {
-    tabLogin.addEventListener("click", () => {
-      tabLogin.classList.add("active");
-      tabRegister.classList.remove("active");
-      formLogin.classList.remove("screen-hidden");
-      registerTabContent.classList.add("screen-hidden");
-    });
-
-    tabRegister.addEventListener("click", () => {
-      tabRegister.classList.add("active");
-      tabLogin.classList.remove("active");
-      registerTabContent.classList.remove("screen-hidden");
-      formLogin.classList.add("screen-hidden");
-    });
-  }
 
   // Envio do formulário de Login da Landing Page
   if (formLogin) {
@@ -8243,109 +8231,8 @@ function initSupabaseIntegration() {
     });
   }
 
-  // Envio do formulário de Cadastro da Landing Page
-  if (formRegister) {
-    formRegister.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const name = document.getElementById("landing-register-name").value.trim();
-      const email = document.getElementById("landing-register-email").value.trim();
-      const password = document.getElementById("landing-register-password").value;
-      const btn = formRegister.querySelector("button[type='submit']");
-
-      try {
-        btn.disabled = true;
-        btn.textContent = "Criando Conta...";
-        await window.signUpIndependentStudent(email, password, name);
-        showToastNotification("📧 Conta Criada!", "Sua conta foi criada com sucesso.");
-        window.showModernAlert("🚀 Conta Criada!", "Sua conta de Aluno foi criada com sucesso! Agora insira suas credenciais na tela de login para começar.", () => {
-          tabLogin.click();
-        });
-      } catch (error) {
-        console.error(error);
-        window.showModernAlert("❌ Erro ao Cadastrar", (error.message || "Erro desconhecido."));
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "Criar Conta de Aluno";
-      }
-    });
-  }
-
-  // --- Modal de Cadastro de Escola/Tutor ---
-  const schoolRegisterModal = document.getElementById("school-register-modal");
-  const schoolRegisterCloseBtn = document.getElementById("school-register-close-btn");
-  const schoolRegisterForm = document.getElementById("school-register-form");
-
-  // Abrir o modal via event delegation (funciona para botões dentro de forms ocultos)
-  document.addEventListener("click", function(e) {
-    if (e.target.closest(".link-create-school-trigger")) {
-      e.preventDefault();
-      const modal = document.getElementById("school-register-modal");
-      const form = document.getElementById("school-register-form");
-      if (modal) {
-        modal.classList.remove("hidden");
-        if (form) form.reset();
-      }
-    }
-  });
-
-  // Fechar o modal
-  if (schoolRegisterCloseBtn) {
-    schoolRegisterCloseBtn.addEventListener("click", () => {
-      schoolRegisterModal.classList.add("hidden");
-    });
-  }
-  if (schoolRegisterModal) {
-    schoolRegisterModal.addEventListener("click", (e) => {
-      if (e.target === schoolRegisterModal) schoolRegisterModal.classList.add("hidden");
-    });
-  }
-
-  // Submit do formulário de cadastro de escola
-  if (schoolRegisterForm) {
-    schoolRegisterForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const fullName   = document.getElementById("sreg-fullname").value.trim();
-      const schoolName = document.getElementById("sreg-schoolname").value.trim();
-      const email      = document.getElementById("sreg-email").value.trim();
-      const password   = document.getElementById("sreg-password").value;
-      const btn        = document.getElementById("sreg-submit-btn");
-
-      if (!window.signUpSchoolTutor) {
-        window.showModernAlert("❌ Erro", "Função de cadastro não disponível. Verifique o supabase_config.js.");
-        return;
-      }
-
-      try {
-        btn.disabled = true;
-        btn.textContent = "Criando conta...";
-
-        await window.signUpSchoolTutor(email, password, fullName, schoolName);
-
-        // Fechar modal e mostrar mensagem de sucesso
-        schoolRegisterModal.classList.add("hidden");
-        schoolRegisterForm.reset();
-
-        window.showModernAlert(
-          "🎉 Escola Cadastrada!",
-          `A conta do tutor e a escola "${schoolName}" foram criadas com sucesso!\n\nFaça login com seu e-mail e senha para acessar o painel de tutor e personalizar o perfil da escola.`,
-          () => {
-            // Focar no campo de e-mail do login
-            const loginEmail = document.getElementById("landing-login-email");
-            if (loginEmail) {
-              loginEmail.value = email;
-              loginEmail.focus();
-            }
-          }
-        );
-      } catch (error) {
-        console.error("Erro ao cadastrar escola:", error);
-        window.showModernAlert("❌ Erro ao Cadastrar", error.message || "Verifique os dados e tente novamente.");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "🏫 Criar Conta da Escola";
-      }
-    });
-  }
+  // --- Modal de Cadastro de Tutor (escola única) ---
+  // O modal dinâmico é aberto via abrirModalEscola() (definido no index.html)
 
   // Botão "Voltar ao Painel" dentro da interface de aula
   const backToHubBtn = document.getElementById("back-to-hub-trigger");
@@ -8410,11 +8297,11 @@ function renderHubHeader() {
     profileName.textContent = window.currentUserProfile.full_name || window.currentUser.email;
   }
 
-  let roleText = "Aluno Autônomo";
+  let roleText = "Aluno";
   const role = window.currentUserProfile.role;
   if (role === 'admin') roleText = "Administrador Central";
   else if (role === 'school') {
-    const schoolName = window.currentUserProfile.schools ? window.currentUserProfile.schools.name : "Escola";
+    const schoolName = window.schoolProfile ? window.schoolProfile.name : "Escola";
     roleText = `Tutor • ${schoolName}`;
   }
   if (profileRole) {
@@ -8517,7 +8404,7 @@ function switchHubTab(tabName) {
  * ABA 1: Painel do Aluno (Resumo de Progresso e Métricas Rápidas)
  */
 function renderStudentDashboardTab(container) {
-  const schoolName = window.currentUserProfile.schools ? window.currentUserProfile.schools.name : "Estudo Individual";
+  const schoolName = window.schoolProfile ? window.schoolProfile.name : "Minha Escola";
   
   // Progresso do Curso (Baseado nas 20 Aulas da Jornada)
   let flatLessons = [];
@@ -8536,10 +8423,10 @@ function renderStudentDashboardTab(container) {
   const currentSlide = COURSE_CONTENT[state.currentSlideIndex] || COURSE_CONTENT[0];
   const lastLessonTitle = currentSlide ? currentSlide.chapter + " — " + currentSlide.title : "Início do Curso";
 
-  // Card do perfil da escola (se o aluno estiver vinculado a uma)
+  // Card do perfil da escola (todos os alunos pertencem à escola única)
   let schoolCardHtml = "";
-  if (window.currentUserProfile.school_id && window.currentUserProfile.schools) {
-    const school = window.currentUserProfile.schools;
+  if (window.schoolProfile) {
+    const school = window.schoolProfile;
     const banner = school.banner_url || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200";
     const logo = school.logo_url || "";
     
@@ -9176,7 +9063,7 @@ function renderSettingsTab(container) {
  * ABA 5 (Escola): Painel da Escola (Gestão de Alunos)
  */
 function renderSchoolDashboardTab(container) {
-  const schoolName = window.currentUserProfile.schools ? window.currentUserProfile.schools.name : "Minha Escola";
+  const schoolName = window.schoolProfile ? window.schoolProfile.name : "Minha Escola";
   
   container.innerHTML = `
     <div class="school-hub-layout">
@@ -9247,7 +9134,7 @@ function renderSchoolDashboardTab(container) {
     try {
       btn.disabled = true;
       btn.textContent = "Registrando...";
-      await window.registerStudentBySchool(email, password, name, window.currentUserProfile.school_id);
+      await window.registerStudentBySchool(email, password, name);
       alert("Aluno registrado com sucesso! Entregue o e-mail e senha criados para ele acessar.");
       createForm.reset();
       await loadHubSchoolStudents();
@@ -9267,12 +9154,12 @@ function renderSchoolDashboardTab(container) {
  * ABA 5.2 (Escola): Configurações do Perfil da Escola
  */
 function renderSchoolProfileTab(container) {
-  if (!window.currentUserProfile || !window.currentUserProfile.schools) {
-    container.innerHTML = `<div style="text-align:center; padding: 2rem;">Erro: Sua conta não está vinculada a nenhuma escola. Contate o administrador.</div>`;
+  if (!window.schoolProfile) {
+    container.innerHTML = `<div style="text-align:center; padding: 2rem;">Erro: Perfil da escola não encontrado. Contate o administrador.</div>`;
     return;
   }
 
-  const school = window.currentUserProfile.schools;
+  const school = window.schoolProfile;
   const currentLogo = school.logo_url || "";
   const currentBanner = school.banner_url || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200";
 
@@ -9438,7 +9325,7 @@ function renderSchoolProfileTab(container) {
       submitBtn.textContent = "Salvando...";
 
       // Chama atualização da escola
-      await window.updateSchoolProfile(window.currentUserProfile.school_id, {
+      await window.updateSchoolProfile({
         name: schoolName,
         description: description,
         logo_url: selectedLogo,
@@ -9449,13 +9336,13 @@ function renderSchoolProfileTab(container) {
       });
 
       // Atualiza Cache Local
-      window.currentUserProfile.schools.name = schoolName;
-      window.currentUserProfile.schools.description = description;
-      window.currentUserProfile.schools.logo_url = selectedLogo;
-      window.currentUserProfile.schools.banner_url = selectedBanner;
-      window.currentUserProfile.schools.contact_email = contactEmail;
-      window.currentUserProfile.schools.contact_phone = contactPhone;
-      window.currentUserProfile.schools.address = address;
+      window.schoolProfile.name = schoolName;
+      window.schoolProfile.description = description;
+      window.schoolProfile.logo_url = selectedLogo;
+      window.schoolProfile.banner_url = selectedBanner;
+      window.schoolProfile.contact_email = contactEmail;
+      window.schoolProfile.contact_phone = contactPhone;
+      window.schoolProfile.address = address;
 
       // Re-renderiza o cabeçalho e avisa
       renderHubHeader();
@@ -9482,21 +9369,11 @@ function renderAdminDashboardTab(container) {
     <div class="admin-hub-layout">
       <div class="admin-hub-grid" style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 2rem;">
         
-        <!-- Cadastro de Escola -->
+        <!-- Resumo do Sistema -->
         <div class="hub-card-box">
-          <h4 style="margin-bottom: 1rem;">🏫 Cadastrar Nova Escola</h4>
-          <form id="hub-create-school-form" style="margin-bottom: 2rem;">
-            <div class="form-group-custom">
-              <label for="hub-school-name">Nome da Escola</label>
-              <input type="text" id="hub-school-name" required placeholder="Ex: Escola Estadual Machado de Assis">
-            </div>
-            <button type="submit" class="btn btn-primary btn-full" style="margin-top: 1rem;">Criar Escola</button>
-          </form>
-
-          <h4 style="margin-bottom: 0.5rem;">Escolas do Sistema</h4>
-          <ul id="hub-admin-schools-list" style="list-style: none; padding: 0; max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;">
-            <li style="text-align:center;">Carregando escolas...</li>
-          </ul>
+          <h4 style="margin-bottom: 1rem;">🏫 Escola</h4>
+          <p style="font-size:0.9rem; margin-bottom: 1rem;">Plataforma de escola única. Os tutores gerenciam alunos e o perfil da escola pelo painel de tutor.</p>
+          <div id="hub-admin-school-summary" style="font-size:0.85rem; color: var(--text-secondary);">Carregando...</div>
         </div>
 
         <!-- Tabela Global de Alunos -->
@@ -9511,13 +9388,12 @@ function renderAdminDashboardTab(container) {
               <thead>
                 <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
                   <th style="padding: 0.5rem; font-weight: 600;">Nome</th>
-                  <th style="padding: 0.5rem; font-weight: 600;">Escola</th>
                   <th style="padding: 0.5rem; font-weight: 600;">Nível/XP</th>
                   <th style="padding: 0.5rem; font-weight: 600;">Progresso</th>
                 </tr>
               </thead>
               <tbody id="hub-admin-students-table-body">
-                <tr><td colspan="4" style="text-align:center; padding: 2rem;">Carregando alunos...</td></tr>
+                <tr><td colspan="3" style="text-align:center; padding: 2rem;">Carregando alunos...</td></tr>
               </tbody>
             </table>
           </div>
@@ -9530,30 +9406,34 @@ function renderAdminDashboardTab(container) {
     showScreen("course");
   });
 
-  const createSchoolForm = document.getElementById("hub-create-school-form");
-  createSchoolForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const schoolName = document.getElementById("hub-school-name").value.trim();
-    const btn = createSchoolForm.querySelector("button[type='submit']");
-
-    try {
-      btn.disabled = true;
-      btn.textContent = "Criando...";
-      await window.createSchool(schoolName);
-      alert("Escola cadastrada com sucesso!");
-      createSchoolForm.reset();
-      await loadHubAdminSchools();
-    } catch (error) {
-      console.error(error);
-      alert("Erro ao criar escola: " + (error.message || "Erro desconhecido."));
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "Criar Escola";
-    }
-  });
-
-  loadHubAdminSchools();
+  loadHubAdminSchoolSummary();
   loadHubAdminStudents();
+}
+
+/**
+ * Carrega o resumo da escola no painel do Admin
+ */
+async function loadHubAdminSchoolSummary() {
+  const summaryEl = document.getElementById("hub-admin-school-summary");
+  if (!summaryEl) return;
+
+  try {
+    const school = await window.getSchoolProfile();
+    if (school) {
+      summaryEl.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:0.4rem;">
+          <span><strong>${school.name || "Minha Escola"}</strong></span>
+          ${school.contact_email ? `<span>📧 ${school.contact_email}</span>` : ""}
+          ${school.contact_phone ? `<span>📞 ${school.contact_phone}</span>` : ""}
+        </div>
+      `;
+    } else {
+      summaryEl.textContent = "Nenhum perfil de escola configurado.";
+    }
+  } catch (error) {
+    console.error(error);
+    summaryEl.textContent = "Erro ao carregar dados da escola.";
+  }
 }
 
 /**
@@ -9577,14 +9457,14 @@ async function renderHubContents() {
  */
 async function loadHubSchoolStudents() {
   const tableBody = document.getElementById("hub-school-students-table-body");
-  if (!tableBody || !window.currentUserProfile || !window.currentUserProfile.school_id) return;
+  if (!tableBody || !window.currentUserProfile) return;
 
   try {
-    const students = await window.getSchoolStudents(window.currentUserProfile.school_id);
+    const students = await window.getSchoolStudents();
     tableBody.innerHTML = "";
 
     if (students.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Nenhum aluno cadastrado nesta escola.</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-secondary);">Nenhum aluno cadastrado ainda.</td></tr>`;
       return;
     }
 
@@ -10185,37 +10065,6 @@ function abrirDetalheAluno(student, stats) {
 }
 
 /**
- * Carrega a lista de escolas no Hub do Admin
- */
-async function loadHubAdminSchools() {
-  const schoolsList = document.getElementById("hub-admin-schools-list");
-  if (!schoolsList) return;
-
-  try {
-    const schools = await window.getAllSchools();
-    schoolsList.innerHTML = "";
-
-    if (schools.length === 0) {
-      schoolsList.innerHTML = `<li style="text-align:center; padding:0.5rem; color:var(--text-secondary);">Nenhuma escola criada.</li>`;
-      return;
-    }
-
-    schools.forEach(school => {
-      const li = document.createElement("li");
-      li.className = "school-list-item";
-      li.innerHTML = `
-        <span style="font-weight:700;">${school.name}</span>
-        <span style="font-size:0.7rem; color:var(--text-secondary);">${school.id.substring(0, 8)}...</span>
-      `;
-      schoolsList.appendChild(li);
-    });
-  } catch (error) {
-    console.error(error);
-    schoolsList.innerHTML = `<li style="text-align:center; padding:0.5rem; color:var(--color-error);">Erro ao carregar escolas.</li>`;
-  }
-}
-
-/**
  * Carrega a listagem global de alunos no Hub do Admin
  */
 async function loadHubAdminStudents() {
@@ -10263,12 +10112,9 @@ async function loadHubAdminStudents() {
         progressPercent = _total > 0 ? Math.round((_m1Done + _m2Done) / _total * 100) : 0;
       }
 
-      const schoolName = student.schools ? student.schools.name : "Independente";
-
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td style="padding: 0.75rem 0.5rem; font-weight:700;">${student.full_name || "Sem Nome"}</td>
-        <td style="padding: 0.75rem 0.5rem; font-style: ${student.school_id ? 'normal' : 'italic'}; color: ${student.school_id ? 'var(--text-primary)' : 'var(--color-primary-light)'};">${schoolName}</td>
         <td style="padding: 0.75rem 0.5rem;">Nível ${level} <span class="text-muted" style="font-size:0.8rem;">(${xp} XP)</span></td>
         <td style="padding: 0.75rem 0.5rem;">
           <div class="progress-bar-mini-track">
@@ -10281,7 +10127,7 @@ async function loadHubAdminStudents() {
     });
   } catch (error) {
     console.error(error);
-    studentsTable.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:2rem; color:var(--color-error);">Erro ao carregar dados dos alunos.</td></tr>`;
+    studentsTable.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:2rem; color:var(--color-error);">Erro ao carregar dados dos alunos.</td></tr>`;
   }
 }
 
@@ -10297,7 +10143,7 @@ function updateAuthUI(isLoggedIn, user = null, profile = null) {
     
     if (profile.role === 'admin') roleText = "Administrador";
     else if (profile.role === 'school') {
-      const schoolName = profile.schools ? profile.schools.name : "Escola";
+      const schoolName = window.schoolProfile ? window.schoolProfile.name : "Escola";
       roleText = `Tutor (${schoolName})`;
     }
 

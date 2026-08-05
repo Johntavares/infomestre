@@ -1,17 +1,13 @@
 -- ==========================================================================
--- INFORMESTRE - BANCO DE DADOS E ESTRUTURA (SUPABASE SQL)
--- MODELO DE ESCOLA ÚNICA: uma única escola (school_profile singleton)
--- gerencia todos os alunos e o curso. Não existe mais multi-escola.
--- Copie e cole este script no SQL Editor do seu painel do Supabase.
+-- INFORMESTRE - MIGRAÇÃO: MODELO DE ESCOLA ÚNICA
+-- Remove o multi-escola (tabela schools) e adota um perfil único de escola
+-- (school_profile singleton) que gerencia todos os alunos e o curso.
 -- ==========================================================================
 
--- 1. Enum e Tabelas
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
-CREATE TYPE public.user_role AS ENUM ('admin', 'school', 'student');
-
--- Perfil da escola (singleton — existe apenas um registro, id fixo abaixo)
-CREATE TABLE public.school_profile (
+-- ==========================================================================
+-- BLOCO 1: Tabela school_profile (singleton) + seed com a escola real
+-- ==========================================================================
+CREATE TABLE IF NOT EXISTS public.school_profile (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   description TEXT,
@@ -23,58 +19,15 @@ CREATE TABLE public.school_profile (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Seed da escola (exemplo: NG CURSOS E TREINAMENTOS)
+-- Seed: herda os dados da escola principal (NG CURSOS E TREINAMENTOS)
 INSERT INTO public.school_profile (id, name, description, logo_url, banner_url, contact_email, contact_phone, address)
-VALUES (
-  '00000000-0000-0000-0000-000000000001',
-  'NG CURSOS E TREINAMENTOS',
-  NULL, NULL, NULL, 'ngcursosng@gmail.com', NULL, NULL
-)
+SELECT '00000000-0000-0000-0000-000000000001', name, description, logo_url, banner_url, contact_email, contact_phone, address
+FROM public.schools
+WHERE id = '141e1cfa-ce89-46c1-a094-5eec83dffc00'
 ON CONFLICT (id) DO NOTHING;
 
--- Perfis de usuários (tutores = role 'school', alunos = role 'student')
-CREATE TABLE public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  role public.user_role NOT NULL DEFAULT 'student',
-  full_name TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- Progresso individual dos alunos
-CREATE TABLE public.student_progress (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  student_id UUID UNIQUE NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  state JSONB NOT NULL DEFAULT '{}'::jsonb,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-);
-
--- 2. Row Level Security (RLS)
 ALTER TABLE public.school_profile ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.student_progress ENABLE ROW LEVEL SECURITY;
 
--- Função auxiliar SECURITY DEFINER para evitar recursão infinita nas políticas RLS
-CREATE OR REPLACE FUNCTION public.get_user_role(user_id UUID)
-RETURNS public.user_role AS $$
-  SELECT role FROM public.profiles WHERE id = user_id;
-$$ LANGUAGE sql SECURITY DEFINER;
-
--- 3. Políticas de Segurança
-
--- POLÍTICAS: PROFILES
-DROP POLICY IF EXISTS "Leitura de perfil próprio e admin" ON public.profiles;
-DROP POLICY IF EXISTS "Leitura de perfis (próprio, escola e admin)" ON public.profiles;
-CREATE POLICY "Leitura de perfis (próprio, escola e admin)" ON public.profiles
-  FOR SELECT USING (
-    auth.uid() = id
-    OR public.get_user_role(auth.uid()) IN ('admin', 'school')
-  );
-
-DROP POLICY IF EXISTS "Atualização de perfil próprio" ON public.profiles;
-CREATE POLICY "Atualização de perfil próprio" ON public.profiles
-  FOR UPDATE USING (auth.uid() = id);
-
--- POLÍTICAS: SCHOOL_PROFILE
 DROP POLICY IF EXISTS "Leitura do perfil da escola" ON public.school_profile;
 CREATE POLICY "Leitura do perfil da escola" ON public.school_profile
   FOR SELECT USING (auth.uid() IS NOT NULL);
@@ -83,19 +36,11 @@ DROP POLICY IF EXISTS "Atualização do perfil da escola" ON public.school_profi
 CREATE POLICY "Atualização do perfil da escola" ON public.school_profile
   FOR UPDATE USING (public.get_user_role(auth.uid()) IN ('school', 'admin'));
 
--- POLÍTICAS: STUDENT_PROGRESS
-DROP POLICY IF EXISTS "Controle de progresso" ON public.student_progress;
-DROP POLICY IF EXISTS "Controle de progresso (próprio, escola e admin)" ON public.student_progress;
-CREATE POLICY "Controle de progresso (próprio, escola e admin)" ON public.student_progress
-  FOR ALL USING (
-    auth.uid() = student_id
-    OR public.get_user_role(auth.uid()) IN ('admin', 'school')
-  );
+-- ==========================================================================
+-- BLOCO 2: Funções (trigger, RPCs) no novo modelo
+-- ==========================================================================
 
--- 4. Trigger de criação de perfil no signUp
--- Tutor/admin: criado por signUp normal (role no raw_user_meta_data).
--- Aluno: criado APENAS pela escola via RPC create_student_by_school
--- (raw_user_meta_data->>'created_by' = 'school').
+-- Trigger: cria perfil de tutor (school/admin) OU aluno criado pela escola (via RPC).
 -- Cadastro autônomo de aluno NÃO é mais permitido.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
@@ -118,17 +63,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- 5. RPCs
-
--- Criação de aluno pela escola (login + senha próprios).
--- Observação: as colunas de token (confirmation_token, recovery_token,
--- email_change_token_new, email_change_token_current, email_change) devem
--- receber '' e NUNCA NULL, senão o login retorna 500 "Database error querying schema".
+-- RPC: criação de aluno pela escola (sem school_id — escola única)
+DROP FUNCTION IF EXISTS public.create_student_by_school(TEXT, TEXT, TEXT, UUID);
 CREATE OR REPLACE FUNCTION public.create_student_by_school(
     p_email TEXT,
     p_password TEXT,
@@ -159,9 +95,7 @@ BEGIN
     INSERT INTO auth.users (
         instance_id, id, aud, role, email, encrypted_password,
         email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
-        is_super_admin, created_at, updated_at,
-        confirmation_token, recovery_token, email_change_token_new,
-        email_change_token_current, email_change
+        is_super_admin, created_at, updated_at
     ) VALUES (
         '00000000-0000-0000-0000-000000000000',
         new_user_id,
@@ -174,8 +108,7 @@ BEGIN
         jsonb_build_object('full_name', p_full_name, 'created_by', 'school'),
         FALSE,
         now(),
-        now(),
-        '', '', '', '', ''
+        now()
     );
 
     INSERT INTO auth.identities (
@@ -200,7 +133,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Redefinição de senha de aluno pela escola/admin
+-- RPC: redefinição de senha de aluno pela escola (sem vínculo de escola)
 CREATE OR REPLACE FUNCTION public.reset_student_password_by_school(
     p_student_id UUID,
     p_new_password TEXT
@@ -258,9 +191,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- E-mails dos alunos (auth.users não é legível via RLS)
+-- RPC: e-mails dos alunos (escola/admin) — auth.users não é legível via RLS
 CREATE OR REPLACE FUNCTION public.get_school_students_emails()
-RETURNS TABLE (student_id UUID, email VARCHAR(255)) AS $$
+RETURNS TABLE (student_id UUID, email TEXT) AS $$
 DECLARE
     caller_role public.user_role;
 BEGIN
@@ -277,7 +210,33 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 6. Grants
+DROP FUNCTION IF EXISTS public.get_user_school_id(UUID);
+
 GRANT EXECUTE ON FUNCTION public.create_student_by_school(TEXT, TEXT, TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.reset_student_password_by_school(UUID, TEXT) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.get_school_students_emails() TO authenticated;
+
+-- ==========================================================================
+-- BLOCO 3: Políticas no novo modelo + remoção das tabelas antigas
+-- ==========================================================================
+
+DROP POLICY IF EXISTS "Leitura de perfil próprio e admin" ON public.profiles;
+DROP POLICY IF EXISTS "Atualização de perfil próprio" ON public.profiles;
+CREATE POLICY "Leitura de perfis (próprio, escola e admin)" ON public.profiles
+  FOR SELECT USING (
+    auth.uid() = id
+    OR public.get_user_role(auth.uid()) IN ('admin', 'school')
+  );
+CREATE POLICY "Atualização de perfil próprio" ON public.profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+DROP POLICY IF EXISTS "Controle de progresso" ON public.student_progress;
+CREATE POLICY "Controle de progresso (próprio, escola e admin)" ON public.student_progress
+  FOR ALL USING (
+    auth.uid() = student_id
+    OR public.get_user_role(auth.uid()) IN ('admin', 'school')
+  );
+
+-- Remove vínculo de escola dos perfis e a tabela schools
+ALTER TABLE public.profiles DROP COLUMN IF EXISTS school_id;
+DROP TABLE IF EXISTS public.schools;

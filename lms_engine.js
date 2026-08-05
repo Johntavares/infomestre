@@ -124,10 +124,10 @@
         "Impressão e exportação em PDF"
       ],
       duration: "45 min",
-      status: "draft",
+      status: "published",
       video_provider: "youtube",
-      video_url: "",
-      video_id: "",
+      video_url: "https://youtu.be/D-Myx_d5Xu0",
+      video_id: "D-Myx_d5Xu0",
       exercise: {
         title: "Desafio Final do Word — Currículo Profissional & Contrato Fictício",
         instructions: "Criar um Currículo Profissional formatado e um Contrato Fictício simples. Envie os arquivos em .docx ou .pdf."
@@ -345,7 +345,7 @@
     }
   }
 
-  // Sync com o Supabase quando logado
+  // Sync com o Supabase quando logado (Garantia de não bloqueio de vídeos)
   async function syncDbWithSupabase() {
     if (typeof window !== 'undefined' && window.supabase) {
       try {
@@ -354,7 +354,24 @@
           const localDb = getLmsDb();
           dbLessons.forEach(l => {
             if (localDb.lessons[l.id]) {
-              localDb.lessons[l.id] = { ...localDb.lessons[l.id], ...l };
+              const def = DEFAULT_MODULE_2_LESSONS.find(d => d.id === l.id);
+              const merged = { ...localDb.lessons[l.id], ...l };
+              
+              // Se o banco remotos trouxe sem vídeo, mas o padrão ou local tem vídeo, preserva o vídeo
+              if (!merged.video_url && !merged.video_id) {
+                if (def && (def.video_url || def.video_id)) {
+                  merged.video_url = def.video_url || '';
+                  merged.video_id = def.video_id || extractVideoId(def.video_url);
+                  merged.video_provider = def.video_provider || 'youtube';
+                }
+              }
+
+              // Se a aula possui vídeo configurado, obriga o status a ser 'published'
+              if (merged.video_url || merged.video_id) {
+                merged.status = 'published';
+              }
+
+              localDb.lessons[l.id] = merged;
             }
           });
           saveLmsDb(localDb);
@@ -725,6 +742,17 @@
                   </div>
                 `}
               </div>
+
+              ${isPublished && videoSource ? `
+                <div class="lms-external-video-fallback mt-2" style="padding: 0.6rem 0.88rem; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
+                  <span style="font-size: 0.82rem; color: var(--text-secondary);">
+                    ⚠️ O vídeo não carregou ou ocorreu algum erro no player?
+                  </span>
+                  <a href="${lesson.video_url || ('https://youtu.be/' + lesson.video_id)}" target="_blank" rel="noopener noreferrer" style="background: #ff0000; border: 1px solid #cc0000; color: #ffffff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; padding: 0.4rem 0.85rem; border-radius: 6px; text-decoration: none; box-shadow: 0 2px 6px rgba(255,0,0,0.3); transition: transform 0.2s;">
+                    ▶️ Assistir Direto no YouTube ↗
+                  </a>
+                </div>
+              ` : ''}
             </div>
 
             <!-- RESUMO E OBJETIVOS DE APRENDIZADO -->

@@ -211,9 +211,9 @@ VALUES
   '["Estrutura de currículo (cabeçalho, experiência profissional, formação e competências)", "Inserção e formatação de tabelas", "Elaboração de contrato simples e revisão ortográfica", "Impressão e exportação em PDF"]'::jsonb,
   '45 min',
   3,
-  'draft',
+  'published',
   'youtube',
-  '',
+  'https://youtu.be/D-Myx_d5Xu0',
   '{"title": "Desafio Final do Word — Currículo Profissional & Contrato Fictício", "instructions": "Criar um Currículo Profissional formatado e um Contrato Fictício simples. Envie os arquivos em .docx ou .pdf."}'::jsonb,
   '[".docx", ".xlsx", ".pptx", ".pdf"]'::jsonb
 ),

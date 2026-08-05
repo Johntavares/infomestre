@@ -37,17 +37,6 @@
       </div>
 
       <div class="auth-box-card">
-        <div class="auth-card-tabs">
-          <button class="auth-card-tabactive active" id="landing-tab-login"
-            onclick="this.classList.add('active'); document.getElementById('landing-tab-register').classList.remove('active'); document.getElementById('landing-login-form').classList.remove('screen-hidden'); document.getElementById('register-tab-content').classList.add('screen-hidden');">
-            Entrar
-          </button>
-          <button class="" id="landing-tab-register"
-            onclick="this.classList.add('active'); document.getElementById('landing-tab-login').classList.remove('active'); document.getElementById('register-tab-content').classList.remove('screen-hidden'); document.getElementById('landing-login-form').classList.add('screen-hidden');">
-            Criar Conta
-          </button>
-        </div>
-
         <!-- Landing Login Form -->
         <form id="landing-login-form" autocomplete="off">
           <div class="form-group-custom">
@@ -59,42 +48,22 @@
             <input type="password" id="landing-login-password" required placeholder="Sua senha" autocomplete="new-password">
           </div>
           <button type="submit" class="btn btn-primary btn-full">Entrar na Plataforma</button>
-          <div class="auth-card-note">Se a sua escola criou sua conta, utilize o e-mail e senha informados pelo seu tutor.</div>
+          <div class="auth-card-note">Sua conta é criada pela escola. Utilize o e-mail e senha informados pelo seu tutor.</div>
         </form>
 
-        <!-- Conteúdo da aba Criar Conta (form aluno + botão escola) -->
-        <div id="register-tab-content" class="screen-hidden">
-          <form id="landing-register-form" autocomplete="off">
-            <div class="form-group-custom">
-              <label for="landing-register-name">Nome Completo</label>
-              <input type="text" id="landing-register-name" required placeholder="Seu nome completo" autocomplete="off">
-            </div>
-            <div class="form-group-custom">
-              <label for="landing-register-email">E-mail</label>
-              <input type="email" id="landing-register-email" required placeholder="seuemail@exemplo.com" autocomplete="off">
-            </div>
-            <div class="form-group-custom">
-              <label for="landing-register-password">Senha (mínimo 6 caracteres)</label>
-              <input type="password" id="landing-register-password" required minlength="6" placeholder="Crie uma senha" autocomplete="new-password">
-            </div>
-            <button type="submit" class="btn btn-primary btn-full">Criar Conta de Aluno</button>
-            <div class="auth-card-note">Cadastro exclusivo para alunos independentes (que estudam sozinhos).</div>
-          </form>
-
-          <!-- Botão escola FORA do form de aluno -->
-          <div style="display:flex; align-items:center; gap:0.75rem; margin: 1.1rem 0 0.9rem;">
-            <div style="flex:1; height:1px; background: rgba(255,255,255,0.12);"></div>
-            <span style="font-size:0.78rem; color:var(--text-muted); white-space:nowrap;">ou</span>
-            <div style="flex:1; height:1px; background: rgba(255,255,255,0.12);"></div>
-          </div>
-          <button
-            id="btn-open-school-register"
-            type="button"
-            onclick="abrirModalEscola()"
-            style="width:100%; padding:0.65rem 1rem; border-radius:10px; border: 1.5px solid var(--color-primary-light); background: transparent; color: var(--color-primary-light); font-size:0.92rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-            🏫 Sou escola / tutor — criar conta institucional
-          </button>
+        <!-- Acesso institucional: cadastro de tutor vinculado à escola -->
+        <div style="display:flex; align-items:center; gap:0.75rem; margin: 1.1rem 0 0.9rem;">
+          <div style="flex:1; height:1px; background: rgba(255,255,255,0.12);"></div>
+          <span style="font-size:0.78rem; color:var(--text-muted); white-space:nowrap;">ou</span>
+          <div style="flex:1; height:1px; background: rgba(255,255,255,0.12);"></div>
         </div>
+        <button
+          id="btn-open-school-register"
+          type="button"
+          onclick="abrirModalEscola()"
+          style="width:100%; padding:0.65rem 1rem; border-radius:10px; border: 1.5px solid var(--color-primary-light); background: transparent; color: var(--color-primary-light); font-size:0.92rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+          🏫 Sou tutor — criar conta institucional
+        </button>
       </div>
     </div>
   </div>
@@ -292,93 +261,6 @@
     </section>
   </div>
 
-  <!-- Auth Modal -->
-  <div class="modal-overlay hidden" id="auth-modal">
-    <div class="modal-content" style="max-width: 400px; width: 90%;">
-      <div class="modal-header">
-        <h3 id="auth-modal-title">Acesso ao InforMestre</h3>
-        <button class="btn-close" id="auth-close-trigger">×</button>
-      </div>
-      <div class="modal-body">
-        <div class="auth-tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
-          <button class="auth-tab-btn active" id="tab-login-btn" style="background:none; border:none; color:inherit; font-weight:bold; cursor:pointer; padding: 0.25rem 0.5rem;">Entrar</button>
-          <button class="auth-tab-btn" id="tab-register-btn" style="background:none; border:none; color:inherit; font-weight:normal; cursor:pointer; padding: 0.25rem 0.5rem; opacity: 0.7;">Criar Conta</button>
-        </div>
-        
-        <!-- Login Form -->
-        <form id="login-form" autocomplete="off">
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label for="login-email" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">E-mail</label>
-            <input type="email" id="login-email" required placeholder="seuemail@exemplo.com" autocomplete="off" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label for="login-password" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">Senha</label>
-            <input type="password" id="login-password" required placeholder="Sua senha" autocomplete="new-password" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
-          </div>
-          <button type="submit" class="btn btn-primary btn-full" id="btn-submit-login">Entrar</button>
-          <p class="text-small text-muted mt-1" style="text-align: center; font-size: 0.8rem;">Alunos cadastrados por escolas devem usar as credenciais dadas pelo tutor.</p>
-        </form>
-
-        <!-- Register Form (Hidden by default) -->
-        <form id="register-form" class="hidden">
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label for="register-name" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">Nome Completo</label>
-            <input type="text" id="register-name" required placeholder="Seu Nome Completo" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label for="register-email" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">E-mail</label>
-            <input type="email" id="register-email" required placeholder="seuemail@exemplo.com" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label for="register-password" style="display:block; margin-bottom: 0.25rem; font-size: 0.9rem;">Senha (mínimo 6 caracteres)</label>
-            <input type="password" id="register-password" required minlength="6" placeholder="Crie uma senha" style="width:100%; padding:0.5rem; border-radius:4px; border:1px solid #444; background:#222; color:#fff;">
-          </div>
-          <button type="submit" class="btn btn-primary btn-full" id="btn-submit-register">Criar Conta</button>
-          <p class="text-small text-muted mt-1" style="text-align: center; font-size: 0.8rem;">Cadastro exclusivo para alunos independentes (sem escola).</p>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- School Register Modal -->
-  <div class="modal-overlay hidden" id="school-register-modal">
-    <div class="modal-content" style="max-width: 460px; width: 92%;">
-      <div class="modal-header">
-        <h3>🏫 Cadastrar Escola / Tutor</h3>
-        <button class="btn-close" id="school-register-close-btn" onclick="fecharModalEscola()">×</button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5;">
-          Crie uma conta de <strong>tutor</strong> para gerenciar alunos, personalizar o perfil da sua escola e acompanhar o progresso da sua turma.
-        </p>
-        <form id="school-register-form">
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label for="sreg-fullname" style="display:block; margin-bottom:0.3rem; font-size:0.9rem; font-weight:600;">Seu Nome Completo</label>
-            <input type="text" id="sreg-fullname" required placeholder="Ex: Maria da Silva" style="width:100%; padding:0.6rem 0.75rem; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label for="sreg-schoolname" style="display:block; margin-bottom:0.3rem; font-size:0.9rem; font-weight:600;">Nome da Escola</label>
-            <input type="text" id="sreg-schoolname" required placeholder="Ex: Escola Técnica Futuro" style="width:100%; padding:0.6rem 0.75rem; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-          </div>
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label for="sreg-email" style="display:block; margin-bottom:0.3rem; font-size:0.9rem; font-weight:600;">E-mail de Acesso</label>
-            <input type="email" id="sreg-email" required placeholder="seuemail@escola.com" style="width:100%; padding:0.6rem 0.75rem; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-          </div>
-          <div class="form-group" style="margin-bottom: 1.5rem;">
-            <label for="sreg-password" style="display:block; margin-bottom:0.3rem; font-size:0.9rem; font-weight:600;">Senha (mínimo 6 caracteres)</label>
-            <input type="password" id="sreg-password" required minlength="6" placeholder="Crie uma senha segura" style="width:100%; padding:0.6rem 0.75rem; border-radius:8px; border:1px solid #444; background:#1a1a1a; color:#fff; font-size:0.95rem; box-sizing:border-box;">
-          </div>
-          <button type="submit" class="btn btn-primary btn-full" id="sreg-submit-btn" style="padding: 0.75rem; font-size:1rem; font-weight:700;">
-            🏫 Criar Conta da Escola
-          </button>
-          <p style="font-size: 0.78rem; color: var(--text-muted); text-align:center; margin-top: 0.75rem;">
-            Após o cadastro, faça login com seu e-mail e senha para acessar o painel de tutor.
-          </p>
-        </form>
-      </div>
-    </div>
-  </div>
-
 
 
   <!-- Achievements Modal -->
@@ -471,11 +353,11 @@
 
   <!-- Javascript Modules -->
   <script src="supabase.js"></script>
-<script src="supabase_config.js?v=30"></script>
+<script src="supabase_config.js?v=32"></script>
 <script src="content_v1.js?v=30"></script>
 <script src="lms_engine.js?v=38"></script>
 <script src="training_lab.js?v=1"></script>
-<script src="app_v1.js?v=31"></script>
+<script src="app_v1.js?v=33"></script>
 <script src="aula8_simulator.js?v=37"></script>
   <script>
     function abrirModalEscola() {
@@ -497,10 +379,7 @@
               <label style="display:block;margin-bottom:0.3rem;font-size:0.9rem;font-weight:600;">Seu Nome Completo</label>
               <input type="text" id="ef-nome" required placeholder="Ex: Maria da Silva" autocomplete="off" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid #444;background:#0d0d1a;color:#fff;font-size:0.95rem;box-sizing:border-box;">
             </div>
-            <div style="margin-bottom:1rem;">
-              <label style="display:block;margin-bottom:0.3rem;font-size:0.9rem;font-weight:600;">Nome da Escola</label>
-              <input type="text" id="ef-escola" required placeholder="Ex: Escola Técnica Futuro" autocomplete="off" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid #444;background:#0d0d1a;color:#fff;font-size:0.95rem;box-sizing:border-box;">
-            </div>
+            
             <div style="margin-bottom:1rem;">
               <label style="display:block;margin-bottom:0.3rem;font-size:0.9rem;font-weight:600;">E-mail</label>
               <input type="email" id="ef-email" required placeholder="seuemail@escola.com" autocomplete="off" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid #444;background:#0d0d1a;color:#fff;font-size:0.95rem;box-sizing:border-box;">
@@ -526,7 +405,6 @@
       document.getElementById('escola-form-dinamico').addEventListener('submit', async function(e) {
         e.preventDefault();
         var nome   = document.getElementById('ef-nome').value.trim();
-        var escola = document.getElementById('ef-escola').value.trim();
         var email  = document.getElementById('ef-email').value.trim();
         var senha  = document.getElementById('ef-senha').value;
         var btn    = document.getElementById('ef-btn-submit');
@@ -538,7 +416,7 @@
         try {
           btn.disabled = true;
           btn.textContent = 'Criando conta...';
-          await window.signUpSchoolTutor(email, senha, nome, escola);
+          await window.signUpSchoolTutor(email, senha, nome);
           overlay.remove();
           alert('✅ Conta criada! Faça login com: ' + email);
           document.getElementById('landing-login-email') && (document.getElementById('landing-login-email').value = email);
