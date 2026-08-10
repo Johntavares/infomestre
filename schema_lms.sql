@@ -226,9 +226,9 @@ VALUES
   '["O que é Excel e para que serve", "Interface do programa (linhas, colunas e células)", "Seleção, inserção de dados e salvamento em .xlsx"]'::jsonb,
   '40 min',
   4,
-  'draft',
+  'published',
   'youtube',
-  '',
+  'https://youtu.be/NW8NzakpDAY',
   '{"title": "Desafio 04 — Tabela Simples de Despesas", "instructions": "Criar uma tabela simples de despesas listando itens, categorias e valores no Excel. Envie em .xlsx."}'::jsonb,
   '[".docx", ".xlsx", ".pptx", ".pdf"]'::jsonb
 ),

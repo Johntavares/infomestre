@@ -150,10 +150,10 @@
         "Seleção, inserção de dados e salvamento em .xlsx"
       ],
       duration: "40 min",
-      status: "draft",
+      status: "published",
       video_provider: "youtube",
-      video_url: "",
-      video_id: "",
+      video_url: "https://youtu.be/NW8NzakpDAY",
+      video_id: "NW8NzakpDAY",
       exercise: {
         title: "Desafio 04 — Tabela Simples de Despesas",
         instructions: "Criar uma tabela simples de despesas listando itens, categorias e valores no Excel. Envie em .xlsx."
