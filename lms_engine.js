@@ -312,12 +312,14 @@
       });
     }
 
-    // LIBERAÇÃO: restaura o vídeo cadastrado como padrão quando os dados
-    // gravados (localStorage ou Supabase) estiverem sem vídeo, evitando que
-    // registros antigos com status draft/vídeo vazio bloqueiem a aula.
+    // LIBERAÇÃO: restaura o vídeo e objetivos cadastrados como padrão quando os dados
+    // gravados (localStorage ou Supabase) estiverem desatualizados ou sem vídeo.
     DEFAULT_MODULE_2_LESSONS.forEach(def => {
       const l = parsed.lessons[def.id];
       if (!l) return;
+      if (def.objectives) {
+        l.objectives = def.objectives;
+      }
       if (!l.video_url && !l.video_id && (def.video_url || def.video_id)) {
         l.video_url = def.video_url || '';
         l.video_id = def.video_id || '';
@@ -360,6 +362,10 @@
               const def = DEFAULT_MODULE_2_LESSONS.find(d => d.id === l.id);
               const merged = { ...localDb.lessons[l.id], ...l };
               
+              if (def && def.objectives) {
+                merged.objectives = def.objectives;
+              }
+
               // Se o banco remotos trouxe sem vídeo, mas o padrão ou local tem vídeo, preserva o vídeo
               if (!merged.video_url && !merged.video_id) {
                 if (def && (def.video_url || def.video_id)) {
