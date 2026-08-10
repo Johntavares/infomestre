@@ -145,9 +145,12 @@
       description: "O que é Excel, interface, linhas, colunas, células, seleção, inserção de dados e salvamento.",
       summary: "Conhecer o ambiente da planilha eletrônica e entender a estrutura de células no Excel.",
       objectives: [
-        "O que é Excel e para que serve",
-        "Interface do programa (linhas, colunas e células)",
-        "Seleção, inserção de dados e salvamento em .xlsx"
+        "Conhecemos o Excel e sua finalidade.",
+        "Aprendemos o que são linhas, colunas e células.",
+        "Entendemos os endereços das células.",
+        "Aprendemos a inserir textos, números e datas.",
+        "Criamos nossa primeira tabela de dados.",
+        "Praticamos a organização de informações em uma planilha."
       ],
       duration: "40 min",
       status: "published",
