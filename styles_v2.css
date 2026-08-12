@@ -5073,3 +5073,20 @@ body.has-top-bar .sidebar {
   align-items: center;
 }
 
+/* ==========================================================================
+   AVISO DE INADIMPLÊNCIA / MENSALIDADE DO PROFESSOR (INFOMESTRE)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .teacher-payment-warning-banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    padding: 1rem !important;
+  }
+  .teacher-payment-warning-banner > div:last-child {
+    width: 100% !important;
+    text-align: center !important;
+    margin-top: 0.5rem !important;
+  }
+}
+

@@ -937,8 +937,11 @@
     const lessons = getAllLessons("modulo-2");
     const allSubs = getAllSubmissions();
 
+    const warningBanner = window.getTeacherPaymentWarningBannerHtml ? window.getTeacherPaymentWarningBannerHtml() : '';
+
     container.innerHTML = `
       <div class="lms-teacher-dashboard">
+        ${warningBanner}
         <div class="teacher-header-banner">
           <h2>👨‍🏫 Painel de Gestão do Professor / Tutor LMS</h2>
           <p class="text-muted">Gerencie videoaulas do YouTube (Não Listadas), publique conteúdos e avalie os trabalhos enviados pelos alunos.</p>
