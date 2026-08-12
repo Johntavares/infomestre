@@ -238,7 +238,7 @@ VALUES
   'Aula 5 — Fórmulas e Funções',
   'Cálculos automáticos utilizando Soma, Média, Máximo, Mínimo, Contagem, referência de células e AutoPreenchimento.',
   'Realizar cálculos automáticos no Excel utilizando as principais funções matemáticas e estatísticas.',
-  '["Funções =SOMA(), =MÉDIA(), =MÁXIMO(), =MÍNIMO() e =CONT.VALORES()", "Referência de células e operadores", "Uso da alça de AutoPreenchimento"]'::jsonb,
+  '["Aprendemos que as fórmulas começam com o sinal de igual (=).", "Conhecemos os principais operadores matemáticos.", "Aprendemos a utilizar referências de células nas fórmulas.", "Entendemos que os resultados podem ser atualizados automaticamente.", "Criamos uma tabela de vendas.", "Utilizamos fórmulas para calcular o total de cada produto."]'::jsonb,
   '45 min',
   5,
   'published',
