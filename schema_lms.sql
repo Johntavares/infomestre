@@ -241,9 +241,9 @@ VALUES
   '["Funções =SOMA(), =MÉDIA(), =MÁXIMO(), =MÍNIMO() e =CONT.VALORES()", "Referência de células e operadores", "Uso da alça de AutoPreenchimento"]'::jsonb,
   '45 min',
   5,
-  'draft',
+  'published',
   'youtube',
-  '',
+  'https://youtu.be/PR0m3JVxEOg',
   '{"title": "Desafio 05 — Planilha de Controle Financeiro Mensal", "instructions": "Criar uma planilha de controle financeiro mensal com fórmulas automáticas de Soma e Média. Envie em .xlsx."}'::jsonb,
   '[".docx", ".xlsx", ".pptx", ".pdf"]'::jsonb
 ),

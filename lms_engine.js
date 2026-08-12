@@ -179,10 +179,10 @@
         "Uso da alça de AutoPreenchimento"
       ],
       duration: "45 min",
-      status: "draft",
+      status: "published",
       video_provider: "youtube",
-      video_url: "",
-      video_id: "",
+      video_url: "https://youtu.be/PR0m3JVxEOg",
+      video_id: "PR0m3JVxEOg",
       exercise: {
         title: "Desafio 05 — Planilha de Controle Financeiro Mensal",
         instructions: "Criar uma planilha de controle financeiro mensal com fórmulas automáticas de Soma e Média. Envie em .xlsx."
