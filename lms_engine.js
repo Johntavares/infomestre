@@ -199,15 +199,16 @@
       module_id: "modulo-2",
       order_index: 6,
       unit: "Unidade 2 — Microsoft Excel",
-      title: "Aula 6 — Projeto Final do Excel: Organização e Análise de Dados",
-      description: "Formatação de células (Moeda R$, Datas e Porcentagens), congelar painéis, classificação, filtros de dados, gráficos e exportação em PDF.",
-      summary: "Consolidar o aprendizado do Excel criando um Controle Financeiro Mensal completo com fórmulas automáticas, filtros e gráficos analíticos.",
+      title: "Aula 6 — Projeto Final do Excel: Planilha de Vendas e Análise",
+      description: "Criação de planilha de vendas, uso de fórmulas e cálculos, preenchimento automático, organização e análise dos dados.",
+      summary: "Nesta aula prática final de Excel, você aprenderá a criar uma planilha de vendas completa com uso de fórmulas e cálculos, preenchimento automático, organização e análise de dados, aplicando na prática todos os conhecimentos aprendidos no Desafio Final de Excel.",
       objectives: [
-        "Formatação de células (Moeda R$, Datas e Porcentagens)",
-        "Classificação de dados, congelar painéis e aplicação de Filtros",
-        "Criação de Gráficos analíticos e organização visual de planilhas",
-        "Projeto Prático: Controle Financeiro Mensal (Entradas, Saídas e Saldo)",
-        "Configuração de Área de Impressão e Exportação em PDF"
+        "Criação de uma planilha de vendas",
+        "Uso de fórmulas e cálculos",
+        "Preenchimento automático",
+        "Organização e análise dos dados",
+        "Aplicação prática dos conhecimentos aprendidos",
+        "Desafio final de Excel"
       ],
       duration: "45 min",
       status: "published",
@@ -215,8 +216,8 @@
       video_url: "https://youtu.be/7si9DxYER_g",
       video_id: "7si9DxYER_g",
       exercise: {
-        title: "Desafio Final do Excel — Controle Financeiro Mensal com Gráfico",
-        instructions: "Criar uma planilha de Controle Financeiro Mensal no Excel contendo no mínimo 20 lançamentos com Data, Descrição, Categoria, Entrada, Saída e Saldo (com cálculos automáticos de totais e saldo final), formatada em Moeda (R$), aplicando filtros e um gráfico explicativo. Envie o arquivo no formato .xlsx ou .pdf."
+        title: "Desafio Final de Excel — Planilha de Vendas e Análise",
+        instructions: "Criar uma planilha de vendas completa no Excel utilizando fórmulas e cálculos, preenchimento automático, organização e análise dos dados conforme ensinado na videoaula. Envie seu arquivo no formato .xlsx ou .pdf."
       },
       allowed_extensions: [".docx", ".xlsx", ".pptx", ".pdf"],
       unlock_rule: "previous_completed",

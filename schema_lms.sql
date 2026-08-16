@@ -250,16 +250,16 @@ VALUES
 (
   'm2-aula-6',
   'modulo-2',
-  'Aula 6 — Projeto Final do Excel: Organização e Análise de Dados',
-  'Formatação de células (Moeda R$, Datas e Porcentagens), congelar painéis, classificação, filtros de dados, gráficos e exportação em PDF.',
-  'Consolidar o aprendizado do Excel criando um Controle Financeiro Mensal completo com fórmulas automáticas, filtros e gráficos analíticos.',
-  '["Formatação de células (Moeda R$, Datas e Porcentagens)", "Classificação de dados, congelar painéis e aplicação de Filtros", "Criação de Gráficos analíticos e organização visual", "Projeto Prático: Controle Financeiro Mensal", "Configuração de Impressão e Exportação em PDF"]'::jsonb,
+  'Aula 6 — Projeto Final do Excel: Planilha de Vendas e Análise',
+  'Criação de planilha de vendas, uso de fórmulas e cálculos, preenchimento automático, organização e análise dos dados.',
+  'Nesta aula prática final de Excel, você aprenderá a criar uma planilha de vendas completa com uso de fórmulas e cálculos, preenchimento automático, organização e análise de dados, aplicando na prática todos os conhecimentos aprendidos no Desafio Final de Excel.',
+  '["Criação de uma planilha de vendas","Uso de fórmulas e cálculos","Preenchimento automático","Organização e análise dos dados","Aplicação prática dos conhecimentos aprendidos","Desafio final de Excel"]'::jsonb,
   '45 min',
   6,
   'published',
   'youtube',
   'https://youtu.be/7si9DxYER_g',
-  '{"title": "Desafio Final do Excel — Controle Financeiro Mensal com Gráfico", "instructions": "Criar uma planilha de Controle Financeiro Mensal no Excel contendo no mínimo 20 lançamentos com Data, Descrição, Categoria, Entrada, Saída e Saldo (com cálculos automáticos), formatada em Moeda (R$), aplicando filtros e um gráfico explicativo. Envie o arquivo no formato .xlsx ou .pdf."}'::jsonb,
+  '{"title": "Desafio Final de Excel — Planilha de Vendas e Análise", "instructions": "Criar uma planilha de vendas completa no Excel utilizando fórmulas e cálculos, preenchimento automático, organização e análise dos dados conforme ensinado na videoaula. Envie seu arquivo no formato .xlsx ou .pdf."}'::jsonb,
   '[".docx", ".xlsx", ".pptx", ".pdf"]'::jsonb
 ),
 (
