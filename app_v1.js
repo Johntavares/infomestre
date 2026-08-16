@@ -9060,67 +9060,8 @@ function renderSettingsTab(container) {
 }
 
 window.getTeacherPaymentWarningBannerHtml = function() {
-  return `
-    <div class="teacher-payment-warning-banner" style="
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(153, 27, 27, 0.45));
-      border: 2px solid #ef4444;
-      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
-      border-radius: 16px;
-      padding: 1.25rem 1.5rem;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.25rem;
-      color: #ffffff;
-      backdrop-filter: blur(10px);
-      width: 100%;
-      box-sizing: border-box;
-    ">
-      <div style="display: flex; align-items: center; gap: 1.25rem;">
-        <div style="
-          font-size: 2.2rem;
-          background: rgba(239, 68, 68, 0.3);
-          border: 1px solid rgba(239, 68, 68, 0.6);
-          border-radius: 14px;
-          padding: 0.6rem 0.9rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        ">
-          ⚠️
-        </div>
-        <div>
-          <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
-            <span style="
-              background: #ef4444;
-              color: #ffffff;
-              font-size: 0.72rem;
-              font-weight: 900;
-              text-transform: uppercase;
-              letter-spacing: 1px;
-              padding: 3px 10px;
-              border-radius: 99px;
-            ">Aviso de Inadimplência</span>
-            <h4 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #fca5a5; letter-spacing: -0.01em;">
-              ALERTA DE MENSALIDADE DA PLATAFORMA
-            </h4>
-          </div>
-          <p style="margin: 0; font-size: 0.92rem; color: #fee2e2; line-height: 1.45; font-weight: 500;">
-            Atenção, Professor: Lembramos que se a mensalidade não for paga <strong>até o dia 15</strong>, o acesso à plataforma será <strong>temporariamente bloqueado</strong>.
-          </p>
-        </div>
-      </div>
-
-      <div style="text-align: right; flex-shrink: 0; background: rgba(0, 0, 0, 0.35); padding: 0.6rem 1rem; border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.4);">
-        <div style="font-size: 0.72rem; color: #fca5a5; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Prazo Limite</div>
-        <div style="font-size: 1.15rem; font-weight: 900; color: #ffffff; margin-top: 2px;">Dia 15 do Mês</div>
-      </div>
-    </div>
-  `;
+  return '';
 };
-
 /**
  * ABA 5 (Escola): Painel da Escola (Gestão de Alunos)
  */
