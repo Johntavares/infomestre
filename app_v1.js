@@ -77,7 +77,7 @@ const COURSE_JORNADA = [
       { id: "m2-aula-3", title: "Aula 3 — Projeto Prático: Currículo e Contrato", desc: "Estrutura de currículo, tabelas, contrato simples e exportação PDF." },
       { id: "m2-aula-4", title: "Aula 4 — Introdução ao Excel", desc: "Interface do Excel, linhas, colunas, células e tabela de despesas." },
       { id: "m2-aula-5", title: "Aula 5 — Fórmulas e Funções", desc: "Soma, Média, Máximo, Mínimo, Contagem e controle financeiro." },
-      { id: "m2-aula-6", title: "Aula 6 — Organização e Análise de Dados", desc: "Formatação de moeda/datas, filtros, gráficos e orçamento familiar." },
+      { id: "m2-aula-6", title: "Aula 6 — Projeto Final do Excel", desc: "Formatação de moeda/datas, congelar painéis, filtros, gráficos e controle financeiro mensal." },
       { id: "m2-aula-7", title: "Aula 7 — Criando Apresentações", desc: "Interface do PowerPoint, temas, layouts, ícones e SmartArt." },
       { id: "m2-aula-8", title: "Aula 8 — Projeto Final", isDesafio: true, desc: "Animações, transições e apresentação profissional completa." }
     ]

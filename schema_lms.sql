@@ -250,16 +250,16 @@ VALUES
 (
   'm2-aula-6',
   'modulo-2',
-  'Aula 6 — Organização e Análise de Dados',
-  'Formatação de células (Moeda, Datas, Porcentagem), classificação, filtros, gráficos e impressão.',
-  'Organizar informações de forma eficiente aplicando formatos visuais, filtros e gráficos analíticos.',
-  '["Formatação de células (Moeda, Datas, Porcentagem)", "Classificação e aplicação de Filtros de dados", "Criação de Gráficos e configuração de Impressão"]'::jsonb,
+  'Aula 6 — Projeto Final do Excel: Organização e Análise de Dados',
+  'Formatação de células (Moeda R$, Datas e Porcentagens), congelar painéis, classificação, filtros de dados, gráficos e exportação em PDF.',
+  'Consolidar o aprendizado do Excel criando um Controle Financeiro Mensal completo com fórmulas automáticas, filtros e gráficos analíticos.',
+  '["Formatação de células (Moeda R$, Datas e Porcentagens)", "Classificação de dados, congelar painéis e aplicação de Filtros", "Criação de Gráficos analíticos e organização visual", "Projeto Prático: Controle Financeiro Mensal", "Configuração de Impressão e Exportação em PDF"]'::jsonb,
   '45 min',
   6,
-  'draft',
+  'published',
   'youtube',
-  '',
-  '{"title": "Desafio Final do Excel — Orçamento Familiar com Gráfico", "instructions": "Criar uma planilha de orçamento familiar completa formatada em moeda R$ contendo fórmulas e um gráfico explicativo. Envie em .xlsx."}'::jsonb,
+  'https://youtu.be/7si9DxYER_g',
+  '{"title": "Desafio Final do Excel — Controle Financeiro Mensal com Gráfico", "instructions": "Criar uma planilha de Controle Financeiro Mensal no Excel contendo no mínimo 20 lançamentos com Data, Descrição, Categoria, Entrada, Saída e Saldo (com cálculos automáticos), formatada em Moeda (R$), aplicando filtros e um gráfico explicativo. Envie o arquivo no formato .xlsx ou .pdf."}'::jsonb,
   '[".docx", ".xlsx", ".pptx", ".pdf"]'::jsonb
 ),
 (

@@ -199,22 +199,24 @@
       module_id: "modulo-2",
       order_index: 6,
       unit: "Unidade 2 — Microsoft Excel",
-      title: "Aula 6 — Organização e Análise de Dados",
-      description: "Formatação de células (Moeda, Datas, Porcentagem), classificação, filtros, gráficos e impressão.",
-      summary: "Organizar informações de forma eficiente aplicando formatos visuais, filtros e gráficos analíticos.",
+      title: "Aula 6 — Projeto Final do Excel: Organização e Análise de Dados",
+      description: "Formatação de células (Moeda R$, Datas e Porcentagens), congelar painéis, classificação, filtros de dados, gráficos e exportação em PDF.",
+      summary: "Consolidar o aprendizado do Excel criando um Controle Financeiro Mensal completo com fórmulas automáticas, filtros e gráficos analíticos.",
       objectives: [
-        "Formatação de células (Moeda, Datas, Porcentagem)",
-        "Classificação e aplicação de Filtros de dados",
-        "Criação de Gráficos e configuração de Impressão"
+        "Formatação de células (Moeda R$, Datas e Porcentagens)",
+        "Classificação de dados, congelar painéis e aplicação de Filtros",
+        "Criação de Gráficos analíticos e organização visual de planilhas",
+        "Projeto Prático: Controle Financeiro Mensal (Entradas, Saídas e Saldo)",
+        "Configuração de Área de Impressão e Exportação em PDF"
       ],
       duration: "45 min",
-      status: "draft",
+      status: "published",
       video_provider: "youtube",
-      video_url: "",
-      video_id: "",
+      video_url: "https://youtu.be/7si9DxYER_g",
+      video_id: "7si9DxYER_g",
       exercise: {
-        title: "Desafio Final do Excel — Orçamento Familiar com Gráfico",
-        instructions: "Criar uma planilha de orçamento familiar completa formatada em moeda R$ contendo fórmulas e um gráfico explicativo. Envie em .xlsx."
+        title: "Desafio Final do Excel — Controle Financeiro Mensal com Gráfico",
+        instructions: "Criar uma planilha de Controle Financeiro Mensal no Excel contendo no mínimo 20 lançamentos com Data, Descrição, Categoria, Entrada, Saída e Saldo (com cálculos automáticos de totais e saldo final), formatada em Moeda (R$), aplicando filtros e um gráfico explicativo. Envie o arquivo no formato .xlsx ou .pdf."
       },
       allowed_extensions: [".docx", ".xlsx", ".pptx", ".pdf"],
       unlock_rule: "previous_completed",
@@ -303,36 +305,31 @@
       };
     }
 
-    // Garantir que as 8 aulas do Módulo 2 existam
-    if (!parsed.lessons || Object.keys(parsed.lessons).length === 0) {
+    if (!parsed.lessons) {
       parsed.lessons = {};
-      DEFAULT_MODULE_2_LESSONS.forEach(l => { parsed.lessons[l.id] = l; });
-    } else {
-      DEFAULT_MODULE_2_LESSONS.forEach(l => {
-        if (!parsed.lessons[l.id]) {
-          parsed.lessons[l.id] = l;
-        }
-      });
     }
 
-    // LIBERAÇÃO: restaura o vídeo e objetivos cadastrados como padrão quando os dados
-    // gravados (localStorage ou Supabase) estiverem desatualizados ou sem vídeo.
+    // Garantir que as 8 aulas do Módulo 2 existam e estejam atualizadas
     DEFAULT_MODULE_2_LESSONS.forEach(def => {
-      const l = parsed.lessons[def.id];
-      if (!l) return;
-      if (def.objectives) {
-        l.objectives = def.objectives;
-      }
-      if (!l.video_url && !l.video_id && (def.video_url || def.video_id)) {
-        l.video_url = def.video_url || '';
-        l.video_id = def.video_id || '';
-        l.video_provider = def.video_provider || 'youtube';
+      if (!parsed.lessons[def.id]) {
+        parsed.lessons[def.id] = { ...def };
+      } else {
+        // Se a aula padrão é publicada ou tem vídeo, sincroniza os campos pedagógicos e status
+        if (def.status === 'published' || def.video_url || def.video_id) {
+          parsed.lessons[def.id].status = def.status || 'published';
+          parsed.lessons[def.id].video_url = def.video_url || parsed.lessons[def.id].video_url;
+          parsed.lessons[def.id].video_id = def.video_id || parsed.lessons[def.id].video_id;
+          parsed.lessons[def.id].video_provider = def.video_provider || 'youtube';
+          parsed.lessons[def.id].title = def.title;
+          parsed.lessons[def.id].description = def.description;
+          parsed.lessons[def.id].summary = def.summary;
+          parsed.lessons[def.id].objectives = def.objectives;
+          parsed.lessons[def.id].exercise = def.exercise;
+        }
       }
     });
 
-    // LIBERAÇÃO: toda aula que possui vídeo configurado é tratada como
-    // publicada, mesmo que um status antigo (draft/scheduled) tenha ficado
-    // gravado no localStorage ou venha sincronizado do Supabase.
+    // Toda aula que possui vídeo configurado é tratada como publicada
     Object.values(parsed.lessons).forEach(l => {
       const hasVideo = Boolean(l.video_url || l.video_id);
       if (hasVideo && l.status !== 'published') {
@@ -657,6 +654,13 @@
     const lesson = getLesson(lessonId) || getAllLessons("modulo-2")[0];
     if (!lesson) {
       container.innerHTML = `<div class="alert alert-danger">Aula não encontrada.</div>`;
+
+    // Remover qualquer botão residual de conclusão manual
+    container.querySelectorAll('.btn-success, button').forEach(btn => {
+      if (btn.innerText.includes('Concluir Aula') || btn.getAttribute('onclick')?.includes('markLessonCompleted')) {
+        btn.remove();
+      }
+    });
       return;
     }
 
@@ -778,9 +782,7 @@
               </ul>
 
               <div class="mt-3" style="display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;">
-                <button class="btn btn-success btn-sm" onclick="InforMestreLMS.markLessonCompleted('${studentId}', '${lesson.id}'); InforMestreLMS.renderStudentLmsLessonView(document.getElementById('hub-main-panel-content'), '${nextLessonId}', window.currentUser);">
-                  ✅ Concluir Aula & Liberar Próxima
-                </button>
+                
                 <button class="btn btn-primary btn-sm" onclick="InforMestreLMS.switchLessonTab('exercise')">
                   Avançar para a Etapa 2: Atividade ➡️
                 </button>
