@@ -237,10 +237,10 @@
         "Uso de elementos gráficos SmartArt"
       ],
       duration: "35 min",
-      status: "draft",
+      status: "published",
       video_provider: "youtube",
-      video_url: "",
-      video_id: "",
+      video_url: "https://youtu.be/5W5YSs-of9Q",
+      video_id: "5W5YSs-of9Q",
       exercise: {
         title: "Desafio 07 — Apresentação Pessoal",
         instructions: "Criar uma apresentação pessoal no PowerPoint com no mínimo 3 slides contendo textos, imagens e ícones. Envie em .pptx ou .pdf."
