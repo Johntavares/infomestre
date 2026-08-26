@@ -99,8 +99,8 @@
       duration: "35 min",
       status: "published",
       video_provider: "youtube",
-      video_url: "https://youtu.be/5CunWsicjd0",
-      video_id: "5CunWsicjd0",
+      video_url: "https://youtu.be/9i3aB-6AofE",
+      video_id: "9i3aB-6AofE",
       exercise: {
         title: "Desafio 02 — Prática dos Atalhos Básicos (Ctrl+Z, Ctrl+C, Ctrl+V, Ctrl+L, Ctrl+A)",
         instructions: "Abra o Microsoft Word e digite um pequeno texto. Treine a utilização de Ctrl+C e Ctrl+V para duplicar trechos, use Ctrl+Z para desfazer uma digitação, use Ctrl+L para buscar uma palavra e Ctrl+A para selecionar todo o texto. Envie seu arquivo nos formatos .docx ou .pdf."
@@ -263,10 +263,10 @@
         "Construção completa: Capa, Objetivos, Conteúdo, Imagens, SmartArt, Ícones e Slide final"
       ],
       duration: "50 min",
-      status: "draft",
+      status: "published",
       video_provider: "youtube",
-      video_url: "",
-      video_id: "",
+      video_url: "https://youtu.be/5CunWsicjd0",
+      video_id: "5CunWsicjd0",
       exercise: {
         title: "Projeto Final — Apresentação Profissional Completa",
         instructions: "Criar uma apresentação completa sobre um tema de livre escolha utilizando: Capa, Objetivos, Conteúdo, Imagens, SmartArt, Ícones, Animações, Transições e Slide Final. Envie em .pptx ou .pdf."
