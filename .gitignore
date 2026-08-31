@@ -1,3 +1,19 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Scratch & Test Scripts
+*.mjs
+*.sql
+*.ps1
+*.vbs
+
+# Root Screenshots / Test Outputs
+screenshot_*.png
+test_*.png
+visual_*.png
+skillset_*.png
+
 # OS Metadata
 Thumbs.db
 ehthumbs.db

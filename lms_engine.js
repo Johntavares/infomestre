@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // INFORMESTRE LMS ENGINE — MOTOR SAAS DE VIDEOAULAS, AVALIAÇÕES E RECOMPENSAS
 // ============================================================================
 
@@ -655,13 +655,6 @@
     const lesson = getLesson(lessonId) || getAllLessons("modulo-2")[0];
     if (!lesson) {
       container.innerHTML = `<div class="alert alert-danger">Aula não encontrada.</div>`;
-
-    // Remover qualquer botão residual de conclusão manual
-    container.querySelectorAll('.btn-success, button').forEach(btn => {
-      if (btn.innerText.includes('Concluir Aula') || btn.getAttribute('onclick')?.includes('markLessonCompleted')) {
-        btn.remove();
-      }
-    });
       return;
     }
 
@@ -671,16 +664,6 @@
     const submissions = getSubmissions(studentId, lesson.id);
     const latestSubmission = submissions.length > 0 ? submissions[submissions.length - 1] : null;
     const notes = getStudentNote(studentId, lesson.id);
-    const questions = getQuestions(lesson.id);
-
-    // Mapeamento visual de status da atividade
-    let subStatusBadge = `<span class="lms-status-badge status-gray">⚪ Não enviada</span>`;
-    if (latestSubmission) {
-      if (latestSubmission.status === 'submitted') subStatusBadge = `<span class="lms-status-badge status-blue">📩 Enviada (Em avaliação)</span>`;
-      else if (latestSubmission.status === 'reviewing') subStatusBadge = `<span class="lms-status-badge status-yellow">⏳ Em avaliação</span>`;
-      else if (latestSubmission.status === 'approved') subStatusBadge = `<span class="lms-status-badge status-green">✅ Aprovada</span>`;
-      else if (latestSubmission.status === 'redo') subStatusBadge = `<span class="lms-status-badge status-red">🔄 Refazer (Ajustes necessários)</span>`;
-    }
 
     // Status da aula (draft/published)
     const videoSource = lesson.video_url || lesson.video_id || '';
@@ -689,252 +672,351 @@
 
     const allMod2 = getAllLessons("modulo-2");
     const currentIdx = allMod2.findIndex(l => l.id === lesson.id);
-    const nextLesson = allMod2[currentIdx + 1] || lesson;
-    const nextLessonId = nextLesson.id;
+    const prevLesson = currentIdx > 0 ? allMod2[currentIdx - 1] : null;
+    const nextLesson = currentIdx < allMod2.length - 1 ? allMod2[currentIdx + 1] : null;
+    const questions = getQuestions(lesson.id);
 
-    // HTML da Página Única da Aula (10 Seções)
     container.innerHTML = `
-      <div class="lms-single-lesson-layout">
-        <!-- 1. CABEÇALHO DA AULA -->
-        <div class="lms-lesson-header-card">
-          <div class="lms-header-left">
-            <button class="btn btn-secondary btn-sm" onclick="if(window.switchHubTab) window.switchHubTab('dashboard'); else if(window.showScreen) window.showScreen('hub');">
-              ⬅️ Voltar ao Dashboard
-            </button>
-            <div class="lms-lesson-meta-badges mt-1">
-              <span class="badge badge-purple">MÓDULO 2 — PACOTE OFFICE</span>
-              <span class="badge badge-outline">⏱️ ${lesson.duration}</span>
-              ${lesson.status === 'published' ? '<span class="badge badge-success">🟢 Publicada</span>' : '<span class="badge badge-warning">⏳ Em breve</span>'}
+      <div class="lms-player-container">
+        
+        <!-- 1. CABEÇALHO COMPACTO (ECONOMIA DE ESPAÇO VERTICAL) -->
+        <div class="lms-player-header-compact">
+          <div class="lms-header-left-compact">
+            <a href="javascript:void(0)" onclick="if(window.openStudentCourseDetail) window.openStudentCourseDetail('informatica-basica'); else if(window.switchHubTab) window.switchHubTab('dashboard');" class="lms-back-btn-compact">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              <span>Voltar aos Módulos</span>
+            </a>
+            <h1 class="lms-title-inline">${lesson.title}</h1>
+            <div class="lms-badges-inline">
+              <span class="lms-badge-mini module">MÓDULO 2 &bull; OFFICE</span>
+              <span class="lms-badge-mini duration">⏱ ${lesson.duration || '30 min'}</span>
+              <span class="lms-badge-mini xp">⭐ +50 XP</span>
+              ${lesson.status === 'published' ? '<span class="lms-badge-mini published">✓ Publicada</span>' : '<span class="lms-badge-mini" style="background:#FFF9E6; color:#E58E26;">Em breve</span>'}
             </div>
-            <h1 class="lms-lesson-title mt-1">${lesson.title}</h1>
-            <p class="text-muted lms-lesson-desc">${lesson.description}</p>
           </div>
-          <div class="lms-header-right">
-            <button id="btn-favorite-lesson" class="btn btn-icon-favorite ${progress.favorite ? 'active' : ''}" onclick="InforMestreLMS.toggleFavorite('${studentId}', '${lesson.id}')">
-              ${progress.favorite ? '⭐ Favoritada' : '☆ Favoritar'}
+
+          <button id="btn-favorite-lesson" class="lms-fav-btn-compact ${progress.favorite ? 'active' : ''}" onclick="InforMestreLMS.toggleFavorite('${studentId}', '${lesson.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="${progress.favorite ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>${progress.favorite ? 'Favoritada' : 'Favoritar'}</span>
+          </button>
+        </div>
+
+        <!-- 2. BARRA UNIFICADA: PLAYLIST SLIM + ABAS DE ETAPAS -->
+        <div class="lms-control-bar-unified">
+          <!-- Playlist de Aulas em Mini Pílulas -->
+          <div class="lms-playlist-pills-row">
+            ${allMod2.map((l, idx) => `
+              <button class="lms-pill-item ${l.id === lesson.id ? 'active' : ''}" type="button" onclick="InforMestreLMS.renderStudentLmsLessonView(document.getElementById('hub-main-panel-content'), '${l.id}', window.currentUser)" title="${l.title}">
+                <span>Aula 0${idx+1}</span>
+                ${l.id === lesson.id ? '<span>▶</span>' : ''}
+              </button>
+            `).join('')}
+          </div>
+
+          <!-- Abas de Etapas Slim -->
+          <div class="lms-steps-tabs-slim">
+            <button class="lms-step-btn-slim active" id="ltab-video" type="button" onclick="InforMestreLMS.switchLessonTab('video')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>1. Videoaula</span>
+            </button>
+            <button class="lms-step-btn-slim" id="ltab-exercise" type="button" onclick="InforMestreLMS.switchLessonTab('exercise')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>2. Atividade & Anotações</span>
+            </button>
+            <button class="lms-step-btn-slim" id="ltab-simulators" type="button" onclick="InforMestreLMS.switchLessonTab('simulators')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span>3. Simuladores</span>
             </button>
           </div>
         </div>
 
-        <!-- LISTA DE AULAS RÁPIDA (NAVBAR DO MÓDULO 2) -->
-        <div class="lms-module-nav-pills">
-          ${getAllLessons("modulo-2").map((l, idx) => `
-            <button class="lms-nav-pill ${l.id === lesson.id ? 'active' : ''}" onclick="InforMestreLMS.renderStudentLmsLessonView(document.getElementById('hub-main-panel-content'), '${l.id}', window.currentUser)">
-              Aula 0${idx+1} ${l.status === 'published' ? '🎬' : '⏳'}
-            </button>
-          `).join('')}
-        </div>
-
-        <!-- BARRA DE NAVEGAÇÃO DE ETAPAS / SLIDES DA AULA -->
-        <div class="lms-lesson-tabs-bar mt-2">
-          <button class="lms-tab-btn active" id="ltab-video" onclick="InforMestreLMS.switchLessonTab('video')">
-            🎬 Etapa 1: Videoaula & Conteúdo
-          </button>
-          <button class="lms-tab-btn" id="ltab-exercise" onclick="InforMestreLMS.switchLessonTab('exercise')">
-            📂 Etapa 2: Atividade Prática & Anotações
-          </button>
-          <button class="lms-tab-btn" id="ltab-simulators" onclick="InforMestreLMS.switchLessonTab('simulators')">
-            🧪 Etapa 3: Simuladores Práticos (Centro de Treinamento)
-          </button>
-        </div>
-
-        <!-- ETAPA 1: VIDEOAULA & RESUMO DA AULA -->
-        <div id="lms-step-video" class="lms-step-panel mt-2">
-          <div class="lms-content-grid">
-            <!-- ÁREA DO PLAYER DE VÍDEO 16:9 -->
-            <div class="lms-card lms-video-card">
-              <div class="lms-card-header">
-                <h3>🎬 Videoaula Principal</h3>
-                <span class="text-muted text-small">${isPublished ? 'Hospedado via YouTube (Não Listado)' : 'Status: Em breve'}</span>
-              </div>
-              
-              <div class="lms-video-wrapper">
+        <!-- ETAPA 1: VIDEOAULA THEATER & RESUMO -->
+        <div id="lms-step-video" class="lms-step-panel">
+          <div class="lms-cinema-grid">
+            
+            <!-- PLAYER DE VÍDEO 16:9 CINEMA -->
+            <div class="lms-cinema-card">
+              <div class="lms-video-viewport">
                 ${isPublished ? `
                   <iframe src="${embedUrl}" title="${lesson.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 ` : `
-                  <div class="lms-video-placeholder">
-                    <div class="placeholder-icon">🎬</div>
-                    <h4>Vídeo ainda não disponível</h4>
-                    <p>Esta aula será publicada em breve pelo professor. Você já pode ler o resumo, praticar os exercícios e tirar dúvidas!</p>
+                  <div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#FFFFFF; padding:1.5rem; text-align:center; gap:0.5rem;">
+                    <div style="font-size:2rem;">🎬</div>
+                    <h4 style="font-size:1.1rem; font-weight:800; margin:0;">Videoaula em Produção</h4>
+                    <p style="font-size:0.8rem; color:#94A3B8; margin:0;">Esta aula será liberada em breve pelo seu tutor.</p>
                   </div>
                 `}
               </div>
 
-              ${isPublished && videoSource ? `
-                <div class="lms-external-video-fallback mt-2" style="padding: 0.6rem 0.88rem; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap;">
-                  <span style="font-size: 0.82rem; color: var(--text-secondary);">
-                    ⚠️ O vídeo não carregou ou ocorreu algum erro no player?
-                  </span>
-                  <a href="${lesson.video_url || ('https://youtu.be/' + lesson.video_id)}" target="_blank" rel="noopener noreferrer" style="background: #ff0000; border: 1px solid #cc0000; color: #ffffff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; padding: 0.4rem 0.85rem; border-radius: 6px; text-decoration: none; box-shadow: 0 2px 6px rgba(255,0,0,0.3); transition: transform 0.2s;">
-                    ▶️ Assistir Direto no YouTube ↗
+              <div class="lms-cinema-bottom-bar">
+                <div style="display:flex; align-items:center; gap:0.35rem;">
+                  <span style="color:#00B894; font-weight:800;">●</span>
+                  <span>Alta Definição (1080p HD) &bull; Acesso Ilimitado</span>
+                </div>
+
+                ${isPublished && videoSource ? `
+                  <a href="${lesson.video_url || ('https://youtu.be/' + lesson.video_id)}" target="_blank" rel="noopener noreferrer" class="lms-yt-pill-link">
+                    <span>Abrir no YouTube</span>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
                   </a>
-                </div>
-              ` : ''}
-            </div>
-
-            <!-- RESUMO E OBJETIVOS DE APRENDIZADO -->
-            <div class="lms-card lms-info-card">
-              <h3>📖 Resumo da Aula</h3>
-              <p style="line-height: 1.6; color: var(--text-primary); font-size: 0.95rem;">${lesson.summary}</p>
-              
-              <h4 class="mt-2" style="color: var(--color-primary-light);">🎯 Objetivos Pedagógicos</h4>
-              <ul class="lms-objectives-list mt-1">
-                ${(lesson.objectives || []).map(obj => `<li><span class="check-icon">✓</span> <span>${obj}</span></li>`).join('')}
-              </ul>
-
-              <div class="mt-3" style="display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap;">
-                
-                <button class="btn btn-primary btn-sm" onclick="InforMestreLMS.switchLessonTab('exercise')">
-                  Avançar para a Etapa 2: Atividade ➡️
-                </button>
+                ` : ''}
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- ETAPA 2: ANOTAÇÕES, ATIVIDADE PRÁTICA & DÚVIDAS -->
-        <div id="lms-step-exercise" class="lms-step-panel screen-hidden mt-2">
-          <div class="lms-content-grid">
-            <!-- BLOCO DE ANOTAÇÕES PRIVADAS -->
-            <div class="lms-card lms-notes-card">
-              <div class="lms-card-header">
-                <h3>📝 Minhas Anotações Privadas</h3>
-                <span class="text-muted text-small">Salvo automaticamente</span>
-              </div>
-              <textarea id="lms-student-notes-input" placeholder="Digite suas anotações pessoais desta aula aqui..." oninput="InforMestreLMS.saveStudentNote('${studentId}', '${lesson.id}', this.value)">${notes}</textarea>
-              <div class="notes-footer text-muted text-small mt-1">💡 Suas anotações são privadas e ficam salvas para sua consulta rápida.</div>
-            </div>
-
-            <!-- ATIVIDADE PRÁTICA & UPLOAD DE ARQUIVOS -->
-            <div class="lms-card lms-exercise-card">
-              <div class="lms-card-header">
-                <h3>📂 Atividade Prática & Envio de Trabalhos</h3>
-                ${subStatusBadge}
+            <!-- PAINEL LATERAL: RESUMO & DOMÍNIO PEDAGÓGICO -->
+            <div class="lms-side-panel-compact">
+              <div class="lms-compact-card">
+                <h3 class="lms-card-heading">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#705CF6" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  <span>Resumo da Aula</span>
+                </h3>
+                <p class="lms-card-text-summary">${lesson.summary || lesson.description}</p>
               </div>
 
-              <div class="exercise-details">
-                <h4>${lesson.exercise?.title || 'Atividade Prática'}</h4>
-                <p class="text-muted mt-1">${lesson.exercise?.instructions || 'Reproduza o exercício apresentado e envie seu arquivo.'}</p>
-                <div class="allowed-exts-tag mt-1">Formatos aceitos: <strong>.docx, .xlsx, .pptx, .pdf</strong></div>
-              </div>
-
-              <!-- ZONA DE UPLOAD -->
-              <div class="lms-upload-box mt-2">
-                <input type="file" id="lms-file-input-${lesson.id}" accept=".docx,.xlsx,.pptx,.pdf" style="display:none;" onchange="InforMestreLMS.handleFileUpload('${studentId}', '${lesson.id}', this)">
-                <button class="btn btn-primary btn-full" onclick="document.getElementById('lms-file-input-${lesson.id}').click()">
-                  📤 Selecionar Arquivo para Enviar (Nova Versão)
-                </button>
-                <p class="text-small text-muted text-center mt-1">Envios anteriores não são sobrescritos. O tutor poderá ver o histórico de versões.</p>
-              </div>
-
-              <!-- HISTÓRICO DE VERSÕES ENVIADAS -->
-              ${submissions.length > 0 ? `
-                <div class="lms-submission-history mt-2">
-                  <h5>📜 Histórico de Envios (${submissions.length} versão/ões)</h5>
-                  <div class="submissions-timeline">
-                    ${submissions.map(sub => `
-                      <div class="sub-timeline-item ${sub.status}">
-                        <div class="sub-version-badge">v${sub.version}</div>
-                        <div class="sub-info">
-                          <strong>${sub.file_name}</strong>
-                          <span class="text-muted text-small">${new Date(sub.created_at).toLocaleString('pt-BR')}</span>
-                          ${sub.feedback ? `<div class="sub-feedback-quote">💬 <em>"${sub.feedback}"</em> — Tutor</div>` : ''}
-                        </div>
-                        <span class="sub-status-pill status-${sub.status}">${sub.status.toUpperCase()}</span>
-                      </div>
-                    `).join('')}
-                  </div>
-                </div>
-              ` : ''}
-
-              <div class="mt-3 text-right">
-                <button class="btn btn-primary btn-sm" onclick="InforMestreLMS.switchLessonTab('simulators')">
-                  Avançar para a Etapa 3: Simuladores 🧪 ➡️
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- FÓRUM DE DÚVIDAS COM O TUTOR (Q&A) -->
-          <div class="lms-card lms-qa-card mt-2">
-            <div class="lms-card-header">
-              <h3>💬 Dúvidas ao Tutor desta Aula</h3>
-              <span class="text-muted text-small">${questions.length} pergunta(s)</span>
-            </div>
-
-            <div class="qa-ask-form mt-1">
-              <textarea id="lms-question-text-${lesson.id}" rows="2" placeholder="Ficou com alguma dúvida sobre esta aula? Pergunte ao tutor..."></textarea>
-              <button class="btn btn-secondary btn-sm mt-1" onclick="InforMestreLMS.handlePostQuestion('${studentId}', '${studentName}', '${lesson.id}')">
-                ❓ Enviar Dúvida ao Tutor
-              </button>
-            </div>
-
-            <div class="qa-questions-list mt-2">
-              ${questions.length === 0 ? '<p class="text-muted text-small">Nenhuma dúvida enviada ainda. Seja o primeiro a perguntar!</p>' : ''}
-              ${questions.map(q => `
-                <div class="qa-question-item">
-                  <div class="qa-q-header">
-                    <strong>👤 ${q.student_name}</strong>
-                    <span class="text-muted text-small">${new Date(q.created_at).toLocaleDateString('pt-BR')}</span>
-                  </div>
-                  <p class="qa-q-text">"${q.question}"</p>
-                  ${(q.answers || []).map(a => `
-                    <div class="qa-answer-box">
-                      <strong>👨‍🏫 ${a.teacher_name}:</strong>
-                      <p>${a.answer}</p>
+              <div class="lms-compact-card">
+                <h3 class="lms-card-heading">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00B894" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                  <span>O que você vai dominar</span>
+                </h3>
+                <div class="lms-objectives-clean-list">
+                  ${(lesson.objectives || []).map(obj => `
+                    <div class="lms-obj-item-clean">
+                      <span class="check-mark">✓</span>
+                      <span>${obj}</span>
                     </div>
                   `).join('')}
                 </div>
-              `).join('')}
+              </div>
+            </div>
+
+          </div>
+
+          <!-- FOOTER DE NAVEGAÇÃO -->
+          <div class="lms-footer-compact mt-2">
+            ${prevLesson ? `
+              <button class="lms-btn-nav-compact" type="button" onclick="InforMestreLMS.renderStudentLmsLessonView(document.getElementById('hub-main-panel-content'), '${prevLesson.id}', window.currentUser)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                <span>Aula Anterior</span>
+              </button>
+            ` : `<div></div>`}
+
+            <button class="lms-btn-nav-compact primary" type="button" onclick="InforMestreLMS.switchLessonTab('exercise')">
+              <span>Próxima Etapa: Atividade Prática</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ETAPA 2: ATIVIDADE PRÁTICA, ENVIO DE ARQUIVO & ANOTAÇÕES -->
+        <div id="lms-step-exercise" class="lms-step-panel screen-hidden">
+          <div class="lms-exercise-grid" style="display:grid; grid-template-columns: 1.35fr 0.95fr; gap:1.25rem; align-items:start;">
+            
+            <!-- COLUNA ESQUERDA: PROPOSTA PRÁTICA + ÁREA DE UPLOAD + HISTÓRICO DE ENVIOS -->
+            <div style="display:flex; flex-direction:column; gap:1rem;">
+              
+              <!-- Card da Atividade Proposta -->
+              <div class="lms-compact-card">
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+                  <h3 class="lms-card-heading" style="color:var(--color-brand);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span>Atividade Prática — ${lesson.title}</span>
+                  </h3>
+                  <span class="lms-badge-mini xp">⭐ +50 XP</span>
+                </div>
+                
+                <p style="font-size:0.86rem; color:var(--color-text-secondary); line-height:1.55; margin:0.25rem 0;">
+                  ${lesson.exercise_prompt || 'Siga as instruções práticas apresentadas na videoaula para produzir o exercício no Word/Excel/PowerPoint e envie seu arquivo abaixo para avaliação pelo tutor.'}
+                </p>
+
+                <!-- Dicas de Formato -->
+                <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; margin-top:0.35rem;">
+                  <span style="font-size:0.72rem; font-weight:700; color:var(--color-text-muted);">Formatos suportados:</span>
+                  <span class="lms-badge-mini module">.docx (Word)</span>
+                  <span class="lms-badge-mini published">.xlsx (Excel)</span>
+                  <span class="lms-badge-mini xp">.pptx (PowerPoint)</span>
+                  <span class="lms-badge-mini duration">.pdf / imagens / .zip</span>
+                </div>
+              </div>
+
+              <!-- Card da Zona de Upload Interativa -->
+              <div class="lms-compact-card">
+                <h3 class="lms-card-heading">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#705CF6" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>Enviar Arquivo da Atividade</span>
+                </h3>
+
+                <div id="lms-dropzone-${lesson.id}" style="background: linear-gradient(180deg, #FAF9FD 0%, #F1EDFD 100%); border: 2px dashed rgba(112, 92, 246, 0.4); border-radius: 16px; padding: 1.75rem 1.25rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.65rem; cursor: pointer; transition: all 0.2s ease;" onclick="document.getElementById('lms-file-input-${lesson.id}').click()">
+                  <div style="width: 48px; height: 48px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 4px 14px rgba(112, 92, 246, 0.15); display: flex; align-items: center; justify-content: center; color: #705CF6;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <div>
+                    <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--color-text-primary); margin: 0;">Clique aqui ou arraste seu arquivo para enviar</h4>
+                    <p style="font-size: 0.76rem; color: var(--color-text-muted); margin: 0.2rem 0 0 0;">Suporta arquivos de até 25 MB</p>
+                  </div>
+                  <input type="file" id="lms-file-input-${lesson.id}" style="display:none;" onchange="InforMestreLMS.handleFileUpload('${studentId}', '${studentName}', '${lesson.id}', event)">
+                  <button class="lms-btn-nav-compact primary" type="button" style="pointer-events:none; margin-top:0.2rem; font-size:0.78rem; padding:0.45rem 0.9rem;">
+                    <span>📁 Escolher Arquivo</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card do Histórico de Submissões -->
+              <div class="lms-compact-card">
+                <div style="display:flex; align-items:center; justify-content:space-between;">
+                  <h3 class="lms-card-heading">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0984E3" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                    <span>Histórico de Entregas (${submissions.length})</span>
+                  </h3>
+                  ${submissions.length > 0 ? `<span class="lms-badge-mini published">Atividade Enviada</span>` : ''}
+                </div>
+
+                ${submissions.length === 0 ? `
+                  <div style="background:#F8F7FD; border-radius:12px; padding:1.15rem; text-align:center; color:var(--color-text-muted); font-size:0.82rem;">
+                    Nenhum arquivo enviado ainda para esta aula. Utilize a área de upload acima para enviar seu trabalho.
+                  </div>
+                ` : `
+                  <div style="display:flex; flex-direction:column; gap:0.65rem;">
+                    ${submissions.map(sub => `
+                      <div style="background: #FFFFFF; border: 1px solid var(--color-border); border-radius: 12px; padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.45rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                          <div style="display: flex; align-items: center; gap: 0.6rem;">
+                            <span style="font-size: 1.25rem;">📄</span>
+                            <div>
+                              <strong style="font-size: 0.88rem; color: var(--color-text-primary);">${sub.file_name}</strong>
+                              <div style="font-size: 0.73rem; color: var(--color-text-muted);">Versão v${sub.version} &bull; Enviado em ${new Date(sub.created_at).toLocaleString('pt-BR')}</div>
+                            </div>
+                          </div>
+
+                          <div>
+                            ${sub.status === 'approved' ? `
+                              <span class="lms-badge-mini published" style="font-size:0.76rem;">✅ Aprovado (Nota: ${sub.grade || 100}/100)</span>
+                            ` : sub.status === 'redo' ? `
+                              <span class="lms-badge-mini xp" style="font-size:0.76rem; background:#FFEBEB; color:#FF4757;">🔄 Solicitação de Ajustes</span>
+                            ` : `
+                              <span class="lms-badge-mini duration" style="font-size:0.76rem; background:#EBF4FF; color:#0984E3;">⏳ Aguardando Avaliação do Tutor</span>
+                            `}
+                          </div>
+                        </div>
+
+                        ${sub.feedback ? `
+                          <div style="background: #F8F7FD; border-left: 3px solid #705CF6; border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.8rem; color: var(--color-text-secondary); margin-top: 0.2rem;">
+                            <strong style="color:#705CF6;">Feedback do Tutor:</strong> ${sub.feedback}
+                          </div>
+                        ` : ''}
+                      </div>
+                    `).join('')}
+                  </div>
+                `}
+              </div>
+
+            </div>
+
+            <!-- COLUNA DIREITA: CADERNO DE ANOTAÇÕES + DÚVIDAS AO TUTOR -->
+            <div style="display:flex; flex-direction:column; gap:1rem;">
+              
+              <!-- Caderno de Anotações -->
+              <div class="lms-compact-card">
+                <h3 class="lms-card-heading">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00CEC9" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                  <span>Meu Caderno de Anotações</span>
+                </h3>
+                <p style="font-size:0.78rem; color:var(--color-text-muted); margin:0;">Suas notas ficam salvas na nuvem para consulta.</p>
+                
+                <textarea id="lms-notes-${lesson.id}" style="width: 100%; height: 140px; border-radius: 12px; border: 1.5px solid var(--color-border); padding: 0.75rem; font-family: inherit; font-size: 0.84rem; color: var(--color-text-primary); background: #FAF9FD; outline: none; resize: vertical; box-sizing: border-box;" placeholder="Digite aqui fórmulas do Excel, atalhos do teclado e anotações desta aula...">${notes}</textarea>
+                
+                <div style="display:flex; justify-content:flex-end;">
+                  <button class="lms-btn-nav-compact primary" type="button" onclick="InforMestreLMS.saveStudentNote('${studentId}', '${lesson.id}', document.getElementById('lms-notes-${lesson.id}').value); if(window.showToastNotification) window.showToastNotification('💾 Anotação Salva!', 'Suas notas foram salvas com sucesso.');">
+                    <span>💾 Salvar Anotações</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Dúvidas ao Tutor -->
+              <div class="lms-compact-card">
+                <h3 class="lms-card-heading">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF9F43" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>Dúvidas ao Tutor (${questions.length})</span>
+                </h3>
+                <p style="font-size:0.78rem; color:var(--color-text-muted); margin:0;">Envie uma dúvida técnica ao seu instrutor.</p>
+
+                <div style="display:flex; flex-direction:column; gap:0.5rem; margin-top:0.25rem;">
+                  <textarea id="lms-question-text-${lesson.id}" style="width:100%; height:70px; border-radius:10px; border:1px solid var(--color-border); padding:0.6rem; font-family:inherit; font-size:0.82rem; background:#FAF9FD; outline:none; resize:none; box-sizing:border-box;" placeholder="Digite sua pergunta aqui..."></textarea>
+                  
+                  <button class="lms-btn-nav-compact" type="button" style="align-self:flex-end; background:#FFF2E5; color:#E58E26; border-color:rgba(255,159,67,0.3); font-weight:700;" onclick="InforMestreLMS.handlePostQuestion('${studentId}', '${studentName}', '${lesson.id}')">
+                    <span>💬 Enviar Pergunta</span>
+                  </button>
+                </div>
+
+                ${questions.length > 0 ? `
+                  <div style="display:flex; flex-direction:column; gap:0.45rem; margin-top:0.4rem; max-height:180px; overflow-y:auto; padding-right:2px;">
+                    ${questions.map(q => `
+                      <div style="background:#F8F7FD; border-radius:10px; padding:0.6rem 0.75rem; font-size:0.78rem;">
+                        <div style="font-weight:700; color:var(--color-text-primary);">👤 ${q.student_name || 'Aluno'}:</div>
+                        <div style="color:var(--color-text-secondary); margin-top:2px;">${q.question}</div>
+                        ${(q.answers || []).map(ans => `
+                          <div style="background:#FFFFFF; border-left:2px solid #00B894; border-radius:6px; padding:0.35rem 0.55rem; margin-top:0.35rem; font-size:0.75rem;">
+                            <strong style="color:#00B894;">👨‍🏫 ${ans.teacher_name || 'Tutor'}:</strong> ${ans.answer}
+                          </div>
+                        `).join('')}
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ETAPA 3: SIMULADORES -->
+        <div id="lms-step-simulators" class="lms-step-panel screen-hidden">
+          <div class="lms-compact-card">
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+              <h3 class="lms-card-heading">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#705CF6" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Simuladores e Laboratório Prático</span>
+              </h3>
+              <span class="lms-badge-mini module">Treinamento Interativo</span>
+            </div>
+            <p style="font-size:0.84rem; color:var(--color-text-secondary); margin:0.25rem 0 0.5rem 0;">Acesse os laboratórios de simulação para acelerar suas habilidades de informática.</p>
+            
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; margin-top:0.5rem;">
+              <div class="skillset-card-3d" onclick="if(window.switchHubTab) window.switchHubTab('training-lab');">
+                <div class="card-3d-body" style="padding:1.15rem; display:flex; flex-direction:column; gap:0.5rem;">
+                  <div style="font-size:1.8rem;">⌨️</div>
+                  <h4 style="font-size:0.92rem; font-weight:800; color:var(--color-text-primary); margin:0;">Laboratório de Digitação</h4>
+                  <p style="font-size:0.78rem; color:var(--color-text-muted); margin:0;">Treine digitação ágil no teclado e meça seu PPM em tempo real.</p>
+                  <button class="lms-btn-nav-compact primary" type="button" style="width:100%; justify-content:center; margin-top:0.25rem;">Abrir Laboratório</button>
+                </div>
+              </div>
+
+              <div class="skillset-card-3d" onclick="if(window.switchHubTab) window.switchHubTab('training-lab');">
+                <div class="card-3d-body" style="padding:1.15rem; display:flex; flex-direction:column; gap:0.5rem;">
+                  <div style="font-size:1.8rem;">🎈</div>
+                  <h4 style="font-size:0.92rem; font-weight:800; color:var(--color-text-primary); margin:0;">Coordenação de Mouse</h4>
+                  <p style="font-size:0.78rem; color:var(--color-text-muted); margin:0;">Pratique cliques rápidos e precisão de mira com o cursor.</p>
+                  <button class="lms-btn-nav-compact primary" type="button" style="width:100%; justify-content:center; margin-top:0.25rem;">Abrir Simulador</button>
+                </div>
+              </div>
+
+              <div class="skillset-card-3d" onclick="if(window.switchHubTab) window.switchHubTab('training-lab');">
+                <div class="card-3d-body" style="padding:1.15rem; display:flex; flex-direction:column; gap:0.5rem;">
+                  <div style="font-size:1.8rem;">🔧</div>
+                  <h4 style="font-size:0.92rem; font-weight:800; color:var(--color-text-primary); margin:0;">Simulador de Hardware 3D</h4>
+                  <p style="font-size:0.78rem; color:var(--color-text-muted); margin:0;">Monte o computador peça por peça e conecte periféricos.</p>
+                  <button class="lms-btn-nav-compact primary" type="button" style="width:100%; justify-content:center; margin-top:0.25rem;">Abrir Simulador</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- ETAPA 3: CENTRO DE TREINAMENTO / SIMULADORES PRÁTICOS -->
-        <div id="lms-step-simulators" class="lms-step-panel screen-hidden mt-2">
-          <div id="lms-lesson-simulators-panel"></div>
-        </div>
       </div>
     `;
   }
 
-  function toggleFavorite(studentId, lessonId) {
-    const current = getLessonProgress(studentId, lessonId);
-    const updated = updateLessonProgress(studentId, lessonId, { favorite: !current.favorite });
-    const btn = document.getElementById("btn-favorite-lesson");
-    if (btn) {
-      btn.classList.toggle("active", updated.favorite);
-      btn.innerHTML = updated.favorite ? "⭐ Favoritada" : "☆ Favoritar";
-    }
-  }
 
-  function handleFileUpload(studentId, lessonId, inputEl) {
-    if (!inputEl || !inputEl.files || inputEl.files.length === 0) return;
-    const file = inputEl.files[0];
-    const newSub = addSubmission(studentId, lessonId, file.name);
-    
-    if (window.showToastNotification) {
-      window.showToastNotification("📤 Trabalho Enviado!", `Versão ${newSub.version} do arquivo "${file.name}" enviada para avaliação.`);
-    } else {
-      alert(`Trabalho Versão ${newSub.version} enviado com sucesso!`);
-    }
-
-    // Recarrega a view da aula
-    renderStudentLmsLessonView(document.getElementById("hub-main-panel-content"), lessonId, window.currentUser);
-  }
-
-  function handlePostQuestion(studentId, studentName, lessonId) {
-    const input = document.getElementById(`lms-question-text-${lessonId}`);
-    if (!input || !input.value.trim()) return;
-
-    addQuestion(studentId, studentName, lessonId, input.value.trim());
-    if (window.showToastNotification) {
-      window.showToastNotification("❓ Dúvida Enviada!", "Sua pergunta foi enviada ao tutor.");
-    }
-    renderStudentLmsLessonView(document.getElementById("hub-main-panel-content"), lessonId, window.currentUser);
-  }
-
-  // PAINEL DE GERENCIAMENTO DO TUTOR/PROFESSOR
   function renderTeacherLmsPanel(container) {
     if (!container) return;
     const lessons = getAllLessons("modulo-2");
@@ -1282,6 +1364,42 @@
         window.InforMestreTrainingLab.renderLabPanel(simContainer, { isInsideLesson: true });
       }
     }
+  }
+
+  function toggleFavorite(studentId, lessonId) {
+    const prog = getLessonProgress(studentId, lessonId);
+    prog.favorite = !prog.favorite;
+    updateLessonProgress(studentId, lessonId, prog);
+    const btn = document.getElementById("btn-favorite-lesson");
+    if (btn) {
+      if (prog.favorite) {
+        btn.classList.add("active");
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> <span>Salva nos Favoritos</span>`;
+      } else {
+        btn.classList.remove("active");
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> <span>Favoritar Aula</span>`;
+      }
+    }
+  }
+
+  function handleFileUpload(studentId, studentName, lessonId, event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    addSubmission(studentId, studentName, lessonId, file.name);
+    if (window.showToastNotification) {
+      window.showToastNotification("🎉 Atividade Enviada!", "Seu exercício foi enviado com sucesso para avaliação.");
+    }
+    renderStudentLmsLessonView(document.getElementById("hub-main-panel-content"), lessonId, window.currentUser);
+  }
+
+  function handlePostQuestion(studentId, studentName, lessonId) {
+    const input = document.getElementById(`lms-question-text-${lessonId}`);
+    if (!input || !input.value.trim()) return;
+    addQuestion(studentId, studentName, lessonId, input.value.trim());
+    if (window.showToastNotification) {
+      window.showToastNotification("💬 Dúvida Enviada!", "Sua pergunta foi enviada ao tutor.");
+    }
+    renderStudentLmsLessonView(document.getElementById("hub-main-panel-content"), lessonId, window.currentUser);
   }
 
   // Exportação Pública Completa

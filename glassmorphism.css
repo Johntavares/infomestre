@@ -1,0 +1,946 @@
+/* ==========================================================================
+   GLASSMORPHISM DESIGN SYSTEM — InforMestre v2
+   ========================================================================== */
+
+/* === OVERRIDE: Design Tokens === */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-bg-strong: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-strong: rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(24px) saturate(180%);
+  --glass-blur-heavy: blur(40px) saturate(200%);
+  --glow-primary: 0 0 30px rgba(124, 58, 237, 0.3);
+  --glow-cyan: 0 0 30px rgba(6, 182, 212, 0.3);
+  --glow-success: 0 0 20px rgba(16, 185, 129, 0.25);
+  --gradient-main: linear-gradient(135deg, #0a0118 0%, #1a0536 40%, #0d1b3e 100%);
+  --gradient-accent: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+  --gradient-warm: linear-gradient(135deg, #f43f5e 0%, #f59e0b 100%);
+  --gradient-cool: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+  --gradient-surface: linear-gradient(135deg, rgba(124,58,237,0.08) 0%, rgba(6,182,212,0.05) 100%);
+}
+
+[data-theme="light"] {
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-bg-strong: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-border-strong: rgba(255, 255, 255, 0.7);
+  --gradient-main: linear-gradient(135deg, #e8e0f7 0%, #dbeafe 40%, #e0f2fe 100%);
+  --gradient-surface: linear-gradient(135deg, rgba(124,58,237,0.04) 0%, rgba(6,182,212,0.03) 100%);
+}
+
+/* === OVERRIDE: Body & Background === */
+body {
+  background: var(--gradient-main) !important;
+  background-attachment: fixed;
+  min-height: 100vh;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(ellipse 600px 600px at 20% 20%, rgba(124, 58, 237, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 500px at 80% 30%, rgba(6, 182, 212, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 400px at 50% 80%, rgba(244, 63, 94, 0.08) 0%, transparent 70%);
+  animation: bgFloat 20s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes bgFloat {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(-3%, 2%) rotate(1deg); }
+  100% { transform: translate(2%, -1%) rotate(-0.5deg); }
+}
+
+/* === Glass Card Mixin-like Base === */
+.glass-card,
+.hub-welcome-banner,
+.hub-stat-pill,
+.hub-module-card,
+.module-card,
+.curriculum-module-card,
+.school-profile-card,
+.auth-box-card,
+.hub-screen .hub-container > *,
+.hub-screen .hub-main-panel > * > *,
+.student-hub-layout > *,
+#screen-app .slide-container,
+#screen-app .lesson-summary-panel,
+#screen-app .quiz-container,
+.info-card,
+.quiz-question-card,
+.notepad-drawer,
+.modern-modal-card,
+.toast-notification,
+.achievement-card,
+.certificate-card,
+.simulator-outer,
+.sim-box,
+.module-progress-bar-top-global {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 20px !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+/* === OVERRIDE: Landing Screen === */
+.landing-screen {
+  background: transparent !important;
+}
+
+.landing-background {
+  background: transparent !important;
+}
+
+.landing-background .blur-circle {
+  opacity: 0.4;
+  filter: blur(80px);
+}
+
+.landing-background .circle-1 {
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.5) 0%, transparent 70%) !important;
+  width: 500px;
+  height: 500px;
+}
+
+.landing-background .circle-2 {
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.4) 0%, transparent 70%) !important;
+  width: 400px;
+  height: 400px;
+}
+
+.auth-box-card {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(30px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 24px !important;
+  box-shadow: 
+    0 24px 80px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+    0 1px 0 rgba(255, 255, 255, 0.08) inset !important;
+}
+
+.landing-brand h1,
+.landing-brand .brand-title {
+  background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #67e8f9 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+  filter: drop-shadow(0 2px 10px rgba(124, 58, 237, 0.3));
+}
+
+/* === OVERRIDE: Form Inputs === */
+.form-group-custom input,
+.form-group-custom select,
+input[type="email"],
+input[type="password"],
+input[type="text"],
+textarea {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 14px !important;
+  color: #fff !important;
+  padding: 0.85rem 1.1rem !important;
+  font-size: 0.95rem !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) inset !important;
+}
+
+.form-group-custom input:focus,
+.form-group-custom select:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus,
+textarea:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(124, 58, 237, 0.5) !important;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1) inset,
+    0 0 0 3px rgba(124, 58, 237, 0.15) !important;
+  outline: none !important;
+}
+
+.form-group-custom label {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  margin-bottom: 0.4rem !important;
+}
+
+/* === OVERRIDE: Buttons === */
+.btn {
+  border-radius: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn:hover::before {
+  opacity: 1;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 4px 20px rgba(124, 58, 237, 0.35),
+    0 0 0 1px rgba(124, 58, 237, 0.2) inset !important;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 
+    0 8px 30px rgba(124, 58, 237, 0.45),
+    0 0 0 1px rgba(124, 58, 237, 0.3) inset !important;
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* === OVERRIDE: Hub Screen === */
+.hub-screen {
+  background: transparent !important;
+}
+
+.hub-banner-header {
+  background: linear-gradient(135deg, rgba(124,58,237,0.3) 0%, rgba(6,182,212,0.2) 50%, rgba(139,92,246,0.3) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 0 0 28px 28px !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2) !important;
+}
+
+.hub-banner-overlay {
+  background: transparent !important;
+}
+
+.hub-title-brand {
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  -webkit-text-fill-color: #fff !important;
+  color: #fff !important;
+  text-shadow: 0 2px 10px rgba(124,58,237,0.3) !important;
+}
+
+.hub-profile-bar-container {
+  background: rgba(255,255,255,0.04) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+}
+
+.hub-avatar-wrapper {
+  background: linear-gradient(135deg, #7c3aed, #06b6d4) !important;
+  border: 3px solid rgba(255,255,255,0.2) !important;
+  box-shadow: var(--glow-primary) !important;
+}
+
+.hub-tabs-nav button {
+  color: rgba(255,255,255,0.5) !important;
+  border-radius: 10px !important;
+  padding: 0.5rem 1rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.hub-tabs-nav button:hover {
+  color: rgba(255,255,255,0.8) !important;
+  background: rgba(255,255,255,0.06) !important;
+}
+
+.hub-tabs-nav button.active {
+  color: #fff !important;
+  background: rgba(124, 58, 237, 0.2) !important;
+  border-color: rgba(124, 58, 237, 0.4) !important;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.2) !important;
+}
+
+.hub-tabs-nav button.active::after {
+  background: linear-gradient(90deg, #7c3aed, #06b6d4) !important;
+}
+
+/* === Hub Dashboard: Welcome Banner === */
+.hub-welcome-banner {
+  background: linear-gradient(135deg, rgba(124,58,237,0.12) 0%, rgba(6,182,212,0.08) 100%) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 22px !important;
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.06) !important;
+}
+
+.hub-welcome-banner h3 {
+  color: #fff !important;
+  text-shadow: 0 1px 8px rgba(124,58,237,0.2) !important;
+}
+
+.hub-welcome-banner h3 span {
+  background: linear-gradient(90deg, #c4b5fd, #67e8f9) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* === Hub Dashboard: Stats Row === */
+.hub-stat-pill {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+.hub-stat-pill:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(124,58,237,0.3) !important;
+  box-shadow: 
+    0 12px 40px rgba(0,0,0,0.2),
+    0 0 20px rgba(124,58,237,0.1) !important;
+}
+
+/* === Hub Dashboard: Module Cards === */
+.hub-module-card {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 22px !important;
+  overflow: hidden !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  position: relative !important;
+}
+
+.hub-module-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hub-module-card:hover {
+  transform: translateY(-8px) scale(1.01) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,0.3),
+    0 0 40px rgba(124,58,237,0.15) !important;
+}
+
+.hub-module-card .btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.3) !important;
+}
+
+.hub-module-card .btn-primary:hover {
+  box-shadow: 0 6px 25px rgba(124,58,237,0.5) !important;
+}
+
+/* === Hub Quick Actions === */
+.hub-dashboard > div:last-child > button {
+  background: rgba(255,255,255,0.05) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 18px !important;
+  transition: all 0.3s ease !important;
+}
+
+.hub-dashboard > div:last-child > button:hover {
+  background: rgba(255,255,255,0.1) !important;
+  border-color: rgba(124,58,237,0.3) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2) !important;
+}
+
+/* === OVERRIDE: Study Screen / Player === */
+#screen-app {
+  background: transparent !important;
+}
+
+.study-topbar {
+  background: rgba(255,255,255,0.04) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15) !important;
+}
+
+.hamburger-btn {
+  background: rgba(255,255,255,0.08) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 12px !important;
+  color: #fff !important;
+  transition: all 0.3s ease !important;
+}
+
+.hamburger-btn:hover {
+  background: rgba(255,255,255,0.14) !important;
+  border-color: rgba(124,58,237,0.3) !important;
+}
+
+.hamburger-drawer {
+  background: rgba(10, 1, 24, 0.85) !important;
+  backdrop-filter: blur(30px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
+  border-right: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 8px 0 40px rgba(0,0,0,0.3) !important;
+}
+
+.hamburger-menu-overlay {
+  background: rgba(0,0,0,0.4) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* === Study Progress Card === */
+.study-progress-card {
+  background: rgba(255,255,255,0.05) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 20px !important;
+  box-shadow: 
+    0 12px 40px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.06) !important;
+}
+
+/* === Module Progress Bar === */
+.module-progress-bar-top-global {
+  background: rgba(10, 1, 24, 0.8) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* === OVERRIDE: Slide Container === */
+.slide-container {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.15) !important;
+}
+
+/* === OVERRIDE: Simulators === */
+.simulator-outer,
+.sim-box {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+}
+
+/* === OVERRIDE: Quiz === */
+.quiz-container,
+.quiz-question-card {
+  background: rgba(255,255,255,0.05) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 20px !important;
+}
+
+.quiz-option {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 14px !important;
+  transition: all 0.3s ease !important;
+}
+
+.quiz-option:hover {
+  background: rgba(124,58,237,0.15) !important;
+  border-color: rgba(124,58,237,0.3) !important;
+}
+
+.quiz-option.correct {
+  background: rgba(16,185,129,0.15) !important;
+  border-color: rgba(16,185,129,0.4) !important;
+  box-shadow: var(--glow-success) !important;
+}
+
+.quiz-option.wrong {
+  background: rgba(239,68,68,0.15) !important;
+  border-color: rgba(239,68,68,0.4) !important;
+}
+
+/* === OVERRIDE: Notepad Drawer === */
+.notepad-drawer {
+  background: rgba(10, 1, 24, 0.9) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  border-left: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+.notepad-drawer textarea {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 12px !important;
+}
+
+/* === OVERRIDE: Modals === */
+.modern-modal-overlay {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.modern-modal-card {
+  background: rgba(20, 15, 40, 0.95) !important;
+  backdrop-filter: blur(40px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 24px !important;
+  box-shadow: 
+    0 32px 80px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.05) inset !important;
+}
+
+.modern-modal-header h3 {
+  color: #fff !important;
+}
+
+/* === OVERRIDE: Toast Notifications === */
+.toast-notification {
+  background: rgba(20, 15, 40, 0.9) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3) !important;
+}
+
+/* === OVERRIDE: Curriculum / Grade === */
+.curriculum-module-card {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 18px !important;
+  transition: all 0.3s ease !important;
+}
+
+.curriculum-module-card:hover {
+  border-color: rgba(124,58,237,0.3) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15) !important;
+}
+
+.curriculum-module-card.active {
+  border-color: rgba(124,58,237,0.4) !important;
+  box-shadow: 0 0 30px rgba(124,58,237,0.15) !important;
+}
+
+.curriculum-lessons-list li {
+  background: rgba(255,255,255,0.03) !important;
+  border-radius: 10px !important;
+  padding: 0.5rem 0.8rem !important;
+}
+
+.curriculum-lessons-list li:hover {
+  background: rgba(255,255,255,0.06) !important;
+}
+
+/* === OVERRIDE: Achievement Cards === */
+.achievement-card {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 18px !important;
+  transition: all 0.3s ease !important;
+}
+
+.achievement-card:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(124,58,237,0.3) !important;
+}
+
+.achievement-card.unlocked {
+  border-color: rgba(124,58,237,0.4) !important;
+  box-shadow: 0 0 25px rgba(124,58,237,0.15) !important;
+}
+
+/* === OVERRIDE: Certificate === */
+.certificate-card {
+  background: rgba(255,255,255,0.06) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 2px solid rgba(124,58,237,0.3) !important;
+  border-radius: 24px !important;
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,0.25),
+    0 0 40px rgba(124,58,237,0.1) !important;
+}
+
+/* === OVERRIDE: Info Cards === */
+.info-card {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 18px !important;
+}
+
+/* === OVERRIDE: Scrollbars === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.3) !important;
+  border-radius: 999px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.5) !important;
+}
+
+/* === OVERRIDE: Text Colors for Glass === */
+.text-muted {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+p {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+  position: fixed !important;
+  left: 0;
+  top: 0;
+  width: 240px;
+  height: 100vh;
+  background: rgba(10, 1, 24, 0.92) !important;
+  backdrop-filter: blur(30px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
+  border-right: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 4px 0 40px rgba(0,0,0,0.3) !important;
+  z-index: 9998 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.sidebar-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.7rem !important;
+  padding: 1.2rem 1.2rem 0.8rem !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+.sidebar-brand {
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  background: linear-gradient(135deg, #fff, #c4b5fd) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+.sidebar-nav {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.2rem !important;
+  padding: 1rem 0.8rem !important;
+  flex: 1 !important;
+  overflow-y: auto !important;
+}
+
+.sidebar-nav-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  padding: 0.7rem 0.9rem !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: rgba(255,255,255,0.5) !important;
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+
+.sidebar-nav-item:hover {
+  background: rgba(255,255,255,0.06) !important;
+  color: rgba(255,255,255,0.8) !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+.sidebar-nav-item.active {
+  background: rgba(124, 58, 237, 0.15) !important;
+  color: #fff !important;
+  border-color: rgba(124, 58, 237, 0.3) !important;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.1) !important;
+}
+
+.nav-icon {
+  font-size: 1.1rem !important;
+  width: 22px !important;
+  text-align: center !important;
+}
+
+.sidebar-divider {
+  height: 1px !important;
+  background: rgba(255,255,255,0.06) !important;
+  margin: 0.6rem 0 !important;
+}
+
+.sidebar-footer {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.7rem !important;
+  padding: 1rem 1.2rem !important;
+  border-top: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+.sidebar-user-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #7c3aed, #06b6d4) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.1rem !important;
+  box-shadow: 0 0 15px rgba(124,58,237,0.3) !important;
+}
+
+.sidebar-user-info {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.sidebar-user-name {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: rgba(255,255,255,0.9) !important;
+}
+
+.sidebar-user-level {
+  font-size: 0.7rem !important;
+  color: rgba(255,255,255,0.4) !important;
+}
+
+/* Main content wrapper with sidebar offset */
+.hub-main-wrapper,
+.app-main-wrapper {
+  margin-left: 240px !important;
+  width: calc(100% - 240px) !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  background: transparent !important;
+}
+
+/* Hub Topbar */
+.hub-topbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: rgba(10, 1, 24, 0.7) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  padding: 0.7rem 1.5rem !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.hub-topbar-left,
+.hub-topbar-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+}
+
+/* Study Topbar */
+.study-topbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  background: rgba(10, 1, 24, 0.7) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+  padding: 0.7rem 1.5rem !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+/* Content area padding */
+.hub-container {
+  padding: 1.5rem !important;
+}
+
+.app-main-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.content-wrapper {
+  flex: 1 !important;
+}
+
+/* === Light Theme Sidebar === */
+[data-theme="light"] .sidebar {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-right-color: rgba(0,0,0,0.06) !important;
+}
+
+[data-theme="light"] .sidebar-brand {
+  background: linear-gradient(135deg, #1a1a2e, #7c3aed) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+[data-theme="light"] .sidebar-nav-item {
+  color: rgba(0,0,0,0.5) !important;
+}
+
+[data-theme="light"] .sidebar-nav-item:hover {
+  background: rgba(0,0,0,0.03) !important;
+}
+
+[data-theme="light"] .sidebar-nav-item.active {
+  background: rgba(124, 58, 237, 0.1) !important;
+  color: #1a1a2e !important;
+  border-color: rgba(124, 58, 237, 0.2) !important;
+}
+
+[data-theme="light"] .sidebar-user-name {
+  color: rgba(0,0,0,0.8) !important;
+}
+
+[data-theme="light"] .sidebar-user-level {
+  color: rgba(0,0,0,0.4) !important;
+}
+
+[data-theme="light"] .sidebar {
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* === Hide old hamburger in sidebar view === */
+.hamburger-drawer,
+.hamburger-menu-overlay {
+  display: none !important;
+}
+
+[data-theme="light"] .auth-box-card,
+[data-theme="light"] .hub-welcome-banner,
+[data-theme="light"] .hub-stat-pill,
+[data-theme="light"] .hub-module-card,
+[data-theme="light"] .slide-container,
+[data-theme="light"] .quiz-container,
+[data-theme="light"] .modern-modal-card,
+[data-theme="light"] .toast-notification {
+  background: rgba(255, 255, 255, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+[data-theme="light"] .form-group-custom input,
+[data-theme="light"] input[type="email"],
+[data-theme="light"] input[type="password"],
+[data-theme="light"] input[type="text"] {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #1a1a2e !important;
+}
+
+[data-theme="light"] .text-muted,
+[data-theme="light"] p {
+  color: rgba(26, 26, 46, 0.6) !important;
+}
+
+[data-theme="light"] .hamburger-drawer {
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-theme="light"] .study-topbar,
+[data-theme="light"] .hub-profile-bar-container {
+  background: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* === Animation: Fade In Up === */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hub-dashboard > *,
+.slide-container,
+.auth-box-card {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.hub-dashboard > *:nth-child(1) { animation-delay: 0.05s; }
+.hub-dashboard > *:nth-child(2) { animation-delay: 0.1s; }
+.hub-dashboard > *:nth-child(3) { animation-delay: 0.15s; }
+.hub-dashboard > *:nth-child(4) { animation-delay: 0.2s; }
+
+/* === Animation: Glow Pulse === */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(124,58,237,0.2); }
+  50% { box-shadow: 0 0 40px rgba(124,58,237,0.35); }
+}
+
+.hub-avatar-wrapper {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
+/* === Animation: Shimmer === */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.btn-primary {
+  background-size: 200% auto !important;
+}
+
+.btn-primary:hover {
+  animation: shimmer 2s linear infinite;
+}

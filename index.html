@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>InforMestre - Curso Dinâmico de Informática Básica</title>
+  <title>Nexora - Seu Próximo Nível Começa Aqui | Plataforma Educacional</title>
   <meta name="description" content="Aprenda informática básica de forma dinâmica, interativa e gamificada com simuladores de hardware, software e conquistas.">
   
   <!-- Google Fonts -->
@@ -12,253 +12,412 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="styles_v2.css?v=60">
+  <link rel="stylesheet" href="tokens.css?v=1">
+  <link rel="stylesheet" href="styles_v2.css?v=200">
 </head>
 <body>
 
   <!-- Barra de Progresso Superior Fixa -->
   <div id="module-progress-bar-top" class="module-progress-bar-top-global" style="display: none;"></div>
 
-  <!-- Screen 1: Landing & Login Page -->
-  <div id="screen-landing" class="landing-screen">
-    <div class="landing-background">
-      <div class="blur-circle circle-1"></div>
-      <div class="blur-circle circle-2"></div>
+  <!-- Screen 1: Landing & Login Page (Nexora Unified Dark Experience) -->
+  <div id="screen-landing" class="landing-screen-unified">
+    <div class="landing-ambient-bg">
+      <div class="ambient-glow glow-cyan"></div>
+      <div class="ambient-glow glow-purple"></div>
+      <div class="ambient-glow glow-blue"></div>
     </div>
     
-    <div class="landing-container">
-      <div class="landing-hero">
-        <div class="landing-logo">
-          <img src="images/logo_icon.png" alt="InforMestre Logo" class="logo-large-img">
-          <h1>InforMestre</h1>
-          <span>Curso Dinâmico de Informática Básica</span>
-        </div>
-        <p class="landing-intro">Aprenda informática de forma dinâmica, interativa e gamificada com simuladores de hardware e sistemas operacionais reais direto no seu navegador!</p>
-      </div>
-
-      <div class="auth-box-card">
-        <!-- Landing Login Form -->
-        <form id="landing-login-form" autocomplete="off">
-          <div class="form-group-custom">
-            <label for="landing-login-email">E-mail de Acesso</label>
-            <input type="email" id="landing-login-email" required placeholder="seuemail@exemplo.com" autocomplete="off">
-          </div>
-          <div class="form-group-custom">
-            <label for="landing-login-password">Senha</label>
-            <input type="password" id="landing-login-password" required placeholder="Sua senha" autocomplete="new-password">
-          </div>
-          <button type="submit" class="btn btn-primary btn-full">Entrar na Plataforma</button>
-          <div class="auth-card-note">Sua conta é criada pela escola. Utilize o e-mail e senha informados pelo seu tutor.</div>
-        </form>
-
-        <!-- Acesso institucional: cadastro de tutor vinculado à escola -->
-        <div style="display:flex; align-items:center; gap:0.75rem; margin: 1.1rem 0 0.9rem;">
-          <div style="flex:1; height:1px; background: rgba(255,255,255,0.12);"></div>
-          <span style="font-size:0.78rem; color:var(--text-muted); white-space:nowrap;">ou</span>
-          <div style="flex:1; height:1px; background: rgba(255,255,255,0.12);"></div>
-        </div>
-        <button
-          id="btn-open-school-register"
-          type="button"
-          onclick="abrirModalEscola()"
-          style="width:100%; padding:0.65rem 1rem; border-radius:10px; border: 1.5px solid var(--color-primary-light); background: transparent; color: var(--color-primary-light); font-size:0.92rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-          🏫 Sou tutor — criar conta institucional
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Screen 2: Portal Hub Dashboard -->
-  <div id="screen-hub" class="hub-screen screen-hidden">
-    <!-- Header de Banner Premium (Fundo Customizável) -->
-    <div class="hub-banner-header" id="hub-banner-background" style="background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200');">
-      <div class="hub-banner-overlay"></div>
+    <div class="landing-unified-wrapper">
       
-      <div class="hub-banner-content">
-        <div class="hub-logo-nav">
-          <img src="images/logo_icon.png" alt="InforMestre Logo" class="hub-logo-img" style="width: 38px; height: 38px; object-fit: contain;">
-          <div>
-            <h2 class="hub-title-brand" style="margin:0; font-size:1.4rem; font-weight:800; background: linear-gradient(135deg, #ffffff 0%, var(--color-primary-light) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">InforMestre</h2>
-            <span class="hub-subtitle-brand" style="font-size:0.75rem; color: rgba(255,255,255,0.7); display:block; margin-top:-2px;">Curso de Informática Básica</span>
+      <!-- COLUNA ESQUERDA: MARCA E TRANSIÇÃO INFORMESTRE -> NEXORA -->
+      <div class="landing-brand-side">
+        
+        <!-- Logo Oficial Transparente em Alta Definição -->
+        <div class="brand-logo-container">
+          <img src="images/nexora_logo_clean.png" alt="NEXORA - Seu Próximo Nível Começa Aqui" class="nexora-clean-logo-img">
+        </div>
+
+        <!-- Card de Transição Visual -->
+        <div class="brand-transition-glass-card">
+          <div class="transition-badge-top">
+            <span class="pulse-sparkle">✨</span>
+            <span>NOVA IDENTIDADE &bull; EVOLUÇÃO DA PLATAFORMA</span>
+          </div>
+
+          <div class="transition-flow-row">
+            <div class="flow-pill-box old">
+              <img src="images/logo_icon.png" alt="InforMestre" class="flow-icon-old">
+              <span class="flow-pill-text">InforMestre</span>
+            </div>
+
+            <div class="flow-arrow-direction">
+              <span class="flow-label">agora é</span>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00C6FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+
+            <div class="flow-pill-box new">
+              <img src="images/nexora_symbol_clean.png" alt="Nexora" class="flow-icon-new">
+              <span class="flow-pill-text highlight">NEXORA</span>
+            </div>
+          </div>
+
+          <p class="transition-desc-text">
+            O <strong>InforMestre</strong> agora é <strong>NEXORA</strong>! Uma plataforma interativa, gamificada e completa com simuladores de hardware reais, missões práticas e certificação oficial.
+          </p>
+        </div>
+
+        <!-- Destaques dos Recursos -->
+        <div class="brand-highlights-row">
+          <div class="highlight-pill-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00C6FF" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span>Simuladores 3D</span>
+          </div>
+          <div class="highlight-pill-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A29BFE" stroke-width="2.2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            <span>Gamificação & XP</span>
+          </div>
+          <div class="highlight-pill-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00CEC9" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+            <span>Certificado Digital</span>
           </div>
         </div>
-        
-        <div class="hub-user-meta" id="hub-user-profile-header">
-          <!-- Dinamicamente preenchido com papel do usuário e logout -->
+
+      </div>
+
+      <!-- COLUNA DIREITA: FORMULÁRIO DE LOGIN (UNIFICADO NO TEMA ESCURO) -->
+      <div class="landing-form-side">
+        <div class="dark-glass-form-card">
+          
+          <div class="form-header-dark">
+            <h2>Acesse sua Conta</h2>
+            <p>Entre com seu e-mail e senha cadastrados</p>
+          </div>
+
+          <form id="landing-login-form" autocomplete="off">
+            <div class="form-group-dark">
+              <label for="landing-login-email">E-mail de Acesso</label>
+              <div class="input-dark-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E94B0" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <input type="email" id="landing-login-email" required placeholder="seuemail@exemplo.com" autocomplete="off">
+              </div>
+            </div>
+
+            <div class="form-group-dark">
+              <label for="landing-login-password">Sua Senha</label>
+              <div class="input-dark-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8E94B0" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <input type="password" id="landing-login-password" required placeholder="Digite sua senha de acesso" autocomplete="new-password">
+              </div>
+            </div>
+
+            <button type="submit" class="btn-nexora-glow">
+              <span>Entrar na Plataforma</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+
+            <div class="auth-note-dark">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00CEC9" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span>Acesso seguro fornecido pela sua instituição de ensino.</span>
+            </div>
+          </form>
+
+          <div class="auth-divider-dark">
+            <span>Acesso Institucional</span>
+          </div>
+
+          <button class="btn-tutor-dark" id="btn-open-school-register" type="button" onclick="abrirModalEscola()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Sou tutor &mdash; criar conta institucional</span>
+          </button>
+
         </div>
       </div>
-    </div>
 
-    <!-- Perfil Flutuante e Barra de Abas -->
-    <div class="hub-profile-bar-container">
-      <div class="hub-profile-bar-inner">
-        <!-- Foto de Perfil / Avatar -->
-        <div class="hub-avatar-wrapper" id="hub-avatar-main">
-          <span class="hub-avatar-display">👨‍💻</span>
-        </div>
-        
-        <div class="hub-profile-info-block">
-          <h3 id="hub-user-full-name" style="margin: 0; font-size: 1.3rem;">Carregando...</h3>
-          <p id="hub-user-role-label" class="text-muted" style="margin: 0; font-size: 0.85rem; font-weight: 500;">Aluno Autônomo</p>
-        </div>
-
-        <!-- Abas do Portal -->
-        <nav class="hub-tabs-nav" id="hub-tabs-navigation">
-          <!-- Dinamicamente preenchido de acordo com a Role -->
-        </nav>
-      </div>
-    </div>
-
-    <!-- Contêiner de Abas Dinâmico -->
-    <div class="hub-container" style="padding-top: 1rem;">
-      <main class="hub-main-panel" id="hub-main-panel-content">
-        <!-- Renderizações do Aluno (Painel, Módulos, Conquistas, Configs) / Escola / Admin irão aqui -->
-      </main>
     </div>
   </div>
 
-  <!-- Screen 3: Study Mode (Course) -->
-  <div id="screen-app" class="screen-hidden" style="width: 100%; height: 100%;">
-    <div class="app-layout" id="main-app-container">
-    
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar" id="app-sidebar">
+  <!-- Screen 2: Portal Hub Dashboard — with Sidebar -->
+  <div id="screen-hub" class="screen-hidden" style="width: 100%; height: 100%;">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <div class="logo">
-          <img class="logo-icon-img" src="images/logo_icon.png" alt="InforMestre Logo Icon">
-          <div class="logo-text">
-            <h2>InforMestre</h2>
-            <span>Informática Básica</span>
-          </div>
-        </div>
-        <button class="mobile-close-btn" id="sidebar-close-trigger" aria-label="Fechar Menu">×</button>
-      </div>
-
-      <!-- Gamification Card -->
-      <div class="gamification-card">
-        <div class="user-stats">
-          <div class="stat-badge">
-            <span class="badge-icon">🎖️</span>
-            <span class="badge-text" id="user-level-badge">Nível 1</span>
-          </div>
-          <div class="xp-display">
-            <span id="user-xp-counter">0</span> <span class="xp-label">XP</span>
-          </div>
-        </div>
-        <div class="progress-container">
-          <div class="progress-bar-label">
-            <span>Progresso do Curso</span>
-            <span id="course-progress-percent">0%</span>
-          </div>
-          <div class="progress-bar-track">
-            <div class="progress-bar-fill" id="course-progress-bar" style="width: 0%;"></div>
-          </div>
+        <img src="images/nexora_symbol_clean.png" alt="Nexora Logo" style="width:38px; height:38px; object-fit:contain;">
+        <div style="display:flex; flex-direction:column; line-height:1.15;">
+          <span class="sidebar-brand-text" style="font-size:1.22rem; font-weight:800; letter-spacing:-0.02em; color:#1E2238;">NEXORA</span>
+          <span style="font-size:0.68rem; color:#8E94B0; font-weight:700; letter-spacing:0.04em;">DIGITAL ACADEMY</span>
         </div>
       </div>
-
-      <!-- Course Outline -->
-      <nav class="course-navigation" id="course-menu-nav">
-        <!-- Chapters and pages will be loaded here dynamically from content.js -->
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <button class="sidebar-nav-item active" data-section="dashboard">
+          <span class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+          <span class="nav-label">Início</span>
+        </button>
+        <button class="sidebar-nav-item" data-section="modules">
+          <span class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+          <span class="nav-label">Módulos do Curso</span>
+        </button>
+        <button class="sidebar-nav-item" data-section="training-lab">
+          <span class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+          <span class="nav-label">Simuladores & Lab</span>
+        </button>
+        <button class="sidebar-nav-item" data-section="achievements">
+          <span class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg></span>
+          <span class="nav-label">Conquistas & Ranking</span>
+        </button>
+        <div class="sidebar-divider"></div>
+        <button class="sidebar-nav-item" data-section="settings">
+          <span class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+          <span class="nav-label">Configurações</span>
+        </button>
+        <button class="sidebar-nav-item nav-item-logout" id="nav-logout-btn" data-section="logout" onclick="handlePlatformLogout()" style="color: var(--color-danger);">
+          <span class="nav-icon" style="color: var(--color-danger);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+          <span class="nav-label" style="color: var(--color-danger); font-weight:700;">Sair da Conta</span>
+        </button>
       </nav>
 
-      <!-- Sidebar Footer -->
-      <div class="sidebar-footer" style="display: flex; flex-direction: column; gap: 0.5rem;">
-        <button class="btn btn-secondary btn-full" id="achievements-modal-trigger">
-          🏆 Ver Conquistas (<span id="achievement-unlocked-count">0</span>/8)
+      <!-- Card Pro Inferior -->
+      <div class="sidebar-pro-card">
+        <div class="sidebar-pro-title">Trilha Pro Completa</div>
+        <div class="sidebar-pro-desc">Desbloqueie certificados e desafios práticos avançados.</div>
+        <button class="sidebar-pro-btn" type="button" onclick="openStudentCourseDetail('informatica-basica')">
+          <span>Ver Trilha</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
-        <div id="auth-status-container" class="auth-status-container" style="display: flex; flex-direction: column; gap: 0.25rem; width: 100%;">
-          <button class="btn btn-outline btn-full" id="login-modal-trigger">🔑 Entrar / Cadastrar</button>
+      </div>
+
+      <!-- Footer User -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user-avatar" id="sidebar-user-avatar">AT</div>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name" id="sidebar-user-name">Estudante</span>
+          <span class="sidebar-user-level" id="sidebar-user-level">Nível 1</span>
+        </div>
+        <button class="sidebar-logout-btn" id="btn-sidebar-footer-logout" title="Sair da Plataforma" aria-label="Sair da Plataforma" onclick="handlePlatformLogout()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="hub-main-wrapper" id="hub-main-wrapper">
+      <!-- Top Bar SkillSet -->
+      <header class="hub-topbar" id="hub-topbar">
+        <div class="hub-topbar-left" style="display:flex; align-items:center; gap: 1rem;">
+          <button class="hamburger-btn" id="sidebar-toggle-trigger" aria-label="Abrir Menu">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="topbar-search-wrapper">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8E94B0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" placeholder="Pesquisar aulas, simuladores, ferramentas..." aria-label="Pesquisar">
+          </div>
+        </div>
+        <div class="topbar-right-controls">
+          <div class="topbar-live-pill">
+            <span class="pulse-dot"></span>
+            <span>Ao Vivo</span>
+          </div>
+          <button class="topbar-icon-action" id="theme-toggle-btn" title="Modo de Leitura" aria-label="Modo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+          <button class="topbar-icon-action" id="notepad-toggle-trigger" title="Minhas Anotações" aria-label="Minhas Anotações">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </button>
+          <div class="topbar-user-pill" onclick="switchHubTab('settings')">
+            <div class="user-avatar-circle" id="topbar-user-avatar">AT</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Hub Content -->
+      <div class="hub-container" style="padding:1.5rem;">
+        <main class="hub-main-panel" id="hub-main-panel-content">
+          <!-- Dynamic content -->
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 3: Study Mode (Course) — with Sidebar -->
+  <div id="screen-app" class="screen-hidden" style="width: 100%; height: 100%;">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header" onclick="showScreen('hub'); if(window.switchHubTab) window.switchHubTab('dashboard');" style="cursor:pointer;">
+        <img src="images/nexora_symbol_clean.png" alt="Nexora Logo" style="width:34px; height:34px; object-fit:contain;">
+        <div style="display:flex; flex-direction:column; line-height:1.15;">
+          <span class="sidebar-brand-text" style="font-size:1.15rem; font-weight:800; letter-spacing:-0.02em; color:#1E2238;">NEXORA</span>
+          <span style="font-size:0.65rem; color:#8E94B0; font-weight:700; letter-spacing:0.04em;">DIGITAL ACADEMY</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-nav-item" data-section="dashboard">
+          <span class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+          <span class="nav-label">Início</span>
+        </button>
+        <button class="sidebar-nav-item" data-section="modules">
+          <span class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+          <span class="nav-label">Módulos do Curso</span>
+        </button>
+        <button class="sidebar-nav-item" data-section="training-lab">
+          <span class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+          <span class="nav-label">Simuladores & Lab</span>
+        </button>
+        <button class="sidebar-nav-item" data-section="achievements">
+          <span class="nav-icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg></span>
+          <span class="nav-label">Conquistas & Ranking</span>
+        </button>
+        <div class="sidebar-divider"></div>
+        <button class="sidebar-nav-item nav-item-logout" onclick="handlePlatformLogout()" style="color: var(--color-danger);">
+          <span class="nav-icon" style="color: var(--color-danger);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+          <span class="nav-label" style="color: var(--color-danger); font-weight:700;">Sair da Conta</span>
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="sidebar-user-avatar" id="sidebar-user-avatar">AT</div>
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-name" id="sidebar-user-name">Estudante</span>
+          <span class="sidebar-user-level" id="sidebar-user-level">Nível 1</span>
         </div>
       </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <div class="content-wrapper">
-      
-      <!-- Top Navbar -->
-      <header class="top-navbar" id="app-header">
-        <div class="header-left">
-          <button class="mobile-menu-btn" id="sidebar-toggle-trigger" aria-label="Abrir Menu">
-            <span></span>
-            <span></span>
-            <span></span>
+    <!-- Main Content -->
+    <div class="app-main-wrapper" id="main-app-container">
+      <!-- Top Bar -->
+      <header class="study-topbar" id="app-header">
+        <div class="study-topbar-left">
+          <button class="hamburger-btn" id="sidebar-toggle-trigger-app" aria-label="Abrir Menu de Aulas">
+            <span></span><span></span><span></span>
           </button>
-          <div class="header-breadcrumbs">
-            <span class="breadcrumb-module" id="header-breadcrumb-module">Aula 1</span>
-            <span class="breadcrumb-separator">/</span>
-            <span class="breadcrumb-chapter" id="header-breadcrumb-chapter">Carregando...</span>
+          <div class="study-topbar-logo" onclick="showScreen('hub'); if(window.switchHubTab) window.switchHubTab('dashboard');" style="cursor:pointer;">
+            <img src="images/nexora_symbol_clean.png" alt="Nexora" style="width:28px;height:28px;object-fit:contain;">
+            <h2 id="topbar-module-title" style="margin:0;font-size:1.05rem;font-weight:700;color:#FFFFFF;">Aula 1</h2>
+          </div>
+          <div class="study-topbar-breadcrumb">
+            <span class="bc-module" id="header-breadcrumb-module">Aula 1</span>
+            <span class="bc-sep">/</span>
+            <span class="bc-chapter" id="header-breadcrumb-chapter">Carregando...</span>
           </div>
         </div>
-
-        <div class="header-right">
-          <!-- Voltar ao Painel Hub -->
-          <button class="btn btn-secondary btn-icon-only" id="back-to-hub-trigger" title="Voltar ao Painel Principal" style="margin-right: 0.5rem;">
-            🔙 <span class="btn-text">Painel</span>
+        <div class="study-topbar-right">
+          <button class="progress-card-toggle" id="progress-card-toggle-btn" title="Ver Progresso">
+            📊 <span class="pc-pct" id="course-progress-percent">0%</span>
           </button>
-
-          <!-- Dark/Light Theme Switcher -->
-          <button class="theme-toggle" id="theme-mode-switcher" aria-label="Alternar Tema">
-            <span class="theme-icon-sun">☀️</span>
-            <span class="theme-icon-moon">🌙</span>
-          </button>
-          
-          <!-- Notepad Drawer Toggle -->
-          <button class="btn btn-primary btn-icon-only" id="notepad-toggle-trigger" title="Minhas Anotações">
-            📝 <span class="btn-text">Notas</span>
+          <button class="icon-btn" id="notepad-toggle-trigger-app" title="Minhas Anotações" aria-label="Minhas Anotações">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
         </div>
       </header>
 
-      <!-- Content Container -->
-      <main class="main-content" id="main-content-panel">
-        
-        <!-- Interactive Slide Container -->
-        <article class="slide-container" id="current-slide-article">
-          <div class="slide-inner" id="slide-inner-content">
-            <!-- Dynamic lesson content goes here -->
-          </div>
+      <!-- Hamburger Menu -->
+      <div class="hamburger-menu-overlay" id="hamburger-overlay"></div>
+      <div class="hamburger-drawer" id="hamburger-drawer">
+        <div class="hamburger-drawer-header">
+          <h3>📚 Aulas</h3>
+          <button class="hamburger-close-btn" id="hamburger-close-btn">×</button>
+        </div>
+        <div class="hamburger-drawer-body" id="hamburger-menu-nav"></div>
+      </div>
 
-          <!-- Interactive Simulator Area -->
-          <div class="simulator-outer-container hidden" id="dynamic-simulator-container">
-            <div class="simulator-header">
-              <span class="simulator-tag">🎮 SIMULADOR PRÁTICO</span>
-              <button class="btn btn-small btn-secondary" id="reset-simulator-btn">Reiniciar</button>
-            </div>
-            <div class="simulator-body" id="simulator-content-render">
-              <!-- Simulator HTML injected here -->
+      <!-- Progress Card Lateral -->
+      <div class="study-progress-card" id="study-progress-card">
+        <div class="study-progress-card-header">
+          <h3>📊 Meu Progresso</h3>
+          <button class="hamburger-close-btn" id="progress-card-close-btn">×</button>
+        </div>
+        <div class="study-progress-card-body">
+          <div class="spc-section">
+            <h4>Experiência</h4>
+            <div class="spc-xp-row">
+              <div>
+                <div class="spc-xp-value" id="user-xp-counter">0</div>
+                <div class="spc-xp-label">XP acumulado</div>
+              </div>
+              <div class="spc-level-badge" id="user-level-badge">🎖️ Nível 1</div>
             </div>
           </div>
-
-          <!-- Bottom Navigation Controls -->
-          <footer class="slide-navigation">
-            <button class="btn btn-secondary" id="prev-slide-btn" disabled>
-              ⬅️ Anterior
-            </button>
-            <div class="page-indicator">
-              Página <span id="current-page-num">1</span> de <span id="total-pages-num">35</span>
+          <div class="spc-section">
+            <h4>Progresso do Curso</h4>
+            <div class="spc-progress-bar">
+              <div class="spc-bar-label">
+                <span>Aulas concluídas</span>
+                <span id="spc-progress-text">0%</span>
+              </div>
+              <div class="spc-bar-track">
+                <div class="spc-bar-fill" id="course-progress-bar" style="width: 0%;"></div>
+              </div>
             </div>
-            <button class="btn btn-primary" id="next-slide-btn">
-              Próximo ➡️
+          </div>
+          <div class="spc-section">
+            <h4>Lista de Aulas</h4>
+            <div class="spc-lessons-list" id="spc-lessons-list"></div>
+          </div>
+          <div class="spc-section">
+            <h4>🏆 Conquistas (<span id="achievement-unlocked-count">0</span>/8)</h4>
+            <button class="btn btn-secondary btn-full" id="achievements-modal-trigger" style="font-size:0.82rem;">
+              Ver Todas as Conquistas
             </button>
-          </footer>
-        </article>
-      </main>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="content-wrapper">
+        <div class="player-module-bar" id="player-module-bar" style="display:none;">
+          <button class="player-back-btn" id="player-back-btn">← Catálogo</button>
+          <div class="player-module-meta">
+            <span class="player-module-title" id="player-module-title"></span>
+            <span class="player-module-progress" id="player-module-progress"></span>
+          </div>
+          <div class="player-module-bar-track"><div class="player-module-bar-fill" id="player-module-bar-fill"></div></div>
+        </div>
+
+        <main class="main-content study-content" id="main-content-panel">
+          <article class="slide-container" id="current-slide-article">
+            <div class="slide-inner" id="slide-inner-content"></div>
+            <div class="simulator-outer-container hidden" id="dynamic-simulator-container">
+              <div class="simulator-header">
+                <span class="simulator-tag">🎮 SIMULADOR PRÁTICO</span>
+                <button class="btn btn-small btn-secondary" id="reset-simulator-btn">Reiniciar</button>
+              </div>
+              <div class="simulator-body" id="simulator-content-render"></div>
+            </div>
+            <footer class="slide-navigation">
+              <button class="btn btn-secondary" id="prev-slide-btn" disabled>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Anterior
+              </button>
+              <div class="page-indicator">Página <span id="current-page-num">1</span> de <span id="total-pages-num">35</span></div>
+              <button class="btn btn-primary" id="next-slide-btn">
+                Próximo
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </footer>
+          </article>
+        </main>
+      </div>
+
+      <!-- Side Notepad Drawer -->
+      <section class="notepad-drawer" id="notepad-panel-drawer">
+        <div class="notepad-header">
+          <h3>📝 Suas Anotações</h3>
+          <button class="btn-close" id="notepad-close-trigger">×</button>
+        </div>
+        <div class="notepad-body">
+          <textarea id="notepad-textarea" placeholder="Escreva suas anotações aqui..." rows="10"></textarea>
+        </div>
+      </section>
     </div>
-
-    <!-- Side Notepad Drawer -->
-    <section class="notepad-drawer" id="notepad-panel-drawer">
-      <div class="notepad-header">
-        <h3>📝 Suas Anotações</h3>
-        <button class="btn-close" id="notepad-close-trigger">×</button>
-      </div>
-      <div class="notepad-body">
-        <p class="text-small text-muted mb-1">Anotações vinculadas à página atual. São salvas automaticamente.</p>
-        <textarea id="notepad-text-area" placeholder="Digite aqui suas observações sobre esta aula, códigos, resumos..."></textarea>
-      </div>
-      <div class="notepad-footer">
-        <button class="btn btn-secondary btn-small btn-full" id="export-notes-txt-btn">📥 Exportar Todas Notas</button>
-      </div>
-    </section>
   </div>
 
 
@@ -308,8 +467,8 @@
               <h2 class="cert-student-name" id="cert-student-name-display">Nome do Aluno</h2>
               
               <p class="cert-text">
-                concluiu com êxito a <strong>Aula 1 – Introdução à Informática</strong> do <em>Curso de Informática Básica</em>, 
-                alcançando rendimento superior na avaliação teórica e prática realizada na plataforma <strong>InforMestre</strong>.
+                concluiu com êxito o <strong>Curso de Informática Básica</strong> na plataforma <strong>InforMestre</strong>, 
+                alcançando rendimento superior nas etapas práticas e teóricas de Hardware, Sistema Operacional, Pacote Office e Internet.
               </p>
               
               <div class="cert-meta-grid">
@@ -319,7 +478,7 @@
                 </div>
                 <div class="cert-meta-item">
                   <span class="meta-label">Carga Horária</span>
-                  <span class="meta-value">10 horas</span>
+                  <span class="meta-value">40 horas</span>
                 </div>
                 <div class="cert-meta-item">
                   <span class="meta-label">Código de Autenticidade</span>
@@ -342,23 +501,25 @@
         </div>
 
         <div class="certificate-actions no-print mt-2">
-          <button class="btn btn-primary" id="print-certificate-btn">🖨️ Imprimir / Salvar PDF</button>
+          <button class="btn btn-primary" id="print-certificate-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Imprimir / Salvar PDF
+          </button>
           <p class="text-small text-muted mt-1">Dica: Selecione "Salvar como PDF" nas opções de impressão para exportar o arquivo.</p>
         </div>
       </div>
     </div>
   </div>
 
-  </div> <!-- Fechamento da div screen-app -->
-
   <!-- Javascript Modules -->
   <script src="supabase.js"></script>
-<script src="supabase_config.js?v=32"></script>
-<script src="content_v1.js?v=30"></script>
-<script src="lms_engine.js?v=70"></script>
-<script src="training_lab.js?v=1"></script>
-<script src="app_v1.js?v=70"></script>
-<script src="aula8_simulator.js?v=37"></script>
+  <script src="supabase_config.js?v=32"></script>
+  <script src="content_v1.js?v=31"></script>
+  <script src="lms_engine.js?v=70"></script>
+  <script src="module3_engine.js?v=2"></script>
+  <script src="training_lab.js?v=1"></script>
+  <script src="app_v1.js?v=77"></script>
+  <script src="aula8_simulator.js?v=37"></script>
   <script>
     function abrirModalEscola() {
       // Remove qualquer modal anterior
@@ -427,6 +588,49 @@
         }
       });
     }
+
+    // Gerenciador do Menu Lateral Responsivo (Mobile & Tablet)
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleBtn = document.getElementById('sidebar-toggle-trigger');
+      const sidebar = document.getElementById('sidebar');
+      
+      let backdrop = document.querySelector('.sidebar-backdrop');
+      if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.className = 'sidebar-backdrop';
+        document.body.appendChild(backdrop);
+      }
+
+      function toggleSidebar() {
+        if (!sidebar) return;
+        const isOpen = sidebar.classList.toggle('open');
+        backdrop.classList.toggle('active', isOpen);
+      }
+
+      function closeSidebar() {
+        if (!sidebar) return;
+        sidebar.classList.remove('open');
+        backdrop.classList.remove('active');
+      }
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          toggleSidebar();
+        });
+      }
+
+      backdrop.addEventListener('click', closeSidebar);
+
+      // Fecha o drawer ao clicar em um item de menu no mobile
+      document.querySelectorAll('#sidebar .sidebar-nav-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+          if (window.innerWidth <= 900) {
+            closeSidebar();
+          }
+        });
+      });
+    });
   </script>
 </body>
 </html>

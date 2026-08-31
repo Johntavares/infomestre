@@ -1,0 +1,22 @@
+{
+  "name": "curso-informatica-basica",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app_v1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Johntavares/infomestre.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Johntavares/infomestre/issues"
+  },
+  "homepage": "https://github.com/Johntavares/infomestre#readme"
+}

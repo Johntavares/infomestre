@@ -5532,6 +5532,374 @@ const COURSE_CONTENT = [
         </div>
       </div>
     </div>`
+  },
+  {
+    id: "m3-boas-vindas",
+    title: "Bem-vindo ao Módulo 3",
+    page: 148,
+    type: "intro",
+    chapter: "AULA 15",
+    content: `<div class="welcome-container text-center">
+        <div class="welcome-badge">🌐 MÓDULO 3</div>
+        <h1 class="welcome-title">Navegue com segurança e autonomia</h1>
+        <p class="welcome-subtitle">Internet e Mundo Digital</p>
+
+        <div class="welcome-card card-gradient text-left">
+          <h3>🚀 Bem-vindo!</h3>
+          <p>Neste módulo do curso <strong>Internet e Mundo Digital</strong>, a ideia é te colocar em pé de igualdade para usar a internet do dia a dia com confiança, sem complicação. Você vai aprender a navegar e pesquisar com mais eficiência no navegador, abrir e organizar páginas úteis com abas, favoritos e histórico, e a avaliar de forma inicial informações que aparecem na web.</p>
+          <p>Depois, vai entender como funcionam mensagens e anexos no e-mail, como preencher formulários e acompanhar serviços e pedidos online, sempre sabendo onde achar comprovantes e registros. Por fim, você vai fortalecer seus cuidados com privacidade e segurança, reconhecer riscos comuns e aplicar boas práticas de convivência digital, até chegar a um resumo completo do seu progresso em direção à autonomia.</p>
+        </div>
+
+        <div class="alert alert-info mt-2">
+          <strong>Dica:</strong> Seu progresso é salvo automaticamente. Avance no seu ritmo e volte quando quiser!
+        </div>
+      </div>`
+  },
+  {
+    id: "m3-o-que-aprender",
+    title: "O que você vai aprender",
+    page: 149,
+    type: "intro",
+    chapter: "AULA 15",
+    content: `<h2>📚 O que você vai aprender</h2>
+      <p>Ao longo deste módulo, você vai desenvolver as seguintes competências:</p>
+      <div class="grid grid-2 gap-2 mt-2">
+        <div class="card bg-surface border-soft">
+          <h4>🧭 Navegação prática</h4>
+          <p class="text-small">Você vai usar o navegador para encontrar páginas, abrir resultados e organizar o que for útil com abas, favoritos e histórico.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>🔎 Pesquisas eficientes</h4>
+          <p class="text-small">Você vai melhorar suas buscas escolhendo palavras certas, refinando resultados e lendo o que importa na página de resposta.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>📧 E-mail organizado</h4>
+          <p class="text-small">Você vai redigir, enviar, responder e anexar arquivos no e-mail, além de organizar a caixa de entrada para achar tudo rapidinho.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>📋 Serviços e protocolos</h4>
+          <p class="text-small">Você vai acessar serviços online, preencher dados com atenção e guardar o protocolo ou comprovante da solicitação.</p>
+        </div>
+        <div class="card bg-surface border-soft">
+          <h4>🛡️ Segurança digital</h4>
+          <p class="text-small">Você vai identificar riscos comuns, cuidar de senhas e privacidade, e decidir o que fazer quando algo parecer estranho.</p>
+        </div>
+      </div>`
+  },
+  {
+    id: "m3-a1-video",
+    title: "🎬 Videoaula 1 — Conhecendo a Internet",
+    page: 150,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `<div class="text-center">
+              <div class="slide-illo"><svg viewBox="0 0 420 200" role="img" aria-label="Vídeo aula">
+  <circle cx="210" cy="100" r="60" fill="none" stroke="var(--color-primary)" stroke-width="3"/>
+  <ellipse cx="210" cy="100" rx="26" ry="60" fill="none" stroke="var(--color-primary)" stroke-width="2" opacity="0.7"/>
+  <line x1="150" y1="100" x2="270" y2="100" stroke="var(--color-primary)" stroke-width="2" opacity="0.7"/>
+  <circle cx="210" cy="100" r="40" fill="var(--color-accent)" opacity="0.95"/>
+  <path d="M198 82 l30 18 -30 18 z" fill="#fff"/>
+</svg></div>
+      <h2>🎬 Assista à Videoaula 1</h2>
+        <p class="mb-2">Primeiro assista à videoaula completa. Depois, revise os slides abaixo e faça o desafio prático para ganhar XP.</p>
+        <div style="position:relative; max-width:860px; margin:0 auto; border-radius:16px; overflow:hidden; border:1px solid var(--border-soft); background:#000;">
+          <video controls width="100%" poster="images/aula1_video_poster.png" style="display:block; width:100%;">
+            <source src="videos/aula1.mp4" type="video/mp4">
+            Seu navegador não suporta a reprodução de vídeo.
+          </video>
+        </div>
+        <div class="alert alert-info mt-2 text-left">
+          <strong>📹 Vídeo em produção:</strong> coloque o arquivo da videoaula em <code>videos/aula1.mp4</code> (ou troque o <code>&lt;source&gt;</code> por um link de incorporação do YouTube/Vimeo). A imagem de capa vai em <code>images/aula1_video_poster.png</code>.
+        </div>
+      </div>`
+  },
+  {
+    id: "m3-a1-p1",
+    title: "1. A Internet e o Mundo Digital",
+    page: 151,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide01.png" alt="Slide 1 - A Internet e o Mundo Digital" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p2",
+    title: "2. O Mundo Conectado",
+    page: 152,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide02.png" alt="Slide 2 - O Mundo Conectado" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p3",
+    title: "3. O que é a Internet?",
+    page: 153,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide03.png" alt="Slide 3 - O que é a Internet" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p4",
+    title: "4. Internet vs. Web",
+    page: 154,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide04.png" alt="Slide 4 - Internet vs. Web" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p5",
+    title: "5. Os Navegadores",
+    page: 155,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide05.png" alt="Slide 5 - Os Navegadores" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p6",
+    title: "6. Sites e Páginas",
+    page: 156,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide06.png" alt="Slide 6 - Sites e Páginas" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p7",
+    title: "7. URL e Domínio",
+    page: 157,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide07.png" alt="Slide 7 - URL e Domínio" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p8",
+    title: "8. Abas, Histórico e Favoritos",
+    page: 158,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide08.png" alt="Slide 8 - Abas, Histórico e Favoritos" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p9",
+    title: "9. Buscadores",
+    page: 159,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide09.png" alt="Slide 9 - Buscadores" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p10",
+    title: "10. Hora da Demonstração!",
+    page: 160,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide10.png" alt="Slide 10 - Hora da Demonstração" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-p11",
+    title: "11. Pratique você mesmo",
+    page: 161,
+    type: "lesson",
+    chapter: "AULA 15",
+    content: `      <img src="images/aula1/slide11.png" alt="Slide 11 - Pratique você mesmo" class="ppt-slide">`
+  },
+  {
+    id: "m3-a1-resumo",
+    title: "Resumo da Aula 1",
+    page: 162,
+    type: "summary",
+    chapter: "AULA 15",
+    content: `      <div class="slide-illo"><svg viewBox="0 0 420 150" role="img" aria-label="Resumo">
+  <rect x="40" y="24" width="24" height="24" rx="6" fill="var(--color-accent)"/>
+  <path d="M48 36 l5 6 10 -12" fill="none" stroke="#fff" stroke-width="3"/>
+  <rect x="76" y="32" width="260" height="10" rx="5" fill="var(--border-soft)"/>
+  <rect x="40" y="64" width="24" height="24" rx="6" fill="var(--color-primary)"/>
+  <path d="M48 76 l5 6 10 -12" fill="none" stroke="#fff" stroke-width="3"/>
+  <rect x="76" y="72" width="220" height="10" rx="5" fill="var(--border-soft)"/>
+  <rect x="40" y="104" width="24" height="24" rx="6" fill="var(--color-warning)"/>
+  <path d="M48 116 l5 6 10 -12" fill="none" stroke="#fff" stroke-width="3"/>
+  <rect x="76" y="112" width="240" height="10" rx="5" fill="var(--border-soft)"/>
+</svg></div>
+      <h2>📚 Resumo da Aula 1</h2>
+      <p>Guarde esses pontos-chave antes do desafio:</p>
+      <div class="summary-cards">
+        <div class="card mt-1"><h4>🌍 Internet</h4><p>A rede de redes que conecta computadores do mundo todo.</p></div>
+        <div class="card mt-1"><h4>🕸️ Internet ≠ Web</h4><p>Internet é a estrada; Web é um dos serviços que nela trafega.</p></div>
+        <div class="card mt-1"><h4>🧭 Navegador</h4><p>O programa que abre e exibe sites (Chrome, Edge, Firefox).</p></div>
+        <div class="card mt-1"><h4>🔗 URL e domínio</h4><p>O endereço da página; confira o domínio e o cadeado https.</p></div>
+        <div class="card mt-1"><h4>📑 Abas/Histórico/Favoritos</h4><p>Ferramentas para navegar e organizar suas páginas.</p></div>
+      </div>`
+  },
+  {
+    id: "m3-a1-desafio",
+    title: "Desafio Prático — Aula 1",
+    page: 163,
+    type: "challenge",
+    chapter: "AULA 15",
+    content: `<h2>🏆 Desafio Prático — Aula 1</h2>
+      <p>Responda e veja seu desempenho na hora. Acertar as questões rende <strong>XP</strong> e fixa o conteúdo!</p>`,
+    quiz: [
+      {
+        "question": "O que é a Internet, na definição mais simples?",
+        "options": [
+          "Um programa de edição de texto",
+          "A rede de redes que conecta computadores ao redor do mundo",
+          "Apenas o conjunto de páginas da Web",
+          "Um tipo de sistema operacional"
+        ],
+        "correct": 1,
+        "explanation": "A Internet é a infraestrutura global formada por muitas redes conectadas, que liga computadores de todo o planeta."
+      },
+      {
+        "question": "Qual a diferença entre Internet e Web (WWW)?",
+        "options": [
+          "São exatamente a mesma coisa",
+          "A Web é a estrada e a Internet é o carro",
+          "A Internet é a infraestrutura e a Web é um serviço que roda sobre ela",
+          "A Web só existe offline"
+        ],
+        "correct": 2,
+        "explanation": "Internet é a infraestrutura (cabos, roteadores, protocolos); a Web é um dos serviços que trafega por essa infraestrutura."
+      },
+      {
+        "question": "O que faz o navegador?",
+        "options": [
+          "Liga o computador",
+          "Lê o código das páginas e exibe o que você vê na tela",
+          "Cria planilhas",
+          "Formata o disco rígido"
+        ],
+        "correct": 1,
+        "explanation": "O navegador (Chrome, Edge, Firefox) interpreta o código das páginas e as desenha para o usuário."
+      },
+      {
+        "question": "No endereço https://www.exemplo.com.br, o que indica o 's' após 'http'?",
+        "options": [
+          "Que o site é o segundo mais acessado",
+          "Conexão segura (criptografada)",
+          "Que o site é do governo",
+          "Nada, é só decorativo"
+        ],
+        "correct": 1,
+        "explanation": "O 's' em HTTPS indica conexão segura: os dados trafegam criptografados entre seu navegador e o servidor."
+      },
+      {
+        "question": "Para salvar um site que você usa muito nos favoritos, qual atalho comum?",
+        "options": [
+          "Ctrl+H",
+          "Ctrl+D",
+          "Ctrl+Z",
+          "Ctrl+P"
+        ],
+        "correct": 1,
+        "explanation": "Ctrl+D salva a página atual nos favoritos; Ctrl+H abre o histórico."
+      }
+    ]
+  },
+  {
+    id: "m3-aula2-pesquisa-informacao",
+    title: "Aula 2 — Pesquisa e Informação",
+    page: 162,
+    type: "lesson",
+    chapter: "AULA 16",
+    content: `<h2>🔎 Aula 2 — Pesquisa e Informação</h2>
+      <p>Saber buscar é uma das habilidades mais valiosas na internet. Nesta aula você vai do básico ao nível profissional de pesquisa.</p>
+      <div class="features-guide mt-2">
+        <div class="guide-item"><div class="guide-icon">✅</div><div class="guide-text"><strong>Como pesquisar melhor:</strong> Planeje a busca antes de digitar o termo.</div></div>
+        <div class="guide-item"><div class="guide-icon">🔑</div><div class="guide-text"><strong>Palavras-chave:</strong> Escolha os termos exatos que representam o que você procura.</div></div>
+        <div class="guide-item"><div class="guide-icon">📍</div><div class="guide-text"><strong>Como encontrar informações:</strong> Use filtros, datas e ferramentas do buscador.</div></div>
+        <div class="guide-item"><div class="guide-icon">⚖️</div><div class="guide-text"><strong>Como comparar resultados:</strong> Avalie diferentes fontes lado a lado.</div></div>
+        <div class="guide-item"><div class="guide-icon">✔️</div><div class="guide-text"><strong>Como identificar fontes confiáveis:</strong> Verifique autoridade, data e reputação do site.</div></div>
+        <div class="guide-item"><div class="guide-icon">📰</div><div class="guide-text"><strong>Fake news e informações falsas:</strong> Sinais de alerta e verificação de fatos.</div></div>
+        <div class="guide-item"><div class="guide-icon">💼</div><div class="guide-text"><strong>Pesquisa profissional:</strong> Operadores avançados e busca especializada.</div></div>
+        <div class="guide-item"><div class="guide-icon">🏆</div><div class="guide-text"><strong>Desafio: investigação na Internet:</strong> Missão prática de pesquisa e checagem.</div></div>
+      </div>
+      <div class="tip-box mt-2"><h4>📝 Em produção</h4><p>Esta aula está estruturada conforme o cronograma do Módulo 3. O conteúdo detalhado e o desafio serão integrados a partir do material do Coursebox.</p></div>`
+  },
+  {
+    id: "m3-aula3-seguranca-digital",
+    title: "Aula 3 — Segurança Digital",
+    page: 163,
+    type: "lesson",
+    chapter: "AULA 17",
+    content: `<h2>🛡️ Aula 3 — Segurança Digital</h2>
+      <p>Antes de navegar livremente, você precisa saber se proteger. Esta aula é o seu escudo contra os principais riscos online.</p>
+      <div class="features-guide mt-2">
+        <div class="guide-item"><div class="guide-icon">🔐</div><div class="guide-text"><strong>Senhas:</strong> Crie e gerencie senhas fortes e únicas.</div></div>
+        <div class="guide-item"><div class="guide-icon">🎣</div><div class="guide-text"><strong>Phishing:</strong> Golpes que se passam por empresas para roubar dados.</div></div>
+        <div class="guide-item"><div class="guide-icon">💸</div><div class="guide-text"><strong>Golpes:</strong> Esquemas comuns de fraude e extorsão.</div></div>
+        <div class="guide-item"><div class="guide-icon">🔗</div><div class="guide-text"><strong>Links suspeitos:</strong> Como inspecionar antes de clicar.</div></div>
+        <div class="guide-item"><div class="guide-icon">🌐</div><div class="guide-text"><strong>Sites falsos:</strong> Sinais de páginas clone e HTTPS.</div></div>
+        <div class="guide-item"><div class="guide-icon">⬇️</div><div class="guide-text"><strong>Downloads:</strong> Riscos de arquivos e extensões perigosas.</div></div>
+        <div class="guide-item"><div class="guide-icon">🆔</div><div class="guide-text"><strong>Dados pessoais:</strong> O que não deve ser exposto na web.</div></div>
+        <div class="guide-item"><div class="guide-icon">🔒</div><div class="guide-text"><strong>2FA:</strong> Autenticação em duas etapas para proteger contas.</div></div>
+        <div class="guide-item"><div class="guide-icon">🎭</div><div class="guide-text"><strong>Simulação de golpes:</strong> Pratique identificar tentativas reais.</div></div>
+        <div class="guide-item"><div class="guide-icon">🏆</div><div class="guide-text"><strong>Desafio de segurança:</strong> Missão prática de defesa digital.</div></div>
+      </div>
+      <div class="tip-box mt-2"><h4>📝 Em produção</h4><p>Esta aula está estruturada conforme o cronograma do Módulo 3. O conteúdo detalhado e a simulação serão integrados a partir do material do Coursebox.</p></div>`
+  },
+  {
+    id: "m3-aula4-email-comunicacao",
+    title: "Aula 4 — E-mail e Comunicação",
+    page: 164,
+    type: "lesson",
+    chapter: "AULA 18",
+    content: `<h2>📧 Aula 4 — E-mail e Comunicação</h2>
+      <p>O e-mail ainda é o canal profissional mais importante. Aqui você aprende a usá-lo com organização e etiqueta.</p>
+      <div class="features-guide mt-2">
+        <div class="guide-item"><div class="guide-icon">✉️</div><div class="guide-text"><strong>O que é e-mail:</strong> Conceito e funcionamento da mensagem eletrônica.</div></div>
+        <div class="guide-item"><div class="guide-icon">📥</div><div class="guide-text"><strong>Caixa de entrada:</strong> Organização, pastas e prioridades.</div></div>
+        <div class="guide-item"><div class="guide-icon">📝</div><div class="guide-text"><strong>Assunto:</strong> Escreva assuntos claros e objetivos.</div></div>
+        <div class="guide-item"><div class="guide-icon">📮</div><div class="guide-text"><strong>Destinatário:</strong> Para quem vai a mensagem principal.</div></div>
+        <div class="guide-item"><div class="guide-icon">👥</div><div class="guide-text"><strong>CC e CCO:</strong> Cópia e cópia oculta, e quando usar cada um.</div></div>
+        <div class="guide-item"><div class="guide-icon">📎</div><div class="guide-text"><strong>Anexos:</strong> Como enviar arquivos com segurança e tamanho correto.</div></div>
+        <div class="guide-item"><div class="guide-icon">↩️</div><div class="guide-text"><strong>Responder e encaminhar:</strong> Boas práticas de continuidade.</div></div>
+        <div class="guide-item"><div class="guide-icon">👔</div><div class="guide-text"><strong>Comunicação profissional:</strong> Tom, gentileza e clareza.</div></div>
+        <div class="guide-item"><div class="guide-icon">🖥️</div><div class="guide-text"><strong>Simulação de e-mail:</strong> Pratique redigir e enviar.</div></div>
+        <div class="guide-item"><div class="guide-icon">🏆</div><div class="guide-text"><strong>Desafio:</strong> Missão prática de e-mail profissional.</div></div>
+      </div>
+      <div class="tip-box mt-2"><h4>📝 Em produção</h4><p>Esta aula está estruturada conforme o cronograma do Módulo 3. O conteúdo detalhado e a simulação serão integrados a partir do material do Coursebox.</p></div>`
+  },
+  {
+    id: "m3-aula5-nuvem-servicos",
+    title: "Aula 5 — Nuvem e Serviços Online",
+    page: 165,
+    type: "lesson",
+    chapter: "AULA 19",
+    content: `<h2>☁️ Aula 5 — Nuvem e Serviços Online</h2>
+      <p>Sua informação não precisa viver só no seu computador. Conheça o ecossistema de serviços e armazenamento online.</p>
+      <div class="features-guide mt-2">
+        <div class="guide-item"><div class="guide-icon">☁️</div><div class="guide-text"><strong>O que é nuvem:</strong> Armazenamento e processamento remoto acessível pela internet.</div></div>
+        <div class="guide-item"><div class="guide-icon">⬆️</div><div class="guide-text"><strong>Upload e download:</strong> Enviar e receber arquivos de e para a nuvem.</div></div>
+        <div class="guide-item"><div class="guide-icon">📁</div><div class="guide-text"><strong>Google Drive / OneDrive:</strong> Principais soluções e seus recursos.</div></div>
+        <div class="guide-item"><div class="guide-icon">🗂️</div><div class="guide-text"><strong>Organização:</strong> Pastas e nomenclatura na nuvem.</div></div>
+        <div class="guide-item"><div class="guide-icon">🤝</div><div class="guide-text"><strong>Compartilhamento:</strong> Enviar links de acesso a outras pessoas.</div></div>
+        <div class="guide-item"><div class="guide-icon">🔑</div><div class="guide-text"><strong>Permissões:</strong> Visualizar, comentar ou editar — e o que cada um permite.</div></div>
+        <div class="guide-item"><div class="guide-icon">💾</div><div class="guide-text"><strong>Backup:</strong> Cópias de segurança automáticas e restauração.</div></div>
+        <div class="guide-item"><div class="guide-icon">🏆</div><div class="guide-text"><strong>Atividade prática:</strong> Missão de organização e compartilhamento na nuvem.</div></div>
+      </div>
+      <div class="tip-box mt-2"><h4>📝 Em produção</h4><p>Esta aula está estruturada conforme o cronograma do Módulo 3. O conteúdo detalhado e a atividade serão integrados a partir do material do Coursebox.</p></div>`
+  },
+  {
+    id: "m3-aula6-missao-final",
+    title: "Aula 6 — Missão Final: Usuário Digital",
+    page: 166,
+    type: "project",
+    chapter: "AULA 20",
+    content: `<h2>🎓 Aula 6 — Missão Final: Usuário Digital</h2>
+      <p>Chegou a hora de fechar o Módulo 3 com uma missão integrada, no mesmo espírito da Missão Final do Módulo 1, só que totalmente voltada para a internet.</p>
+      <div class="card bg-surface border-soft mt-2">
+        <h4>🎯 A Situação</h4>
+        <p>Você recebe uma situação profissional e precisa aplicar tudo o que aprendeu, na ordem:</p>
+        <ol style="margin-left:1.5rem; line-height:1.8;">
+          <li><strong>Pesquisar</strong> a informação necessária com eficiência.</li>
+          <li><strong>Verificar</strong> a procedência e identificar possíveis golpes.</li>
+          <li><strong>Baixar</strong> o arquivo com segurança.</li>
+          <li><strong>Organizar</strong> o arquivo em pastas claras.</li>
+          <li><strong>Enviar por e-mail</strong>, anexando o documento.</li>
+          <li><strong>Enviar para a nuvem</strong> e compartilhar corretamente.</li>
+        </ol>
+        <p>Isso encerra com sucesso os três módulos do InforMestre! 🚀</p>
+      </div>
+      <div class="tip-box mt-2"><h4>📝 Em produção</h4><p>O roteiro completo da missão final será integrado a partir do material do Coursebox, fechando o Módulo 3 com o desafio prático encadeado.</p></div>`
   }
 ];
 

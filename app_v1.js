@@ -30,6 +30,7 @@ let state = {
     certificates: []
   }
 };
+window.state = state;
 
 const ACHIEVEMENTS = [
   { id: "welcome", title: "Primeiros Passos", desc: "Abriu as boas-vindas do curso.", icon: "🚀" },
@@ -391,16 +392,19 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeInfoP
 // INITIALIZATION & DYNAMIC UI RENDERING
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
-  loadState();
-  initTheme();
-  initSidebarMenu();
-  initNotepad();
-  initGlobalEvents();
+  if (typeof loadState === "function") loadState();
+  if (typeof initTheme === "function") initTheme();
+  if (typeof initSidebarMenu === "function") initSidebarMenu();
+  if (typeof initNotepad === "function") initNotepad();
+  if (typeof initGlobalEvents === "function") initGlobalEvents();
   
-  // Load initial slide
-  loadSlide(state.currentSlideIndex);
-  updateStatsUI();
-  updateProgressUI();
+  // Load initial slide only if course screen is currently active
+  const appScreen = document.getElementById("screen-app");
+  if (appScreen && !appScreen.classList.contains("screen-hidden")) {
+    if (typeof loadSlide === "function") loadSlide(state.currentSlideIndex);
+    if (typeof updateStatsUI === "function") updateStatsUI();
+    if (typeof updateProgressUI === "function") updateProgressUI();
+  }
 
   // Inicializa integração com Supabase
   if (typeof initSupabaseIntegration === "function") {
@@ -416,13 +420,15 @@ function initTheme() {
   const currentTheme = localStorage.getItem("informestre_theme") || "dark";
   document.documentElement.setAttribute("data-theme", currentTheme);
   
-  toggle.addEventListener("click", () => {
-    const activeTheme = document.documentElement.getAttribute("data-theme");
-    const nextTheme = activeTheme === "dark" ? "light" : "dark";
-    
-    document.documentElement.setAttribute("data-theme", nextTheme);
-    localStorage.setItem("informestre_theme", nextTheme);
-  });
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      const activeTheme = document.documentElement.getAttribute("data-theme");
+      const nextTheme = activeTheme === "dark" ? "light" : "dark";
+      
+      document.documentElement.setAttribute("data-theme", nextTheme);
+      localStorage.setItem("informestre_theme", nextTheme);
+    });
+  }
 }
 
 // Draw the left menu items (Upgraded to Gamified Journey Modules & Lessons)
@@ -1635,46 +1641,73 @@ function markSlideAsCompleted(slideId) {
 // Setup Global Click Handlers
 function initGlobalEvents() {
   // Prev/Next buttons
-  document.getElementById("prev-slide-btn").addEventListener("click", () => {
-    loadSlide(state.currentSlideIndex - 1);
-  });
+  const prevBtn = document.getElementById("prev-slide-btn");
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => {
+      loadSlide(state.currentSlideIndex - 1);
+    });
+  }
   
-  document.getElementById("next-slide-btn").addEventListener("click", () => {
-    loadSlide(state.currentSlideIndex + 1);
-  });
+  const nextBtn = document.getElementById("next-slide-btn");
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      loadSlide(state.currentSlideIndex + 1);
+    });
+  }
   
   // Responsive sidebar toggles
-  const sidebar = document.getElementById("app-sidebar");
-  document.getElementById("sidebar-toggle-trigger").addEventListener("click", () => {
-    sidebar.classList.add("open");
-  });
-  document.getElementById("sidebar-close-trigger").addEventListener("click", () => {
-    sidebar.classList.remove("open");
-  });
+  const sidebar = document.getElementById("app-sidebar") || document.getElementById("sidebar");
+  const toggleBtn = document.getElementById("sidebar-toggle-trigger");
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+  }
+
+  const closeBtn = document.getElementById("sidebar-close-trigger");
+  if (closeBtn && sidebar) {
+    closeBtn.addEventListener("click", () => {
+      sidebar.classList.remove("open");
+    });
+  }
   
   // Reset current simulator btn
-  document.getElementById("reset-simulator-btn").addEventListener("click", () => {
-    const item = COURSE_CONTENT[state.currentSlideIndex];
-    if (item && item.interactiveId) {
-      loadSimulator(item.interactiveId, item, true);
-    }
-  });
+  const resetSimBtn = document.getElementById("reset-simulator-btn");
+  if (resetSimBtn) {
+    resetSimBtn.addEventListener("click", () => {
+      const item = COURSE_CONTENT[state.currentSlideIndex];
+      if (item && item.interactiveId) {
+        loadSimulator(item.interactiveId, item, true);
+      }
+    });
+  }
 
   // Achievements Modal Controls
   const achModal = document.getElementById("achievements-modal");
-  document.getElementById("achievements-modal-trigger").addEventListener("click", openAchievementsModal);
-  document.getElementById("achievements-close-trigger").addEventListener("click", () => {
-    achModal.classList.add("hidden");
-  });
+  const achTrigger = document.getElementById("achievements-modal-trigger");
+  if (achTrigger) achTrigger.addEventListener("click", openAchievementsModal);
+  const achClose = document.getElementById("achievements-close-trigger");
+  if (achClose && achModal) {
+    achClose.addEventListener("click", () => {
+      achModal.classList.add("hidden");
+    });
+  }
   
   // Certificate Modal Close
-  document.getElementById("certificate-close-trigger").addEventListener("click", () => {
-    document.getElementById("certificate-modal").classList.add("hidden");
-  });
+  const certModal = document.getElementById("certificate-modal");
+  const certClose = document.getElementById("certificate-close-trigger");
+  if (certClose && certModal) {
+    certClose.addEventListener("click", () => {
+      certModal.classList.add("hidden");
+    });
+  }
   
-  document.getElementById("print-certificate-btn").addEventListener("click", () => {
-    window.print();
-  });
+  const printCertBtn = document.getElementById("print-certificate-btn");
+  if (printCertBtn) {
+    printCertBtn.addEventListener("click", () => {
+      window.print();
+    });
+  }
 }
 
 /**
@@ -1766,39 +1799,53 @@ function initNotepad() {
   const trigger = document.getElementById("notepad-toggle-trigger");
   const closeBtn = document.getElementById("notepad-close-trigger");
   
-  trigger.addEventListener("click", () => {
-    drawer.classList.toggle("open");
-  });
+  if (trigger && drawer) {
+    trigger.addEventListener("click", () => {
+      drawer.classList.toggle("open");
+    });
+  }
   
-  closeBtn.addEventListener("click", () => {
-    drawer.classList.remove("open");
-  });
+  if (closeBtn && drawer) {
+    closeBtn.addEventListener("click", () => {
+      drawer.classList.remove("open");
+    });
+  }
   
   // Autosave notes on typing
   const textarea = document.getElementById("notepad-text-area");
-  textarea.addEventListener("input", () => {
-    const item = COURSE_CONTENT[state.currentSlideIndex];
-    if (item) {
-      state.notes[item.id] = textarea.value;
-      saveState();
-    }
-  });
+  if (textarea) {
+    textarea.addEventListener("input", () => {
+      const item = COURSE_CONTENT[state.currentSlideIndex];
+      if (item) {
+        state.notes[item.id] = textarea.value;
+        saveState();
+      }
+    });
+  }
   
   // Export Notes Trigger
-  document.getElementById("export-notes-txt-btn").addEventListener("click", exportAllNotes);
+  const exportBtn = document.getElementById("export-notes-txt-btn");
+  if (exportBtn) {
+    exportBtn.addEventListener("click", exportAllNotes);
+  }
 }
 
 function loadNotepadForSlide(slideId) {
-  const textarea = document.getElementById("notepad-text-area");
-  textarea.value = state.notes[slideId] || "";
+  const textarea = document.getElementById("notepad-text-area") || document.getElementById("notepad-textarea");
+  if (textarea) {
+    textarea.value = (state.notes && state.notes[slideId]) || "";
+  }
 }
 
 function saveCurrentNotepadText() {
   const item = COURSE_CONTENT[state.currentSlideIndex];
   if (item) {
-    const textarea = document.getElementById("notepad-text-area");
-    state.notes[item.id] = textarea.value;
-    saveState();
+    const textarea = document.getElementById("notepad-text-area") || document.getElementById("notepad-textarea");
+    if (textarea) {
+      if (!state.notes) state.notes = {};
+      state.notes[item.id] = textarea.value;
+      saveState();
+    }
   }
 }
 
@@ -8189,11 +8236,14 @@ function initSupabaseIntegration() {
         updateProgressUI();
         updateStatsUI();
         initSidebarMenu();
-        loadSlide(state.currentSlideIndex);
+        if (appScreen && !appScreen.classList.contains("screen-hidden")) {
+          loadSlide(state.currentSlideIndex);
+        }
 
         // Renderiza o cabeçalho e conteúdo do Portal Hub
         renderHubHeader();
         renderHubContents();
+        initSidebarNavigation();
         updateAuthUI(true, session.user, profile); // Mantém o status da barra lateral atualizado
       } else {
         window.currentUser = null;
@@ -8377,8 +8427,10 @@ function switchHubTab(tabName) {
     if (window.InforMestreTrainingLab) {
       window.InforMestreTrainingLab.renderLabPanel(mainPanel);
     }
-  } else if (tabName === "curriculum") {
-    renderStudentCurriculumTab(mainPanel);
+  } else if (tabName === "curriculum" || tabName === "modules" || tabName === "modulo-1") {
+    openStudentCourseDetail('informatica-basica');
+  } else if (tabName === "modulo-3") {
+    renderStudentModule3View(mainPanel);
   } else if (tabName === "achievements") {
     renderStudentAchievementsTab(mainPanel);
   } else if (tabName === "settings") {
@@ -8401,29 +8453,40 @@ function switchHubTab(tabName) {
 }
 
 /**
- * ABA 1: Painel do Aluno (Resumo de Progresso e Métricas Rápidas)
+ * ABA 1: Painel do Aluno (Resumo de Progresso e Cursos Inscritos no Nexora)
  */
 function renderStudentDashboardTab(container) {
   const schoolName = window.schoolProfile ? window.schoolProfile.name : "Minha Escola";
-  
-  // Progresso do Curso (Baseado nas 20 Aulas da Jornada)
-  let flatLessons = [];
-  COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
-  const totalLessons = flatLessons.length;
-  
-  let completedCount = 0;
-  flatLessons.forEach(l => {
-    if (isLessonCompleted(l)) completedCount++;
-  });
-  
-  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-  const achievementsCount = Object.keys(state.unlockedAchievements || {}).length;
+  const studentName = (window.currentUserProfile.full_name || "Estudante").split(" ")[0];
 
-  // Achar o título da última aula ativa para continuar
-  const currentSlide = COURSE_CONTENT[state.currentSlideIndex] || COURSE_CONTENT[0];
-  const lastLessonTitle = currentSlide ? currentSlide.chapter + " — " + currentSlide.title : "Início do Curso";
+  // Cálculo de progresso do curso de Informática Básica (M1 + M2)
+  const mod1 = COURSE_JORNADA.find(m => m.id === "modulo-1");
+  const mod2 = COURSE_JORNADA.find(m => m.id === "modulo-2");
 
-  // Card do perfil da escola (todos os alunos pertencem à escola única)
+  let m1Done = 0, m1Total = mod1 ? mod1.lessons.length : 8;
+  let m2Done = 0, m2Total = mod2 ? mod2.lessons.length : 8;
+
+  if (mod1) {
+    mod1.lessons.forEach(l => {
+      if (isLessonCompleted(l)) m1Done++;
+    });
+  }
+
+  if (mod2) {
+    if (window.InforMestreLMS) {
+      m2Done = window.InforMestreLMS.getModule2Stats(window.currentUser?.id || 'guest_student').completed || 0;
+    } else {
+      mod2.lessons.forEach(l => {
+        if (state.completedLessons && state.completedLessons[l.id]) m2Done++;
+      });
+    }
+  }
+
+  const totalAtivos = m1Total + m2Total;
+  const complAtivos = m1Done + m2Done;
+  const progressPercent = totalAtivos > 0 ? Math.round((complAtivos / totalAtivos) * 100) : 0;
+
+  // Card da Escola
   let schoolCardHtml = "";
   if (window.schoolProfile) {
     const school = window.schoolProfile;
@@ -8431,251 +8494,809 @@ function renderStudentDashboardTab(container) {
     const logo = school.logo_url || "";
     
     schoolCardHtml = `
-      <div class="school-profile-card" style="background: rgba(22, 20, 45, 0.95); border: 1px solid var(--border-soft); border-radius: var(--border-radius-lg); overflow: hidden; margin-top: 1rem;">
-        <!-- Banner -->
-        <div class="school-card-banner" style="background-image: url('${banner}'); height: 120px; background-size: cover; background-position: center; position: relative;">
-          <!-- Logo sobreposta -->
-          <div class="school-card-logo" style="width: 70px; height: 70px; border-radius: 8px; border: 3px solid rgba(22,20,45,0.95); background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; position: absolute; bottom: -25px; left: 20px; overflow: hidden; font-size: 2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-            ${logo ? `<img src="${logo}" style="width: 100%; height: 100%; object-fit: cover;">` : "🏫"}
-          </div>
+      <div class="skillset-section" style="margin-top: 1.5rem;">
+        <div class="skillset-section-header">
+          <h2 class="skillset-section-title">🏫 Sua Escola</h2>
         </div>
-        
-        <!-- Conteúdo do card -->
-        <div class="school-card-content" style="padding: 2.2rem 1.5rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
-          <div>
-            <h4 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--text-primary);">${school.name || "Minha Escola"}</h4>
-            ${school.description ? `<p class="text-muted" style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.45;">${school.description}</p>` : `<p class="text-muted" style="margin-top: 0.5rem; font-size: 0.9rem; font-style: italic;">Nenhuma mensagem cadastrada pela escola.</p>`}
-          </div>
-          
-          <!-- Informações de contato se houver alguma cadastrada -->
-          ${(school.contact_email || school.contact_phone || school.address) ? `
-            <div class="school-card-contacts" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.8rem; padding-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; color: var(--text-secondary);">
-              ${school.contact_email ? `<div style="display:flex; align-items:center; gap:0.4rem;"><span>📧</span> <span style="word-break: break-all;">${school.contact_email}</span></div>` : ""}
-              ${school.contact_phone ? `<div style="display:flex; align-items:center; gap:0.4rem;"><span>📞</span> <span>${school.contact_phone}</span></div>` : ""}
-              ${school.address ? `<div style="display:flex; align-items:center; gap:0.4rem; grid-column: 1 / -1;"><span>📍</span> <span>${school.address}</span></div>` : ""}
+        <div class="school-profile-card" style="background: #FFFFFF; border: 1px solid var(--color-border); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-sm);">
+          <div class="school-card-banner" style="background-image: url('${banner}'); height: 110px; background-size: cover; background-position: center; position: relative;">
+            <div class="school-card-logo" style="width: 60px; height: 60px; border-radius: 12px; border: 3px solid #FFFFFF; background: #FFFFFF; display: flex; align-items: center; justify-content: center; position: absolute; bottom: -20px; left: 20px; overflow: hidden; font-size: 1.8rem; box-shadow: var(--shadow-md);">
+              ${logo ? `<img src="${logo}" style="width: 100%; height: 100%; object-fit: cover;">` : "🏫"}
             </div>
-          ` : ""}
+          </div>
+          <div style="padding: 1.8rem 1.5rem 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+            <div>
+              <h4 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--color-text-primary);">${school.name || "Minha Escola"}</h4>
+              <p style="margin: 0.35rem 0 0 0; font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.45;">${school.description || "Escola de informática e formação profissional tecnológica."}</p>
+            </div>
+            ${(school.contact_email || school.contact_phone || school.address) ? `
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap; padding-top: 0.75rem; border-top: 1px solid var(--color-border); font-size: 0.82rem; color: var(--color-text-muted);">
+                ${school.contact_email ? `<div>📧 ${school.contact_email}</div>` : ""}
+                ${school.contact_phone ? `<div>📞 ${school.contact_phone}</div>` : ""}
+                ${school.address ? `<div>📍 ${school.address}</div>` : ""}
+              </div>
+            ` : ""}
+          </div>
         </div>
       </div>
     `;
   }
 
-      const levelInfo = getUserLevelInfo(state.xp);
+  container.innerHTML = `
+    <div class="skillset-dashboard-layout">
+      <!-- Coluna Principal (Esquerda) -->
+      <div class="skillset-main-col">
+        
+        <!-- Hero Banner 3D -->
+        <div class="skillset-hero-banner">
+          <div class="hero-3d-art">
+            <svg width="130" height="110" viewBox="0 0 130 110" fill="none">
+              <ellipse cx="65" cy="95" rx="55" ry="10" fill="rgba(0,0,0,0.12)"/>
+              <path d="M20 75 L65 92 L110 75 L65 58 Z" fill="#00D2D3"/>
+              <path d="M20 75 L65 92 L65 100 L20 83 Z" fill="#01A3A4"/>
+              <path d="M65 92 L110 75 L110 83 L65 100 Z" fill="#10AC84"/>
+              <path d="M22 73 L65 89 L108 73 L65 57 Z" fill="#F8F9FA"/>
+              <path d="M28 58 L65 73 L102 58 L65 43 Z" fill="#8C7AE6"/>
+              <path d="M28 58 L65 73 L65 80 L28 65 Z" fill="#6D5CB8"/>
+              <path d="M65 73 L102 58 L102 65 L65 80 Z" fill="#5848A6"/>
+              <path d="M30 56 L65 70 L100 56 L65 42 Z" fill="#F8F9FA"/>
+              <path d="M35 40 L65 53 L95 40 L65 27 Z" fill="#FF7675"/>
+              <path d="M35 40 L65 53 L65 59 L35 46 Z" fill="#E84118"/>
+              <path d="M65 53 L95 40 L95 46 L65 59 Z" fill="#C23616"/>
+              <circle cx="50" cy="22" r="10" stroke="#FECA57" stroke-width="3" fill="rgba(255,255,255,0.3)"/>
+              <circle cx="76" cy="22" r="10" stroke="#FECA57" stroke-width="3" fill="rgba(255,255,255,0.3)"/>
+              <path d="M60 20 Q63 17 66 20" stroke="#FECA57" stroke-width="3" fill="none"/>
+              <path d="M40 22 L32 20" stroke="#FECA57" stroke-width="2.5"/>
+              <path d="M86 22 L94 20" stroke="#FECA57" stroke-width="2.5"/>
+            </svg>
+          </div>
+          <div class="hero-content-center">
+            <h1 class="hero-title">Olá, ${studentName}!</h1>
+            <p class="hero-subtitle">${schoolName} &bull; Sua biblioteca digital interativa para acelerar o aprendizado em tecnologia.</p>
+            <button class="hero-cta-btn" type="button" onclick="openStudentCourseDetail('informatica-basica')">
+              <span>Acessar Meu Curso</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+          <div class="hero-3d-art">
+            <svg width="130" height="110" viewBox="0 0 130 110" fill="none">
+              <ellipse cx="65" cy="98" rx="50" ry="8" fill="rgba(0,0,0,0.12)"/>
+              <path d="M15 78 L115 78 L120 86 L10 86 Z" fill="#F0932B"/>
+              <path d="M10 86 L120 86 L120 94 L10 94 Z" fill="#B35900"/>
+              <path d="M25 94 L35 94 L30 104 Z" fill="#B35900"/>
+              <path d="M95 94 L105 94 L100 104 Z" fill="#B35900"/>
+              <rect x="30" y="32" width="14" height="46" rx="3" fill="#6C5CE7"/>
+              <rect x="32" y="34" width="4" height="42" rx="1" fill="#8C7CF0"/>
+              <rect x="46" y="24" width="16" height="54" rx="3" fill="#A29BFE"/>
+              <rect x="64" y="38" width="12" height="40" rx="3" fill="#FF7675"/>
+              <g transform="translate(80, 30) rotate(18)">
+                <rect x="0" y="0" width="14" height="48" rx="3" fill="#00CEC9"/>
+                <rect x="2" y="2" width="3" height="44" rx="1" fill="#81ECEC"/>
+              </g>
+            </svg>
+          </div>
+        </div>
 
-      container.innerHTML = `
-    <div class="student-hub-layout" style="display: flex; flex-direction: column; gap: 2rem;">
-      <div class="hub-welcome-banner">
-        <h3 style="margin-bottom: 0.4rem;">👋 Bem-vindo de volta, <span>${window.currentUserProfile.full_name || "Estudante"}</span>!</h3>
-        <p class="text-muted" style="font-size: 0.95rem;">Escola: ${schoolName}</p>
-      </div>
-      
-      <div class="hub-stats-grid">
-        <div class="hub-stat-card" style="display:flex; flex-direction:column; gap:0.5rem; align-items:flex-start; min-height: 100px; justify-content: space-between; padding: 1.2rem;">
-          <div style="display:flex; align-items:center; gap:0.6rem;">
-            <span class="card-icon" style="margin:0; font-size: 1.8rem;">🎖️</span>
-            <div class="card-info">
-              <span class="card-value" style="font-size: 1.1rem; line-height: 1.2;">Nível ${state.level}</span>
-              <span class="card-label" style="font-size:0.75rem; font-weight:700; color:var(--color-primary-light); text-transform:uppercase; margin-top:2px;">${levelInfo.title}</span>
+        <!-- SEÇÃO: MEUS CURSOS INSCRITOS -->
+        <div class="skillset-section">
+          <div class="skillset-section-header">
+            <h2 class="skillset-section-title">Meus Cursos Inscritos</h2>
+            <span class="skillset-section-badge">1 Curso em Andamento</span>
+          </div>
+
+          <div class="course-enrolled-card" onclick="openStudentCourseDetail('informatica-basica')">
+            <div class="course-card-thumb">
+              <div class="course-thumb-badge">CURSO PRINCIPAL</div>
+              <div class="course-thumb-icon">💻</div>
+              <div class="course-thumb-glow"></div>
+            </div>
+
+            <div class="course-card-content">
+              <div class="course-card-meta">
+                <span class="course-tag">Jornada Completa &bull; 3 Módulos</span>
+                <span class="course-xp-pill">⭐ +250 XP</span>
+              </div>
+              
+              <h3 class="course-card-title">Informática Básica: Introdução Digital</h3>
+              <p class="course-card-desc">Domine a arquitetura do computador, montagem de hardware, Windows, Word, Excel, PowerPoint e Internet Segura.</p>
+
+              <div class="course-card-footer">
+                <div class="course-progress-wrap">
+                  <div class="course-progress-label">
+                    <span>Progresso do Curso</span>
+                    <strong>${progressPercent}% (${complAtivos}/${totalAtivos} Aulas)</strong>
+                  </div>
+                  <div class="course-progress-track">
+                    <div class="course-progress-fill" style="width: ${progressPercent}%;"></div>
+                  </div>
+                </div>
+
+                <button class="course-action-btn" type="button" onclick="event.stopPropagation(); openStudentCourseDetail('informatica-basica')">
+                  <span>Acessar Módulos</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+              </div>
             </div>
           </div>
-          <div style="width:100%;">
-            <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#aaa; margin-bottom:4px;">
-              <span>${state.xp - levelInfo.minXp} / ${levelInfo.maxXp - levelInfo.minXp} XP</span>
-              <span>Prox: ${levelInfo.levelNum < 5 ? `Nível ${levelInfo.levelNum + 1}` : 'Max'}</span>
+        </div>
+
+        <!-- SEÇÃO: SIMULADORES E LABORATÓRIOS -->
+        <div class="skillset-section">
+          <div class="skillset-section-header">
+            <h2 class="skillset-section-title">Laboratórios de Prática & Simuladores</h2>
+            <a href="javascript:void(0)" onclick="switchHubTab('training-lab')" class="skillset-view-all">VER TODOS</a>
+          </div>
+
+          <div class="skillset-cards-grid">
+            <!-- Card 1: Digitação -->
+            <div class="skillset-card-3d" onclick="switchHubTab('training-lab')">
+              <div class="card-3d-banner" style="background: linear-gradient(135deg, #6C5CE7 0%, #a29bfe 100%);">
+                <span class="card-badge-top">LABORATÓRIO</span>
+                <div class="card-art-circle">⌨️</div>
+              </div>
+              <div class="card-3d-body">
+                <h4 class="card-3d-title">Digitação Ágil</h4>
+                <p class="card-3d-desc">Treine digitação no teclado, aumente seu PPM e ganhe precisão.</p>
+                <div class="card-3d-footer">
+                  <span class="card-xp-badge">+50 XP</span>
+                  <span class="card-action-link">Praticar →</span>
+                </div>
+              </div>
             </div>
-            <div class="xp-bar-container-premium">
-              <div class="xp-bar-fill-premium" style="width: ${levelInfo.levelNum < 5 ? Math.round(((state.xp - levelInfo.minXp) / (levelInfo.maxXp - levelInfo.minXp)) * 100) : 100}%;"></div>
+
+            <!-- Card 2: Mouse -->
+            <div class="skillset-card-3d" onclick="switchHubTab('training-lab')">
+              <div class="card-3d-banner" style="background: linear-gradient(135deg, #FF7675 0%, #fab1a0 100%);">
+                <span class="card-badge-top">SIMULADOR</span>
+                <div class="card-art-circle">🎈</div>
+              </div>
+              <div class="card-3d-body">
+                <h4 class="card-3d-title">Coordenação de Mouse</h4>
+                <p class="card-3d-desc">Treine precisão de clique, arrastar e agilidade com o cursor.</p>
+                <div class="card-3d-footer">
+                  <span class="card-xp-badge">+40 XP</span>
+                  <span class="card-action-link">Praticar →</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: Hardware -->
+            <div class="skillset-card-3d" onclick="switchHubTab('training-lab')">
+              <div class="card-3d-banner" style="background: linear-gradient(135deg, #00CEC9 0%, #81ecec 100%);">
+                <span class="card-badge-top">3D INTERATIVO</span>
+                <div class="card-art-circle">🔧</div>
+              </div>
+              <div class="card-3d-body">
+                <h4 class="card-3d-title">Montagem de Hardware</h4>
+                <p class="card-3d-desc">Identifique peças de computador e faça conexões de periféricos.</p>
+                <div class="card-3d-footer">
+                  <span class="card-xp-badge">+80 XP</span>
+                  <span class="card-action-link">Montar →</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="hub-stat-card" style="padding: 1.2rem; min-height: 100px; display: flex; align-items: center; gap: 1rem;">
-          <span class="card-icon" style="font-size: 2rem;">⚡</span>
-          <div class="card-info">
-            <span class="card-value">${state.xp} XP</span>
-            <span class="card-label">Experiência Acumulada</span>
+
+        ${schoolCardHtml}
+
+      </div>
+
+      <!-- Coluna Lateral Direita -->
+      <div class="skillset-side-col">
+        <!-- Card de Nível & XP -->
+        <div class="skillset-user-card-3d">
+          <div class="user-card-3d-header">
+            <div class="user-avatar-large">
+              <span>AT</span>
+            </div>
+            <div class="user-name-title">
+              <h3>${studentName}</h3>
+              <span>Nível 1 &bull; Aluno Dedicado</span>
+            </div>
+          </div>
+
+          <div class="user-xp-box">
+            <div class="user-xp-header">
+              <span>Experiência Total</span>
+              <strong>${state.xp} XP</strong>
+            </div>
+            <div class="xp-bar-track-3d">
+              <div class="xp-bar-fill-3d" style="width: ${Math.min(100, Math.round((state.xp / 500) * 100))}%;"></div>
+            </div>
+            <div class="user-xp-footer">
+              <span>Próximo nível em ${Math.max(0, 500 - state.xp)} XP</span>
+            </div>
           </div>
         </div>
-        <div class="hub-stat-card" style="padding: 1.2rem; min-height: 100px; display: flex; align-items: center; gap: 1rem;">
-          <span class="card-icon" style="font-size: 2rem;">🏆</span>
-          <div class="card-info">
-            <span class="card-value">${achievementsCount} / 10</span>
-            <span class="card-label">Conquistas Desbloqueadas</span>
+
+        <!-- Conquistas Recentes -->
+        <div class="skillset-side-card">
+          <div class="side-card-header">
+            <h4>🏆 Conquistas</h4>
+            <a href="javascript:void(0)" onclick="switchHubTab('achievements')">Ver Ranking</a>
+          </div>
+          <div class="side-achievements-list">
+            <div class="side-achieve-item unlocked">
+              <div class="achieve-icon-circle">🎖️</div>
+              <div class="achieve-info-mini">
+                <strong>Primeiro Passo</strong>
+                <span>Iniciou a jornada digital</span>
+              </div>
+              <span class="achieve-badge-ok">✓</span>
+            </div>
+            <div class="side-achieve-item unlocked">
+              <div class="achieve-icon-circle">⚡</div>
+              <div class="achieve-info-mini">
+                <strong>Explorador de Hardware</strong>
+                <span>Completou o Módulo 1</span>
+              </div>
+              <span class="achieve-badge-ok">✓</span>
+            </div>
+            <div class="side-achieve-item">
+              <div class="achieve-icon-circle">🎬</div>
+              <div class="achieve-info-mini">
+                <strong>Mestre do Office</strong>
+                <span>Em andamento no Módulo 2</span>
+              </div>
+              <span class="achieve-badge-lock">🔒</span>
+            </div>
           </div>
         </div>
       </div>
-
-      <div class="hub-progress-section">
-      </div>
-
-      <!-- Módulo 2 LMS Progress Card -->
-      <div class="hub-progress-section" style="background: rgba(30, 25, 56, 0.95); border: 1px solid var(--color-primary); border-radius: var(--border-radius-lg); padding: 1.5rem;">
-        <div class="progress-details" style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <h4 style="margin: 0; font-size: 1.2rem; font-weight:700;">🎬 Módulo 2 — Pacote Office (Videoaulas)</h4>
-            <span style="font-size:0.85rem; color:var(--text-muted);">${(window.InforMestreLMS ? window.InforMestreLMS.getModule2Stats(window.currentUser?.id || 'guest_student').completed : 0)} de 8 aulas concluídas</span>
-          </div>
-          <span style="font-weight: 800; font-size: 1.5rem; color: var(--color-primary-light);">${(window.InforMestreLMS ? window.InforMestreLMS.getModule2Stats(window.currentUser?.id || 'guest_student').percent : 0)}%</span>
-        </div>
-        <div class="progress-bar-large-track" style="margin-top: 0.8rem;">
-          <div class="progress-bar-large-fill" style="width: ${(window.InforMestreLMS ? window.InforMestreLMS.getModule2Stats(window.currentUser?.id || 'guest_student').percent : 0)}%;"></div>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items:center; margin-top: 1rem; flex-wrap:wrap; gap:0.5rem;">
-          <span class="text-small text-muted">Aulas 1 a 8 preparadas no player LMS responsivo</span>
-          <button class="btn btn-primary" onclick="if(window.switchHubTab) window.switchHubTab('m2-aula-1');" style="padding: 0.6rem 1.5rem;">
-            ▶️ Acessar Módulo 2 (Videoaulas)
-          </button>
-        </div>
-      </div>
-
-      ${schoolCardHtml}
     </div>
   `;
-
-  const startBtn = document.getElementById("student-hub-start-btn");
-  if (startBtn) {
-    startBtn.addEventListener("click", () => {
-      showScreen("course");
-    });
-  }
 }
 
 /**
- * ABA 2: Módulos do Curso (Curriculum / Grade de Capítulos)
+ * VISÃO DETALHADA DO CURSO: Informática Básica (Apresenta os 3 Módulos com Progresso)
+ */
+function openStudentCourseDetail(courseId) {
+  showScreen("hub");
+  
+  // Atualiza sidebar ativa
+  document.querySelectorAll(".sidebar-nav-item").forEach(b => {
+    b.classList.toggle("active", b.dataset.section === "modules");
+  });
+
+  const mainPanel = document.getElementById("hub-main-panel-content");
+  if (!mainPanel) return;
+
+  const schoolName = window.schoolProfile ? window.schoolProfile.name : "Minha Escola";
+
+  const mod1 = COURSE_JORNADA.find(m => m.id === "modulo-1");
+  const mod2 = COURSE_JORNADA.find(m => m.id === "modulo-2");
+  const mod3 = COURSE_JORNADA.find(m => m.id === "modulo-3");
+
+  let m1Done = 0, m1Total = mod1 ? mod1.lessons.length : 8;
+  let m2Done = 0, m2Total = mod2 ? mod2.lessons.length : 8;
+  let m3Done = 0, m3Total = mod3 ? mod3.lessons.length : 6;
+
+  if (mod1) {
+    mod1.lessons.forEach(l => { if (isLessonCompleted(l)) m1Done++; });
+  }
+  if (mod2) {
+    if (window.InforMestreLMS) {
+      m2Done = window.InforMestreLMS.getModule2Stats(window.currentUser?.id || 'guest_student').completed || 0;
+    } else {
+      mod2.lessons.forEach(l => { if (state.completedLessons && state.completedLessons[l.id]) m2Done++; });
+    }
+  }
+
+  const m1Pct = Math.round((m1Done / m1Total) * 100);
+  const m2Pct = Math.round((m2Done / m2Total) * 100);
+  const m3Pct = Math.round((m3Done / m3Total) * 100);
+
+  const totalAtivos = m1Total + m2Total;
+  const complAtivos = m1Done + m2Done;
+  const overallPct = totalAtivos > 0 ? Math.round((complAtivos / totalAtivos) * 100) : 0;
+
+  mainPanel.innerHTML = `
+    <div class="course-detail-view">
+      <!-- Navegação Superior -->
+      <div class="course-detail-nav">
+        <button class="course-back-btn" type="button" onclick="switchHubTab('dashboard')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          <span>Voltar aos Meus Cursos</span>
+        </button>
+        <span style="font-size:0.85rem; font-weight:700; color:var(--color-text-muted);">Nexora &bull; Trilha de Aprendizado</span>
+      </div>
+
+      <!-- Hero Banner do Curso -->
+      <div class="course-detail-hero">
+        <div class="course-detail-hero-content">
+          <span class="course-detail-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            Curso Inscrito &bull; ${schoolName}
+          </span>
+          <h1 class="course-detail-hero-title">Informática Básica: Introdução Digital</h1>
+          <p class="course-detail-hero-desc">Domine a arquitetura do computador, montagem, sistema operacional Windows, redação e planilhas no Pacote Office e navegação segura na Internet.</p>
+          
+          <div class="course-detail-stats-pills">
+            <div class="detail-stat-pill">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>3 Módulos Estruturados</span>
+            </div>
+            <div class="detail-stat-pill">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <span>22 Aulas Práticas</span>
+            </div>
+            <div class="detail-stat-pill">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+              <span>${overallPct}% Concluído Geral</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="z-index:2; flex-shrink:0; text-align:center; background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); padding:1.5rem 2rem; border-radius:20px; border:1px solid rgba(255,255,255,0.3);">
+          <div style="font-size:2.4rem; font-weight:800; line-height:1;">${overallPct}%</div>
+          <div style="font-size:0.8rem; font-weight:600; opacity:0.9; margin-top:0.3rem;">Seu Progresso</div>
+          <div style="font-size:0.75rem; opacity:0.8; margin-top:0.2rem;">${complAtivos} de ${totalAtivos} Aulas</div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO DOS 3 MÓDULOS -->
+      <div class="course-modules-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h2 class="course-modules-section-title">Módulos do Curso</h2>
+          <span style="font-size:0.85rem; color:var(--color-text-muted); font-weight:600;">Conclua os módulos em sequência para avançar</span>
+        </div>
+
+        <div class="course-modules-list">
+          
+          <!-- Módulo 1 -->
+          <div class="module-card-item">
+            <div class="module-card-left">
+              <div class="module-card-badge-num m1">01</div>
+              <div class="module-card-info">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span style="font-size:0.72rem; font-weight:700; color:var(--color-modulo-1); text-transform:uppercase; letter-spacing:0.04em;">MÓDULO 1</span>
+                  <span style="font-size:0.75rem; color:var(--color-text-muted);">&bull; 8 Aulas &bull; Simulador de Hardware</span>
+                </div>
+                <h3 class="module-card-title">Conhecendo o Digital & Hardware</h3>
+                <p class="module-card-desc">Introdução à informática, montagem de máquina, placa-mãe, memórias, periféricos, Windows e diagnóstico técnico.</p>
+              </div>
+            </div>
+
+            <div class="module-card-middle">
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700;">
+                <span style="color:var(--color-text-secondary);">Progresso</span>
+                <span style="color:var(--color-modulo-1);">${m1Pct}% (${m1Done}/${m1Total})</span>
+              </div>
+              <div class="card-progress-track">
+                <div class="card-progress-fill" style="width: ${m1Pct}%; background:linear-gradient(135deg, #6C5CE7 0%, #8C7CF0 100%);"></div>
+              </div>
+            </div>
+
+            <div class="module-card-right">
+              <button class="course-action-btn" type="button" onclick="openModulePlayer('modulo-1')">
+                <span>${m1Pct === 100 ? 'Revisar Módulo' : 'Acessar Módulo 1'}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Módulo 2 -->
+          <div class="module-card-item">
+            <div class="module-card-left">
+              <div class="module-card-badge-num m2">02</div>
+              <div class="module-card-info">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span style="font-size:0.72rem; font-weight:700; color:var(--color-modulo-2); text-transform:uppercase; letter-spacing:0.04em;">MÓDULO 2</span>
+                  <span style="font-size:0.75rem; color:var(--color-text-muted);">&bull; 8 Videoaulas &bull; LMS Interativo</span>
+                </div>
+                <h3 class="module-card-title">Pacote Office & Produtividade</h3>
+                <p class="module-card-desc">Redação profissional no Word (ABNT), cálculos e tabelas no Excel, criação de slides visuais no PowerPoint e Projeto Integrado.</p>
+              </div>
+            </div>
+
+            <div class="module-card-middle">
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700;">
+                <span style="color:var(--color-text-secondary);">Progresso</span>
+                <span style="color:var(--color-modulo-2);">${m2Pct}% (${m2Done}/${m2Total})</span>
+              </div>
+              <div class="card-progress-track">
+                <div class="card-progress-fill" style="width: ${m2Pct}%; background:linear-gradient(135deg, #0984E3 0%, #74B9FF 100%);"></div>
+              </div>
+            </div>
+
+            <div class="module-card-right">
+              <button class="course-action-btn" type="button" onclick="if(window.InforMestreLMS) window.InforMestreLMS.renderStudentLmsLessonView(document.getElementById('hub-main-panel-content'), 'm2-aula-1', window.currentUser); else switchHubTab('m2-aula-1');" style="background: linear-gradient(135deg, #0984E3 0%, #74B9FF 100%); box-shadow: 0 4px 14px rgba(9,132,227,0.3);">
+                <span>Acessar Módulo 2</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Módulo 3 -->
+          <div class="module-card-item">
+            <div class="module-card-left">
+              <div class="module-card-badge-num m3">03</div>
+              <div class="module-card-info">
+                <div style="display:flex; align-items:center; gap:0.5rem;">
+                  <span style="font-size:0.72rem; font-weight:700; color:var(--color-modulo-3); text-transform:uppercase; letter-spacing:0.04em;">MÓDULO 3</span>
+                  <span style="font-size:0.75rem; color:var(--text-muted);">&bull; 6 Aulas &bull; Internet & Segurança</span>
+                </div>
+                <h3 class="module-card-title">Internet, E-mail & Nuvem Segura</h3>
+                <p class="module-card-desc">História da web, navegadores, criação e gestão de e-mails corporativos, Google Drive, armazenamento em nuvem e proteção digital contra golpes.</p>
+              </div>
+            </div>
+
+            <div class="module-card-middle">
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700;">
+                <span style="color:var(--color-text-secondary);">Progresso</span>
+                <span style="color:var(--color-modulo-3);">${m3Pct}% (${m3Done}/${m3Total})</span>
+              </div>
+              <div class="card-progress-track">
+                <div class="card-progress-fill" style="width: ${m3Pct}%; background:linear-gradient(135deg, #00B894 0%, #55EFC4 100%);"></div>
+              </div>
+            </div>
+
+            <div class="module-card-right">
+              <button class="course-action-btn" type="button" onclick="openModulePlayer('modulo-3')" style="background: linear-gradient(135deg, #00B894 0%, #55EFC4 100%); box-shadow: 0 4px 14px rgba(0,184,148,0.3);">
+                <span>Ver Módulo 3</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  `;
+}
+window.openStudentCourseDetail = openStudentCourseDetail;
+
+/**
+ * ABA 2: Módulos do Curso (Curriculum)
  */
 function renderStudentCurriculumTab(container) {
-  let listHtml = `
-    <div style="margin-bottom: 1.5rem;">
-      <h3 style="margin-bottom: 0.2rem;">📚 Módulos e Minha Jornada</h3>
-      <p class="text-muted" style="font-size:0.9rem;">Veja a trilha completa do curso. Conclua as missões passo a passo para liberar novas aulas.</p>
+  openStudentCourseDetail('informatica-basica');
+}
+
+/**
+ * Renderiza o Portal Interativo do MÓDULO 3 — Internet, E-mail & Nuvem Segura
+ */
+function renderStudentModule3View(container) {
+  showScreen("hub");
+  
+  if (!container) container = document.getElementById("hub-main-panel-content");
+  if (!container) return;
+
+  const mod3 = COURSE_JORNADA.find(m => m.id === "modulo-3");
+  const lessons = mod3 ? mod3.lessons : [];
+  
+  let m3Done = 0;
+  lessons.forEach((l, idx) => {
+    if (state.completedLessons && (state.completedLessons[l.id] || state.completedLessons['m3-aula-' + (idx + 1)] || state.completedLessons['aula-' + (15 + idx)])) {
+      m3Done++;
+    }
+  });
+  const m3Total = lessons.length;
+  const m3Pct = m3Total > 0 ? Math.round((m3Done / m3Total) * 100) : 0;
+
+  container.innerHTML = `
+    <div class="course-detail-view module3-view-container">
+      <!-- Navegação Superior -->
+      <div class="course-detail-nav">
+        <button class="course-back-btn" type="button" onclick="openStudentCourseDetail('informatica-basica')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          <span>Voltar aos Módulos do Curso</span>
+        </button>
+        <span style="font-size:0.85rem; font-weight:700; color:var(--color-modulo-3);">Módulo 3 &bull; Internet, E-mail & Nuvem</span>
+      </div>
+
+      <!-- Banner Hero do Módulo 3 -->
+      <div class="module-detail-hero" style="background: linear-gradient(135deg, #0d2b24 0%, #10483b 50%, #00B894 100%); border: 1px solid rgba(0, 184, 148, 0.3); border-radius: 20px; padding: 2.2rem; color: #fff; margin-bottom: 2rem; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 184, 148, 0.15);">
+        <div style="position:absolute; right: -20px; top:-20px; font-size: 8rem; opacity: 0.12; user-select: none;">🌐</div>
+        <div style="max-width: 680px; position: relative; z-index: 2;">
+          <div style="display:inline-flex; align-items:center; gap:0.5rem; background: rgba(0, 184, 148, 0.25); border: 1px solid rgba(0, 184, 148, 0.5); padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #55EFC4; margin-bottom: 0.8rem;">
+            <span>🥇 MÓDULO 3 • ETAPA FINAL</span>
+          </div>
+          <h1 style="font-size: 1.85rem; font-weight: 800; margin: 0 0 0.6rem; letter-spacing: -0.02em; color: #FFFFFF;">Internet, E-mail & Nuvem Segura</h1>
+          <p style="font-size: 0.95rem; color: #D1FADF; margin: 0 0 1.5rem; line-height: 1.55;">
+            Domine a rede mundial de computadores, técnicas avançadas de pesquisa, criação de e-mails corporativos, segurança cibernética contra golpes e trabalho colaborativo no Google Drive.
+          </p>
+
+          <!-- Barra de Progresso do Módulo 3 -->
+          <div style="background: rgba(0,0,0,0.3); border-radius: 12px; padding: 1rem; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:700; margin-bottom:0.4rem;">
+              <span>Progresso do Módulo 3</span>
+              <span style="color:#55EFC4;">${m3Pct}% Concluído (${m3Done}/${m3Total} Aulas)</span>
+            </div>
+            <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow:hidden;">
+              <div style="width: ${m3Pct}%; height:100%; background: linear-gradient(90deg, #00B894, #55EFC4); transition: width 0.4s ease;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grade de Aulas com Bloqueio Sequencial -->
+      <div style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--color-text-primary); margin: 0 0 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+          <span>📚 Aulas e Desafios Práticos</span>
+          <span style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); background: var(--color-bg-alt); padding: 0.2rem 0.6rem; border-radius: 6px;">6 Conteúdos Sequenciais</span>
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.2rem;">
+          ${lessons.map((aula, idx) => {
+            const isDone = !!(state.completedLessons && (state.completedLessons[aula.id] || state.completedLessons['m3-aula-' + (idx + 1)] || state.completedLessons['aula-' + (15 + idx)]));
+            
+            // Aula 1 está sempre desbloqueada; as próximas dependem da anterior concluída
+            const isUnlocked = idx === 0 || !!(state.completedLessons && (
+              state.completedLessons[lessons[idx - 1].id] || 
+              state.completedLessons['m3-aula-' + idx] || 
+              state.completedLessons['aula-' + (14 + idx)]
+            ));
+
+            const curiosidade = LESSON_CURIOSITIES[aula.id];
+            const bullets = curiosidade ? curiosidade.bulletPoints : [];
+            const isFinal = aula.isDesafio;
+
+            return `
+              <div class="module3-lesson-card" style="background: var(--color-surface); border: 1.5px solid ${isDone ? 'rgba(0,184,148,0.4)' : isUnlocked ? 'var(--color-border)' : 'rgba(255,255,255,0.06)'}; border-radius: 16px; padding: 1.4rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03); opacity: ${isUnlocked ? '1' : '0.7'}; transition: transform 0.2s, box-shadow 0.2s;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                    <span style="font-size: 0.75rem; font-weight: 800; color: ${isFinal ? '#f59e0b' : 'var(--color-modulo-3)'}; background: ${isFinal ? 'rgba(245,158,11,0.12)' : 'rgba(0,184,148,0.12)'}; padding: 0.25rem 0.65rem; border-radius: 50px;">
+                      ${isFinal ? '🏆 DESAFIO FINAL' : `AULA ${idx + 1}`}
+                    </span>
+                    
+                    ${isDone ? `
+                      <span style="font-size: 0.78rem; font-weight: 800; color: #10b981; background: rgba(16,185,129,0.12); padding: 0.25rem 0.65rem; border-radius: 50px; display: inline-flex; align-items: center; gap: 0.3rem;">
+                        ✅ Concluída
+                      </span>
+                    ` : isUnlocked ? `
+                      <span style="font-size: 0.78rem; font-weight: 800; color: #00B894; background: rgba(0,184,148,0.12); padding: 0.25rem 0.65rem; border-radius: 50px; display: inline-flex; align-items: center; gap: 0.3rem;">
+                        ⏳ Disponível
+                      </span>
+                    ` : `
+                      <span style="font-size: 0.78rem; font-weight: 700; color: var(--color-text-muted); background: var(--color-bg-alt); padding: 0.25rem 0.65rem; border-radius: 50px; display: inline-flex; align-items: center; gap: 0.3rem;">
+                        🔒 Bloqueada
+                      </span>
+                    `}
+                  </div>
+
+                  <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--color-text-primary); margin: 0 0 0.5rem;">
+                    ${aula.title}
+                  </h3>
+                  <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.45; margin: 0 0 1rem;">
+                    ${aula.desc}
+                  </p>
+
+                  <!-- Tópicos abordados -->
+                  <div style="background: var(--color-bg-alt); border-radius: 8px; padding: 0.8rem; margin-bottom: 1rem;">
+                    <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); display: block; margin-bottom: 0.4rem;">Competências desta aula:</span>
+                    <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.8rem; color: var(--color-text-secondary); line-height: 1.4;">
+                      ${bullets.slice(0, 3).map(b => `<li style="margin-bottom:0.2rem;">${b}</li>`).join('')}
+                    </ul>
+                  </div>
+
+                  ${!isUnlocked ? `
+                    <div style="font-size: 0.8rem; font-weight: 600; color: #f59e0b; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.4rem;">
+                      <span>🔒</span> Conclua a Aula ${idx} para desbloquear este conteúdo.
+                    </div>
+                  ` : ''}
+                </div>
+
+                <div style="display: flex; gap: 0.6rem; align-items: center; margin-top: 0.5rem;">
+                  ${isUnlocked ? `
+                    <button type="button" class="btn btn-primary" onclick="const m3Id = 'm3-aula-${idx + 1}'; if (window.InforMestreModule3) window.InforMestreModule3.renderStudentModule3LessonView(document.getElementById('hub-main-panel-content'), m3Id, window.currentUser); else openModule3LessonModal('${aula.id}');" style="flex: 1; padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 700; background: ${isDone ? 'linear-gradient(135deg, #00B894 0%, #55EFC4 100%)' : 'linear-gradient(135deg, #00B894 0%, #00cec9 100%)'}; border: none; border-radius: 10px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(0,184,148,0.2);">
+                      <span>${isDone ? 'Revisar Aula Completa' : 'Iniciar Aula (Vídeo, Slides & Quiz)'}</span>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                  ` : `
+                    <button type="button" disabled style="flex: 1; padding: 0.75rem 1rem; font-size: 0.88rem; font-weight: 700; background: var(--color-bg-alt); border: 1px solid var(--color-border); border-radius: 10px; color: var(--color-text-muted); cursor: not-allowed; display: flex; align-items: center; justify-content: center; gap: 0.4rem; opacity: 0.65;">
+                      <span>🔒 Conteúdo Bloqueado</span>
+                    </button>
+                  `}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+window.renderStudentModule3View = renderStudentModule3View;
+
+/**
+ * Abre o Modal Completo de Estudo e Prática de uma Aula do Módulo 3
+ */
+function openModule3LessonModal(lessonId) {
+  const mod3 = COURSE_JORNADA.find(m => m.id === "modulo-3");
+  const aula = mod3 ? mod3.lessons.find(l => l.id === lessonId) : null;
+  if (!aula) return;
+
+  const curiosidade = LESSON_CURIOSITIES[lessonId];
+  const bulletList = curiosidade ? curiosidade.bulletPoints : [];
+  const isDone = state.completedLessons && state.completedLessons[lessonId];
+  const isFinal = aula.isDesafio;
+
+  const existing = document.getElementById("module3-lesson-modal");
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "module3-lesson-modal";
+  modal.className = "modern-modal-overlay active";
+  modal.style.zIndex = "999999";
+
+  modal.innerHTML = `
+    <div class="modern-modal-card" style="max-width: 620px; max-height: 90vh; overflow-y: auto; padding: 2rem; border-radius: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem;">
+        <div>
+          <span style="font-size: 0.75rem; font-weight: 800; color: #00B894; text-transform: uppercase; letter-spacing: 0.05em; background: rgba(0,184,148,0.12); padding: 0.25rem 0.65rem; border-radius: 50px;">
+            ${isFinal ? '🏆 PROJETO DE CONCLUSÃO' : 'MÓDULO 3 • INTERNET & NUVEM'}
+          </span>
+          <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--color-text-primary); margin: 0.5rem 0 0.2rem;">
+            ${aula.title}
+          </h2>
+        </div>
+        <button onclick="document.getElementById('module3-lesson-modal').remove()" style="background: none; border: none; font-size: 1.5rem; color: var(--color-text-muted); cursor: pointer; padding: 0.2rem;">×</button>
+      </div>
+
+      <p style="font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.55; margin-bottom: 1.5rem;">
+        ${curiosidade ? curiosidade.prev : aula.desc}
+      </p>
+
+      <!-- Seção 1: Conceitos Chave -->
+      <div style="background: var(--color-bg-alt); border: 1px solid var(--color-border); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.2rem;">
+        <h4 style="margin: 0 0 0.7rem; font-size: 0.95rem; color: var(--color-text-primary); display: flex; align-items: center; gap: 0.4rem;">
+          <span>📖</span> O que você domina nesta etapa:
+        </h4>
+        <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.88rem; color: var(--color-text-secondary); line-height: 1.55;">
+          ${bulletList.map(b => `<li style="margin-bottom: 0.4rem;">${b}</li>`).join('')}
+        </ul>
+      </div>
+
+      <!-- Seção 2: Desafio Prático Guiado -->
+      <div style="background: rgba(0, 184, 148, 0.06); border: 1px solid rgba(0, 184, 148, 0.25); border-radius: 12px; padding: 1.2rem; margin-bottom: 1.8rem;">
+        <h4 style="margin: 0 0 0.5rem; font-size: 0.95rem; color: #00B894; display: flex; align-items: center; gap: 0.4rem;">
+          <span>🧪</span> Missão Prática Recomendada:
+        </h4>
+        <p style="font-size: 0.86rem; color: var(--color-text-secondary); line-height: 1.5; margin: 0;">
+          Abra seu navegador e aplique os conceitos apresentados: faça testes reais de busca avançada no Google, verifique o certificado SSL (cadeado HTTPS) dos sites visitados e explore a colaboração de documentos em tempo real.
+        </p>
+      </div>
+
+      <!-- Ações -->
+      <div style="display: flex; gap: 0.8rem; justify-content: flex-end;">
+        <button class="btn btn-outline" type="button" onclick="document.getElementById('module3-lesson-modal').remove()" style="padding: 0.7rem 1.4rem; border-radius: 8px;">
+          Fechar
+        </button>
+        <button class="btn btn-primary" id="btn-concluir-aula-m3" type="button" style="padding: 0.7rem 1.8rem; border-radius: 8px; background: linear-gradient(135deg, #00B894 0%, #55EFC4 100%); border: none; font-weight: 700; color: #fff; cursor: pointer;">
+          ${isDone ? '✅ Concluída (+50 XP)' : '🚀 Marcar Aula como Concluída (+50 XP)'}
+        </button>
+      </div>
     </div>
   `;
 
-  COURSE_JORNADA.forEach((modulo, modIdx) => {
-    const moduloStatus = getModuloStatus(modulo.id);
-    const isLocked = moduloStatus === "locked";
+  document.body.appendChild(modal);
+
+  document.getElementById("btn-concluir-aula-m3").onclick = async () => {
+    if (!state.completedLessons) state.completedLessons = {};
+    state.completedLessons[lessonId] = true;
+    if (typeof addXP === "function") addXP(50);
+    if (typeof saveState === "function") saveState();
     
-    // Contar aulas concluídas no módulo
-    let completedCount = 0;
-    modulo.lessons.forEach(l => {
-      if (isLessonCompleted(l)) completedCount++;
-    });
-    
-    const progressPercent = Math.round((completedCount / modulo.lessons.length) * 100);
+    // Se for o projeto final (aula-20), desbloqueia conquista de graduação
+    if (lessonId === "aula-20") {
+      if (typeof unlockAchievement === "function") unlockAchievement("graduated");
+    }
 
-    listHtml += `
-      <div class="curriculum-module-card ${modIdx === 0 && !isLocked ? 'active' : ''} ${isLocked ? 'module-locked' : ''}" data-index="${modIdx}" style="${isLocked ? 'opacity: 0.55;' : ''}">
-        <div class="curriculum-module-header" style="display:flex; justify-content:space-between; align-items:center; cursor: pointer; padding: 1.2rem;">
-          <div class="curriculum-module-title-group">
-            <h4 class="curriculum-module-title" style="margin:0; font-size:1.1rem; font-weight:700; color: ${isLocked ? '#888' : 'var(--text-primary)'}">
-              ${modulo.icon} ${modulo.title} ${isLocked ? '🔒' : ''}
-            </h4>
-            <span class="curriculum-module-stats" style="font-size:0.8rem; color:var(--text-muted);">
-              ${isLocked ? (modulo.descMessage || 'Módulo bloqueado.') : `${modulo.lessons.length} aulas • ${completedCount} concluídas`}
-            </span>
-          </div>
-          ${!isLocked ? `
-            <div class="curriculum-module-progress-group" style="display:flex; align-items:center; gap:0.5rem;">
-              <span class="curriculum-module-progress-text" style="font-weight:700; color: var(--color-primary-light);">${progressPercent}%</span>
-              <span class="curriculum-module-chevron">❯</span>
-            </div>
-          ` : ''}
-        </div>
-        
-        ${!isLocked ? `
-          <ul class="curriculum-lessons-list" style="list-style:none; padding: 0 1.2rem 1.2rem 1.2rem; margin:0; border-top: 1px solid rgba(255,255,255,0.05); gap:0.5rem; padding-top:0.8rem;">
-            ${modulo.lessons.map(aula => {
-              const status = getLessonStatus(aula.id);
-              
-              let statusIcon = "🔒";
-              let color = "#555";
-              
-              if (status === "completed") {
-                statusIcon = "✅";
-                color = "#10b981";
-              } else if (status === "in_progress" || status === "available") {
-                statusIcon = "🟡";
-                color = "#a78bfa";
-              }
-
-              if (aula.isDesafio && status !== "locked") {
-                statusIcon = "🏆";
-              }
-
-              return `
-                <li class="curriculum-lesson-item" style="display:flex; align-items:center; justify-content:space-between; padding: 0.5rem 0.75rem; border-radius: 6px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
-                  <div style="display:flex; align-items:center; gap:0.6rem;">
-                    <span style="font-size:1rem;">${statusIcon}</span>
-                    <a class="curriculum-lesson-nav-link" data-lesson-id="${aula.id}" style="color: ${color}; font-weight:600; cursor:pointer; text-decoration:none; font-size:0.85rem; transition: color 0.15s;">
-                      ${aula.title}
-                    </a>
-                  </div>
-                  <span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">${aula.isDesafio ? 'Avaliação' : 'Aula'}</span>
-                </li>
-              `;
-            }).join('')}
-          </ul>
-        ` : ''}
-      </div>
-    `;
-  });
-
-  container.innerHTML = listHtml;
-
-  // Accordion toggle
-  const cards = container.querySelectorAll(".curriculum-module-card:not(.module-locked)");
-  cards.forEach(card => {
-    const header = card.querySelector(".curriculum-module-header");
-    header.addEventListener("click", () => {
-      const isActive = card.classList.contains("active");
-      cards.forEach(c => c.classList.remove("active"));
-      if (!isActive) card.classList.add("active");
-    });
-  });
-
-  // Eventos de clique nas aulas do currículo
-  const links = container.querySelectorAll(".curriculum-lesson-nav-link");
-  links.forEach(link => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      const lessonId = link.getAttribute("data-lesson-id");
-      
-      let flatLessons = [];
-      COURSE_JORNADA.forEach(mod => flatLessons.push(...mod.lessons));
-      const aula = flatLessons.find(l => l.id === lessonId);
-      if (!aula) return;
-      
-      const status = getLessonStatus(lessonId);
-      
-      if (status === "locked") {
-        abrirModalCuriosidade(aula);
-      } else if (aula.id.startsWith("m2-aula-") || (window.InforMestreLMS && window.InforMestreLMS.getLesson(aula.id))) {
-        switchHubTab(aula.id);
-      } else {
-        if (aula.chapter) {
-          const chapterSlides = COURSE_CONTENT.map((s, idx) => ({ ...s, idx })).filter(s => s.chapter === aula.chapter);
-          if (chapterSlides.length > 0) {
-            const pendente = chapterSlides.find(s => !state.completedSlides[s.id]);
-            const targetIdx = pendente ? pendente.idx : chapterSlides[0].idx;
-            loadSlide(targetIdx);
-            showScreen("course");
-          }
-        } else {
-          abrirModalAulaFutura(aula);
-        }
+    // Salva progresso no Supabase se usuário estiver logado
+    if (window.currentUser && window.saveProgressToDb) {
+      try {
+        await window.saveProgressToDb(window.currentUser.id, state);
+      } catch (err) {
+        console.warn("Erro ao salvar progresso do Módulo 3 no Supabase:", err);
       }
-    });
-    
-    link.addEventListener("mouseenter", () => {
-      link.style.color = "#fff";
-    });
-    link.addEventListener("mouseleave", () => {
-      const lessonId = link.getAttribute("data-lesson-id");
-      const status = getLessonStatus(lessonId);
-      if (status === "completed") link.style.color = "#10b981";
-      else if (status !== "locked") link.style.color = "#a78bfa";
-      else link.style.color = "#555";
-    });
+    }
+
+    modal.remove();
+    if (typeof showToastNotification === "function") {
+      showToastNotification("🎉 Aula Concluída!", `Parabéns! Você concluiu "${aula.title}" e ganhou +50 XP.`);
+    }
+    renderStudentModule3View();
+  };
+}
+window.openModule3LessonModal = openModule3LessonModal;
+
+/**
+ * Abre o player ou visão do módulo específico (Módulo 1, Módulo 2 ou Módulo 3)
+ */
+function openModulePlayer(modId) {
+  const modulo = COURSE_JORNADA.find(m => m.id === modId);
+  if (!modulo) return;
+
+  const status = typeof getModuloStatus === "function" ? getModuloStatus(modId) : "unlocked";
+  if (status === "locked") {
+    if (typeof showToastNotification === "function") {
+      showToastNotification("🔒 Módulo bloqueado", "Conclua as etapas anteriores para desbloquear.");
+    }
+    return;
+  }
+
+  if (modulo.isLmsModule || modId === "modulo-2") {
+    showScreen("hub");
+    if (window.InforMestreLMS) {
+      window.InforMestreLMS.renderStudentLmsLessonView(document.getElementById("hub-main-panel-content"), "m2-aula-1", window.currentUser);
+    } else {
+      switchHubTab("m2-aula-1");
+    }
+    return;
+  }
+
+  if (modId === "modulo-3") {
+    showScreen("hub");
+    renderStudentModule3View(document.getElementById("hub-main-panel-content"));
+    return;
+  }
+
+  // Módulo 1 (baseado em slides e simuladores)
+  let targetAula = modulo.lessons.find(l => {
+    const s = typeof getLessonStatus === "function" ? getLessonStatus(l.id) : "available";
+    return s === "available" || s === "in_progress";
+  }) || modulo.lessons.find(l => !(state.completedLessons && state.completedLessons[l.id])) || modulo.lessons[0];
+
+  showScreen("course");
+  
+  if (targetAula && targetAula.chapter) {
+    const chapterSlides = COURSE_CONTENT.map((s, idx) => ({ ...s, idx })).filter(s => s.chapter === targetAula.chapter);
+    if (chapterSlides.length > 0) {
+      const pendente = chapterSlides.find(s => !state.completedSlides[s.id]);
+      const targetIdx = pendente ? pendente.idx : chapterSlides[0].idx;
+      loadSlide(targetIdx);
+    }
+  } else {
+    loadSlide(0);
+  }
+}
+window.openModulePlayer = openModulePlayer;
+
+/**
+ * Inicialização dos botões da Sidebar do Nexora (Início, Módulos do Curso, Simuladores, Conquistas, Configurações)
+ */
+function initSidebarNavigation() {
+  document.querySelectorAll(".sidebar-nav-item").forEach(btn => {
+    btn.onclick = (e) => {
+      const section = btn.dataset.section;
+      if (!section || section === "logout") return;
+
+      e.preventDefault();
+
+      document.querySelectorAll(".sidebar-nav-item").forEach(b => {
+        b.classList.toggle("active", b.dataset.section === section);
+      });
+
+      if (section === "dashboard") {
+        showScreen("hub");
+        if (typeof switchHubTab === "function") switchHubTab("dashboard");
+      } else if (section === "modules" || section === "modulo-1" || section === "curriculum") {
+        showScreen("hub");
+        if (typeof openStudentCourseDetail === "function") {
+          openStudentCourseDetail("informatica-basica");
+        } else if (typeof switchHubTab === "function") {
+          switchHubTab("dashboard");
+        }
+      } else if (section === "training-lab") {
+        showScreen("hub");
+        if (typeof switchHubTab === "function") switchHubTab("training-lab");
+      } else if (section === "achievements") {
+        showScreen("hub");
+        if (typeof switchHubTab === "function") switchHubTab("achievements");
+      } else if (section === "settings") {
+        showScreen("hub");
+        if (typeof switchHubTab === "function") switchHubTab("settings");
+      }
+    };
   });
+}
+window.initSidebarNavigation = initSidebarNavigation;
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initSidebarNavigation);
+} else {
+  initSidebarNavigation();
 }
 
 /**
