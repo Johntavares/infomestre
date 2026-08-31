@@ -33,21 +33,21 @@ let state = {
 window.state = state;
 
 const ACHIEVEMENTS = [
-  { id: "welcome", title: "Primeiros Passos", desc: "Abriu as boas-vindas do curso.", icon: "🚀" },
-  { id: "timeline", title: "Evolucionista", desc: "Explorou todas as gerações da computação.", icon: "⏳" },
-  { id: "hardware", title: "Montador Pleno", desc: "Montou o computador no simulador de hardware.", icon: "🔧" },
-  { id: "peripherals", title: "Mestre das Portas", desc: "Conectou todos os cabos periféricos traseiros.", icon: "🔌" },
-  { id: "windows", title: "Admin do Windows", desc: "Aprendeu a criar pastas e mover arquivos no S.O.", icon: "🖥️" },
-  { id: "ergonomics", title: "Ergonomista Chefe", desc: "Ajustou a postura ergonômica ideal.", icon: "🧘" },
-  { id: "graduated", title: "Diplomado", desc: "Aprovado na Avaliação Final!", icon: "🎓" },
-  { id: "peripheral_master", title: "Mestre dos Periféricos", desc: "Concluiu a Missão 3 — Periféricos e Conexões.", icon: "🔌" },
-  { id: "windows_explorer", title: "Explorador do Windows", desc: "Concluiu a Missão 4 — Dominando o Windows.", icon: "🖥️" },
-  { id: "windows_guardian", title: "Guardião do Windows", desc: "Concluiu a expansão da Aula 4 e dominou os principais recursos do Windows.", icon: "🖥️" },
-  { id: "guardian_files", title: "Guardião dos Arquivos", desc: "Concluiu a Missão 5 — Organização Digital.", icon: "📂" },
-  { id: "operador_digital", title: "Operador Digital", desc: "Concluiu a Aula 5 — Organização e Gerenciamento de Arquivos.", icon: "🏅" },
-  { id: "assistente_tecnico", title: "Assistente Técnico", desc: "Concluiu a Aula 6 e dominou as configurações do Windows.", icon: "🥈" },
-  { id: "especialista_informatica", title: "Especialista em Informática", desc: "Concluiu a Aula 7 e aprendeu a dar suporte técnico.", icon: "🥇" },
-  { id: "mestre_modulo1", title: "Mestre do Módulo 1", desc: "Concluiu a Avaliação Integrada e concluiu o Módulo 1.", icon: "🏆" }
+  { id: "welcome", title: "Primeiros Passos", desc: "Abriu as boas-vindas do curso.", icon: "🚀", image: "assets/badges_custom/primeiros_passos.jpg" },
+  { id: "timeline", title: "Evolucionista", desc: "Explorou todas as gerações da computação.", icon: "⏳", image: "assets/badges_custom/gemini_badge_12.jpg" },
+  { id: "hardware", title: "Montador Pleno", desc: "Montou o computador no simulador de hardware.", icon: "🔧", image: "assets/badges_custom/gemini_badge_11.jpg" },
+  { id: "peripherals", title: "Mestre das Portas", desc: "Conectou todos os cabos periféricos traseiros.", icon: "🔌", image: "assets/badges_custom/gemini_badge_10.jpg" },
+  { id: "windows", title: "Admin do Windows", desc: "Aprendeu a criar pastas e mover arquivos no S.O.", icon: "🖥️", image: "assets/badges_custom/gemini_badge_9.jpg" },
+  { id: "ergonomics", title: "Ergonomista Chefe", desc: "Ajustou a postura ergonômica ideal.", icon: "🧘", image: "assets/badges_custom/gemini_badge_8.jpg" },
+  { id: "graduated", title: "Diplomado", desc: "Aprovado na Avaliação Final!", icon: "🎓", image: "assets/badges_custom/gemini_badge_7.jpg" },
+  { id: "peripheral_master", title: "Mestre dos Periféricos", desc: "Concluiu a Missão 3 — Periféricos e Conexões.", icon: "🔌", image: "assets/badges_custom/gemini_badge_6.jpg" },
+  { id: "windows_explorer", title: "Explorador do Windows", desc: "Concluiu a Missão 4 — Dominando o Windows.", icon: "🖥️", image: "assets/badges_custom/gemini_badge_5.jpg" },
+  { id: "windows_guardian", title: "Guardião do Windows", desc: "Concluiu a expansão da Aula 4 e dominou os principais recursos do Windows.", icon: "🖥️", image: "assets/badges_custom/gemini_badge_4.jpg" },
+  { id: "guardian_files", title: "Guardião dos Arquivos", desc: "Concluiu a Missão 5 — Organização Digital.", icon: "📂", image: "assets/badges_custom/gemini_badge_3.jpg" },
+  { id: "operador_digital", title: "Operador Digital", desc: "Concluiu a Aula 5 — Organização e Gerenciamento de Arquivos.", icon: "🏅", image: "assets/badges_custom/gemini_badge_2.jpg" },
+  { id: "assistente_tecnico", title: "Assistente Técnico", desc: "Concluiu a Aula 6 e dominou as configurações do Windows.", icon: "🥈", image: "assets/badges_custom/gemini_badge_13.jpg" },
+  { id: "especialista_informatica", title: "Especialista em Informática", desc: "Concluiu a Aula 7 e aprendeu a dar suporte técnico.", icon: "🥇", image: "assets/badges_custom/gemini_badge_12.jpg" },
+  { id: "mestre_modulo1", title: "Mestre do Módulo 1", desc: "Concluiu a Avaliação Integrada e concluiu o Módulo 1.", icon: "🏆", image: "assets/badges_custom/gemini_badge_11.jpg" }
 ];
 
 const COURSE_JORNADA = [
@@ -1244,68 +1244,9 @@ function updateProgressUI() {
 
 // Status das aulas e módulos gerenciados por isLessonAvailable, getLessonStatus e getModuloStatus.
 
-// Renderiza a barra superior fixa de progresso do módulo
+// Renderiza a barra superior fixa de progresso do módulo (Desativada)
 function updateModuleProgressBar() {
-  const container = document.getElementById("module-progress-bar-top");
-  if (!container) return;
-
-  const landingScreen = document.getElementById("screen-landing");
-  const isUserLoggedIn = landingScreen && landingScreen.classList.contains("screen-hidden");
-  
-  if (!isUserLoggedIn || !window.currentUser) {
-    container.style.display = "none";
-    document.body.classList.remove("has-top-bar");
-    return;
-  }
-
-  container.style.display = "flex";
-  document.body.classList.add("has-top-bar");
-
-  // Calcular progresso do Módulo 1 (Aulas 1 a 8)
-  const modulo1 = COURSE_JORNADA.find(m => m.id === "modulo-1");
-  const modulo1Lessons = modulo1 ? modulo1.lessons : [];
-  const total = modulo1Lessons.length;
-  let completed = 0;
-  
-  modulo1Lessons.forEach(lesson => {
-    if (state.completedLessons && state.completedLessons[lesson.id]) {
-      completed++;
-    }
-  });
-
-  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-  
-  // Encontrar o título da próxima missão
-  let nextMissionTitle = "Módulo 1 Concluído";
-  const proxima = modulo1Lessons.find(l => !state.completedLessons || !state.completedLessons[l.id]);
-  if (proxima) {
-    nextMissionTitle = proxima.title.replace(/^Aula \d+\s*—\s*/, "");
-  }
-
-  // Montar barra visual baseada em blocos (████████░░░░)
-  const blockCount = 10;
-  const filledBlocks = Math.round((percent / 100) * blockCount);
-  const emptyBlocks = blockCount - filledBlocks;
-  const barText = "█".repeat(filledBlocks) + "░".repeat(emptyBlocks);
-
-  container.innerHTML = `
-    <div style="display:flex; align-items:center; justify-content:space-between; width:100%; color:#fff; font-size:0.8rem; gap:1.5rem;">
-      <div style="font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--color-primary-light); display:flex; align-items:center; gap:0.4rem;">
-        <span>🥉</span> MÓDULO 1 — INTRODUÇÃO À INFORMÁTICA
-      </div>
-      
-      <div style="display:flex; align-items:center; gap:0.6rem; flex:1; max-width:480px; justify-content:center;">
-        <span style="font-family:'JetBrains Mono', monospace; letter-spacing:1px; color:#fbbf24; font-weight:bold; font-size: 0.9rem;">${barText}</span>
-        <span style="font-weight:700; color:#fff;">${percent}%</span>
-      </div>
-      
-      <div style="display:flex; align-items:center; gap:0.8rem;">
-        <span>Aulas concluídas: <strong style="color:#10b981;">${completed}/${total}</strong></span>
-        <span style="color:rgba(255,255,255,0.15)">|</span>
-        <span>Próxima missão: <strong style="color:var(--color-primary-light);">${nextMissionTitle}</strong></span>
-      </div>
-    </div>
-  `;
+  return;
 }
 
 /**
@@ -8358,17 +8299,9 @@ function renderHubHeader() {
     profileRole.textContent = roleText;
   }
 
-  // 3. Renderizar Botão de Logout no Topo
+  // 3. Renderizar Botão de Logout no Topo (Removido a pedido do usuário)
   if (headerMeta) {
-    headerMeta.innerHTML = `
-      <button class="btn btn-outline btn-small" id="hub-logout-btn" style="background: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.2);">Sair 🚪</button>
-    `;
-    document.getElementById("hub-logout-btn").addEventListener("click", () => {
-      window.showModernConfirm("🚪 Encerrar Sessão", "Deseja realmente sair da plataforma?", async () => {
-        await window.signOutUser();
-        showToastNotification("🔒 Sessão Encerrada", "Você saiu da plataforma.");
-      });
-    });
+    headerMeta.innerHTML = '';
   }
 
   // 4. Renderizar Abas de acordo com a função (Role)
@@ -9300,37 +9233,216 @@ if (document.readyState === "loading") {
 }
 
 /**
- * ABA 3: Conquistas do Aluno (Visualização da Galeria de Medalhas)
+ * ABA 3: Conquistas do Aluno (Visualização da Galeria de Medalhas e Distintivos Digitais)
  */
 function renderStudentAchievementsTab(container) {
   let listHtml = `
-    <div style="margin-bottom: 2rem;">
-      <h3 style="margin-bottom: 0.2rem;">🏆 Suas Conquistas</h3>
-      <p class="text-muted" style="font-size:0.9rem;">Suba de nível e execute atividades práticas no curso para desbloquear medalhas.</p>
-    </div>
-    <div class="achievements-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.2rem;">
+    <style>
+      .achievements-dashboard { animation: fadeIn 0.4s ease-out; }
+      .ach-header-banner {
+        background: linear-gradient(135deg, rgba(131, 82, 255, 0.15) 0%, rgba(200, 155, 254, 0.05) 100%);
+        border: 1px solid rgba(131, 82, 255, 0.2);
+        border-radius: 20px; padding: 2rem; display: flex; justify-content: space-between; align-items: center;
+        backdrop-filter: blur(12px); margin-bottom: 2rem; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+      }
+      .ach-header-info { z-index: 1; }
+      .ach-header-info h2 { font-size: 2rem; font-weight: 800; color: var(--color-text-primary); margin: 0 0 0.5rem; }
+      .ach-header-icon { font-size: 4.5rem; z-index: 1; animation: float 3s ease-in-out infinite; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); }
+      
+      .achievements-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+      .ach-card {
+        background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 1.5rem;
+        display: flex; gap: 1.2rem; align-items: center; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative; overflow: hidden;
+      }
+      .ach-card.unlocked {
+        background: linear-gradient(135deg, rgba(131, 82, 255, 0.08) 0%, rgba(131, 82, 255, 0.02) 100%);
+        border-color: rgba(131, 82, 255, 0.3); cursor: pointer; box-shadow: var(--shadow-sm);
+      }
+      .ach-card.unlocked:hover {
+        transform: translateY(-5px); box-shadow: 0 10px 25px rgba(131, 82, 255, 0.2); border-color: #8352ff;
+      }
+      .ach-card.unlocked::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(circle at top right, rgba(131, 82, 255, 0.1), transparent 60%); pointer-events: none;
+      }
+      
+      .ach-card.locked { opacity: 0.6; filter: grayscale(80%); }
+      .ach-icon-box {
+        width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        font-size: 2.2rem; flex-shrink: 0; background: rgba(0,0,0,0.2); box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+      }
+      .ach-card.unlocked .ach-icon-box { background: rgba(131, 82, 255, 0.2); box-shadow: 0 0 15px rgba(131, 82, 255, 0.3); }
+      
+      .ach-info h4 { margin: 0 0 0.3rem 0; font-size: 1.05rem; font-weight: 700; color: var(--color-text-primary); }
+      .ach-info p { margin: 0; font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.4; }
+      .badge-unlocked { display: inline-block; margin-top: 0.5rem; font-size: 0.75rem; font-weight: 800; color: #8352ff; text-transform: uppercase; letter-spacing: 0.05em; }
+      
+      /* MODAL DISTINTIVO DIGITAL GAMER */
+      .badge-modal-overlay {
+        position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
+        z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+      }
+      .badge-modal-content {
+        background: var(--color-surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px;
+        padding: 3rem; max-width: 450px; width: 100%; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;
+      }
+      .badge-modal-close { position: absolute; top: 1rem; right: 1.5rem; background: transparent; border: none; font-size: 1.5rem; color: var(--color-text-muted); cursor: pointer; }
+      .badge-modal-close:hover { color: #fff; }
+      
+      /* THE GAMER MEDAL / COIN */
+      .gamer-medal-wrapper {
+        position: relative; width: 220px; height: 220px; margin: 0 auto 2rem;
+        perspective: 1000px;
+      }
+      .digital-badge-art {
+        width: 100%; height: 100%; border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #3a3a40 0%, #1a1a1d 70%);
+        border: 10px solid #d4af37; /* Base Gold */
+        box-shadow: 
+          0 20px 50px rgba(212, 175, 55, 0.4), /* Outer gold glow */
+          inset 0 0 15px rgba(0, 0, 0, 0.9),  /* Inner shadow */
+          inset 0 0 5px rgba(255, 255, 255, 0.5), /* Inner highlight */
+          0 0 0 4px #555, /* Outer rim dark */
+          0 0 0 6px #222; /* Outer rim border */
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        position: relative; overflow: hidden;
+        animation: floatingMedal 4s ease-in-out infinite;
+      }
+      /* Metallic Gradient on Border via background-clip on a pseudo element */
+      .digital-badge-art::before {
+        content: ''; position: absolute; inset: -10px; border-radius: 50%;
+        padding: 10px; 
+        background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 25%, #8a6d3b 50%, #d4af37 75%, #f3e5ab 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude; pointer-events: none;
+      }
+      /* Glass Reflection (Gloss) */
+      .digital-badge-art::after {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: linear-gradient(to bottom right, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0) 50%);
+        transform: rotate(30deg); pointer-events: none;
+      }
+
+      @keyframes floatingMedal {
+        0%, 100% { transform: translateY(0) rotateX(5deg); }
+        50% { transform: translateY(-15px) rotateX(15deg); box-shadow: 0 35px 60px rgba(212, 175, 55, 0.3), inset 0 0 15px rgba(0, 0, 0, 0.9), inset 0 0 5px rgba(255, 255, 255, 0.5), 0 0 0 4px #555, 0 0 0 6px #222; }
+      }
+
+      .db-icon { font-size: 5rem; position: relative; z-index: 2; filter: drop-shadow(0 0 20px #8352ff); animation: neonPulse 2s infinite alternate; }
+      @keyframes neonPulse { from { filter: drop-shadow(0 0 10px #8352ff); } to { filter: drop-shadow(0 0 25px #c89bfe); } }
+      
+      .medal-meta-panel {
+        background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;
+      }
+      .db-title { font-size: 1.4rem; font-weight: 900; color: #fff; margin: 0 0 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+      .db-desc { font-size: 0.9rem; color: #b2bec3; margin: 0 0 1rem; }
+      .db-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: #636e72; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 1rem; }
+      
+      .share-buttons { display: flex; gap: 0.8rem; justify-content: center; }
+      .btn-social { flex: 1; padding: 0.8rem; border-radius: 12px; font-weight: 700; font-size: 0.9rem; color: #fff; border: none; cursor: pointer; transition: transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+      .btn-social:hover { transform: translateY(-3px); }
+      .btn-wa { background: #25D366; }
+      .btn-li { background: #0077b5; }
+      .btn-x { background: #000000; border: 1px solid #333; }
+    </style>
+
+    <div class="achievements-dashboard">
+      <div class="ach-header-banner">
+        <div class="ach-header-info">
+          <h2>🏆 Galeria de Conquistas</h2>
+          <p class="text-muted" style="font-size:1.05rem; margin:0;">Colecione distintivos digitais completando missões e simuladores. Clique nas conquistas desbloqueadas para compartilhar!</p>
+        </div>
+        <div class="ach-header-icon">🏅</div>
+      </div>
+      <div class="achievements-grid" id="achievements-grid-container">
   `;
 
   ACHIEVEMENTS.forEach(ach => {
     const isUnlocked = state.unlockedAchievements && state.unlockedAchievements[ach.id];
     
-    listHtml += `
-      <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}" style="background: ${isUnlocked ? 'rgba(131, 82, 255, 0.05)' : 'rgba(255,255,255,0.01)'}; border: 1px solid ${isUnlocked ? 'rgba(131,82,255,0.2)' : 'rgba(255,255,255,0.05)'}; padding: 1.2rem; border-radius: 8px; display: flex; gap: 1rem; align-items: center; opacity: ${isUnlocked ? '1' : '0.45'}; transition: all var(--transition-fast);">
-        <div class="achievement-icon" style="font-size: 2.2rem; background: rgba(255,255,255,0.02); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-          ${isUnlocked ? ach.icon : "🔒"}
+    if (isUnlocked) {
+      listHtml += `
+        <div class="ach-card unlocked" onclick="window.showAchievementModal('${ach.id}', '${ach.title.replace(/'/g, "\\'")}', '${ach.desc.replace(/'/g, "\\'")}', '${ach.icon}', '${ach.image || ''}')">
+          <div class="ach-icon-box">${ach.icon}</div>
+          <div class="ach-info">
+            <h4>${ach.title}</h4>
+            <p>${ach.desc}</p>
+            <span class="badge-unlocked">✨ Desbloqueado!</span>
+          </div>
         </div>
-        <div class="achievement-info" style="display: flex; flex-direction: column; gap: 0.15rem;">
-          <h4 style="margin: 0; font-size: 0.95rem; color: ${isUnlocked ? 'var(--text-primary)' : 'var(--text-muted)'};">${ach.title}</h4>
-          <span style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.3;">${ach.desc}</span>
-          ${isUnlocked ? '<span style="font-size: 0.7rem; color: var(--color-primary-light); font-weight:700; margin-top:2px;">Desbloqueado!</span>' : ''}
+      `;
+    } else {
+      listHtml += `
+        <div class="ach-card locked">
+          <div class="ach-icon-box">🔒</div>
+          <div class="ach-info">
+            <h4>${ach.title}</h4>
+            <p>${ach.desc}</p>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    }
   });
 
-  listHtml += `</div>`;
+  listHtml += `</div></div>`;
   container.innerHTML = listHtml;
 }
+
+// Lógica Global do Modal de Compartilhamento de Distintivos
+window.showAchievementModal = function(id, title, desc, icon, imageUrl) {
+  let modal = document.getElementById('badge-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'badge-modal';
+    modal.className = 'badge-modal-overlay';
+    document.body.appendChild(modal);
+  }
+
+  const studentName = window.currentUserProfile?.full_name || "Estudante";
+  const dateStr = new Date().toLocaleDateString('pt-BR');
+  const shareText = encodeURIComponent(`Acabei de conquistar a medalha "${title}" no curso Nexora Digital Academy! 🚀✨ #Aprendizado #Tecnologia`);
+  const currentUrl = encodeURIComponent(window.location.href);
+
+  // Se tiver imagem real, renderiza ela com animação, caso contrário, usa o CSS base antigo (fallback)
+  const badgeRenderHtml = imageUrl 
+    ? `<img src="${imageUrl}" style="width:100%; height:100%; object-fit:cover; border-radius:50%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);" alt="${title}">` 
+    : `<div class="digital-badge-art"><span class="db-icon">${icon}</span></div>`;
+
+  modal.innerHTML = `
+    <div class="badge-modal-content">
+      <button class="badge-modal-close" onclick="document.getElementById('badge-modal').style.opacity='0'; setTimeout(()=>document.getElementById('badge-modal').style.display='none',300);">✖</button>
+      
+      <h3 style="color:var(--color-text-primary); font-weight:800; margin: 0 0 2rem;">🎉 Nova Medalha Desbloqueada!</h3>
+      
+      <div class="gamer-medal-wrapper">
+        ${badgeRenderHtml}
+      </div>
+      
+      <div class="medal-meta-panel">
+        <h4 class="db-title">${title}</h4>
+        <p class="db-desc">${desc}</p>
+        <div class="db-meta">
+          <span>Herói(na): <strong style="color:var(--color-primary-light);">${studentName.split(' ')[0]}</strong></span>
+          <span>Data: <strong style="color:var(--color-primary-light);">${dateStr}</strong></span>
+        </div>
+      </div>
+      
+      <p style="color:var(--color-text-muted); font-size:0.9rem; margin-bottom:1rem;">Compartilhe sua nova medalha nas redes:</p>
+      
+      <div class="share-buttons">
+        <button class="btn-social btn-wa" onclick="window.open('https://wa.me/?text=${shareText}', '_blank')">WhatsApp</button>
+        <button class="btn-social btn-li" onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}', '_blank')">LinkedIn</button>
+        <button class="btn-social btn-x" onclick="window.open('https://twitter.com/intent/tweet?text=${shareText}', '_blank')">X (Twitter)</button>
+      </div>
+    </div>
+  `;
+  
+  modal.style.display = 'flex';
+  setTimeout(() => modal.style.opacity = '1', 10);
+};
 
 /**
  * /**
@@ -9354,10 +9466,29 @@ function renderSettingsTab(container) {
   let selectedAvatar = currentAvatar;
   let selectedBanner = currentBanner;
 
+  let roleText = 'Estudante';
+  if (window.currentUserProfile.role === 'admin') roleText = 'Administrador(a)';
+  if (window.currentUserProfile.role === 'tutor') roleText = 'Tutor(a)';
+
   container.innerHTML = `
     <div style="margin-bottom: 2rem;">
       <h3 style="margin-bottom: 0.2rem;">⚙️ Configurações da Conta</h3>
       <p class="text-muted" style="font-size:0.9rem;">Gerencie o visual do seu perfil, altere seu avatar ou faça upload de novas imagens de banner.</p>
+    </div>
+
+    <!-- LIVE PREVIEW DE PERFIL -->
+    <div class="profile-live-preview">
+      <div class="profile-live-banner" id="settings-banner-preview" style="background-image: url('${currentBanner}');">
+        <div class="profile-live-avatar-wrap">
+          <div class="profile-live-avatar" id="settings-avatar-preview">
+            <!-- Inicializado via JS -->
+          </div>
+        </div>
+      </div>
+      <div class="profile-live-info">
+        <div class="profile-live-name" id="settings-name-preview">${window.currentUserProfile.full_name || 'Aluno Nexora'}</div>
+        <div class="profile-live-role">${roleText}</div>
+      </div>
     </div>
 
     <form id="hub-settings-form">
@@ -9505,6 +9636,15 @@ function renderSettingsTab(container) {
       }
     });
   });
+
+  // Atualização instantânea do nome no Preview
+  const nameInput = document.getElementById("settings-display-name");
+  const namePreview = document.getElementById("settings-name-preview");
+  if(nameInput && namePreview) {
+    nameInput.addEventListener("input", (e) => {
+      namePreview.textContent = e.target.value || 'Aluno Nexora';
+    });
+  }
 
   // Preview Instantâneo e Upload de Foto de Perfil
   avatarUploadInput.addEventListener("change", (e) => {
