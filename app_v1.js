@@ -8351,6 +8351,8 @@ function switchHubTab(tabName) {
   const mainPanel = document.getElementById("hub-main-panel-content");
   if (!mainPanel || !window.currentUserProfile) return;
 
+  sessionStorage.setItem("nexora_last_view", JSON.stringify({ type: "hubTab", id: tabName }));
+
   // Limpa o painel e insere contêiner de carregamento
   mainPanel.innerHTML = `<div style="text-align:center; padding: 2rem;">Carregando...</div>`;
 
@@ -8518,9 +8520,8 @@ function renderStudentDashboardTab(container) {
           </div>
 
           <div class="course-enrolled-card" onclick="openStudentCourseDetail('informatica-basica')">
-            <div class="course-card-thumb">
-              <div class="course-thumb-badge">CURSO PRINCIPAL</div>
-              <div class="course-thumb-icon">💻</div>
+            <div class="course-card-thumb" style="background-image: url('images/capa_curso_informatica.jpg?v=2'); background-size: cover; background-position: center; border-radius: 18px;">
+              <div class="course-thumb-badge" style="background: rgba(108, 92, 231, 0.85); backdrop-filter: blur(4px);">CURSO PRINCIPAL</div>
               <div class="course-thumb-glow"></div>
             </div>
 
@@ -10209,6 +10210,22 @@ async function renderHubContents() {
   const role = window.currentUserProfile.role;
   
   if (role === 'student') {
+    const lastViewRaw = sessionStorage.getItem('nexora_last_view');
+    if (lastViewRaw) {
+      try {
+        const lastView = JSON.parse(lastViewRaw);
+        if (lastView.type === 'module3_lesson' && window.InforMestreModule3) {
+          window.InforMestreModule3.renderStudentModule3LessonView(document.getElementById('hub-main-panel-content'), lastView.id, window.currentUser);
+          return;
+        } else if (lastView.type === 'module3') {
+          renderStudentModule3View(document.getElementById('hub-main-panel-content'));
+          return;
+        } else if (lastView.type === 'hubTab') {
+          switchHubTab(lastView.id);
+          return;
+        }
+      } catch(e) {}
+    }
     switchHubTab("dashboard");
   } else if (role === 'school') {
     switchHubTab("school-dashboard");

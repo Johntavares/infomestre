@@ -96,6 +96,82 @@
           explanation: "Exatamente! O armazenamento em nuvem garante backup contínuo e acesso universal aos seus arquivos através do seu login em qualquer aparelho."
         }
       ]
+    },
+    {
+      id: "m3-aula-2",
+      number: 2,
+      title: "Mecanismos de Busca e Pesquisas na Internet",
+      badge: "Aula 2 • Pesquisa & Fontes",
+      duration: "1h 45m",
+      xpReward: 150,
+      videoUrl: "https://www.youtube.com/watch?v=k5_dY8YkKGs",
+      presentation: {
+        headline: "Dominando os Mecanismos de Busca",
+        subtitle: "Aprenda a pesquisar, filtrar resultados e avaliar a confiabilidade das fontes.",
+        description: "Na Aula 1 você descobriu como a Internet funciona por trás dos panos. Agora, vamos dominar os navegadores e aprender a pesquisar informações de forma eficiente e segura usando técnicas avançadas no Google e outras ferramentas.",
+        coverImage: "images/m3/aula2/slide_1.png",
+        objectives: [
+          "Entender como os mecanismos de busca funcionam",
+          "Utilizar palavras-chave corretamente para pesquisas eficientes",
+          "Analisar anúncios patrocinados vs. resultados orgânicos",
+          "Avaliar fontes (Data, autor, contexto) e identificar informações confiáveis",
+          "Praticar em Desafios de Detetive da Internet"
+        ]
+      },
+      slides: [
+        { id: 1, title: "Dominando a Internet: Navegação e Pesquisa", src: "images/m3/aula2/slide_1.png" },
+        { id: 2, title: "O Desafio da Aula", src: "images/m3/aula2/slide_2.png" },
+        { id: 3, title: "Navegando com Eficiência", src: "images/m3/aula2/slide_3.png" },
+        { id: 4, title: "Atalhos que Todo Usuário Deveria Conhecer", src: "images/m3/aula2/slide_4.png" },
+        { id: 5, title: "Organizando sua Navegação", src: "images/m3/aula2/slide_5.png" },
+        { id: 6, title: "Como o Google Encontra Resultados?", src: "images/m3/aula2/slide_6.png" },
+        { id: 7, title: "Pesquisando Melhor com Palavras-Chave", src: "images/m3/aula2/slide_7.png" },
+        { id: 8, title: "Técnicas Avançadas de Pesquisa", src: "images/m3/aula2/slide_8.png" },
+        { id: 9, title: "Encontrando Informações em Páginas Longas", src: "images/m3/aula2/slide_9.png" },
+        { id: 10, title: "Escolhendo o Tipo Certo de Resultado", src: "images/m3/aula2/slide_10.png" },
+        { id: 11, title: "Resultado vs. Anúncio Patrocinado", src: "images/m3/aula2/slide_11.png" },
+        { id: 12, title: "Como Saber se uma Informação é Confiável?", src: "images/m3/aula2/slide_12.png" },
+        { id: 13, title: "Missão Prática: Desafio Internet", src: "images/m3/aula2/slide_13.png" },
+        { id: 14, title: "Resumo & Próxima Aula", src: "images/m3/aula2/slide_14.png" }
+      ],
+      quiz: [
+        {
+          id: "q1",
+          question: "Ao pesquisar no Google, qual a diferença entre um resultado patrocinado e um orgânico?",
+          options: [
+            "Não há diferença, todos são sites confiáveis escolhidos a dedo pelo Google.",
+            "O resultado patrocinado pagou para aparecer nas primeiras posições, enquanto o orgânico conquistou o lugar por relevância.",
+            "O resultado orgânico é sempre uma notícia falsa.",
+            "O Google só mostra resultados patrocinados."
+          ],
+          correct: 1,
+          explanation: "Isso mesmo! Anunciantes pagam (Patrocinado) para aparecer no topo. Os resultados orgânicos são rankeados pela relevância que o algoritmo do buscador calcula."
+        },
+        {
+          id: "q2",
+          question: "Como podemos melhorar a precisão de uma pesquisa sobre um termo específico?",
+          options: [
+            "Digitando frases extremamente longas contando uma história para o Google.",
+            "Utilizando aspas ao redor do termo, como: \"curso de informática básica\".",
+            "Sempre pesquisando em letras maiúsculas.",
+            "Escrevendo palavras soltas aleatórias."
+          ],
+          correct: 1,
+          explanation: "Perfeito! Usar aspas faz com que o mecanismo de busca encontre exatamente aquela frase, na mesma ordem das palavras."
+        },
+        {
+          id: "q3",
+          question: "O que é mais importante ao avaliar se uma fonte (site ou artigo) é confiável?",
+          options: [
+            "Checar se tem muita imagem bonita.",
+            "Acreditar em qualquer coisa que estiver no primeiro resultado do Google.",
+            "Verificar a data de publicação, quem é o autor, e comparar com outras fontes.",
+            "Ver se a cor do site é verde."
+          ],
+          correct: 2,
+          explanation: "Correto. Fontes confiáveis costumam ter um autor claro, data de publicação recente ou identificada, e são corroboradas por outros sites respeitáveis."
+        }
+      ]
     }
   ];
 
@@ -105,6 +181,7 @@
   let currentActiveTab = "presentation"; // "presentation" | "video" | "slides" | "quiz"
   let currentSlideIndex = 0;
   let currentQuizAnswers = {};
+  let currentLessonId = "m3-aula-1";
 
   // --------------------------------------------------------------------------
   // 3. ESTILOS CSS CUSTOMIZADOS (PROFISSIONAL & 16:9 HD)
@@ -281,11 +358,19 @@
   function renderStudentModule3LessonView(container, lessonId, user) {
     ensureModule3Styles();
 
+    sessionStorage.setItem("nexora_last_view", JSON.stringify({ type: "module3_lesson", id: lessonId }));
+
     if (!container) container = document.getElementById("hub-main-panel-content");
     if (!container) return;
 
     let lesson = MODULE_3_LESSONS.find(l => l.id === lessonId);
     if (!lesson) lesson = MODULE_3_LESSONS[0];
+    
+    if (currentLessonId !== lesson.id) {
+      currentSlideIndex = 0;
+      currentQuizAnswers = {};
+    }
+    currentLessonId = lesson.id;
 
     container.innerHTML = `
       <div class="m3-wrapper">
@@ -316,7 +401,7 @@
           
           <button type="button" class="m3-stepper-btn ${currentActiveTab === 'slides' ? 'active' : ''}" onclick="window.InforMestreModule3.switchLessonTab('slides')">
             <span class="m3-stepper-badge">3</span>
-            <span>📊 3. Slides Oficiais (13)</span>
+            <span>📊 3. Slides Oficiais (${lesson.slides ? lesson.slides.length : 0})</span>
           </button>
           
           <button type="button" class="m3-stepper-btn ${currentActiveTab === 'quiz' ? 'active' : ''}" onclick="window.InforMestreModule3.switchLessonTab('quiz')">
@@ -336,7 +421,7 @@
 
   function switchLessonTab(tabName) {
     currentActiveTab = tabName;
-    const lesson = MODULE_3_LESSONS[0];
+    const lesson = MODULE_3_LESSONS.find(l => l.id === currentLessonId) || MODULE_3_LESSONS[0];
     
     document.querySelectorAll(".m3-stepper-btn").forEach((btn, idx) => {
       const tabs = ["presentation", "video", "slides", "quiz"];
@@ -374,7 +459,7 @@
         <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2rem; align-items: center; margin-bottom: 2rem;">
           <div>
             <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0,184,148,0.12); color: #00B894; padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.8rem;">
-              <span>🚀 AULA 1 • INTRODUÇÃO À REDE</span>
+              <span>🚀 ${lesson.badge}</span>
             </div>
             
             <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--color-text-primary); margin: 0 0 0.8rem; letter-spacing: -0.02em;">
@@ -386,7 +471,7 @@
             </p>
 
             <p style="font-size: 0.95rem; color: var(--color-text-secondary); line-height: 1.6; margin: 0 0 1.5rem;">
-              Nos módulos anteriores você dominou o computador isolado: peças, sistema operacional e programas. Agora, seu computador se transforma em uma porta de entrada para um universo global de informações, conectando você à maior rede do planeta.
+              ${p.description || "Nos módulos anteriores você dominou o computador isolado: peças, sistema operacional e programas. Agora, seu computador se transforma em uma porta de entrada para um universo global de informações, conectando você à maior rede do planeta."}
             </p>
 
             <button type="button" class="btn btn-primary" onclick="window.InforMestreModule3.switchLessonTab('video')" style="padding: 0.9rem 2.2rem; font-size: 1rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #00B894 0%, #00cec9 100%); border: none; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; box-shadow: 0 4px 20px rgba(0,184,148,0.35);">
@@ -458,7 +543,7 @@
                 <span>📊</span> Próxima Etapa: Slides da Aula
               </h4>
               <p style="font-size: 0.86rem; color: var(--color-text-secondary); line-height: 1.55; margin: 0;">
-                Veja agora a apresentação completa com os <strong>13 slides detalhados</strong> em tela cheia para fixar o aprendizado antes do quiz.
+                Veja agora a apresentação completa com os <strong>${lesson.slides ? lesson.slides.length : 0} slides detalhados</strong> em tela cheia para fixar o aprendizado antes do quiz.
               </p>
             </div>
           </div>
@@ -471,7 +556,7 @@
           </button>
           
           <button type="button" class="btn btn-primary" onclick="window.InforMestreModule3.switchLessonTab('slides')" style="padding: 0.9rem 2.2rem; font-size: 0.98rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #00B894 0%, #00cec9 100%); border: none; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; box-shadow: 0 4px 20px rgba(0,184,148,0.35);">
-            <span>Avançar para os 13 Slides Oficiais</span>
+            <span>Avançar para os ${lesson.slides ? lesson.slides.length : 0} Slides Oficiais</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>
@@ -689,7 +774,7 @@
   // 5. CONTROLADORES DE SLIDES E SESSÃO
   // --------------------------------------------------------------------------
   function nextSlide() {
-    const lesson = MODULE_3_LESSONS[0];
+    const lesson = MODULE_3_LESSONS.find(l => l.id === currentLessonId) || MODULE_3_LESSONS[0];
     if (currentSlideIndex < lesson.slides.length - 1) {
       currentSlideIndex++;
       const stageContainer = document.getElementById("m3-stage-container");
@@ -698,7 +783,7 @@
   }
 
   function prevSlide() {
-    const lesson = MODULE_3_LESSONS[0];
+    const lesson = MODULE_3_LESSONS.find(l => l.id === currentLessonId) || MODULE_3_LESSONS[0];
     if (currentSlideIndex > 0) {
       currentSlideIndex--;
       const stageContainer = document.getElementById("m3-stage-container");
@@ -707,7 +792,7 @@
   }
 
   function goToSlide(idx) {
-    const lesson = MODULE_3_LESSONS[0];
+    const lesson = MODULE_3_LESSONS.find(l => l.id === currentLessonId) || MODULE_3_LESSONS[0];
     if (idx >= 0 && idx < lesson.slides.length) {
       currentSlideIndex = idx;
       const stageContainer = document.getElementById("m3-stage-container");
@@ -719,7 +804,7 @@
     if (currentQuizAnswers[qIdx] !== undefined) return;
     currentQuizAnswers[qIdx] = oIdx;
 
-    const lesson = MODULE_3_LESSONS[0];
+    const lesson = MODULE_3_LESSONS.find(l => l.id === currentLessonId) || MODULE_3_LESSONS[0];
     const stageContainer = document.getElementById("m3-stage-container");
     if (stageContainer) renderQuizStage(stageContainer, lesson);
   }
