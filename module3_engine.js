@@ -172,6 +172,186 @@
           explanation: "Correto. Fontes confiáveis costumam ter um autor claro, data de publicação recente ou identificada, e são corroboradas por outros sites respeitáveis."
         }
       ]
+    },
+    {
+      id: "m3-aula-3",
+      number: 3,
+      title: "Segurança Digital e Prevenção de Golpes",
+      badge: "Aula 3 • Segurança & Privacidade",
+      duration: "1h 30m",
+      xpReward: 200,
+      videoUrl: "https://www.youtube.com/watch?v=k5_dY8YkKGs", // A ser substituído
+      presentation: {
+        headline: "Navegando com Segurança na Internet",
+        subtitle: "Aprenda a proteger seus dados, criar senhas imbatíveis e reconhecer golpes online.",
+        description: "A Internet é cheia de oportunidades, mas também possui armadilhas. Nesta aula, você aprenderá as melhores práticas para manter suas contas seguras, identificar mensagens falsas e agir caso algo dê errado.",
+        coverImage: "images/m3/aula3/slide_1.png",
+        objectives: [
+          "Criar e utilizar senhas mais seguras e não reutilizá-las",
+          "Reconhecer sites suspeitos e links potencialmente perigosos",
+          "Diferenciar mensagens legítimas de tentativas de fraude (Phishing)",
+          "Utilizar autenticação em dois fatores (2FA) para proteger dados pessoais",
+          "Saber como agir caso uma conta seja comprometida"
+        ]
+      },
+      slides: [
+        { id: 1, title: "Segurança Digital: Protegendo o que importa", src: "images/m3/aula3/slide_1.png" },
+        { id: 2, title: "A importância das Senhas", src: "images/m3/aula3/slide_2.png" },
+        { id: 3, title: "Nunca Reutilize Senhas", src: "images/m3/aula3/slide_3.png" },
+        { id: 4, title: "Reconhecendo Sites Suspeitos", src: "images/m3/aula3/slide_4.png" },
+        { id: 5, title: "Identificando Links Perigosos", src: "images/m3/aula3/slide_5.png" },
+        { id: 6, title: "Golpes Comuns (Phishing)", src: "images/m3/aula3/slide_6.png" },
+        { id: 7, title: "Como Identificar Mensagens Falsas", src: "images/m3/aula3/slide_7.png" },
+        { id: 8, title: "O que Fazer ao Receber Mensagem Suspeita?", src: "images/m3/aula3/slide_8.png" },
+        { id: 9, title: "Protegendo Dados Pessoais", src: "images/m3/aula3/slide_9.png" },
+        { id: 10, title: "Autenticação em Dois Fatores (2FA)", src: "images/m3/aula3/slide_10.png" },
+        { id: 11, title: "Conta Comprometida: Como Agir?", src: "images/m3/aula3/slide_11.png" },
+        { id: 12, title: "Recuperação de Acesso", src: "images/m3/aula3/slide_12.png" },
+        { id: 13, title: "Resumo e Encerramento", src: "images/m3/aula3/slide_13.png" }
+      ],
+      quiz: [
+        {
+          id: "q1",
+          question: "Qual das opções abaixo representa a melhor prática na hora de criar e gerenciar senhas?",
+          options: [
+            "Usar a mesma senha para todas as redes sociais e e-mails para não esquecer.",
+            "Criar senhas complexas e usar uma senha diferente para cada serviço importante.",
+            "Usar sua data de nascimento para facilitar a memorização.",
+            "Anotar todas as senhas em um arquivo de texto não protegido na Área de Trabalho."
+          ],
+          correct: 1,
+          explanation: "Excelente! Senhas fortes e únicas para cada serviço evitam que todas as suas contas sejam comprometidas caso uma senha vaze."
+        },
+        {
+          id: "q2",
+          question: "Você recebeu um e-mail urgente do seu 'banco' pedindo para clicar em um link e confirmar sua senha. O que você deve fazer?",
+          options: [
+            "Clicar no link imediatamente e preencher os dados, afinal é urgente.",
+            "Responder ao e-mail perguntando se é verdade.",
+            "Ignorar a mensagem, não clicar em nada e, na dúvida, acessar o aplicativo oficial.",
+            "Encaminhar para seus amigos para avisá-los do bloqueio."
+          ],
+          correct: 2,
+          explanation: "Correto! Isso é um exemplo clássico de Phishing. Bancos não pedem confirmação de senha por links de e-mail ou SMS."
+        },
+        {
+          id: "q3",
+          question: "O que é a Autenticação em Dois Fatores (2FA)?",
+          options: [
+            "É um antivírus que roda em duas etapas no computador.",
+            "É uma camada extra de segurança que exige um código enviado para seu celular (ou app) além da senha.",
+            "É uma regra que obriga a digitar a senha duas vezes seguidas para entrar.",
+            "É o processo de criar duas contas diferentes na mesma rede social."
+          ],
+          correct: 1,
+          explanation: "Perfeito! Mesmo que descubram sua senha, não conseguirão entrar na conta sem o código de segurança do seu celular."
+        },
+        {
+          id: "q4",
+          question: "Se você suspeitar que sua conta foi invadida, qual deve ser seu primeiro passo?",
+          options: [
+            "Deletar o aplicativo e nunca mais usá-lo.",
+            "Avisar as pessoas mais próximas sobre o ocorrido e tentar recuperar a conta através dos canais oficiais.",
+            "Esperar algumas semanas para ver se o invasor desiste e devolve a conta.",
+            "Criar uma nova conta com a mesma senha."
+          ],
+          correct: 1,
+          explanation: "Exato! Alertar contatos previne que sejam extorquidos, e você deve usar o suporte oficial para recuperar o acesso e trocar a senha imediatamente."
+        }
+      ]
+    },
+    {
+      id: "m3-aula-4",
+      number: 4,
+      title: "E-mail Profissional",
+      badge: "Aula 4 • Comunicação Digital",
+      duration: "1h 15m",
+      xpReward: 200,
+      videoUrl: "https://www.youtube.com/watch?v=k5_dY8YkKGs", // Placeholder
+      presentation: {
+        headline: "Dominando o Correio Eletrônico",
+        subtitle: "Como usar o e-mail com clareza, segurança e profissionalismo.",
+        description: "O e-mail vai além da conversa casual: é uma ferramenta indispensável para trabalhar, estudar e se comunicar de forma profissional. Aprenda a estruturar mensagens, gerenciar sua caixa de entrada e identificar tentativas de fraude.",
+        coverImage: "images/m3/aula4/slide_1.png",
+        objectives: [
+          "Enviar, receber e gerenciar e-mails",
+          "Entender a anatomia do e-mail (Para, Assunto, Anexos)",
+          "Escrever mensagens com estrutura profissional",
+          "Diferenciar Caixa de Entrada, Rascunhos, Spam e Lixeira",
+          "Criar uma conta no Gmail e dar os primeiros passos"
+        ]
+      },
+      slides: [
+        { id: 1, title: "E-mail e Comunicação Digital", src: "images/m3/aula4/slide_1.png" },
+        { id: 2, title: "Objetivos da Aula", src: "images/m3/aula4/slide_2.png" },
+        { id: 3, title: "E-mail no Dia a Dia", src: "images/m3/aula4/slide_3.png" },
+        { id: 4, title: "Conhecendo a Caixa de Entrada", src: "images/m3/aula4/slide_4.png" },
+        { id: 5, title: "Anatomia de um E-mail", src: "images/m3/aula4/slide_5.png" },
+        { id: 6, title: "Como Escrever um Bom E-mail", src: "images/m3/aula4/slide_6.png" },
+        { id: 7, title: "Segurança: Sinais de Alerta", src: "images/m3/aula4/slide_7.png" },
+        { id: 8, title: "Spam e Phishing", src: "images/m3/aula4/slide_8.png" },
+        { id: 9, title: "O que é o Correio Eletrônico?", src: "images/m3/aula4/slide_9.png" },
+        { id: 10, title: "Conhecendo o Gmail", src: "images/m3/aula4/slide_10.png" },
+        { id: 11, title: "Passo a passo (1)", src: "images/m3/aula4/slide_11.png" },
+        { id: 12, title: "Passo a passo (2)", src: "images/m3/aula4/slide_12.png" },
+        { id: 13, title: "Passo a passo (3)", src: "images/m3/aula4/slide_13.png" },
+        { id: 14, title: "Passo a passo (4)", src: "images/m3/aula4/slide_14.png" },
+        { id: 15, title: "Passo a passo (5)", src: "images/m3/aula4/slide_15.png" },
+        { id: 16, title: "Passo a passo (6)", src: "images/m3/aula4/slide_16.png" },
+        { id: 17, title: "Passo a passo (7)", src: "images/m3/aula4/slide_17.png" },
+        { id: 18, title: "Bem-vindo ao Gmail", src: "images/m3/aula4/slide_18.png" },
+        { id: 19, title: "Parabéns, você já tem seu e-mail!", src: "images/m3/aula4/slide_19.png" }
+      ],
+      quiz: [
+        {
+          id: "q1",
+          question: "Na anatomia de um e-mail, qual é a finalidade principal do campo 'Assunto'?",
+          options: [
+            "Escrever a mensagem inteira para economizar tempo.",
+            "Inserir o endereço de quem vai receber o e-mail.",
+            "Resumir o tema principal ou objetivo da mensagem.",
+            "Anexar os arquivos e documentos."
+          ],
+          correct: 2,
+          explanation: "Isso mesmo! O Assunto serve como um título que avisa o destinatário sobre o que se trata o e-mail antes mesmo dele abri-lo."
+        },
+        {
+          id: "q2",
+          question: "Qual a estrutura recomendada para se escrever um bom e-mail profissional?",
+          options: [
+            "Saudação → Objetivo → Informação complementar → Encerramento.",
+            "Apenas enviar o anexo sem escrever nada.",
+            "Objetivo → Despedida → Saudação.",
+            "Usar letras maiúsculas para chamar atenção."
+          ],
+          correct: 0,
+          explanation: "Perfeito! Começar com um 'Olá', explicar o motivo do contato de forma clara, adicionar detalhes e encerrar com um 'Atenciosamente' mostra profissionalismo."
+        },
+        {
+          id: "q3",
+          question: "O que caracteriza os e-mails classificados como 'Spam'?",
+          options: [
+            "São e-mails enviados exclusivamente pelo seu chefe ou colegas de trabalho.",
+            "Mensagens indesejadas, geralmente enviadas em massa com fins publicitários.",
+            "São os e-mails que você deixou salvos nos 'Rascunhos'.",
+            "É o sistema de antivírus integrado no e-mail."
+          ],
+          correct: 1,
+          explanation: "Exato! Spam são correspondências não solicitadas. O Gmail costuma filtrá-las automaticamente para a pasta de Spam."
+        },
+        {
+          id: "q4",
+          question: "Se você recebe um e-mail escrito com urgência (ex: 'Sua conta será bloqueada!') pedindo para clicar em um link desconhecido, o que provavelmente é isso?",
+          options: [
+            "Um comunicado oficial e verdadeiro do seu banco.",
+            "Uma mensagem excluída.",
+            "Um e-mail enviado por engano.",
+            "Uma tentativa de Phishing (golpe para roubar seus dados)."
+          ],
+          correct: 3,
+          explanation: "Correto! Golpistas costumam usar o senso de urgência para assustar a vítima e fazê-la clicar em links falsos. Na dúvida, sempre acesse o aplicativo oficial ao invés de clicar em links de e-mail."
+        }
+      ]
     }
   ];
 

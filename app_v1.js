@@ -343,6 +343,36 @@ window.showModernConfirm = function(title, message, onConfirm, onCancel) {
   });
 };
 
+/**
+ * Handle platform logout globally
+ */
+window.handlePlatformLogout = function() {
+  if (typeof window.showModernConfirm === "function") {
+    window.showModernConfirm("🚪 Encerrar Sessão", "Deseja realmente sair da plataforma?", async () => {
+      try {
+        if (window.signOutUser) {
+          await window.signOutUser();
+        }
+        window.location.reload();
+      } catch (err) {
+        console.error("Erro ao fazer logout:", err);
+        alert("Erro ao encerrar sessão: " + err.message);
+      }
+    });
+  } else {
+    if (confirm("Deseja realmente sair da plataforma?")) {
+      if (window.signOutUser) {
+        window.signOutUser().then(() => window.location.reload()).catch(err => {
+          console.error("Erro ao fazer logout:", err);
+          alert("Erro ao encerrar sessão: " + err.message);
+        });
+      } else {
+        window.location.reload();
+      }
+    }
+  }
+};
+
 // ==========================================================================
 // INFO POPUP SYSTEM – Visual Reference Modal
 // ==========================================================================
@@ -8963,8 +8993,21 @@ function renderStudentModule3View(container) {
               state.completedLessons['aula-' + (14 + idx)]
             ));
 
-            const curiosidade = LESSON_CURIOSITIES[aula.id];
-            const bullets = curiosidade ? curiosidade.bulletPoints : [];
+            const engineLesson = (window.InforMestreModule3 && window.InforMestreModule3.MODULE_3_LESSONS) 
+              ? window.InforMestreModule3.MODULE_3_LESSONS.find(l => l.id === `m3-aula-${idx + 1}`) 
+              : null;
+              
+            const displayTitle = engineLesson ? engineLesson.title : aula.title;
+            const displayDesc = engineLesson && engineLesson.presentation ? engineLesson.presentation.description : aula.desc;
+            
+            let bullets = [];
+            if (engineLesson && engineLesson.presentation && engineLesson.presentation.objectives) {
+              bullets = engineLesson.presentation.objectives;
+            } else {
+              const curiosidade = LESSON_CURIOSITIES[aula.id];
+              bullets = curiosidade ? curiosidade.bulletPoints : [];
+            }
+            
             const isFinal = aula.isDesafio;
 
             return `
@@ -8991,10 +9034,10 @@ function renderStudentModule3View(container) {
                   </div>
 
                   <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--color-text-primary); margin: 0 0 0.5rem;">
-                    ${aula.title}
+                    ${displayTitle}
                   </h3>
                   <p style="font-size: 0.85rem; color: var(--color-text-secondary); line-height: 1.45; margin: 0 0 1rem;">
-                    ${aula.desc}
+                    ${displayDesc}
                   </p>
 
                   <!-- Tópicos abordados -->
@@ -9042,8 +9085,22 @@ function openModule3LessonModal(lessonId) {
   const aula = mod3 ? mod3.lessons.find(l => l.id === lessonId) : null;
   if (!aula) return;
 
-  const curiosidade = LESSON_CURIOSITIES[lessonId];
-  const bulletList = curiosidade ? curiosidade.bulletPoints : [];
+  const idx = mod3.lessons.findIndex(l => l.id === lessonId);
+  const engineLesson = (window.InforMestreModule3 && window.InforMestreModule3.MODULE_3_LESSONS) 
+    ? window.InforMestreModule3.MODULE_3_LESSONS.find(l => l.id === `m3-aula-${idx + 1}`) 
+    : null;
+
+  const displayTitle = engineLesson ? engineLesson.title : aula.title;
+  const displayDesc = engineLesson && engineLesson.presentation ? engineLesson.presentation.description : aula.desc;
+  
+  let bulletList = [];
+  if (engineLesson && engineLesson.presentation && engineLesson.presentation.objectives) {
+    bulletList = engineLesson.presentation.objectives;
+  } else {
+    const curiosidade = LESSON_CURIOSITIES[lessonId];
+    bulletList = curiosidade ? curiosidade.bulletPoints : [];
+  }
+
   const isDone = state.completedLessons && state.completedLessons[lessonId];
   const isFinal = aula.isDesafio;
 
@@ -9063,14 +9120,14 @@ function openModule3LessonModal(lessonId) {
             ${isFinal ? '🏆 PROJETO DE CONCLUSÃO' : 'MÓDULO 3 • INTERNET & NUVEM'}
           </span>
           <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--color-text-primary); margin: 0.5rem 0 0.2rem;">
-            ${aula.title}
+            ${displayTitle}
           </h2>
         </div>
         <button onclick="document.getElementById('module3-lesson-modal').remove()" style="background: none; border: none; font-size: 1.5rem; color: var(--color-text-muted); cursor: pointer; padding: 0.2rem;">×</button>
       </div>
 
       <p style="font-size: 0.92rem; color: var(--color-text-secondary); line-height: 1.55; margin-bottom: 1.5rem;">
-        ${curiosidade ? curiosidade.prev : aula.desc}
+        ${displayDesc}
       </p>
 
       <!-- Seção 1: Conceitos Chave -->
