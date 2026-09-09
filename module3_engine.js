@@ -94,6 +94,78 @@
           ],
           correct: 2,
           explanation: "Exatamente! O armazenamento em nuvem garante backup contínuo e acesso universal aos seus arquivos através do seu login em qualquer aparelho."
+        },
+        {
+          id: "q5",
+          question: "O que é um 'Navegador' (Browser) de Internet?",
+          options: [
+            "Um programa ou aplicativo usado para acessar e visualizar as páginas da Web (ex: Google Chrome, Edge).",
+            "O aparelho físico que distribui o sinal de Wi-Fi pela casa.",
+            "A empresa provedora que fornece a conexão de internet para o cliente (ex: Vivo, Claro).",
+            "O cabo físico que interliga os computadores na rede de casa."
+          ],
+          correct: 0,
+          explanation: "Muito bem! Os navegadores (browsers) são os 'veículos' que utilizamos para acessar a Web, traduzindo códigos complexos em páginas interativas."
+        },
+        {
+          id: "q6",
+          question: "Qual alternativa representa o formato básico e correto de um Endereço Digital (URL)?",
+          options: [
+            "google@com",
+            "www.meusite.com.br",
+            "site:meusite#br",
+            "C:\\Users\\Documentos\\site.com"
+          ],
+          correct: 1,
+          explanation: "Isso mesmo! O formato padrão de uma URL costuma usar 'www.' e ter domínios como '.com' ou '.com.br'."
+        },
+        {
+          id: "q7",
+          question: "O que permite que a Internet cruze oceanos e conecte os continentes do nosso planeta?",
+          options: [
+            "Apenas ondas de rádio enviadas por antenas 5G gigantes em navios.",
+            "Uma rede com milhares de quilômetros de cabos submarinos de fibra óptica repousados no fundo do oceano.",
+            "Exclusivamente satélites de comunicação posicionados no espaço.",
+            "Não existe conexão direta entre os continentes, a internet de cada país é totalmente isolada."
+          ],
+          correct: 1,
+          explanation: "Correto! Mais de 95% do tráfego internacional de dados passa por imensos cabos de fibra óptica instalados no fundo do mar."
+        },
+        {
+          id: "q8",
+          question: "Se você resolver baixar um filme ou um arquivo PDF da internet para salvar no seu computador e visualizar depois, qual operação foi realizada?",
+          options: [
+            "Upload",
+            "Criptografia",
+            "Download",
+            "Desfragmentação"
+          ],
+          correct: 2,
+          explanation: "Perfeito! Você está fazendo o Download (puxando) do arquivo de um servidor na internet para o disco local do seu equipamento."
+        },
+        {
+          id: "q9",
+          question: "De forma simples, como os navegadores se comunicam com os sites na internet quando você digita um endereço?",
+          options: [
+            "O navegador faz uma 'requisição' (pedido) ao servidor, que responde enviando os pacotes de dados da página de volta para a sua tela.",
+            "O servidor envia fisicamente um pendrive para o seu provedor de internet.",
+            "O navegador adivinha os códigos usando inteligência artificial sem precisar consultar o servidor.",
+            "O navegador lê diretamente o arquivo que já estava salvo no seu disco C: desde a fábrica."
+          ],
+          correct: 0,
+          explanation: "Exato! É um modelo de comunicação Cliente-Servidor. Seu navegador (cliente) pede a página e o computador remoto (servidor) atende o pedido entregando o conteúdo."
+        },
+        {
+          id: "q10",
+          question: "Qual a diferença central entre usar uma conexão por Cabo de Rede e o Wi-Fi?",
+          options: [
+            "O Wi-Fi transmite dados através de ondas de rádio pelo ar (sem fio), enquanto o cabo transmite dados de forma física e direta, geralmente mais estável.",
+            "O Wi-Fi só funciona se o computador estiver ligado na tomada com cabos de alta tensão.",
+            "O Wi-Fi é a internet 'verdadeira', e o cabo é apenas para rede local sem acesso à internet.",
+            "Não existe nenhuma diferença de estabilidade ou velocidade, ambos funcionam exatamente igual em qualquer distância."
+          ],
+          correct: 0,
+          explanation: "Muito bom! O Wi-Fi oferece grande mobilidade (ondas de rádio), enquanto o cabo físico garante velocidade total e estabilidade contínua livre de interferências."
         }
       ]
     },
