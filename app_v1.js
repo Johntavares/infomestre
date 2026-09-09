@@ -696,8 +696,8 @@ function isLessonAvailable(lessonOrId) {
     return true;
   }
 
-  // Aulas sem slides nem vídeo (ex: Aulas 15 a 20 do Módulo 3) ainda não estão disponíveis
-  return false;
+  // Todas as aulas liberadas para visualização, mesmo sem conteúdo final
+  return true;
 }
 
 function getLessonStatus(lessonId) {
