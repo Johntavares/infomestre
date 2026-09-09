@@ -16,7 +16,7 @@
       badge: "Aula 1 • Fundamentos da Rede",
       duration: "25 min",
       xpReward: 100,
-      videoUrl: "https://www.youtube.com/watch?v=k5_dY8YkKGs",
+      videoUrl: "https://youtu.be/UUm3hAk0ah8",
       presentation: {
         headline: "A Internet e o Mundo Digital",
         subtitle: "Desmistificando a maior rede do planeta e aprendendo a navegar com segurança.",
