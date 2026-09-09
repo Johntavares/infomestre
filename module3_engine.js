@@ -114,7 +114,7 @@
             "google@com",
             "www.meusite.com.br",
             "site:meusite#br",
-            "C:\\Users\\Documentos\\site.com"
+            "C:\Users\Documentos\site.com"
           ],
           correct: 1,
           explanation: "Isso mesmo! O formato padrão de uma URL costuma usar 'www.' e ter domínios como '.com' ou '.com.br'."
@@ -768,7 +768,7 @@
         <!-- Player de Vídeo Cinema 16:9 -->
         <div style="position: relative; width: 100%; padding-top: 56.25%; background: #000; border-radius: 16px; overflow: hidden; margin-bottom: 1.8rem; box-shadow: 0 15px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);">
           <iframe 
-            src="https://www.youtube.com/embed/${lesson.videoUrl ? (lesson.videoUrl.match(/(?:youtu\\.be\\/|youtube\\.com\\/(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))([\\w-]{11})/) || [])[1] || 'UUm3hAk0ah8' : 'UUm3hAk0ah8'}?rel=0&modestbranding=1" 
+            src="https://www.youtube.com/embed/${lesson.videoUrl ? (lesson.videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/) || [])[1] || 'UUm3hAk0ah8' : 'UUm3hAk0ah8'}?rel=0&modestbranding=1" 
             title="${lesson.title}"
             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
