@@ -167,7 +167,121 @@
           correct: 0,
           explanation: "Muito bom! O Wi-Fi oferece grande mobilidade (ondas de rádio), enquanto o cabo físico garante velocidade total e estabilidade contínua livre de interferências."
         }
-      ]
+      ],
+      finalChallenge: {
+        title: "🌐 DESAFIO FINAL — VOCÊ ENTENDE A INTERNET?",
+        subtitle: "Agora vamos descobrir se você consegue aplicar o que aprendeu em situações do dia a dia.",
+        questions: [
+          {
+            id: "fc1",
+            type: "choice",
+            context: "João abriu o Google Chrome no computador e disse:\n\n'Entrei na Internet porque abri o Chrome.'\n\nEle está correto?",
+            options: [
+              "Sim, o Chrome é a própria Internet.",
+              "Sim, porque todo navegador é uma conexão de Internet.",
+              "Não. O navegador é uma ferramenta utilizada para acessar conteúdos e serviços através da Internet.",
+              "Não. O Chrome funciona somente quando existe um servidor dentro do computador."
+            ],
+            correct: 2,
+            feedback: "O navegador não é a Internet. Ele é um software usado para acessar sites e outros conteúdos disponíveis através da rede.",
+            xp: 20
+          },
+          {
+            id: "fc2",
+            type: "choice",
+            context: "Maria enviou um e-mail para seu colega. Depois abriu um site de notícias no navegador.",
+            question: "Qual afirmação melhor explica essas duas situações?",
+            options: [
+              "E-mail e Web são exatamente a mesma coisa.",
+              "Os dois utilizam a Internet, mas são serviços/recursos diferentes.",
+              "O e-mail utiliza a Web, mas a Internet não participa.",
+              "O site de notícias funciona sem Internet."
+            ],
+            correct: 1,
+            feedback: "A Internet é a infraestrutura de redes que permite a comunicação. A Web é um dos serviços que utilizam essa infraestrutura. O e-mail também é um serviço diferente da Web.",
+            xp: 20
+          },
+          {
+            id: "fc3",
+            type: "ordering",
+            context: "Você digita um endereço de site no navegador e aperta Enter.",
+            question: "Qual sequência representa melhor o processo de forma simplificada? Organize os passos abaixo:",
+            items: [
+              "Navegador faz a solicitação",
+              "A solicitação passa pela rede",
+              "Um servidor recebe/processa a solicitação",
+              "O servidor envia os dados",
+              "O navegador apresenta a página"
+            ],
+            feedback: "Excelente! Essa é uma representação simplificada. A comunicação real envolve várias etapas e equipamentos (provedores, DNS, roteadores), mas este é o ciclo fundamental Cliente-Servidor.",
+            xp: 20
+          },
+          {
+            id: "fc4",
+            type: "url-analysis",
+            context: "Analise o endereço abaixo:",
+            url: "https://www.exemplo.com.br/noticias",
+            parts: [
+              { label: "Protocolo", value: "https://" },
+              { label: "Domínio", value: "www.exemplo.com.br" },
+              { label: "Caminho", value: "/noticias" }
+            ],
+            feedback: "Muito bem! O protocolo (HTTPS) diz COMO acessar. O domínio diz ONDE ir. O caminho diz O QUE buscar dentro desse lugar.",
+            xp: 20
+          },
+          {
+            id: "fc5",
+            type: "choice",
+            context: "Pedro está conectado ao Wi-Fi de sua casa. Ele afirma:\n\n'Se meu Wi-Fi está funcionando, significa que o Wi-Fi é a Internet.'",
+            question: "Qual é a melhor explicação?",
+            options: [
+              "Pedro está certo.",
+              "Wi-Fi é um tipo de navegador.",
+              "Wi-Fi é uma tecnologia de conexão sem fio que pode permitir que o dispositivo acesse uma rede; ele não é sinônimo de Internet.",
+              "Wi-Fi é o servidor que armazena os sites."
+            ],
+            correct: 2,
+            feedback: "O Wi-Fi liga o seu computador ao roteador da sua casa sem precisar de fios. O roteador então precisa estar conectado à Internet real. Se a internet do provedor cair, o Wi-Fi continuará ligado, mas sem conexão com a Internet.",
+            xp: 20
+          },
+          {
+            id: "fc6",
+            type: "choice",
+            context: "Você está tentando acessar um site, mas ele não abre. Seu computador está ligado e o navegador funciona.",
+            question: "Qual conclusão é mais correta?",
+            options: [
+              "O navegador deixou de ser Internet.",
+              "O problema necessariamente está no computador.",
+              "Existem várias possibilidades: conexão, rede, servidor, endereço digitado ou outros fatores.",
+              "Todo site precisa estar armazenado dentro do computador."
+            ],
+            correct: 2,
+            feedback: "A Internet é composta por várias partes: seu aparelho, seu roteador, seu provedor, os cabos pelo mundo e o servidor de destino. Uma falha em qualquer desses pontos impede o acesso.",
+            xp: 20
+          },
+          {
+            id: "fc7",
+            type: "choice",
+            context: "Imagine que uma pessoa que nunca estudou informática perguntou:\n\n'Quando eu digito um site no navegador, como ele aparece na minha tela?'\n\nVocê precisa explicar isso para ela.",
+            question: "Qual é a melhor resposta?",
+            options: [
+              "O navegador já possui todos os sites armazenados dentro dele.",
+              "O Wi-Fi cria o site quando você pede.",
+              "O navegador solicita a informação pela rede, a solicitação chega aos servidores e os dados retornam para que o navegador apresente a página.",
+              "A Internet é um programa instalado no computador que contém todos os sites."
+            ],
+            correct: 2,
+            feedback: "Exato! Essa é uma explicação simplificada, mas correta para o nível desta aula. O navegador é a ferramenta que faz a solicitação, a Internet fornece a infraestrutura de comunicação e os servidores disponibilizam os dados necessários para o conteúdo ser apresentado.",
+            xp: 40
+          }
+        ],
+        competencies: [
+          { name: "Internet x Web", score: 100 },
+          { name: "URL e Domínios", score: 100 },
+          { name: "Funcionamento da Rede", score: 80 },
+          { name: "Aplicação dos Conceitos", score: 100 }
+        ]
+      }
     },
     {
       id: "m3-aula-2",
@@ -242,8 +356,179 @@
           ],
           correct: 2,
           explanation: "Correto. Fontes confiáveis costumam ter um autor claro, data de publicação recente ou identificada, e são corroboradas por outros sites respeitáveis."
+        },
+        {
+          id: "q4",
+          question: "Para que serve o atalho 'Ctrl+F' (ou 'Cmd+F' no Mac) em uma página da web?",
+          options: [
+            "Para fechar a aba atual do navegador.",
+            "Para abrir as configurações do computador.",
+            "Para pesquisar e encontrar uma palavra ou frase específica dentro daquela página.",
+            "Para atualizar a página quando ela trava."
+          ],
+          correct: 2,
+          explanation: "Excelente! O atalho Ctrl+F abre uma pequena barra de pesquisa que permite localizar rapidamente qualquer palavra no texto de uma página longa."
+        },
+        {
+          id: "q5",
+          question: "Qual o recurso do navegador permite salvar seus sites preferidos para acessá-los rapidamente depois?",
+          options: [
+            "O Histórico de downloads.",
+            "A barra de Favoritos (ou Bookmarks).",
+            "O modo de navegação anônima.",
+            "O botão de atualizar página."
+          ],
+          correct: 1,
+          explanation: "Correto! Salvar um site nos Favoritos cria um atalho fácil para você voltar a ele sem precisar pesquisar novamente."
+        },
+        {
+          id: "q6",
+          question: "Se você quiser excluir uma palavra da sua pesquisa no Google (ex: pesquisar 'manga' fruta, mas não a roupa), o que você deve fazer?",
+          options: [
+            "Escrever 'manga não roupa'.",
+            "Usar o sinal de menos (-) logo antes da palavra que deseja excluir, ex: manga -roupa.",
+            "Colocar tudo entre aspas.",
+            "Pesquisar normalmente e ignorar os resultados errados."
+          ],
+          correct: 1,
+          explanation: "Isso mesmo! O sinal de menos (-) atua como um filtro, removendo dos resultados as páginas que contenham a palavra indesejada."
+        },
+        {
+          id: "q7",
+          question: "Onde podemos verificar quais sites foram visitados recentemente no nosso navegador?",
+          options: [
+            "No Histórico de navegação.",
+            "Na lixeira do Windows.",
+            "Nas configurações de tela.",
+            "No painel de controle."
+          ],
+          correct: 0,
+          explanation: "Muito bem! O Histórico guarda o registro das páginas que você acessou, útil caso queira voltar a um site que esqueceu de salvar."
+        },
+        {
+          id: "q8",
+          question: "Por que é fundamental verificar a data de publicação de uma notícia ou artigo na internet?",
+          options: [
+            "Porque artigos antigos sempre contêm vírus.",
+            "Para garantir que a informação ainda é válida e não está desatualizada.",
+            "Porque o Google apaga artigos com mais de um ano.",
+            "Para saber quanto tempo o autor levou para escrever."
+          ],
+          correct: 1,
+          explanation: "Exatamente! Especialmente em temas como tecnologia, leis ou notícias, uma informação de anos atrás pode não ser mais a realidade atual."
+        },
+        {
+          id: "q9",
+          question: "Ao procurar exclusivamente por fotografias ou ilustrações de um tema, qual ferramenta de busca do Google é a mais indicada?",
+          options: [
+            "Google Maps.",
+            "Google Shopping.",
+            "Google Imagens.",
+            "Google Tradutor."
+          ],
+          correct: 2,
+          explanation: "Isso! O Google Imagens filtra os resultados para mostrar apenas arquivos visuais relacionados ao termo que você pesquisou."
+        },
+        {
+          id: "q10",
+          question: "O que fazem os atalhos de teclado, como Ctrl+T (abrir nova aba) ou Ctrl+W (fechar aba), durante o uso da internet?",
+          options: [
+            "Eles deixam a internet mais rápida.",
+            "Agilizam a navegação substituindo cliques do mouse por combinações rápidas no teclado.",
+            "Eles servem para consertar problemas de conexão.",
+            "São códigos para acessar a dark web."
+          ],
+          correct: 1,
+          explanation: "Correto! Atalhos de teclado são atalhos práticos que economizam tempo e aumentam sua produtividade ao navegar."
         }
-      ]
+      ],
+      finalChallenge: {
+        title: "🔍 DESAFIO FINAL — MESTRE DAS BUSCAS",
+        subtitle: "Aplique suas habilidades de pesquisa para resolver situações do dia a dia.",
+        questions: [
+          {
+            id: "a2_fc1",
+            type: "choice",
+            context: "Você precisa comprar um tênis específico e pesquisa 'Tênis de corrida XZ'. Os três primeiros resultados possuem a palavra 'Patrocinado' ao lado.",
+            question: "O que isso significa?",
+            options: [
+              "São os sites mais confiáveis e seguros escolhidos pelo Google.",
+              "São lojas que pagaram para aparecer no topo da sua pesquisa.",
+              "São resultados falsos que roubarão seus dados.",
+              "São os sites mais baratos da internet."
+            ],
+            correct: 1,
+            feedback: "Correto! Anúncios patrocinados significam que a empresa pagou para o buscador exibi-los no topo para aquela palavra-chave.",
+            xp: 20
+          },
+          {
+            id: "a2_fc2",
+            type: "choice",
+            context: "Você precisa encontrar um documento exato que tem a frase: 'Relatório financeiro anual 2023'.",
+            question: "Como você digitaria no Google para encontrar APENAS páginas com essa frase exata?",
+            options: [
+              "Relatório financeiro anual 2023",
+              "URGENTE Relatório financeiro anual 2023",
+              "\"Relatório financeiro anual 2023\"",
+              "Relatório + financeiro + anual + 2023"
+            ],
+            correct: 2,
+            feedback: "Perfeito! Usar aspas duplas obriga o Google a procurar páginas que contenham as palavras exatamente naquela ordem.",
+            xp: 20
+          },
+          {
+            id: "a2_fc3",
+            type: "ordering",
+            context: "Você recebeu uma notícia chocante no WhatsApp e quer verificar se é verdade.",
+            question: "Organize os passos ideais de verificação:",
+            items: [
+              "Não repassar a mensagem imediatamente",
+              "Identificar os termos principais da notícia",
+              "Pesquisar os termos no Google",
+              "Ler a notícia em um portal de jornalismo confiável",
+              "Avisar quem te enviou se a notícia for falsa"
+            ],
+            feedback: "Excelente! Segurar a emoção e não repassar imediatamente é o passo mais importante para combater Fake News.",
+            xp: 20
+          },
+          {
+            id: "a2_fc4",
+            type: "choice",
+            context: "Você acessou um blog que ensina uma dieta 'milagrosa'. O site não tem nome de autor, não tem data e está cheio de botões vermelhos piscando.",
+            question: "Esta é uma fonte de pesquisa confiável?",
+            options: [
+              "Sim, se está na internet é porque foi aprovado.",
+              "Sim, os botões vermelhos indicam urgência médica.",
+              "Não. Sites confiáveis geralmente possuem autor identificado, data de publicação e design limpo sem exageros.",
+              "Não, porque a cor vermelha é proibida na web."
+            ],
+            correct: 2,
+            feedback: "Isso mesmo! Sempre avalie a autoria, a data e a apresentação visual (excesso de anúncios ou apelos emocionais são alertas vermelhos).",
+            xp: 20
+          },
+          {
+            id: "a2_fc5",
+            type: "choice",
+            context: "Seu tio diz que 'o Google sabe tudo e tem todas as respostas corretas do mundo'.",
+            question: "Como você explicaria o papel do Google para ele?",
+            options: [
+              "Ele está certo, o Google cria todo o conhecimento humano.",
+              "O Google é apenas um índice organizador; ele não cria as informações, apenas mostra o que outras pessoas publicaram na web.",
+              "O Google é uma enciclopédia escrita pelos seus próprios funcionários.",
+              "O Google só mostra informações de sites do governo."
+            ],
+            correct: 1,
+            feedback: "Exato! O buscador é como uma gigantesca lista telefônica: ele apenas aponta onde a informação está, cabendo a você julgar se quem escreveu estava certo ou não.",
+            xp: 40
+          }
+        ],
+        competencies: [
+          { name: "Mecânica de Busca", score: 100 },
+          { name: "Filtros e Operadores", score: 100 },
+          { name: "Avaliação de Fontes", score: 90 },
+          { name: "Combate a Fake News", score: 100 }
+        ]
+      }
     },
     {
       id: "m3-aula-3",
@@ -330,7 +615,93 @@
           correct: 1,
           explanation: "Exato! Alertar contatos previne que sejam extorquidos, e você deve usar o suporte oficial para recuperar o acesso e trocar a senha imediatamente."
         }
-      ]
+      ],
+      finalChallenge: {
+        title: "🛡️ DESAFIO FINAL — DETETIVE DA SEGURANÇA",
+        subtitle: "Mostre que você sabe proteger seus dados e reconhecer armadilhas na rede.",
+        questions: [
+          {
+            id: "a3_fc1",
+            type: "choice",
+            context: "Você precisa criar uma senha para o seu novo e-mail.",
+            question: "Qual destas opções é a mais segura de acordo com as boas práticas?",
+            options: [
+              "maria1234",
+              "12345678",
+              "BoloDeCenoura!@#2024",
+              "senha"
+            ],
+            correct: 2,
+            feedback: "Perfeito! Senhas fortes devem combinar letras maiúsculas, minúsculas, números e símbolos, além de serem longas (como uma frase memorizável).",
+            xp: 20
+          },
+          {
+            id: "a3_fc2",
+            type: "choice",
+            context: "Você recebeu um SMS: 'Seu cartão foi bloqueado! Acesse http://banco-seguro-urgente.com para desbloquear agora.'",
+            question: "Qual é a atitude correta?",
+            options: [
+              "Clicar imediatamente e colocar a senha do cartão, pois é urgente.",
+              "Ignorar o link, abrir o aplicativo oficial do banco no celular ou ligar para o número no verso do cartão.",
+              "Responder o SMS com seu CPF.",
+              "Acessar o link apenas para olhar, sem digitar nada."
+            ],
+            correct: 1,
+            feedback: "Excelente! Nunca confie no imediatismo (urgência) e não clique em links recebidos via SMS ou e-mail de remetentes desconhecidos. Vá direto pela via oficial.",
+            xp: 20
+          },
+          {
+            id: "a3_fc3",
+            type: "choice",
+            context: "O que é 'Phishing'?",
+            question: "Selecione a definição correta:",
+            options: [
+              "Uma técnica para acelerar a internet usando o navegador.",
+              "Um tipo de golpe onde cibercriminosos tentam 'pescar' seus dados pessoais se passando por empresas confiáveis (bancos, lojas, governo).",
+              "Um antivírus de última geração.",
+              "Um termo para quem passa muito tempo nas redes sociais."
+            ],
+            correct: 1,
+            feedback: "Correto! O Phishing usa iscas (mensagens falsas, sites clonados) para fazer a própria vítima entregar suas senhas de forma voluntária.",
+            xp: 20
+          },
+          {
+            id: "a3_fc4",
+            type: "ordering",
+            context: "Sua conta do Instagram foi invadida e a senha foi alterada.",
+            question: "Ordene as ações de recuperação prioritárias:",
+            items: [
+              "Avisar amigos e familiares para não caírem em golpes",
+              "Tentar usar a opção 'Esqueci minha senha / Recuperar acesso'",
+              "Alterar a senha do e-mail que está vinculado à conta (para evitar que o e-mail também seja invadido)",
+              "Ativar a autenticação de 2 fatores após recuperar a conta"
+            ],
+            feedback: "Muito bem! Agir rápido protegendo as vias de recuperação (o seu e-mail base) e alertando a rede de contatos é fundamental durante incidentes.",
+            xp: 20
+          },
+          {
+            id: "a3_fc5",
+            type: "choice",
+            context: "Seu amigo ativou a 'Autenticação em Dois Fatores' (2FA) no WhatsApp e acha que foi besteira.",
+            question: "Como você justifica a importância do 2FA?",
+            options: [
+              "Realmente é besteira, só atrapalha o uso do celular.",
+              "O 2FA garante que, mesmo que alguém descubra a sua senha ou clone seu chip, o invasor não conseguirá entrar sem um segundo código exclusivo (PIN).",
+              "O 2FA faz a internet ficar mais rápida e economiza bateria.",
+              "O 2FA deleta todas as mensagens antigas para liberar espaço."
+            ],
+            correct: 1,
+            feedback: "Exato! É a camada de segurança mais forte que você pode colocar em qualquer conta. Senhas vazam, mas o seu fator de autenticação secundário protege a porta.",
+            xp: 40
+          }
+        ],
+        competencies: [
+          { name: "Gestão de Senhas", score: 100 },
+          { name: "Prevenção de Phishing", score: 100 },
+          { name: "Recuperação de Contas", score: 90 },
+          { name: "Camadas Extra (2FA)", score: 100 }
+        ]
+      }
     },
     {
       id: "m3-aula-4",
@@ -423,7 +794,94 @@
           correct: 3,
           explanation: "Correto! Golpistas costumam usar o senso de urgência para assustar a vítima e fazê-la clicar em links falsos. Na dúvida, sempre acesse o aplicativo oficial ao invés de clicar em links de e-mail."
         }
-      ]
+      ],
+      finalChallenge: {
+        title: "✉️ DESAFIO FINAL — COMUNICAÇÃO PROFISSIONAL",
+        subtitle: "Prove que você sabe escrever e-mails profissionais e fugir das fraudes de internet.",
+        questions: [
+          {
+            id: "a4_fc1",
+            type: "choice",
+            context: "Você precisa enviar um orçamento para um cliente novo chamado Sr. Roberto.",
+            question: "Qual é a estrutura mais profissional e adequada para o corpo desse e-mail?",
+            options: [
+              "Olá Sr. Roberto, segue o anexo. Qualquer coisa me liga, valeu!",
+              "Prezado Sr. Roberto, \n\nSegue em anexo o orçamento solicitado para o projeto. Fico à disposição para eventuais dúvidas.\n\nAtenciosamente,\n[Seu Nome]",
+              "ORÇAMENTO TÁ NO ANEXO ABRE AÍ",
+              "Enviar apenas o arquivo em anexo, sem título e sem texto."
+            ],
+            correct: 1,
+            feedback: "Perfeito! Um e-mail profissional deve ter saudação (Prezado/Caro/Olá), um corpo claro indicando o anexo e uma despedida cortês (Atenciosamente/Cordialmente).",
+            xp: 20
+          },
+          {
+            id: "a4_fc2",
+            type: "ordering",
+            context: "Siga a ordem correta para compor e enviar um novo e-mail no Gmail:",
+            question: "Organize as etapas de composição de um e-mail com anexo:",
+            items: [
+              "Clicar no botão 'Escrever' (compor)",
+              "Digitar o endereço de e-mail no campo 'Para'",
+              "Digitar o título no campo 'Assunto'",
+              "Escrever a mensagem e clicar no ícone do clipe para anexar o arquivo",
+              "Revisar o e-mail e clicar em 'Enviar'"
+            ],
+            feedback: "Excelente! Esta é a sequência perfeita para não esquecer de preencher os campos fundamentais e evitar o famoso 'esqueci de anexar'.",
+            xp: 20
+          },
+          {
+            id: "a4_fc3",
+            type: "choice",
+            context: "Você precisa enviar um relatório para a sua chefe (Ana), mas quer que o diretor (Marcos) e a coordenadora (Paula) recebam uma cópia apenas para conhecimento.",
+            question: "Como você distribuiria os endereços de e-mail?",
+            options: [
+              "Colocar todo mundo no campo 'Para'.",
+              "Colocar a Ana no 'Para', e o Marcos e a Paula no campo 'Cc' (Com Cópia).",
+              "Enviar três e-mails separados com a mesma mensagem.",
+              "Colocar todo mundo no 'Cco' (Cópia Oculta)."
+            ],
+            correct: 1,
+            feedback: "Isso mesmo! O campo 'Para' indica de quem se espera a ação principal. O campo 'Cc' indica quem deve ser mantido informado.",
+            xp: 20
+          },
+          {
+            id: "a4_fc4",
+            type: "choice",
+            context: "Você está esperando um e-mail importante da prefeitura, mas ele não aparece na sua 'Caixa de Entrada' principal.",
+            question: "Qual é o primeiro lugar que você deve procurar?",
+            options: [
+              "Lixeira",
+              "Rascunhos",
+              "Caixa de Spam (Lixo Eletrônico)",
+              "Compor um novo e-mail"
+            ],
+            correct: 2,
+            feedback: "Exato! Muitas vezes, os filtros de segurança dos provedores podem se enganar e jogar e-mails legítimos para a caixa de Spam.",
+            xp: 20
+          },
+          {
+            id: "a4_fc5",
+            type: "choice",
+            context: "Chegou um e-mail do 'Suporte Correios' dizendo que sua encomenda está retida na alfândega e que você deve pagar R$ 50,00 clicando num link urgente.",
+            question: "O que você faz?",
+            options: [
+              "Clico e pago rapidamente para não perder o pacote.",
+              "Aviso meus amigos e clico no link para ver do que se trata.",
+              "Não clico em nada. Abro uma nova aba, entro no site oficial dos Correios e digito o código de rastreio para verificar.",
+              "Respondo o e-mail xingando o golpista."
+            ],
+            correct: 2,
+            feedback: "Muito bem! Golpes de rastreio falso são muito comuns. Sempre use os canais oficiais para validar as cobranças.",
+            xp: 40
+          }
+        ],
+        competencies: [
+          { name: "Etiqueta Profissional", score: 100 },
+          { name: "Gestão do Gmail", score: 90 },
+          { name: "Anatomia do E-mail", score: 100 },
+          { name: "Filtro de Spam e Phishing", score: 100 }
+        ]
+      }
     }
   ];
 
@@ -639,7 +1097,7 @@
           </div>
         </div>
 
-        <!-- STEPPER DE 4 ETAPAS -->
+        <!-- STEPPER DA JORNADA -->
         <div class="m3-stepper">
           <button type="button" class="m3-stepper-btn ${currentActiveTab === 'presentation' ? 'active' : ''}" onclick="window.InforMestreModule3.switchLessonTab('presentation')">
             <span class="m3-stepper-badge">1</span>
@@ -660,6 +1118,21 @@
             <span class="m3-stepper-badge">4</span>
             <span>🧠 4. Quiz & XP</span>
           </button>
+
+          <button type="button" class="m3-stepper-btn ${currentActiveTab === 'activities' ? 'active' : ''}" onclick="window.InforMestreModule3.switchLessonTab('activities')">
+            <span class="m3-stepper-badge">5</span>
+            <span>🛠️ 5. Atividades Práticas</span>
+          </button>
+
+          <button type="button" class="m3-stepper-btn ${currentActiveTab === 'mission' ? 'active' : ''}" onclick="window.InforMestreModule3.switchLessonTab('mission')">
+            <span class="m3-stepper-badge">6</span>
+            <span>🚀 6. Missão Real</span>
+          </button>
+
+          <button type="button" class="m3-stepper-btn ${currentActiveTab === 'challenge' ? 'active' : ''}" onclick="window.InforMestreModule3.switchLessonTab('challenge')">
+            <span class="m3-stepper-badge">7</span>
+            <span>🏆 7. Desafio Final</span>
+          </button>
         </div>
 
         <!-- CONTAINER DA ETAPA SELECIONADA -->
@@ -676,7 +1149,7 @@
     const lesson = MODULE_3_LESSONS.find(l => l.id === currentLessonId) || MODULE_3_LESSONS[0];
     
     document.querySelectorAll(".m3-stepper-btn").forEach((btn, idx) => {
-      const tabs = ["presentation", "video", "slides", "quiz"];
+      const tabs = ["presentation", "video", "slides", "quiz", "activities", "mission", "challenge"];
       btn.classList.toggle("active", tabs[idx] === tabName);
     });
 
@@ -695,6 +1168,12 @@
       renderSlidesStage(stageContainer, lesson);
     } else if (currentActiveTab === "quiz") {
       renderQuizStage(stageContainer, lesson);
+    } else if (currentActiveTab === "activities") {
+      renderActivitiesStage(stageContainer, lesson);
+    } else if (currentActiveTab === "mission") {
+      renderMissionStage(stageContainer, lesson);
+    } else if (currentActiveTab === "challenge") {
+      renderChallengeStage(stageContainer, lesson);
     }
   }
 
@@ -1010,16 +1489,327 @@
 
           <button 
             type="button" 
-            onclick="window.InforMestreModule3.finishQuiz('${lesson.id}')"
+            onclick="window.InforMestreModule3.switchLessonTab('activities')"
             ${allAnswered ? '' : 'disabled style="opacity:0.4; cursor:not-allowed;"'}
             style="padding: 0.95rem 2.5rem; font-size: 1rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #00B894 0%, #55EFC4 100%); border: none; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; box-shadow: 0 4px 20px rgba(0,184,148,0.35);">
-            <span>Concluir Aula & Resgatar +${lesson.xpReward} XP</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Continuar para Atividades Práticas 🛠️</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
         </div>
 
       </div>
     `;
+  }
+
+  function renderActivitiesStage(container, lesson) {
+    container.innerHTML = '';
+    
+    if (lesson.id === 'm3-aula-1' || lesson.id === 'aula-15') {
+      // Atividade 3 e 4 para a Aula 1
+      initM3Aula1Activities(container, lesson);
+    } else {
+      container.innerHTML = `
+        <div style="background: var(--color-surface); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border); box-shadow: 0 8px 30px rgba(0,0,0,0.12); text-align: center; animation: fadeIn 0.3s ease;">
+          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--color-text-primary);">🛠️ Atividades Práticas</h3>
+          <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">As atividades práticas para esta aula estão em desenvolvimento.</p>
+          <button class="btn btn-primary" onclick="window.InforMestreModule3.switchLessonTab('mission')">Continuar para a Missão 🚀</button>
+        </div>
+      `;
+    }
+  }
+
+  function renderMissionStage(container, lesson) {
+    container.innerHTML = `
+      <div style="background: var(--color-surface); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border); box-shadow: 0 8px 30px rgba(0,0,0,0.12); text-align: center; animation: fadeIn 0.3s ease;">
+        <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--color-text-primary);">🚀 Missão Real</h3>
+        <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">A missão para esta aula está em desenvolvimento.</p>
+        <button class="btn btn-primary" onclick="window.InforMestreModule3.switchLessonTab('challenge')">Ir para o Desafio Final 🏆</button>
+      </div>
+    `;
+  }
+
+  function renderChallengeStage(container, lesson) {
+    container.innerHTML = "";
+    
+    const challenge = lesson.finalChallenge;
+    if (!challenge) {
+      container.innerHTML = `
+        <div style="background: var(--color-surface); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border); text-align: center;">
+          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--color-text-primary);">🏆 Desafio Final</h3>
+          <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">O desafio desta aula está em desenvolvimento.</p>
+          <button type="button" onclick="window.InforMestreModule3.finishQuiz('${lesson.id}')" class="btn btn-primary">Concluir Aula Definitivamente</button>
+        </div>
+      `;
+      return;
+    }
+
+    let currentQIdx = 0;
+    let xpEarned = 0;
+    let correctCount = 0;
+    let answers = []; // store { questionId, correct }
+
+    const widget = document.createElement("div");
+    widget.className = "card bg-surface border-soft mt-1";
+    widget.style.padding = "2rem";
+    
+    // Header
+    const header = document.createElement("div");
+    header.style.textAlign = "center";
+    header.style.marginBottom = "2rem";
+    header.innerHTML = `
+      <h2 style="color: var(--color-text-primary); margin-bottom: 0.5rem; font-size: 1.5rem;">${challenge.title}</h2>
+      <p style="color: var(--color-text-secondary); font-size: 0.95rem;">${challenge.subtitle}</p>
+    `;
+
+    const contentArea = document.createElement("div");
+
+    const renderResults = () => {
+      // final results screen
+      let compsHtml = challenge.competencies.map(c => {
+        const barWidth = answers.filter(a => a.correct).length >= (challenge.questions.length / 2) ? c.score : Math.max(10, c.score - 40);
+        return `
+          <div style="margin-bottom: 1rem; text-align: left;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.4rem; color: var(--color-text-primary);">
+              <span>${c.name}</span>
+              <span style="color: var(--color-text-secondary);">${barWidth}%</span>
+            </div>
+            <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden;">
+              <div style="width: ${barWidth}%; height: 100%; background: var(--color-primary); border-radius: 4px;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      contentArea.innerHTML = `
+        <div class="text-center" style="animation: fadeIn 0.4s ease;">
+          <span style="font-size: 3.5rem;">🏆</span>
+          <h3 style="margin: 1rem 0; color: #10b981;">DESAFIO CONCLUÍDO!</h3>
+          <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
+            Você não apenas estudou os conceitos. Você conseguiu aplicá-los em situações do cotidiano.
+          </p>
+          
+          <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem;">
+            <div style="background: rgba(16,185,129,0.1); padding: 1rem; border-radius: 12px; min-width: 120px;">
+              <div style="font-size: 0.8rem; color: #10b981; text-transform: uppercase;">Acertos</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-text-primary);">${correctCount}/${challenge.questions.length}</div>
+            </div>
+            <div style="background: rgba(59,130,246,0.1); padding: 1rem; border-radius: 12px; min-width: 120px;">
+              <div style="font-size: 0.8rem; color: #3b82f6; text-transform: uppercase;">XP Ganho</div>
+              <div style="font-size: 1.5rem; font-weight: bold; color: var(--color-text-primary);">+${xpEarned}</div>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem;">
+            <h4 style="margin-top: 0; margin-bottom: 1.5rem; text-align: left; color: var(--color-text-primary);">Análise de Competências</h4>
+            ${compsHtml}
+          </div>
+
+          <button 
+            type="button" 
+            onclick="window.InforMestreModule3.finishQuiz('${lesson.id}')"
+            style="padding: 1rem 3rem; font-size: 1.1rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #00B894 0%, #55EFC4 100%); border: none; color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 0.6rem; box-shadow: 0 4px 20px rgba(0,184,148,0.35);">
+            <span>Encerrar Aula e Salvar Progresso</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
+        </div>
+      `;
+      // Grant XP
+      if (xpEarned > 0 && typeof window.addXP === "function") {
+        window.addXP(xpEarned);
+      }
+    };
+
+    const renderQuestion = () => {
+      if (currentQIdx >= challenge.questions.length) {
+        renderResults();
+        return;
+      }
+      const q = challenge.questions[currentQIdx];
+      
+      let html = `
+        <div style="text-align: left; animation: fadeIn 0.3s ease;">
+          <div style="font-size: 0.85rem; color: var(--color-primary); font-weight: bold; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">
+            Questão ${currentQIdx + 1} de ${challenge.questions.length} • Desafio Prático
+          </div>
+          <div style="background: rgba(255,255,255,0.03); border-left: 4px solid var(--color-primary); padding: 1.2rem; border-radius: 0 8px 8px 0; margin-bottom: 1.5rem;">
+            <p style="margin: 0; font-size: 1rem; color: var(--color-text-primary); line-height: 1.6; white-space: pre-wrap;">${q.context}</p>
+          </div>
+      `;
+      
+      if (q.question) {
+        html += `<h3 style="margin-bottom: 1.5rem; color: var(--color-text-primary); font-size: 1.2rem;">${q.question}</h3>`;
+      }
+
+      contentArea.innerHTML = html;
+
+      const interactiveArea = document.createElement("div");
+      
+      let answered = false;
+
+      const showFeedback = (isCorrect) => {
+        answered = true;
+        if (isCorrect) {
+          correctCount++;
+          xpEarned += q.xp;
+        }
+        answers.push({ questionId: q.id, correct: isCorrect });
+
+        const fbDiv = document.createElement("div");
+        fbDiv.style.cssText = `margin-top: 1.5rem; padding: 1.2rem; border-radius: 12px; background: ${isCorrect ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; border: 1px solid ${isCorrect ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}; animation: slideUp 0.3s ease;`;
+        fbDiv.innerHTML = `
+          <div style="font-weight: bold; margin-bottom: 0.5rem; color: ${isCorrect ? '#10b981' : '#ef4444'};">
+            ${isCorrect ? '✅ Correto! (+' + q.xp + ' XP)' : '❌ Incorreto'}
+          </div>
+          <p style="margin: 0; font-size: 0.95rem; color: var(--color-text-secondary); line-height: 1.5;">${q.feedback}</p>
+          <button class="btn btn-primary" style="margin-top: 1rem;" id="next-btn-fc">Continuar</button>
+        `;
+        contentArea.appendChild(fbDiv);
+        
+        fbDiv.querySelector("#next-btn-fc").addEventListener("click", () => {
+          currentQIdx++;
+          renderQuestion();
+        });
+      };
+
+      if (q.type === "choice") {
+        interactiveArea.style.display = "flex";
+        interactiveArea.style.flexDirection = "column";
+        interactiveArea.style.gap = "0.8rem";
+
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "quiz-option-btn";
+          btn.style.textAlign = "left";
+          btn.innerHTML = `<span style="font-weight: bold; margin-right: 10px;">${String.fromCharCode(65 + idx)})</span> ${opt}`;
+          btn.addEventListener("click", () => {
+            if (answered) return;
+            const isCorrect = (idx === q.correct);
+            btn.classList.add(isCorrect ? "correct" : "wrong");
+            if (!isCorrect) {
+              interactiveArea.children[q.correct].classList.add("correct");
+            }
+            Array.from(interactiveArea.children).forEach(c => c.style.pointerEvents = "none");
+            showFeedback(isCorrect);
+          });
+          interactiveArea.appendChild(btn);
+        });
+      } else if (q.type === "ordering") {
+        let ordered = [];
+        let remaining = [...q.items];
+        
+        const renderOrdering = () => {
+          interactiveArea.innerHTML = "";
+          
+          if (ordered.length > 0) {
+            const listDiv = document.createElement("div");
+            listDiv.style.marginBottom = "1rem";
+            listDiv.innerHTML = `<div style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 0.5rem;">Sua Sequência:</div>`;
+            ordered.forEach((item, idx) => {
+              const itemDiv = document.createElement("div");
+              itemDiv.style.cssText = "padding: 0.8rem 1rem; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.8rem; cursor: pointer;";
+              itemDiv.innerHTML = `<span style="background: var(--color-primary); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold;">${idx+1}</span> <span>${item}</span>`;
+              itemDiv.addEventListener("click", () => {
+                if (answered) return;
+                remaining.push(item);
+                ordered.splice(idx, 1);
+                renderOrdering();
+              });
+              listDiv.appendChild(itemDiv);
+            });
+            interactiveArea.appendChild(listDiv);
+          }
+          
+          if (remaining.length > 0 && !answered) {
+            const availDiv = document.createElement("div");
+            availDiv.innerHTML = `<div style="font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 0.5rem;">Opções disponíveis (Clique para adicionar):</div>`;
+            const grid = document.createElement("div");
+            grid.style.display = "flex";
+            grid.style.flexDirection = "column";
+            grid.style.gap = "0.5rem";
+            remaining.forEach((item, idx) => {
+              const btn = document.createElement("button");
+              btn.className = "btn btn-outline";
+              btn.textContent = item;
+              btn.addEventListener("click", () => {
+                if (answered) return;
+                ordered.push(item);
+                remaining.splice(idx, 1);
+                renderOrdering();
+              });
+              grid.appendChild(btn);
+            });
+            availDiv.appendChild(grid);
+            interactiveArea.appendChild(availDiv);
+          }
+          
+          if (remaining.length === 0 && !answered) {
+            const checkBtn = document.createElement("button");
+            checkBtn.className = "btn btn-primary";
+            checkBtn.textContent = "Verificar Sequência";
+            checkBtn.style.marginTop = "1rem";
+            checkBtn.addEventListener("click", () => {
+              const isCorrect = JSON.stringify(ordered) === JSON.stringify(q.items);
+              showFeedback(isCorrect);
+            });
+            interactiveArea.appendChild(checkBtn);
+          }
+        };
+        
+        remaining.sort(() => Math.random() - 0.5);
+        renderOrdering();
+
+      } else if (q.type === "url-analysis") {
+        interactiveArea.innerHTML = `
+          <div style="font-family: monospace; font-size: 1.4rem; text-align: center; background: #111; padding: 1.5rem; border-radius: 12px; border: 1px solid #333; margin: 1.5rem 0; color: #fff;">
+            ${q.url}
+          </div>
+          <div id="url-q-container"></div>
+        `;
+        
+        const qContainer = interactiveArea.querySelector("#url-q-container");
+        
+        let selectsHtml = q.parts.map((p, i) => `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--color-border); border-radius: 8px; margin-bottom: 0.5rem;">
+            <div style="font-weight: bold;">Qual é o ${p.label}?</div>
+            <select id="url-sel-${i}" style="padding: 0.5rem; border-radius: 6px; background: #222; color: #fff; border: 1px solid #444; width: 200px;">
+              <option value="">Selecione...</option>
+              ${q.parts.map(opt => `<option value="${opt.value}">${opt.value}</option>`).join('')}
+            </select>
+          </div>
+        `).join('');
+        
+        qContainer.innerHTML = selectsHtml;
+        
+        const checkBtn = document.createElement("button");
+        checkBtn.className = "btn btn-primary";
+        checkBtn.textContent = "Verificar Análise";
+        checkBtn.style.marginTop = "1rem";
+        checkBtn.addEventListener("click", () => {
+          if (answered) return;
+          let allCorrect = true;
+          q.parts.forEach((p, i) => {
+            const sel = interactiveArea.querySelector(`#url-sel-${i}`);
+            if (sel.value !== p.value) {
+              allCorrect = false;
+              sel.style.borderColor = "#ef4444";
+            } else {
+              sel.style.borderColor = "#10b981";
+            }
+            sel.disabled = true;
+          });
+          showFeedback(allCorrect);
+        });
+        qContainer.appendChild(checkBtn);
+      }
+
+      contentArea.appendChild(interactiveArea);
+    };
+
+    widget.appendChild(header);
+    widget.appendChild(contentArea);
+    container.appendChild(widget);
+    
+    renderQuestion();
   }
 
   // --------------------------------------------------------------------------
@@ -1131,16 +1921,214 @@
     document.body.appendChild(modal);
   }
 
-  // Teclado para navegar pelos slides
-  window.addEventListener("keydown", function(e) {
-    if (currentActiveTab === "slides") {
-      if (e.key === "ArrowRight" || e.key === " ") nextSlide();
-      if (e.key === "ArrowLeft") prevSlide();
-    }
-  });
+  // --------------------------------------------------------------------------
+  // 6. SIMULADORES E ATIVIDADES (MÓDULO 3)
+  // --------------------------------------------------------------------------
+  function initM3Aula1Activities(container, lesson) {
+    container.innerHTML = "";
+    
+    // Activities State
+    let currentStep = 1; // 1: Internet x Web, 2: URL, 3: Caminho
+    let lives = 3;
+
+    const widget = document.createElement("div");
+    widget.className = "card bg-surface border-soft mt-1";
+    widget.style.padding = "1.5rem";
+
+    const updateHearts = (heartsDiv) => {
+      heartsDiv.innerHTML = "Vidas: " + Array(3).fill(0).map((_, i) => i < lives ? "❤️" : "💔").join(" ");
+    };
+
+    const render = () => {
+      widget.innerHTML = "";
+
+      if (lives <= 0) {
+        widget.innerHTML = `
+          <div class="text-center">
+            <span style="font-size:3rem;">⚠️</span>
+            <h4 class="mt-1" style="color:var(--color-danger);">Você perdeu as vidas!</h4>
+            <p class="text-muted text-small">Sem problemas! Errar faz parte do aprendizado.</p>
+            <button class="btn btn-secondary mt-1" id="btn-restart-a1">Tentar Novamente</button>
+          </div>
+        `;
+        widget.querySelector("#btn-restart-a1").addEventListener("click", () => {
+          lives = 3;
+          currentStep = 1;
+          render();
+        });
+        return;
+      }
+
+      // TOP BAR
+      const topBar = document.createElement("div");
+      topBar.style.display = "flex";
+      topBar.style.justifyContent = "space-between";
+      topBar.style.marginBottom = "1rem";
+      
+      const stepSpan = document.createElement("span");
+      stepSpan.textContent = `Atividade ${currentStep} de 3`;
+      stepSpan.style.fontSize = "0.85rem";
+      stepSpan.style.color = "var(--color-text-secondary)";
+      
+      const heartsSpan = document.createElement("span");
+      heartsSpan.style.color = "var(--color-danger)";
+      heartsSpan.style.fontWeight = "bold";
+      heartsSpan.style.fontSize = "0.85rem";
+      updateHearts(heartsSpan);
+
+      topBar.appendChild(stepSpan);
+      topBar.appendChild(heartsSpan);
+      widget.appendChild(topBar);
+
+      if (currentStep === 1) {
+        // ATIVIDADE 1: Internet x Web
+        const items = [
+          { name: "Cabo Submarino", type: "Internet" },
+          { name: "Site do Google", type: "Web" },
+          { name: "Navegador Chrome", type: "Web" },
+          { name: "Roteador Wi-Fi", type: "Internet" }
+        ];
+        
+        let currentItemIdx = 0;
+        
+        const renderItem = () => {
+          if (currentItemIdx >= items.length) {
+            currentStep = 2;
+            render();
+            return;
+          }
+          
+          const curr = items[currentItemIdx];
+          
+          const itemBox = document.createElement("div");
+          itemBox.style.cssText = "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.2rem;";
+          
+          const title = document.createElement("h3");
+          title.textContent = curr.name;
+          title.style.margin = "0 0 0.5rem 0";
+          
+          const desc = document.createElement("p");
+          desc.textContent = "Isso faz parte da infraestrutura física (Internet) ou dos serviços/páginas (Web)?";
+          desc.style.color = "var(--color-text-secondary)";
+          desc.style.fontSize = "0.85rem";
+          
+          itemBox.appendChild(title);
+          itemBox.appendChild(desc);
+          
+          const optsDiv = document.createElement("div");
+          optsDiv.style.display = "grid";
+          optsDiv.style.gridTemplateColumns = "1fr 1fr";
+          optsDiv.style.gap = "8px";
+          
+          ["Internet", "Web"].forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "quiz-option-btn";
+            btn.textContent = opt;
+            btn.addEventListener("click", () => {
+              if (opt === curr.type) {
+                btn.classList.add("correct");
+                setTimeout(() => {
+                  currentItemIdx++;
+                  renderItem();
+                }, 1000);
+              } else {
+                btn.classList.add("wrong");
+                lives--;
+                updateHearts(heartsSpan);
+                if (lives <= 0) {
+                  render();
+                } else {
+                  alert("❌ Incorreto! Lembre-se: Internet é a parte física (cabos, sinal). Web é a parte lógica (sites).");
+                }
+              }
+            });
+            optsDiv.appendChild(btn);
+          });
+          
+          widget.innerHTML = "";
+          widget.appendChild(topBar);
+          widget.appendChild(itemBox);
+          widget.appendChild(optsDiv);
+        };
+        
+        renderItem();
+      } 
+      else if (currentStep === 2) {
+        // ATIVIDADE 2: Monte a URL
+        widget.innerHTML = "";
+        widget.appendChild(topBar);
+        
+        const title = document.createElement("h4");
+        title.textContent = "Analise o Endereço Digital";
+        widget.appendChild(title);
+        
+        const urlBox = document.createElement("div");
+        urlBox.style.cssText = "font-family: monospace; font-size: 1.2rem; text-align: center; background: #111; padding: 1rem; border-radius: 8px; border: 1px solid #333; margin: 1rem 0;";
+        urlBox.innerHTML = `<span style="color: #ef4444;">https://</span><span style="color: #3b82f6;">www.bancodobrasil</span><span style="color: #10b981;">.com.br</span>`;
+        widget.appendChild(urlBox);
+        
+        const question = document.createElement("p");
+        question.textContent = "Qual parte do endereço acima representa o 'Domínio' (o nome do site)?";
+        widget.appendChild(question);
+        
+        const optsDiv = document.createElement("div");
+        optsDiv.style.display = "flex";
+        optsDiv.style.flexDirection = "column";
+        optsDiv.style.gap = "8px";
+        
+        ["https:// (Protocolo)", "www.bancodobrasil (Domínio)", ".com.br (Extensão/País)"].forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "quiz-option-btn";
+          btn.textContent = opt;
+          btn.addEventListener("click", () => {
+            if (idx === 1) {
+              btn.classList.add("correct");
+              setTimeout(() => {
+                currentStep = 3;
+                render();
+              }, 1000);
+            } else {
+              btn.classList.add("wrong");
+              lives--;
+              updateHearts(heartsSpan);
+              if (lives <= 0) render();
+              else alert("❌ Incorreto! O domínio é o nome principal do site.");
+            }
+          });
+          optsDiv.appendChild(btn);
+        });
+        widget.appendChild(optsDiv);
+      }
+      else if (currentStep === 3) {
+        // CONCLUSÃO ATIVIDADES
+        widget.innerHTML = `
+          <div class="text-center">
+            <span style="font-size:3rem;">🎉</span>
+            <h4 class="mt-1" style="color:var(--color-success);">Atividades Concluídas!</h4>
+            <p class="text-muted text-small">Muito bem! Você provou que entende as diferenças entre Internet, Web e domínios.</p>
+            <span class="badge badge-success">✓ Prática Concluída (+50 XP)</span>
+            <div style="margin-top: 1.5rem;">
+              <button class="btn btn-primary" id="btn-next-mission">Continuar para a Missão 🚀</button>
+            </div>
+          </div>
+        `;
+        
+        setTimeout(() => {
+          if(typeof window.addXP === "function") window.addXP(50);
+        }, 100);
+
+        widget.querySelector("#btn-next-mission").addEventListener("click", () => {
+          window.InforMestreModule3.switchLessonTab('mission');
+        });
+      }
+    };
+
+    render();
+    container.appendChild(widget);
+  }
 
   // --------------------------------------------------------------------------
-  // 6. EXPOSIÇÃO GLOBAL
+  // 7. EXPOSIÇÃO GLOBAL
   // --------------------------------------------------------------------------
   root.InforMestreModule3 = {
     MODULE_3_LESSONS,
