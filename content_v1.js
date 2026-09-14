@@ -5795,6 +5795,27 @@ const COURSE_CONTENT = [
     ]
   },
   {
+    id: "m3-a2-video",
+    title: "🎬 Videoaula 2 — Pesquisa e Informação",
+    page: 161,
+    type: "lesson",
+    chapter: "AULA 16",
+    content: `<div class="text-center">
+              <div class="slide-illo"><svg viewBox="0 0 420 200" role="img" aria-label="Vídeo aula">
+  <circle cx="210" cy="100" r="60" fill="none" stroke="var(--color-primary)" stroke-width="3"/>
+  <ellipse cx="210" cy="100" rx="26" ry="60" fill="none" stroke="var(--color-primary)" stroke-width="2" opacity="0.7"/>
+  <line x1="150" y1="100" x2="270" y2="100" stroke="var(--color-primary)" stroke-width="2" opacity="0.7"/>
+  <circle cx="210" cy="100" r="40" fill="var(--color-accent)" opacity="0.95"/>
+  <path d="M198 82 l30 18 -30 18 z" fill="#fff"/>
+</svg></div>
+      <h2>🎬 Assista à Videoaula 2</h2>
+        <p class="mb-2">Primeiro assista à videoaula completa. Depois, revise os slides abaixo e faça o desafio prático para ganhar XP.</p>
+        <div style="position:relative; max-width:860px; margin:0 auto; border-radius:16px; overflow:hidden; border:1px solid var(--border-soft); background:#000; aspect-ratio:16/9;">
+          <iframe width="100%" height="100%" src="https://www.youtube.com/embed/47dDVkvlEmM" title="Videoaula 2 — Pesquisa e Informação" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>
+        </div>
+      </div>`
+  },
+  {
     id: "m3-aula2-pesquisa-informacao",
     title: "Aula 2 — Pesquisa e Informação",
     page: 162,

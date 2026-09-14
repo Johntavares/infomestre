@@ -1507,6 +1507,8 @@
     if (lesson.id === 'm3-aula-1' || lesson.id === 'aula-15') {
       // Atividade 3 e 4 para a Aula 1
       initM3Aula1Activities(container, lesson);
+    } else if (lesson.id === 'aula-2') {
+      initM3Aula2Activities(container, lesson);
     } else {
       container.innerHTML = `
         <div style="background: var(--color-surface); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border); box-shadow: 0 8px 30px rgba(0,0,0,0.12); text-align: center; animation: fadeIn 0.3s ease;">
@@ -1519,13 +1521,19 @@
   }
 
   function renderMissionStage(container, lesson) {
-    container.innerHTML = `
-      <div style="background: var(--color-surface); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border); box-shadow: 0 8px 30px rgba(0,0,0,0.12); text-align: center; animation: fadeIn 0.3s ease;">
-        <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--color-text-primary);">🚀 Missão Real</h3>
-        <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">A missão para esta aula está em desenvolvimento.</p>
-        <button class="btn btn-primary" onclick="window.InforMestreModule3.switchLessonTab('challenge')">Ir para o Desafio Final 🏆</button>
-      </div>
-    `;
+    container.innerHTML = '';
+
+    if (lesson.id === 'aula-2') {
+      initM3Aula2Mission(container, lesson);
+    } else {
+      container.innerHTML = `
+        <div style="background: var(--color-surface); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border); box-shadow: 0 8px 30px rgba(0,0,0,0.12); text-align: center; animation: fadeIn 0.3s ease;">
+          <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--color-text-primary);">🚀 Missão Real</h3>
+          <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">A missão para esta aula está em desenvolvimento.</p>
+          <button class="btn btn-primary" onclick="window.InforMestreModule3.switchLessonTab('challenge')">Ir para o Desafio Final 🏆</button>
+        </div>
+      `;
+    }
   }
 
   function renderChallengeStage(container, lesson) {
@@ -2121,6 +2129,250 @@
           window.InforMestreModule3.switchLessonTab('mission');
         });
       }
+    };
+
+    render();
+    container.appendChild(widget);
+  }
+
+  function initM3Aula2Activities(container, lesson) {
+    container.innerHTML = "";
+    
+    let currentStep = 1;
+    let lives = 3;
+
+    const widget = document.createElement("div");
+    widget.className = "card bg-surface border-soft mt-1";
+    widget.style.padding = "1.5rem";
+
+    const updateHearts = (heartsDiv) => {
+      heartsDiv.innerHTML = "Vidas: " + Array(3).fill(0).map((_, i) => i < lives ? "❤️" : "💔").join(" ");
+    };
+
+    const render = () => {
+      widget.innerHTML = "";
+      if (lives <= 0) {
+        widget.innerHTML = `
+          <div class="text-center">
+            <span style="font-size:3rem;">⚠️</span>
+            <h4 class="mt-1" style="color:var(--color-danger);">Você perdeu as vidas!</h4>
+            <p class="text-muted text-small">Tudo bem! Errar faz parte do aprendizado.</p>
+            <button class="btn btn-secondary mt-1" id="btn-restart-a2">Tentar Novamente</button>
+          </div>
+        `;
+        widget.querySelector("#btn-restart-a2").addEventListener("click", () => {
+          lives = 3; currentStep = 1; render();
+        });
+        return;
+      }
+
+      const topBar = document.createElement("div");
+      topBar.style.display = "flex";
+      topBar.style.justifyContent = "space-between";
+      topBar.style.marginBottom = "1rem";
+      
+      const stepSpan = document.createElement("span");
+      stepSpan.textContent = `Atividade ${currentStep} de 3`;
+      stepSpan.style.fontSize = "0.85rem";
+      stepSpan.style.color = "var(--color-text-secondary)";
+      
+      const heartsSpan = document.createElement("span");
+      heartsSpan.style.color = "var(--color-danger)";
+      heartsSpan.style.fontWeight = "bold";
+      heartsSpan.style.fontSize = "0.85rem";
+      updateHearts(heartsSpan);
+
+      topBar.appendChild(stepSpan);
+      topBar.appendChild(heartsSpan);
+      widget.appendChild(topBar);
+
+      if (currentStep === 1) {
+        const title = document.createElement("h4");
+        title.textContent = "O Operador Correto";
+        widget.appendChild(title);
+
+        const question = document.createElement("p");
+        question.textContent = "Qual recurso você deve usar no Google para procurar exatamente a frase 'curso de informática' na ordem exata?";
+        widget.appendChild(question);
+
+        const optsDiv = document.createElement("div");
+        optsDiv.style.display = "flex";
+        optsDiv.style.flexDirection = "column";
+        optsDiv.style.gap = "8px";
+
+        ["O sinal de menos (-)", "Colocar a frase entre aspas (\")", "Usar o Google Imagens"].forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "quiz-option-btn";
+          btn.textContent = opt;
+          btn.addEventListener("click", () => {
+            if (idx === 1) {
+              btn.classList.add("correct");
+              setTimeout(() => { currentStep = 2; render(); }, 1000);
+            } else {
+              btn.classList.add("wrong");
+              lives--; updateHearts(heartsSpan);
+              if (lives <= 0) render();
+              else alert("❌ Incorreto! Para procurar a frase exata, usamos aspas.");
+            }
+          });
+          optsDiv.appendChild(btn);
+        });
+        widget.appendChild(optsDiv);
+      } else if (currentStep === 2) {
+        const title = document.createElement("h4");
+        title.textContent = "Onde Guardar?";
+        widget.appendChild(title);
+
+        const question = document.createElement("p");
+        question.textContent = "Você encontrou um site ótimo que vai acessar todos os dias para trabalhar. Onde você deve salvá-lo?";
+        widget.appendChild(question);
+
+        const optsDiv = document.createElement("div");
+        optsDiv.style.display = "flex";
+        optsDiv.style.flexDirection = "column";
+        optsDiv.style.gap = "8px";
+
+        ["Nos Favoritos (Bookmarks)", "No Histórico de Navegação", "Na sua área de trabalho (Desktop)"].forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "quiz-option-btn";
+          btn.textContent = opt;
+          btn.addEventListener("click", () => {
+            if (idx === 0) {
+              btn.classList.add("correct");
+              setTimeout(() => { currentStep = 3; render(); }, 1000);
+            } else {
+              btn.classList.add("wrong");
+              lives--; updateHearts(heartsSpan);
+              if (lives <= 0) render();
+              else alert("❌ Incorreto! O ideal para acessos diários é a barra de Favoritos.");
+            }
+          });
+          optsDiv.appendChild(btn);
+        });
+        widget.appendChild(optsDiv);
+      } else if (currentStep === 3) {
+        const title = document.createElement("h4");
+        title.textContent = "Avaliando a Fonte";
+        widget.appendChild(title);
+
+        const question = document.createElement("p");
+        question.textContent = "Você lê uma notícia polêmica sem nome de autor e sem data de publicação. Qual a melhor atitude?";
+        widget.appendChild(question);
+
+        const optsDiv = document.createElement("div");
+        optsDiv.style.display = "flex";
+        optsDiv.style.flexDirection = "column";
+        optsDiv.style.gap = "8px";
+
+        ["Compartilhar imediatamente com os amigos.", "Acreditar, já que está na internet.", "Duvidar, pesquisar em outros sites confiáveis e verificar a fonte."].forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "quiz-option-btn";
+          btn.textContent = opt;
+          btn.addEventListener("click", () => {
+            if (idx === 2) {
+              btn.classList.add("correct");
+              setTimeout(() => { currentStep = 4; render(); }, 1000);
+            } else {
+              btn.classList.add("wrong");
+              lives--; updateHearts(heartsSpan);
+              if (lives <= 0) render();
+              else alert("❌ Incorreto! Devemos sempre desconfiar de notícias sem autoria ou data.");
+            }
+          });
+          optsDiv.appendChild(btn);
+        });
+        widget.appendChild(optsDiv);
+      } else if (currentStep === 4) {
+        widget.innerHTML = `
+          <div class="text-center">
+            <span style="font-size:3rem;">🎉</span>
+            <h4 class="mt-1" style="color:var(--color-success);">Atividades Concluídas!</h4>
+            <p class="text-muted text-small">Parabéns! Você demonstrou ótimas habilidades de pesquisa e navegação segura.</p>
+            <span class="badge badge-success">✓ Prática Concluída (+50 XP)</span>
+            <div style="margin-top: 1.5rem;">
+              <button class="btn btn-primary" id="btn-next-mission">Continuar para a Missão 🚀</button>
+            </div>
+          </div>
+        `;
+        setTimeout(() => { if(typeof window.addXP === "function") window.addXP(50); }, 100);
+        widget.querySelector("#btn-next-mission").addEventListener("click", () => {
+          window.InforMestreModule3.switchLessonTab('mission');
+        });
+      }
+    };
+    render();
+    container.appendChild(widget);
+  }
+
+  function initM3Aula2Mission(container, lesson) {
+    container.innerHTML = "";
+    
+    const widget = document.createElement("div");
+    widget.className = "card bg-surface border-soft mt-1";
+    widget.style.padding = "1.5rem";
+
+    let missionCompleted = false;
+
+    const render = () => {
+      if (missionCompleted) {
+        widget.innerHTML = `
+          <div class="text-center">
+            <span style="font-size:3rem;">🕵️‍♂️</span>
+            <h4 class="mt-1" style="color:var(--color-success);">Missão Cumprida!</h4>
+            <p class="text-muted text-small">Você montou o comando de busca perfeito usando aspas e hífen.</p>
+            <span class="badge badge-success">✓ Missão Concluída (+100 XP)</span>
+            <div style="margin-top: 1.5rem;">
+              <button class="btn btn-primary" onclick="window.InforMestreModule3.switchLessonTab('challenge')">Ir para o Desafio Final 🏆</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      widget.innerHTML = `
+        <div class="text-center mb-1">
+          <span style="font-size:3rem;">🚀</span>
+          <h4 class="mt-1" style="color:var(--color-text-primary);">Missão: O Grande Pesquisador</h4>
+          <p style="color:var(--color-text-secondary); font-size:0.9rem;">
+            Você foi encarregado de fazer uma pesquisa super específica sobre <strong>Processadores</strong>.<br>
+            Sua missão: Pesquisar a frase exata "Melhor Processador 2026", mas você quer garantir que resultados com a palavra "Smartphone" sejam <strong>excluídos</strong>!
+          </p>
+        </div>
+      `;
+
+      const optsDiv = document.createElement("div");
+      optsDiv.style.display = "flex";
+      optsDiv.style.flexDirection = "column";
+      optsDiv.style.gap = "8px";
+
+      const options = [
+        "Melhor Processador 2026 Smartphone",
+        "\\"Melhor Processador 2026\\" -Smartphone",
+        "-Melhor Processador 2026 Smartphone",
+        "\\"Melhor Processador 2026\\" Smartphone"
+      ];
+
+      options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "quiz-option-btn";
+        btn.textContent = opt;
+        btn.addEventListener("click", () => {
+          if (idx === 1) {
+            btn.classList.add("correct");
+            setTimeout(() => {
+              missionCompleted = true;
+              if(typeof window.addXP === "function") window.addXP(100);
+              render();
+            }, 1000);
+          } else {
+            btn.classList.add("wrong");
+            alert("❌ Incorreto! Lembre-se: use aspas para a frase exata e o sinal de menos para excluir palavras.");
+          }
+        });
+        optsDiv.appendChild(btn);
+      });
+
+      widget.appendChild(optsDiv);
     };
 
     render();
