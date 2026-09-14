@@ -89,8 +89,8 @@ const COURSE_JORNADA = [
     icon: "🥇",
     descMessage: "Conclua o Módulo 2 para acessar o mundo digital.",
     lessons: [
-      { id: "aula-15", title: "História da Internet", desc: "Descubra como a grande rede global surgiu e como ela funciona estruturalmente." },
-      { id: "aula-16", title: "Navegadores e Pesquisas", desc: "Aprenda a usar o Chrome, abas, favoritos, e técnicas avançadas de busca no Google." },
+      { id: "aula-15", title: "História da Internet", chapter: "AULA 15", desc: "Descubra como a grande rede global surgiu e como ela funciona estruturalmente." },
+      { id: "aula-16", title: "Navegadores e Pesquisas", chapter: "AULA 16", desc: "Aprenda a usar o Chrome, abas, favoritos, e técnicas avançadas de busca no Google." },
       { id: "aula-17", title: "Segurança Digital", desc: "Aprenda a identificar sites falsos, criar senhas seguras e evitar golpes online." },
       { id: "aula-18", title: "E-mail Profissional", desc: "Como criar uma conta de e-mail, enviar anexos e usar a etiqueta digital profissional." },
       { id: "aula-19", title: "Serviços Online", desc: "Aprenda sobre Armazenamento em Nuvem, Google Drive, assinaturas virtuais e utilitários." },
