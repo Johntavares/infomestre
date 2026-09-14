@@ -290,7 +290,7 @@
       badge: "Aula 2 • Pesquisa & Fontes",
       duration: "1h 45m",
       xpReward: 150,
-      videoUrl: "https://www.youtube.com/watch?v=k5_dY8YkKGs",
+      videoUrl: "https://youtu.be/47dDVkvlEmM",
       presentation: {
         headline: "Dominando os Mecanismos de Busca",
         subtitle: "Aprenda a pesquisar, filtrar resultados e avaliar a confiabilidade das fontes.",
