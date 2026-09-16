@@ -1190,7 +1190,21 @@ function initSidebarMenu() {
               }
             }
           } else {
-            if (aula.chapter) {
+            if (aula.id.match(/^aula-(1[5-9]|20)$/) && window.InforMestreModule3) {
+              const m3Id = 'm3-aula-' + (parseInt(aula.id.split('-')[1]) - 14);
+              const screenLanding = document.getElementById("screen-landing");
+              const screenApp = document.getElementById("screen-app");
+              const screenHub = document.getElementById("screen-hub");
+              if (screenLanding) screenLanding.classList.add("screen-hidden");
+              if (screenApp) screenApp.classList.add("screen-hidden");
+              if (screenHub) screenHub.classList.remove("screen-hidden");
+              
+              if (window.switchHubTab) {
+                window.switchHubTab('dashboard'); 
+                // We briefly switch to dashboard to ensure the UI resets, then render over it
+              }
+              window.InforMestreModule3.renderStudentModule3LessonView(document.getElementById('hub-main-panel-content'), m3Id, window.currentUser);
+            } else if (aula.chapter) {
               const chapterSlides = COURSE_CONTENT.map((s, idx) => ({ ...s, idx })).filter(s => s.chapter === aula.chapter);
               if (chapterSlides.length > 0) {
                 const targetIdx = chapterSlides[0].idx;
