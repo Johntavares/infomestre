@@ -10345,7 +10345,7 @@ async function loadHubSchoolStudents() {
             let c = false;
             if (l.chapter) {
               const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
-              c = slides.length > 0 && slides.every(s => completedSlides[s.id] === true);
+              c = (slides.length > 0 && slides.every(s => completedSlides[s.id] === true)) || completedLessons[l.id] === true;
             } else {
               c = completedLessons[l.id] === true;
             }
@@ -10446,7 +10446,7 @@ function abrirDetalheAluno(student, stats) {
 
   if (_m1) _m1.lessons.forEach(l => {
     let c = false;
-    if (l.chapter) { const sl = COURSE_CONTENT.filter(s => s.chapter === l.chapter); c = sl.length > 0 && sl.every(s => stats.completedSlides[s.id] === true); }
+    if (l.chapter) { const sl = COURSE_CONTENT.filter(s => s.chapter === l.chapter); c = (sl.length > 0 && sl.every(s => stats.completedSlides[s.id] === true)) || (stats.completedLessons && stats.completedLessons[l.id] === true); }
     else { c = stats.completedLessons[l.id] === true; }
     if (c) m1Done++;
   });
@@ -10468,7 +10468,7 @@ function abrirDetalheAluno(student, stats) {
     let concluida = false;
     if (aula.chapter) {
       const slides = COURSE_CONTENT.filter(s => s.chapter === aula.chapter);
-      concluida = slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true);
+      concluida = (slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true)) || (stats.completedLessons && stats.completedLessons[aula.id] === true);
     } else {
       concluida = stats.completedLessons && stats.completedLessons[aula.id] === true;
     }
@@ -10720,7 +10720,7 @@ function abrirDetalheAluno(student, stats) {
 
       if (aula.chapter) {
         slidesDaAula = COURSE_CONTENT.filter(s => s.chapter === aula.chapter);
-        concluida = slidesDaAula.length > 0 && slidesDaAula.every(s => stats.completedSlides[s.id] === true);
+        concluida = (slidesDaAula.length > 0 && slidesDaAula.every(s => stats.completedSlides[s.id] === true)) || (stats.completedLessons && stats.completedLessons[aula.id] === true);
       } else {
         concluida = stats.completedLessons && stats.completedLessons[aula.id] === true;
       }
@@ -10849,7 +10849,7 @@ function abrirDetalheAluno(student, stats) {
             let compl = false;
             if (l.chapter) {
               const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
-              compl = slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true);
+              compl = (slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true)) || (stats.completedLessons && stats.completedLessons[l.id] === true);
             } else {
               compl = stats.completedLessons && stats.completedLessons[l.id] === true;
             }
@@ -10874,7 +10874,7 @@ function abrirDetalheAluno(student, stats) {
             let compl = false;
             if (l.chapter) {
               const slides = COURSE_CONTENT.filter(s => s.chapter === l.chapter);
-              compl = slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true);
+              compl = (slides.length > 0 && slides.every(s => stats.completedSlides[s.id] === true)) || (stats.completedLessons && stats.completedLessons[l.id] === true);
             } else {
               compl = stats.completedLessons && stats.completedLessons[l.id] === true;
             }
@@ -10951,7 +10951,7 @@ async function loadHubAdminStudents() {
 
         if (_mod1) _mod1.lessons.forEach(l => {
           let c = false;
-          if (l.chapter) { const sl = COURSE_CONTENT.filter(s => s.chapter === l.chapter); c = sl.length > 0 && sl.every(s => completedSlides[s.id] === true); }
+          if (l.chapter) { const sl = COURSE_CONTENT.filter(s => s.chapter === l.chapter); c = (sl.length > 0 && sl.every(s => completedSlides[s.id] === true)) || (completedLessons && completedLessons[l.id] === true); }
           else { c = completedLessons[l.id] === true; }
           if (c) _m1Done++;
         });

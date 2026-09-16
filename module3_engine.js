@@ -1857,7 +1857,10 @@
     if (!window.state) window.state = {};
     if (!window.state.completedLessons) window.state.completedLessons = {};
     window.state.completedLessons[lesson.id] = true;
-    window.state.completedLessons["aula-15"] = true;
+    const match = lesson.id.match(/^m3-aula-(\d+)$/);
+    if (match) {
+      window.state.completedLessons[`aula-${14 + parseInt(match[1])}`] = true;
+    }
 
     if (typeof window.addXP === "function") window.addXP(lesson.xpReward);
     if (typeof window.saveState === "function") window.saveState();
