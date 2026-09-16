@@ -9001,11 +9001,7 @@ function renderStudentModule3View(container) {
             const isDone = !!(state.completedLessons && (state.completedLessons[aula.id] || state.completedLessons['m3-aula-' + (idx + 1)] || state.completedLessons['aula-' + (15 + idx)]));
             
             // Aula 1 está sempre desbloqueada; as próximas dependem da anterior concluída
-            const isUnlocked = idx === 0 || !!(state.completedLessons && (
-              state.completedLessons[lessons[idx - 1].id] || 
-              state.completedLessons['m3-aula-' + idx] || 
-              state.completedLessons['aula-' + (14 + idx)]
-            ));
+            const isUnlocked = true;
 
             const engineLesson = (window.InforMestreModule3 && window.InforMestreModule3.MODULE_3_LESSONS) 
               ? window.InforMestreModule3.MODULE_3_LESSONS.find(l => l.id === `m3-aula-${idx + 1}`) 
