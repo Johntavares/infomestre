@@ -4,6 +4,7 @@
   "description": "",
   "main": "app_v1.js",
   "scripts": {
+    "build": "echo 'Static site ready'",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
