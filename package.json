@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "build": "echo 'Static site ready'",
     "dev": "node dev_server.js",
     "start": "node dev_server.js"
   },
