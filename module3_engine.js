@@ -537,7 +537,7 @@
       badge: "Aula 3 • Segurança & Privacidade",
       duration: "1h 30m",
       xpReward: 200,
-      videoUrl: "https://www.youtube.com/watch?v=k5_dY8YkKGs", // A ser substituído
+      videoUrl: "https://youtu.be/C72r-QcojpU",
       presentation: {
         headline: "Navegando com Segurança na Internet",
         subtitle: "Aprenda a proteger seus dados, criar senhas imbatíveis e reconhecer golpes online.",
