@@ -614,17 +614,89 @@
           ],
           correct: 1,
           explanation: "Exato! Alertar contatos previne que sejam extorquidos, e você deve usar o suporte oficial para recuperar o acesso e trocar a senha imediatamente."
+        },
+        {
+          id: "q5",
+          question: "Por que é extremamente arriscado utilizar a mesma senha em vários sites e aplicativos?",
+          options: [
+            "Porque o computador fica lento a cada novo site cadastrado com a mesma senha.",
+            "Porque se um único site sofrer vazamento de dados, criminosos poderão invadir todas as suas outras contas.",
+            "Porque os navegadores bloqueiam automaticamente senhas repetidas após 24 horas.",
+            "Não há risco algum, desde que a senha contenha números e letras."
+          ],
+          correct: 1,
+          explanation: "Excelente! É o efeito dominó: ao descobrir sua senha em um cadastro simples, criminosos testam a mesma combinação no seu e-mail, redes sociais e bancos."
+        },
+        {
+          id: "q6",
+          question: "Ao receber um link com endereço suspeito (ex: 'loja-ofertas-imperdiveis.xyz/premio'), qual sinal indica risco iminente de golpe?",
+          options: [
+            "O link ter letras maiúsculas e minúsculas.",
+            "O nome do domínio ser diferente do site oficial e usar extensões incomuns para enganar quem não repara com atenção.",
+            "O link conter a barra normal (/), que só existe em sites proibidos.",
+            "O texto da mensagem ter pontuação correta."
+          ],
+          correct: 1,
+          explanation: "Correto! Criminosos criam nomes de domínios muito parecidos com os oficiais, mas com extensões estranhas (.xyz, .top) ou pequenas alterações de letras para induzir a vítima ao erro."
+        },
+        {
+          id: "q7",
+          question: "Qual gatilho psicológico é mais utilizado por criminosos em mensagens falsas de phishing para induzir a vítima ao erro?",
+          options: [
+            "Senso de urgência extrema ou ameaça imediata (ex: 'Sua conta será cancelada em 1 hora' ou 'Resgate seu prêmio agora').",
+            "Paciência exagerada, informando que você tem 1 ano para responder.",
+            "Solicitação formal com carta registrada enviada pelos Correios.",
+            "Uso de termos técnicos científicos que dão sono ao leitor."
+          ],
+          correct: 0,
+          explanation: "Isso mesmo! O imediatismo gera ansiedade e pânico, fazendo a pessoa clicar sem pensar ou sem conferir a autenticidade do remetente."
+        },
+        {
+          id: "q8",
+          question: "Uma pessoa liga para você dizendo ser atendente do seu banco e pede o código de 6 dígitos que acabou de chegar por SMS no seu celular. O que você deve fazer?",
+          options: [
+            "Informar o código imediatamente para comprovar sua identidade.",
+            "Desligar imediatamente e nunca compartilhar o código, pois bancos legítimos jamais pedem códigos de SMS por telefone.",
+            "Pedir para a pessoa retornar a ligação no dia seguinte para confirmar o código.",
+            "Digitar o código no teclado numérico do telefone durante a chamada."
+          ],
+          correct: 1,
+          explanation: "Perfeito! Códigos enviados por SMS ou gerados em aplicativos autenticadores são senhas temporárias de uso pessoal. Quem pede seu código está tentando invadir sua conta."
+        },
+        {
+          id: "q9",
+          question: "Você recebeu um e-mail de um remetente desconhecido com um anexo intitulado 'Fatura_Vencida_Comprovante.exe'. Como você deve proceder?",
+          options: [
+            "Dar dois cliques no arquivo para abrir e conferir se a cobrança é legítima.",
+            "Não abrir nem executar o arquivo, pois extensões como .exe, .scr e .bat são programas executáveis que podem instalar vírus e malwares.",
+            "Renomear o arquivo para .pdf para que ele se torne um documento seguro de texto.",
+            "Encaminhar o e-mail para todos os seus contatos para verificar se alguém conhece a conta."
+          ],
+          correct: 1,
+          explanation: "Exato! Documentos legítimos são enviados em formato PDF. Arquivos executáveis (.exe) enviados por e-mail ou mensagens são a principal via de infecção por vírus e sequestro de dados (ransomware)."
+        },
+        {
+          id: "q10",
+          question: "Ao utilizar uma rede Wi-Fi pública aberta (em shoppings, praças ou aeroportos), qual cuidado básico de segurança é fundamental?",
+          options: [
+            "Salvar todas as senhas no navegador para não precisar digitá-las novamente.",
+            "Evitar acessar contas bancárias ou digitar dados confidenciais e sempre encerrar as sessões (Logout) ao terminar.",
+            "Abaixar o brilho da tela do computador para que a rede não transmita seus dados.",
+            "Desconectar o cabo de energia para que o sinal não passe pela tomada."
+          ],
+          correct: 1,
+          explanation: "Muito bem! Em redes públicas sem senha, qualquer pessoa conectada pode monitorar o tráfego de dados não protegidos. Por isso, evite transações financeiras e faça Logout ao sair."
         }
       ],
       finalChallenge: {
         title: "🛡️ DESAFIO FINAL — DETETIVE DA SEGURANÇA",
-        subtitle: "Mostre que você sabe proteger seus dados e reconhecer armadilhas na rede.",
+        subtitle: "Mostre que você domina a proteção de dados, identifica armadilhas e sabe agir como um especialista.",
         questions: [
           {
             id: "a3_fc1",
             type: "choice",
-            context: "Você precisa criar uma senha para o seu novo e-mail.",
-            question: "Qual destas opções é a mais segura de acordo com as boas práticas?",
+            context: "Você precisa criar uma senha para a sua nova conta de e-mail principal (onde você recebe códigos de recuperação de todos os seus serviços).",
+            question: "Qual destas opções representa a criação mais segura segundo as melhores práticas?",
             options: [
               "maria1234",
               "12345678",
@@ -632,74 +704,103 @@
               "senha"
             ],
             correct: 2,
-            feedback: "Perfeito! Senhas fortes devem combinar letras maiúsculas, minúsculas, números e símbolos, além de serem longas (como uma frase memorizável).",
+            feedback: "Perfeito! Senhas fortes combinam letras maiúsculas, minúsculas, números e caracteres especiais, formando frases memorizáveis e de grande extensão.",
             xp: 20
           },
           {
             id: "a3_fc2",
             type: "choice",
-            context: "Você recebeu um SMS: 'Seu cartão foi bloqueado! Acesse http://banco-seguro-urgente.com para desbloquear agora.'",
-            question: "Qual é a atitude correta?",
+            context: "Você recebeu um SMS: 'AVISO URGENTE: Seu cartão foi bloqueado por suspeita de fraude! Acesse http://banco-seguro-urgente.com para desbloquear agora.'",
+            question: "Qual é a atitude correta e segura a ser tomada?",
             options: [
               "Clicar imediatamente e colocar a senha do cartão, pois é urgente.",
-              "Ignorar o link, abrir o aplicativo oficial do banco no celular ou ligar para o número no verso do cartão.",
-              "Responder o SMS com seu CPF.",
-              "Acessar o link apenas para olhar, sem digitar nada."
+              "Ignorar o link do SMS, abrir o aplicativo oficial do banco no celular ou ligar para o número no verso do seu cartão físico.",
+              "Responder o SMS enviando seu CPF e número de agência.",
+              "Acessar o link apenas para olhar a página, sem digitar nada."
             ],
             correct: 1,
-            feedback: "Excelente! Nunca confie no imediatismo (urgência) e não clique em links recebidos via SMS ou e-mail de remetentes desconhecidos. Vá direto pela via oficial.",
+            feedback: "Excelente! Nunca ceda ao imediatismo (urgência) e não clique em links recebidos por SMS ou e-mail. Vá sempre pelo canal oficial que você já conhece.",
             xp: 20
           },
           {
             id: "a3_fc3",
             type: "choice",
-            context: "O que é 'Phishing'?",
-            question: "Selecione a definição correta:",
+            context: "No ambiente de segurança da informação, muito se fala sobre o perigo do 'Phishing'.",
+            question: "Como você definiria 'Phishing' de forma clara e precisa?",
             options: [
-              "Uma técnica para acelerar a internet usando o navegador.",
-              "Um tipo de golpe onde cibercriminosos tentam 'pescar' seus dados pessoais se passando por empresas confiáveis (bancos, lojas, governo).",
-              "Um antivírus de última geração.",
-              "Um termo para quem passa muito tempo nas redes sociais."
+              "Uma técnica para acelerar a conexão Wi-Fi através do navegador.",
+              "Um tipo de golpe onde criminosos usam 'iscas' (mensagens falsas e sites clonados) para induzir a vítima a entregar senhas e dados voluntariamente.",
+              "Um antivírus gratuito instalado automaticamente pelo Windows.",
+              "Um programa que limpa arquivos duplicados do disco rígido."
             ],
             correct: 1,
-            feedback: "Correto! O Phishing usa iscas (mensagens falsas, sites clonados) para fazer a própria vítima entregar suas senhas de forma voluntária.",
+            feedback: "Correto! O Phishing se aproveita de disfarces (bancos, lojas, órgãos públicos) para 'pescar' as credenciais da vítima através de armadilhas psicológicas.",
             xp: 20
           },
           {
             id: "a3_fc4",
             type: "ordering",
-            context: "Sua conta do Instagram foi invadida e a senha foi alterada.",
-            question: "Ordene as ações de recuperação prioritárias:",
+            context: "Sua conta em uma rede social foi invadida e você percebeu que o invasor alterou a senha.",
+            question: "Ordene o passo a passo prioritário para conter danos e recuperar o controle da sua identidade digital:",
             items: [
-              "Avisar amigos e familiares para não caírem em golpes",
-              "Tentar usar a opção 'Esqueci minha senha / Recuperar acesso'",
-              "Alterar a senha do e-mail que está vinculado à conta (para evitar que o e-mail também seja invadido)",
-              "Ativar a autenticação de 2 fatores após recuperar a conta"
+              "Acessar a tela oficial de login e utilizar a opção 'Esqueci minha senha / Recuperar conta'",
+              "Alterar imediatamente a senha do e-mail vinculado à conta para garantir que o invasor não o controle",
+              "Avisar contatos e familiares por outra rede para que não caiam em pedidos de dinheiro ou golpes",
+              "Ativar a Autenticação em Dois Fatores (2FA) e encerrar todas as outras sessões ativas"
             ],
-            feedback: "Muito bem! Agir rápido protegendo as vias de recuperação (o seu e-mail base) e alertando a rede de contatos é fundamental durante incidentes.",
-            xp: 20
+            feedback: "Muito bem! Essa é a sequência profissional: tentar a recuperação oficial, proteger o e-mail que é a chave-mestra, alertar sua rede contra extorsões e blindar com 2FA.",
+            xp: 30
           },
           {
             id: "a3_fc5",
             type: "choice",
-            context: "Seu amigo ativou a 'Autenticação em Dois Fatores' (2FA) no WhatsApp e acha que foi besteira.",
-            question: "Como você justifica a importância do 2FA?",
+            context: "Um conhecido disse que 'Autenticação em Dois Fatores (2FA) é perda de tempo e só serve para atrasar o login'.",
+            question: "Como você justifica a importância indiscutível do 2FA?",
             options: [
-              "Realmente é besteira, só atrapalha o uso do celular.",
-              "O 2FA garante que, mesmo que alguém descubra a sua senha ou clone seu chip, o invasor não conseguirá entrar sem um segundo código exclusivo (PIN).",
-              "O 2FA faz a internet ficar mais rápida e economiza bateria.",
-              "O 2FA deleta todas as mensagens antigas para liberar espaço."
+              "Realmente é perda de tempo, pois antivírus comuns já protegem tudo sozinhos.",
+              "O 2FA garante que, mesmo que alguém descubra ou vaze a sua senha, o invasor não conseguirá acessar sua conta sem o código exclusivo gerado no seu dispositivo pessoal.",
+              "O 2FA economiza a bateria do computador e reduz o consumo de dados da internet.",
+              "O 2FA apaga automaticamente seu histórico de pesquisa após cada navegação."
             ],
             correct: 1,
-            feedback: "Exato! É a camada de segurança mais forte que você pode colocar em qualquer conta. Senhas vazam, mas o seu fator de autenticação secundário protege a porta.",
+            feedback: "Exato! Senhas vazam todos os dias na internet. A segunda camada de verificação é a barreira física que impede o invasor de entrar na sua conta.",
+            xp: 20
+          },
+          {
+            id: "a3_fc6",
+            type: "url-analysis",
+            context: "Você recebeu um e-mail avisando sobre uma suposta compra cancelada com o link abaixo. Como perito de segurança digital, analise os elementos deste link suspeito:",
+            url: "http://seguranca-portal-bancario.xyz/recadastramento",
+            parts: [
+              { label: "Protocolo Inseguro", value: "http://" },
+              { label: "Domínio Clonado Suspeito", value: "seguranca-portal-bancario.xyz" },
+              { label: "Caminho da Isca", value: "/recadastramento" }
+            ],
+            feedback: "Excelente olho clínico! O link não usa HTTPS criptografado ('http://' sem o 's' de segurança), o domínio é falso com terminação '.xyz' imitando um banco, e o caminho aponta para uma página falsa de captura de dados.",
+            xp: 30
+          },
+          {
+            id: "a3_fc7",
+            type: "choice",
+            context: "Você recebe uma mensagem no WhatsApp de um número novo com a foto do seu parente dizendo:\n\n'Oi! Troquei de número porque meu celular quebrou. Preciso pagar uma fatura urgente agora e meu aplicativo não está abrindo. Você consegue fazer um Pix de R$ 380 para mim que te devolvo amanhã cedo?'",
+            question: "Qual é o procedimento de segurança correto diante dessa situação?",
+            options: [
+              "Fazer o Pix imediatamente, afinal a foto do perfil é do seu parente e ele disse que era urgente.",
+              "Bloquear o número imediatamente sem falar com ninguém da família.",
+              "Ligar para o número antigo do seu parente ou fazer uma chamada de voz/vídeo para confirmar a identidade diretamente antes de realizar qualquer envio financeiro.",
+              "Responder perguntando os dados bancários e transferir metade do valor para ajudar."
+            ],
+            correct: 2,
+            feedback: "Perfeito! Esse é o clássico golpe do 'novo número' por engenharia social. Criminosos copiam fotos públicas e contatam familiares simulando emergências. Nunca faça pagamentos sem confirmar por voz ou pessoalmente!",
             xp: 40
           }
         ],
         competencies: [
-          { name: "Gestão de Senhas", score: 100 },
-          { name: "Prevenção de Phishing", score: 100 },
-          { name: "Recuperação de Contas", score: 90 },
-          { name: "Camadas Extra (2FA)", score: 100 }
+          { name: "Criação e Gestão de Senhas", score: 100 },
+          { name: "Prevenção a Phishing e Engenharia Social", score: 100 },
+          { name: "Inspeção de Links e URLs Suspeitas", score: 100 },
+          { name: "Proteção com Dois Fatores (2FA)", score: 100 },
+          { name: "Resposta a Incidentes e Golpes", score: 100 }
         ]
       }
     },
@@ -1407,7 +1508,7 @@
               🧠 DESAFIO DE CONHECIMENTO
             </span>
             <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--color-text-primary); margin: 0;">
-              Validação de Aprendizado da Aula 1
+              Validação de Aprendizado da Aula ${lesson.number}
             </h2>
           </div>
 
@@ -1507,6 +1608,9 @@
     if (lesson.id === 'm3-aula-1' || lesson.id === 'aula-15') {
       // Atividade 3 e 4 para a Aula 1
       initM3Aula1Activities(container, lesson);
+    } else if (lesson.id === 'm3-aula-3' || lesson.id === 'aula-17') {
+      // Laboratório de Segurança Digital da Aula 3
+      initM3Aula3Activities(container, lesson);
     } else {
       container.innerHTML = `
         <div style="background: var(--color-surface); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border); box-shadow: 0 8px 30px rgba(0,0,0,0.12); text-align: center; animation: fadeIn 0.3s ease;">
@@ -1519,6 +1623,56 @@
   }
 
   function renderMissionStage(container, lesson) {
+    if (lesson.id === 'm3-aula-3' || lesson.id === 'aula-17') {
+      container.innerHTML = `
+        <div style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 20px; padding: 2.2rem; box-shadow: 0 8px 30px rgba(0,0,0,0.06); animation: fadeIn 0.3s ease;">
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(0,184,148,0.12); color: #00B894; padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1rem;">
+            <span>🚀 MISSÃO REAL PRÁTICA</span>
+          </div>
+          <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--color-text-primary); margin: 0 0 0.8rem;">
+            Auditoria Pessoal de Segurança Digital
+          </h2>
+          <p style="color: var(--color-text-secondary); font-size: 0.98rem; line-height: 1.6; margin-bottom: 1.8rem;">
+            Agora que você conhece a anatomia dos golpes e as melhores práticas de defesa, realize esta auditoria real no seu ambiente digital antes do Desafio Final:
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+            <div style="display: flex; align-items: flex-start; gap: 1rem; padding: 1.2rem; background: var(--color-bg-alt); border: 1px solid var(--color-border); border-radius: 12px;">
+              <span style="font-size: 1.5rem;">🔒</span>
+              <div>
+                <strong style="color: var(--color-text-primary); display: block; margin-bottom: 0.2rem;">Passo 1: Verifique suas senhas principais</strong>
+                <span style="font-size: 0.88rem; color: var(--color-text-secondary);">Garanta que seu e-mail pessoal e suas contas principais possuem senhas fortes e exclusivas, sem repetição em outros sites.</span>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 1rem; padding: 1.2rem; background: var(--color-bg-alt); border: 1px solid var(--color-border); border-radius: 12px;">
+              <span style="font-size: 1.5rem;">📱</span>
+              <div>
+                <strong style="color: var(--color-text-primary); display: block; margin-bottom: 0.2rem;">Passo 2: Ative a Autenticação em 2 Etapas (2FA)</strong>
+                <span style="font-size: 0.88rem; color: var(--color-text-secondary);">Ative a verificação em duas etapas no WhatsApp (PIN) e na sua conta de e-mail (código no celular ou app autenticador).</span>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 1rem; padding: 1.2rem; background: var(--color-bg-alt); border: 1px solid var(--color-border); border-radius: 12px;">
+              <span style="font-size: 1.5rem;">🛡️</span>
+              <div>
+                <strong style="color: var(--color-text-primary); display: block; margin-bottom: 0.2rem;">Passo 3: Desconecte aparelhos desconhecidos</strong>
+                <span style="font-size: 0.88rem; color: var(--color-text-secondary);">Nas configurações de segurança do WhatsApp, Google e redes sociais, verifique quais computadores estão com sessão aberta e desconecte os antigos.</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; border-top: 1px solid var(--color-border);">
+            <button class="btn btn-outline" onclick="window.InforMestreModule3.switchLessonTab('activities')" style="padding: 0.8rem 1.6rem; font-weight: 700; border-radius: 10px;">← Voltar às Atividades</button>
+            <button class="btn btn-primary" onclick="window.InforMestreModule3.switchLessonTab('challenge')" style="padding: 0.95rem 2.5rem; font-size: 1rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #00B894 0%, #55EFC4 100%); border: none; color: #fff; cursor: pointer; box-shadow: 0 4px 20px rgba(0,184,148,0.35);">
+              Ir para o Desafio Final 🏆
+            </button>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
     container.innerHTML = `
       <div style="background: var(--color-surface); padding: 2rem; border-radius: 16px; border: 1px solid var(--color-border); box-shadow: 0 8px 30px rgba(0,0,0,0.12); text-align: center; animation: fadeIn 0.3s ease;">
         <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--color-text-primary);">🚀 Missão Real</h3>
@@ -1889,7 +2043,7 @@
       <div class="modern-modal-card" style="max-width: 520px; text-align: center; padding: 2.5rem; border-radius: 20px; border: 1px solid rgba(0,184,148,0.4); box-shadow: 0 15px 50px rgba(0,184,148,0.25);">
         <div style="font-size: 4.5rem; margin-bottom: 0.8rem; animation: bounce 1s ease infinite;">🎉</div>
         <div style="font-size: 0.8rem; font-weight: 800; color: #00B894; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;">
-          AULA 1 CONCLUÍDA COM MAESTRIA!
+          AULA ${lesson.number} CONCLUÍDA COM MAESTRIA!
         </div>
         <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--color-text-primary); margin: 0 0 0.8rem;">
           ${lesson.title}
@@ -2121,6 +2275,248 @@
         }, 100);
 
         widget.querySelector("#btn-next-mission").addEventListener("click", () => {
+          window.InforMestreModule3.switchLessonTab('mission');
+        });
+      }
+    };
+
+    render();
+    container.appendChild(widget);
+  }
+
+  function initM3Aula3Activities(container, lesson) {
+    container.innerHTML = "";
+    
+    // Activities State
+    let currentStep = 1; // 1: Detetive de Phishing, 2: Avaliador de Senhas, 3: Conclusão
+    let lives = 3;
+
+    const widget = document.createElement("div");
+    widget.className = "card bg-surface border-soft mt-1";
+    widget.style.padding = "1.5rem";
+
+    const updateHearts = (heartsDiv) => {
+      heartsDiv.innerHTML = "Vidas: " + Array(3).fill(0).map((_, i) => i < lives ? "❤️" : "💔").join(" ");
+    };
+
+    const render = () => {
+      widget.innerHTML = "";
+
+      if (lives <= 0) {
+        widget.innerHTML = `
+          <div class="text-center">
+            <span style="font-size:3rem;">⚠️</span>
+            <h4 class="mt-1" style="color:var(--color-danger);">Você perdeu as vidas de segurança!</h4>
+            <p class="text-muted text-small">Sem problemas! No mundo da segurança, revisar e tentar de novo é o melhor treino.</p>
+            <button class="btn btn-secondary mt-1" id="btn-restart-a3">Tentar Novamente</button>
+          </div>
+        `;
+        widget.querySelector("#btn-restart-a3").addEventListener("click", () => {
+          lives = 3;
+          currentStep = 1;
+          render();
+        });
+        return;
+      }
+
+      // TOP BAR
+      const topBar = document.createElement("div");
+      topBar.style.display = "flex";
+      topBar.style.justifyContent = "space-between";
+      topBar.style.marginBottom = "1rem";
+      
+      const stepSpan = document.createElement("span");
+      stepSpan.textContent = `Atividade Prática ${currentStep} de 3 • Laboratório de Segurança`;
+      stepSpan.style.fontSize = "0.85rem";
+      stepSpan.style.color = "var(--color-text-secondary)";
+      
+      const heartsSpan = document.createElement("span");
+      heartsSpan.style.color = "var(--color-danger)";
+      heartsSpan.style.fontWeight = "bold";
+      heartsSpan.style.fontSize = "0.85rem";
+      updateHearts(heartsSpan);
+
+      topBar.appendChild(stepSpan);
+      topBar.appendChild(heartsSpan);
+      widget.appendChild(topBar);
+
+      if (currentStep === 1) {
+        // ATIVIDADE 1: Detetive de Phishing
+        const items = [
+          { 
+            title: "SMS: 'Seu cartão foi bloqueado! Acesse link-banco-urgente.xyz/desbloqueio para liberar.'", 
+            type: "Golpe / Phishing",
+            tip: "Bancos não enviam links de desbloqueio por SMS nem usam domínios desconhecidos (.xyz)."
+          },
+          { 
+            title: "E-mail oficial com remetente @google.com avisando sobre um novo login reconhecido no seu celular.", 
+            type: "Legítimo / Seguro",
+            tip: "Notificações informativas de plataformas confiáveis que não pedem senhas nem dinheiro são comunicações legítimas."
+          },
+          { 
+            title: "WhatsApp: Mensagem dizendo que você ganhou R$ 1.000 e pedindo para informar o código SMS de 6 dígitos que acabou de chegar.", 
+            type: "Golpe / Phishing",
+            tip: "O código SMS de 6 dígitos é a confirmação para clonar ou transferir seu WhatsApp para outro aparelho."
+          },
+          { 
+            title: "Mensagem no Instagram de uma loja oficial verificada com selo azul avisando sobre promoção no site oficial www.lojaoficial.com.br.", 
+            type: "Legítimo / Seguro",
+            tip: "Contas verificadas com selo azul e direcionando para domínios oficiais conhecidos são seguras."
+          }
+        ];
+        
+        let currentItemIdx = 0;
+        
+        const renderItem = () => {
+          if (currentItemIdx >= items.length) {
+            currentStep = 2;
+            render();
+            return;
+          }
+          
+          const curr = items[currentItemIdx];
+          
+          const itemBox = document.createElement("div");
+          itemBox.style.cssText = "background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.5rem; text-align: center; margin-bottom: 1.2rem;";
+          
+          const title = document.createElement("h3");
+          title.textContent = `Caso ${currentItemIdx + 1} de ${items.length}`;
+          title.style.margin = "0 0 0.5rem 0";
+          title.style.fontSize = "1.05rem";
+          title.style.color = "var(--color-primary)";
+          
+          const situation = document.createElement("p");
+          situation.textContent = `"${curr.title}"`;
+          situation.style.fontSize = "1rem";
+          situation.style.color = "var(--color-text-primary)";
+          situation.style.fontWeight = "600";
+          situation.style.lineHeight = "1.5";
+          
+          const desc = document.createElement("p");
+          desc.textContent = "Como você classifica essa comunicação digital?";
+          desc.style.color = "var(--color-text-secondary)";
+          desc.style.fontSize = "0.85rem";
+          
+          itemBox.appendChild(title);
+          itemBox.appendChild(situation);
+          itemBox.appendChild(desc);
+          
+          const optsDiv = document.createElement("div");
+          optsDiv.style.display = "grid";
+          optsDiv.style.gridTemplateColumns = "1fr 1fr";
+          optsDiv.style.gap = "12px";
+          
+          ["Golpe / Phishing", "Legítimo / Seguro"].forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "quiz-option-btn";
+            btn.style.padding = "0.9rem";
+            btn.style.fontWeight = "700";
+            btn.textContent = opt === "Golpe / Phishing" ? "🚨 Golpe / Phishing" : "✅ Legítimo / Seguro";
+            btn.addEventListener("click", () => {
+              if (opt === curr.type) {
+                btn.classList.add("correct");
+                setTimeout(() => {
+                  currentItemIdx++;
+                  renderItem();
+                }, 900);
+              } else {
+                btn.classList.add("wrong");
+                lives--;
+                updateHearts(heartsSpan);
+                if (lives <= 0) {
+                  render();
+                } else {
+                  alert(`❌ Atenção! ${curr.tip}`);
+                }
+              }
+            });
+            optsDiv.appendChild(btn);
+          });
+          
+          widget.innerHTML = "";
+          widget.appendChild(topBar);
+          widget.appendChild(itemBox);
+          widget.appendChild(optsDiv);
+        };
+        
+        renderItem();
+      } 
+      else if (currentStep === 2) {
+        // ATIVIDADE 2: Avaliador de Senhas
+        widget.innerHTML = "";
+        widget.appendChild(topBar);
+        
+        const title = document.createElement("h4");
+        title.textContent = "Laboratório de Blindagem: Escolha a Senha Mais Segura";
+        title.style.margin = "0 0 0.5rem 0";
+        widget.appendChild(title);
+        
+        const desc = document.createElement("p");
+        desc.textContent = "Você está configurando o acesso ao seu banco digital. Qual das opções abaixo atende plenamente aos critérios de senha forte e imbatível?";
+        desc.style.color = "var(--color-text-secondary)";
+        desc.style.fontSize = "0.9rem";
+        desc.style.marginBottom = "1.2rem";
+        widget.appendChild(desc);
+        
+        const optsDiv = document.createElement("div");
+        optsDiv.style.display = "flex";
+        optsDiv.style.flexDirection = "column";
+        optsDiv.style.gap = "10px";
+        
+        const passOptions = [
+          { label: "12345678", desc: "Apenas números sequenciais comuns (Extremamente Fraca)" },
+          { label: "joao2024", desc: "Nome próprio comum e ano atual (Muito Fraca)" },
+          { label: "Livro#Azul$Mesa98", desc: "Frase-passe longa combinando maiúsculas, minúsculas, símbolos (#$) e números (Excelente / Forte)" }
+        ];
+        
+        passOptions.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = "quiz-option-btn";
+          btn.style.textAlign = "left";
+          btn.style.padding = "1rem 1.2rem";
+          btn.innerHTML = `<div style="font-family: monospace; font-size: 1.1rem; font-weight: bold; margin-bottom: 0.3rem;">${opt.label}</div><div style="font-size: 0.8rem; color: var(--color-text-secondary);">${opt.desc}</div>`;
+          btn.addEventListener("click", () => {
+            if (idx === 2) {
+              btn.classList.add("correct");
+              setTimeout(() => {
+                currentStep = 3;
+                render();
+              }, 1000);
+            } else {
+              btn.classList.add("wrong");
+              lives--;
+              updateHearts(heartsSpan);
+              if (lives <= 0) render();
+              else alert("❌ Incorreto! Senhas seguras devem misturar letras maiúsculas, minúsculas, números e símbolos especiais, além de serem longas.");
+            }
+          });
+          optsDiv.appendChild(btn);
+        });
+        widget.appendChild(optsDiv);
+      }
+      else if (currentStep === 3) {
+        // CONCLUSÃO ATIVIDADES
+        widget.innerHTML = `
+          <div class="text-center" style="animation: fadeIn 0.4s ease;">
+            <span style="font-size:3.5rem;">🛡️</span>
+            <h3 class="mt-1" style="color:var(--color-success); margin: 0.8rem 0;">Prática de Segurança Concluída!</h3>
+            <p style="color: var(--color-text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+              Parabéns! Você demonstrou olhar afiado para detectar tentativas de Phishing e domina as técnicas para criar senhas robustas.
+            </p>
+            <div style="display: inline-block; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 0.8rem 1.5rem; margin-bottom: 1.5rem;">
+              <span style="font-weight: 800; color: #10b981; font-size: 1rem;">✓ Prática Concluída (+50 XP)</span>
+            </div>
+            <div>
+              <button class="btn btn-primary" id="btn-next-mission-a3" style="padding: 0.85rem 2.2rem; font-size: 1rem; font-weight: 800; border-radius: 12px;">Continuar para a Missão Real 🚀</button>
+            </div>
+          </div>
+        `;
+        
+        setTimeout(() => {
+          if (typeof window.addXP === "function") window.addXP(50);
+        }, 100);
+
+        widget.querySelector("#btn-next-mission-a3").addEventListener("click", () => {
           window.InforMestreModule3.switchLessonTab('mission');
         });
       }
