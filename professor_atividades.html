@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Área do Professor - Entregas de Atividades</title>
+  <style>
+    :root {
+      --color-primary: #2563eb;
+      --color-surface: #ffffff;
+      --color-bg: #f8fafc;
+      --color-border: #e2e8f0;
+      --color-text-primary: #1e293b;
+      --color-text-secondary: #64748b;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--color-surface);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-border);
+    }
+    th {
+      background: var(--color-bg);
+      font-weight: 700;
+      color: var(--color-text-secondary);
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(16,185,129,0.15);
+      color: #059669;
+      padding: 0.3rem 0.8rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .btn-download {
+      background: var(--color-primary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-download:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>👩‍🏫 Portal do Professor</h1>
+  <p>Visualização das atividades enviadas pelos alunos.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID Aluno</th>
+        <th>Aula</th>
+        <th>Arquivo</th>
+        <th>Data do Envio</th>
+        <th>Status</th>
+        <th>Ação</th>
+      </tr>
+    </thead>
+    <tbody id="deliveries-body">
+      <tr>
+        <td colspan="6" style="text-align: center; color: var(--color-text-secondary);">Carregando entregas...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // Helper to connect to IndexedDB
+  async function getAllDeliveries() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('InforMestreDeliveriesDB', 1);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('deliveries')) {
+          db.createObjectStore('deliveries', { keyPath: 'id' });
+        }
+      };
+      request.onsuccess = (e) => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains('deliveries')) {
+          resolve([]);
+          return;
+        }
+        const tx = db.transaction('deliveries', 'readonly');
+        const store = tx.objectStore('deliveries');
+        const getAllReq = store.getAll();
+        getAllReq.onsuccess = () => resolve(getAllReq.result);
+        getAllReq.onerror = () => reject(getAllReq.error);
+      };
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  function downloadBase64File(base64Data, fileName) {
+    const a = document.createElement("a");
+    a.href = base64Data;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  async function loadUI() {
+    const tbody = document.getElementById('deliveries-body');
+    try {
+      const deliveries = await getAllDeliveries();
+      if (deliveries.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--color-text-secondary);">Nenhuma atividade enviada ainda.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      deliveries.forEach(d => {
+        const dateStr = new Date(d.submittedAt).toLocaleString('pt-BR');
+        
+        const tr = document.createElement('tr');
+        
+        // Setup download button
+        const btn = document.createElement('button');
+        btn.className = 'btn-download';
+        btn.textContent = 'Baixar PDF';
+        btn.onclick = () => downloadBase64File(d.fileData, d.fileName);
+
+        tr.innerHTML = \`
+          <td><strong>\${d.userId}</strong></td>
+          <td>\${d.lessonId === 'm3-aula-5' ? 'Aula 5 (Ferramentas Google)' : d.lessonId}</td>
+          <td>\${d.fileName} (\${Math.round(d.fileSize / 1024)} KB)</td>
+          <td>\${dateStr}</td>
+          <td><span class="status-badge">✅ \${d.status}</span></td>
+          <td id="action-\${d.id}"></td>
+        \`;
+        
+        tbody.appendChild(tr);
+        document.getElementById(\`action-\${d.id}\`).appendChild(btn);
+      });
+
+    } catch (e) {
+      console.error(e);
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Erro ao carregar banco de dados local.</td></tr>';
+    }
+  }
+
+  loadUI();
+</script>
+
+</body>
+</html>
