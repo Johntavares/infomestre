@@ -94,7 +94,7 @@ const COURSE_JORNADA = [
       { id: "aula-17", title: "Segurança Digital", desc: "Aprenda a identificar sites falsos, criar senhas seguras e evitar golpes online." },
       { id: "aula-18", title: "E-mail Profissional", desc: "Como criar uma conta de e-mail, enviar anexos e usar a etiqueta digital profissional." },
       { id: "aula-19", title: "Serviços Online", desc: "Aprenda sobre Armazenamento em Nuvem, Google Drive, assinaturas virtuais e utilitários." },
-      { id: "aula-20", title: "Projeto Final", isDesafio: true, desc: "A grande missão final da internet e encerramento do curso InforMestre." }
+      { id: "aula-20", title: "Aula 6 — Desafio Final e Certificação", isDesafio: true, desc: "A última etapa do curso. Faça a revisão e resolva o Desafio Prático." }
     ]
   }
 ];

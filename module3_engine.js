@@ -1743,8 +1743,25 @@
           "name": "Trabalho Colaborativo",
           "score": 100
         }
-      ]
-    }
+      ]    }
+  },
+  {
+    "id": "m3-aula-6",
+    "number": 6,
+    "title": "A Prova Final: O Desafio do Informestre",
+    "badge": "Aula 6 • Certificação",
+    "duration": "2h 00m",
+    "xpReward": 1000,
+    "videoUrl": "",
+    "presentation": {
+      "headline": "Revisão Geral e Prova Prática Final",
+      "subtitle": "Você passará por 4 etapas práticas de revisão. Mostre tudo o que aprendeu!",
+      "description": "Nesta última aula, você não terá vídeo ou ajuda do tutor. É um circuito de 4 missões práticas com 8 questões cada.",
+      "coverImage": "images/capa_curso_informatica.png",
+      "objectives": []
+    },
+    "slides": [],
+    "quiz": []
   }
 ];
 
@@ -1938,6 +1955,15 @@
 
     let lesson = MODULE_3_LESSONS.find(l => l.id === lessonId);
     if (!lesson) lesson = MODULE_3_LESSONS[0];
+
+    if (lessonId === 'm3-aula-6') {
+      if(window.renderAula6CustomView) {
+         window.renderAula6CustomView(container, lesson, window.currentUser);
+      } else {
+         container.innerHTML = '<h3>Erro: renderAula6CustomView não definida.</h3>';
+      }
+      return;
+    }
     
     if (currentLessonId !== lesson.id) {
       currentSlideIndex = 0;
@@ -3502,3 +3528,696 @@
   };
 
 })(typeof window !== 'undefined' ? window : this);
+
+
+
+// ============================================================================
+// AULA 6 CUSTOM ENGINE (INJETADO E SEPARADO EM SLIDES SIM/QUIZ)
+// ============================================================================
+
+window.a6State = {
+  currentStage: 0,
+  subStage: 'sim', // 'sim' ou 'quiz'
+  answers: {},
+  score: 0
+};
+
+window.renderAula6CustomView = function(container, lesson, user) {
+  // CSS
+  if(!document.getElementById('a6-custom-styles')) {
+    const style = document.createElement('style');
+    style.id = 'a6-custom-styles';
+    style.innerHTML = `
+      .a6-wrapper { max-width: 1000px; margin: 0 auto; padding-bottom: 3rem; animation: fadeIn 0.3s ease; font-family: 'Inter', sans-serif; }
+      .a6-stepper { display: flex; gap: 1rem; background: var(--color-surface); padding: 1rem; border-radius: 16px; margin-bottom: 2rem; border: 1px solid var(--color-border); flex-wrap: wrap; }
+      .a6-step { flex: 1; min-width: 200px; padding: 1rem; text-align: center; border-radius: 12px; font-weight: bold; color: var(--color-text-secondary); cursor: pointer; transition: all 0.3s ease; background: var(--color-bg-alt); border: 1px solid transparent; }
+      .a6-step.active { background: rgba(0,184,148,0.1); color: #00B894; border-color: #00B894; }
+      .a6-content-box { background: var(--color-surface); border-radius: 20px; padding: 2rem; border: 1px solid var(--color-border); margin-bottom: 2rem; }
+      .a6-simulator-box { border: 2px solid #e2e8f0; border-radius: 12px; background: #f8fafc; padding: 2rem; margin: 1.5rem 0; min-height: 300px; display: flex; flex-direction: column; align-items:center; justify-content:center;}
+      .a6-question { background: var(--color-bg-alt); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid var(--color-border); }
+      .a6-option { display: block; width: 100%; text-align: left; padding: 1rem; margin-top: 0.5rem; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-surface); cursor: pointer; transition: all 0.2s; }
+      .a6-option:hover { border-color: #00B894; }
+      .a6-option.selected { background: rgba(0,184,148,0.1); border-color: #00B894; color: #00B894; font-weight: bold; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  container.innerHTML = `
+    <div class="a6-wrapper">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; align-items:center;">
+        <button class="btn btn-outline" onclick="renderStudentModule3View()">← Voltar ao Menu</button>
+        <h2 style="color: var(--color-text-primary); margin: 0;">🏆 Prova Final: O Desafio do Informestre</h2>
+      </div>
+      
+      
+      
+      <div class="a6-stepper">
+        <div class="a6-step ${window.a6State.currentStage === 0 ? 'active' : ''}" onclick="a6SetStage(0)">📍 Introdução</div>
+        <div class="a6-step ${window.a6State.currentStage === 1 ? 'active' : ''}" onclick="a6SetStage(1)">1. Hardware</div>
+        <div class="a6-step ${window.a6State.currentStage === 2 ? 'active' : ''}" onclick="a6SetStage(2)">2. Internet e Nuvem</div>
+        <div class="a6-step ${window.a6State.currentStage === 3 ? 'active' : ''}" onclick="a6SetStage(3)">3. Segurança e Golpes</div>
+        <div class="a6-step ${window.a6State.currentStage === 4 ? 'active' : ''}" onclick="a6SetStage(4)">🏆 4. O Desafio Final</div>
+      </div>
+
+      <div id="a6-stage-content"></div>
+    </div>
+
+      <div id="a6-stage-content"></div>
+    </div>
+
+      <div id="a6-stage-content"></div>
+    </div>
+  `;
+
+  window.renderA6Stage(document.getElementById('a6-stage-content'));
+};
+
+window.a6SetStage = function(stage) {
+  window.a6State.currentStage = stage;
+  window.a6State.subStage = 'sim'; // reset to sim
+  const c = document.getElementById('hub-main-panel-content');
+  if(c) window.renderAula6CustomView(c, {id:'m3-aula-6'}, window.currentUser);
+}
+
+window.a6SetSubStage = function(sub) {
+  window.a6State.subStage = sub;
+  const c = document.getElementById('hub-main-panel-content');
+  if(c) window.renderAula6CustomView(c, {id:'m3-aula-6'}, window.currentUser);
+}
+
+window.renderA6Stage = function(container) {
+  if (window.a6State.currentStage === 0) renderA6Stage0(container);
+  if (window.a6State.currentStage === 1) renderA6Stage1(container);
+  if (window.a6State.currentStage === 2) renderA6Stage5(container);
+  if (window.a6State.currentStage === 3) renderA6Stage4(container);
+  if (window.a6State.currentStage === 4) renderA6Stage2(container);
+}
+
+
+// ==========================================
+// STAGE 0: INTRODUÇÃO E LINHA DO TEMPO
+// ==========================================
+function renderA6Stage0(container) {
+  container.innerHTML = `
+    <div class="a6-content-box" style="text-align: center;">
+      <h2 style="color: #00B894; margin-bottom: 0.5rem; font-size: 2rem;">A Jornada do Conhecimento</h2>
+      <p style="color: var(--color-text-secondary); font-size: 1.1rem; max-width: 700px; margin: 0 auto 2.5rem; line-height: 1.6;">
+        Chegamos à última etapa do nosso curso! Antes de entrarmos no Desafio Final, vamos relembrar a incrível jornada que você trilhou até aqui.
+        Esta aula testará toda a sua autonomia e conhecimento prático acumulado.
+      </p>
+
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 2rem; position: relative;">
+        <!-- Linha central conectora -->
+        <div style="position: absolute; width: 4px; background: #e2e8f0; height: 80%; left: 50%; transform: translateX(-50%); top: 10%; z-index: 0;"></div>
+
+        <!-- Módulo 1 -->
+        <div style="display: flex; align-items: center; gap: 2rem; width: 100%; max-width: 600px; z-index: 1;">
+          <div style="flex: 1; text-align: right;">
+            <h3 style="color: #3b82f6; margin: 0;">Módulo 1: O Início</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 0;">Hardware, Componentes e como o computador pensa.</p>
+          </div>
+          <div style="width: 50px; height: 50px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; border: 4px solid #f8fafc; flex-shrink: 0;">🔧</div>
+          <div style="flex: 1;"></div>
+        </div>
+
+        <!-- Módulo 2 -->
+        <div style="display: flex; align-items: center; gap: 2rem; width: 100%; max-width: 600px; z-index: 1;">
+          <div style="flex: 1;"></div>
+          <div style="width: 50px; height: 50px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; border: 4px solid #f8fafc; flex-shrink: 0;">📝</div>
+          <div style="flex: 1; text-align: left;">
+            <h3 style="color: #f59e0b; margin: 0;">Módulo 2: O Sistema</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 0;">Navegação no Windows, Pastas, Microsoft Word e Internet.</p>
+          </div>
+        </div>
+
+        <!-- Módulo 3 -->
+        <div style="display: flex; align-items: center; gap: 2rem; width: 100%; max-width: 600px; z-index: 1;">
+          <div style="flex: 1; text-align: right;">
+            <h3 style="color: #10b981; margin: 0;">Módulo 3: O Profissional</h3>
+            <p style="color: #64748b; font-size: 0.9rem; margin: 0;">Tabelas no Excel, Finanças e Segurança contra Golpes.</p>
+          </div>
+          <div style="width: 50px; height: 50px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; border: 4px solid #f8fafc; flex-shrink: 0;">📊</div>
+          <div style="flex: 1;"></div>
+        </div>
+
+      </div>
+
+      <div style="margin-top: 3.5rem; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1.5rem; border-radius: 12px; max-width: 700px; margin-left: auto; margin-right: auto;">
+        <h4 style="color: #166534; margin-top: 0;">🎯 O Desafio Final</h4>
+        <p style="color: #166534; font-size: 0.95rem; line-height: 1.5; margin-bottom: 0;">
+          Para garantir seu certificado, você passará por 4 etapas práticas seguidas de perguntas teóricas. 
+          Mostre que você absorveu o conhecimento e está pronto para dominar o mundo digital com autonomia!
+        </p>
+      </div>
+
+      <button class="btn btn-primary" onclick="a6SetStage(1)" style="margin-top: 2rem; font-size: 1.1rem; padding: 1rem 2.5rem;">
+        Iniciar o Desafio →
+      </button>
+
+    </div>
+  `;
+}
+
+// ==========================================
+// STAGE 1: HARDWARE
+
+// ==========================================
+function renderA6Stage1(container) {
+  if (window.a6State.subStage === 'sim') {
+    container.innerHTML = `
+      <div class="a6-content-box">
+        <h3 style="color:#00B894;">Revisão: Componentes do Computador (Prática)</h3>
+        <p style="color:var(--color-text-secondary); line-height: 1.6;">Ligue cada peça de Hardware à sua função principal. Arraste o componente da esquerda para a caixa de descrição correspondente na direita.</p>
+        
+        <div class="a6-simulator-box" id="a6-sim-1" style="background:#1e293b; border: 2px solid #334155; padding: 2rem; border-radius: 12px; margin: 1.5rem 0;">
+          <h4 style="color:#f8fafc; margin-bottom: 1.5rem; text-align:center;">Simulador: Associação de Hardware</h4>
+          
+          <div style="display:flex; gap: 2rem; width: 100%; max-width: 800px; justify-content:space-between;">
+            
+            <!-- COMPONENTS (LEFT) -->
+            <div style="display:flex; flex-direction:column; gap:1rem; flex: 1;">
+               <div class="a6-drag-item" draggable="true" data-type="cpu" style="background:linear-gradient(135deg, #3b82f6, #2563eb); padding: 1rem; border-radius:8px; color:white; font-weight:bold; cursor:grab; box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align:center;">⚡ Processador (CPU)</div>
+               
+               <div class="a6-drag-item" draggable="true" data-type="ram" style="background:linear-gradient(135deg, #10b981, #059669); padding: 1rem; border-radius:8px; color:white; font-weight:bold; cursor:grab; box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align:center;">🧠 Memória RAM</div>
+
+               <div class="a6-drag-item" draggable="true" data-type="ssd" style="background:linear-gradient(135deg, #8b5cf6, #7c3aed); padding: 1rem; border-radius:8px; color:white; font-weight:bold; cursor:grab; box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align:center;">🗄️ Armazenamento (SSD/HD)</div>
+
+               <div class="a6-drag-item" draggable="true" data-type="motherboard" style="background:linear-gradient(135deg, #f59e0b, #d97706); padding: 1rem; border-radius:8px; color:white; font-weight:bold; cursor:grab; box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align:center;">🔌 Placa-Mãe</div>
+
+               <div class="a6-drag-item" draggable="true" data-type="cooler" style="background:linear-gradient(135deg, #0ea5e9, #0284c7); padding: 1rem; border-radius:8px; color:white; font-weight:bold; cursor:grab; box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align:center;">❄️ Cooler</div>
+
+               <div class="a6-drag-item" draggable="true" data-type="power" style="background:linear-gradient(135deg, #ef4444, #dc2626); padding: 1rem; border-radius:8px; color:white; font-weight:bold; cursor:grab; box-shadow: 0 4px 6px rgba(0,0,0,0.3); text-align:center;">🔋 Fonte de Energia</div>
+            </div>
+
+            <!-- DESCRIPTIONS (RIGHT) -->
+            <div style="display:flex; flex-direction:column; gap:1rem; flex: 2;">
+               
+               <div class="a6-dropzone" data-target="ssd" style="background:#0f172a; border: 2px dashed #475569; border-radius:8px; padding: 1rem; display:flex; align-items:center; min-height: 54px; color:#cbd5e1; transition:all 0.2s;">
+                 Guarda os arquivos de forma permanente (Windows, fotos, documentos).
+               </div>
+
+               <div class="a6-dropzone" data-target="cpu" style="background:#0f172a; border: 2px dashed #475569; border-radius:8px; padding: 1rem; display:flex; align-items:center; min-height: 54px; color:#cbd5e1; transition:all 0.2s;">
+                 É o "cérebro" do PC. Realiza todos os cálculos e processa os dados.
+               </div>
+
+               <div class="a6-dropzone" data-target="power" style="background:#0f172a; border: 2px dashed #475569; border-radius:8px; padding: 1rem; display:flex; align-items:center; min-height: 54px; color:#cbd5e1; transition:all 0.2s;">
+                 Recebe a energia da tomada e distribui na voltagem certa para as peças.
+               </div>
+
+               <div class="a6-dropzone" data-target="ram" style="background:#0f172a; border: 2px dashed #475569; border-radius:8px; padding: 1rem; display:flex; align-items:center; min-height: 54px; color:#cbd5e1; transition:all 0.2s;">
+                 "Mesa de trabalho". Memória ultrarrápida mas temporária (apaga ao desligar).
+               </div>
+
+               <div class="a6-dropzone" data-target="motherboard" style="background:#0f172a; border: 2px dashed #475569; border-radius:8px; padding: 1rem; display:flex; align-items:center; min-height: 54px; color:#cbd5e1; transition:all 0.2s;">
+                 O "esqueleto". Grande placa que conecta e permite comunicação entre todas as peças.
+               </div>
+
+               <div class="a6-dropzone" data-target="cooler" style="background:#0f172a; border: 2px dashed #475569; border-radius:8px; padding: 1rem; display:flex; align-items:center; min-height: 54px; color:#cbd5e1; transition:all 0.2s;">
+                 Resfria o processador e outras peças para evitar superaquecimento.
+               </div>
+
+            </div>
+
+          </div>
+          <div id="a6-sim-1-msg" style="margin-top: 1.5rem; color:#10b981; font-weight:bold; text-align:center; min-height:24px; font-size: 1.1rem;"></div>
+        </div>
+
+        <button id="btn-next-quiz1" class="btn btn-primary" onclick="a6SetSubStage('quiz')" style="margin-top:1rem; float:right;">Concluí a Prática! Avançar para as Questões Teóricas →</button>
+        <div style="clear:both;"></div>
+      </div>
+    `;
+
+    setTimeout(() => {
+       let partsPlaced = 0;
+       const items = document.querySelectorAll('.a6-drag-item');
+       const zones = document.querySelectorAll('.a6-dropzone');
+       
+       items.forEach(item => {
+           item.addEventListener('dragstart', (e) => {
+               e.dataTransfer.setData('text/plain', item.dataset.type);
+               item.style.opacity = '0.6';
+           });
+           item.addEventListener('dragend', (e) => {
+               if(item.getAttribute('draggable') === 'true') item.style.opacity = '1';
+           });
+       });
+
+       zones.forEach(zone => {
+           zone.addEventListener('dragover', (e) => e.preventDefault());
+           zone.addEventListener('drop', (e) => {
+               e.preventDefault();
+               const draggedType = e.dataTransfer.getData('text/plain');
+               if (draggedType === zone.dataset.target) {
+                   zone.style.borderColor = '#10b981';
+                   zone.style.background = 'rgba(16,185,129,0.15)';
+                   zone.style.color = '#10b981';
+                   
+                   const draggedEl = document.querySelector(`.a6-drag-item[data-type="${draggedType}"]`);
+                   if(draggedEl) {
+                       zone.innerHTML = '✅ ' + draggedEl.innerText + ' — ' + zone.innerText;
+                       draggedEl.style.visibility = 'hidden';
+                       draggedEl.setAttribute('draggable', 'false');
+                   }
+
+                   partsPlaced++;
+                   if(partsPlaced === 6) {
+                       document.getElementById('a6-sim-1-msg').innerText = '🎉 Excelente! Você associou todos os componentes corretamente!';
+                       document.getElementById('a6-sim-1').style.borderColor = '#10b981';
+                       document.getElementById('btn-next-quiz1').style.display = 'block';
+                   }
+               } else {
+                   document.getElementById('a6-sim-1-msg').innerText = '❌ Incorreto: A função não corresponde a este componente!';
+                   document.getElementById('a6-sim-1-msg').style.color = '#ef4444';
+                   zone.style.borderColor = '#ef4444';
+                   setTimeout(() => {
+                      zone.style.borderColor = '#475569';
+                      if(partsPlaced < 6) {
+                         document.getElementById('a6-sim-1-msg').innerText = '';
+                         document.getElementById('a6-sim-1-msg').style.color = '#10b981';
+                      }
+                   }, 1500);
+               }
+           });
+       });
+    }, 100);
+
+  } else {
+    // QUIZ
+    const qHtml = a6GenerateQuestions(1, [
+      { q: "Qual a função do Processador (CPU)?", opts: ["Armazenar fotos", "Processar os dados (Cérebro)", "Imprimir", "Resfriar"], ans: 1 },
+      { q: "Onde o sistema operacional fica instalado permanentemente?", opts: ["Na Memória RAM", "No Disco Rígido (HD/SSD)", "Na Placa Mãe", "Na Fonte"], ans: 1 },
+      { q: "O que a Memória RAM faz?", opts: ["Armazena arquivos pra sempre", "Memória de trabalho rápida temporária", "Toca som", "Conecta na internet"], ans: 1 },
+      { q: "A Placa-Mãe serve para:", opts: ["Conectar todas as peças", "Gerar energia", "Digitar textos", "Limpar vírus"], ans: 0 },
+      { q: "Qual é a vantagem do SSD sobre o HD?", opts: ["Mais barato", "Muito mais rápido e sem peças móveis", "Tem mais vírus", "É de papel"], ans: 1 },
+      { q: "O Cooler serve para:", opts: ["Aumentar memória", "Evitar superaquecimento", "Dar luz", "Mandar email"], ans: 1 },
+      { q: "Um pendrive é um tipo de:", opts: ["Memória volátil", "Armazenamento portátil", "Processador", "Navegador"], ans: 1 },
+      { q: "A fonte de alimentação (Power Supply):", opts: ["Dá internet", "Distribui energia elétrica adequada", "Guarda senhas", "Roda jogos"], ans: 1 }
+    ]);
+    container.innerHTML = `
+      <div class="a6-content-box">
+        <h3 style="color:#00B894;">Revisão: Componentes do Computador (Questões Teóricas)</h3>
+        ${qHtml}
+        <button class="btn btn-outline" onclick="a6SetSubStage('sim')" style="margin-top:1rem;">← Voltar à Prática</button>
+        <button class="btn btn-primary" onclick="a6SetStage(2)" style="margin-top:1rem; float:right;">Avançar para Etapa 2 (Word) →</button>
+        <div style="clear:both;"></div>
+      </div>
+    `;
+  }
+}
+
+// ==========================================
+// STAGE 2: WORD E PASTAS
+// ==========================================
+function renderA6Stage2(container) {
+  if (window.a6State.subStage === 'sim') {
+    container.innerHTML = `
+      <div class="a6-content-box">
+        <h3 style="color:#00B894;">O Grande Desafio Prático: Pacote Office & E-mail</h3>
+        <p style="color:var(--color-text-secondary); line-height: 1.6;">Chegou a hora de provar suas habilidades! Um profissional completo precisa dominar textos, planilhas e apresentações, e saber enviá-los corretamente.</p>
+        
+        <div class="a6-simulator-box" id="a6-sim-2" style="background:#f8fafc; padding: 2rem; border-left: 5px solid #2563eb; align-items: flex-start; text-align:left;">
+          <h4 style="color:#0f172a; margin-top: 0; font-size: 1.2rem;">💼 A Missão de Ouro</h4>
+          
+          <p style="color:#334155; margin-bottom: 1.5rem;">
+            Você está se candidatando para a sua vaga dos sonhos e a empresa pediu um teste prático. Siga os passos utilizando seu próprio computador:
+          </p>
+
+          <ol style="color:#334155; padding-left: 1.5rem; margin-bottom: 2rem; line-height: 1.8;">
+            <li>No <strong>Word</strong>: Crie o seu <strong>Currículo Profissional</strong>. Destaque seu nome em Negrito, organize sua experiência e salve como PDF.</li>
+            <li>No <strong>Excel</strong>: Crie uma <strong>Planilha de Orçamento</strong> (Gastos mensais) contendo a fórmula =SOMA() e um <strong>Gráfico</strong> visual. Salve a planilha.</li>
+            <li>No <strong>PowerPoint</strong>: Faça uma apresentação curta (2 a 3 slides) exibindo os resultados do seu gráfico de orçamento. Salve a apresentação.</li>
+            <li>No <strong>Simulador de E-mail</strong> abaixo: Preencha os campos como se fosse um e-mail real e anexe os 3 arquivos criados!</li>
+          </ol>
+
+          <!-- Simulador de Cliente de E-mail -->
+          <div style="background: white; padding: 1.5rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; box-sizing: border-box; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div style="display:flex; align-items:center; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
+               <span style="width:60px; font-weight:bold; color:#64748b;">Para:</span>
+               <input type="text" id="a6-email-to" placeholder="tutor@informestre.com.br" style="flex:1; border:none; outline:none; font-size:1rem;">
+            </div>
+            <div style="display:flex; align-items:center; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
+               <span style="width:60px; font-weight:bold; color:#64748b;">Assunto:</span>
+               <input type="text" id="a6-email-sub" placeholder="Teste Prático - [Seu Nome]" style="flex:1; border:none; outline:none; font-size:1rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+               <textarea id="a6-email-body" style="width:100%; height:120px; border:1px solid #cbd5e1; border-radius:4px; padding:0.5rem; outline:none; font-family:sans-serif;" placeholder="Prezado Tutor, segue em anexo os arquivos do desafio..."></textarea>
+            </div>
+            <div style="margin-bottom: 1rem; background:#f1f5f9; padding:1rem; border-radius:6px; border:1px dashed #94a3b8;">
+               <label style="font-weight:bold; color:#475569; display:block; margin-bottom:0.5rem;">📎 Anexar seus 3 arquivos (Currículo, Planilha, Slide):</label>
+               <input type="file" id="a6-email-files" multiple style="color:#334155;">
+               <p style="font-size:0.8rem; color:#64748b; margin-top:0.5rem;">Selecione os 3 arquivos de uma vez segurando o Ctrl, ou anexe um arquivo .ZIP.</p>
+            </div>
+            
+            <div style="text-align:right;">
+              <button onclick="a6SendMegaEmail()" style="background:#2563eb; color:white; border:none; padding:0.8rem 2rem; border-radius:6px; cursor:pointer; font-weight:bold; font-size:1rem;">📤 Enviar E-mail Completo</button>
+            </div>
+            <div id="a6-email-msg" style="margin-top: 1rem; color:#10b981; font-weight:bold; text-align:right;"></div>
+          </div>
+        </div>
+
+        <button id="btn-next-quiz2" class="btn btn-primary" onclick="a6SetSubStage('quiz')" style="margin-top:1rem; float:right;">Missão Cumprida! Avançar para o Grande Quiz do Office →</button>
+        <div style="clear:both;"></div>
+      </div>
+    `;
+
+    window.a6SendMegaEmail = function() {
+      const to = document.getElementById('a6-email-to').value.trim();
+      const sub = document.getElementById('a6-email-sub').value.trim();
+      const body = document.getElementById('a6-email-body').value.trim();
+      const files = document.getElementById('a6-email-files').files;
+
+      if(!to.includes('@')) { alert('Erro: Preencha o e-mail de destino corretamente.'); return; }
+      if(!sub) { alert('Erro: O campo Assunto é obrigatório!'); return; }
+      if(!body) { alert('Erro: Escreva um pequeno texto no corpo do e-mail.'); return; }
+      if(files.length === 0) { alert('Erro: Você esqueceu de anexar os arquivos da sua missão!'); return; }
+
+      document.getElementById('a6-email-msg').innerHTML = '✅ E-mail corporativo enviado com sucesso com ' + files.length + ' anexo(s)!';
+      document.getElementById('a6-sim-2').style.borderColor='#10b981';
+      document.getElementById('btn-next-quiz2').style.display = 'block';
+    }
+
+  } else {
+    // QUIZ MEGA OFFICE (12 questões abrangendo Word, Excel e PPT)
+    const qHtml = a6GenerateQuestions(2, [
+      { q: "Qual a extensão padrão de um documento de texto do Microsoft Word?", opts: [".mp3", ".jpg", ".docx", ".exe"], ans: 2 },
+      { q: "Para deixar o texto mais grosso e destacado no Word, usamos:", opts: ["Itálico", "Negrito", "Sublinhado", "Marcador"], ans: 1 },
+      { q: "Como selecionamos TODO o texto de uma vez rapidamente?", opts: ["Ctrl+T (ou Ctrl+A no inglês)", "Ctrl+S", "Esc", "Enter"], ans: 0 },
+      { q: "Qual atalho salva o documento rapidamente?", opts: ["Ctrl+B (ou Ctrl+S no inglês)", "Ctrl+A", "Alt+Tab", "F1"], ans: 0 },
+      
+      { q: "O Excel é usado principalmente para:", opts: ["Editar fotos", "Criar planilhas, cálculos e tabelas", "Assistir filmes", "Criar sites"], ans: 1 },
+      { q: "Como iniciamos uma fórmula de cálculo no Excel?", opts: ["Com o sinal de %", "Com a letra X", "Com o sinal de = (Igual)", "Com a palavra CALC"], ans: 2 },
+      { q: "Para somar valores da célula A1 até A5, a fórmula correta é:", opts: ["=SOMA(A1:A5)", "A1+A5", "SOMA A1,A5", "=A1*A5"], ans: 0 },
+      
+      { q: "O Microsoft PowerPoint é focado em:", opts: ["Editar áudio", "Criar apresentações de slides", "Navegar na internet", "Programar sistemas"], ans: 1 },
+      { q: "O que é uma 'Transição' no PowerPoint?", opts: ["O modo de fechar o programa", "O efeito visual ao passar de um slide para o outro", "A cor do texto", "Um tipo de vírus"], ans: 1 },
+      { q: "Para iniciar a Apresentação de Slides do começo, qual tecla é padrão?", opts: ["F5", "Enter", "Espaço", "Esc"], ans: 0 },
+      
+      { q: "Como cancelar uma ação que você fez errado (Desfazer) em qualquer programa do Office?", opts: ["Ctrl+Z", "Ctrl+X", "Ctrl+P", "Desligar o computador"], ans: 0 },
+      { q: "Qual a grande vantagem de exportar seus documentos (Word/Excel/PPT) para PDF antes de enviá-los?", opts: ["Gasta mais espaço", "Ele se transforma num vídeo animado", "Trava o layout para que não desconfigure no computador de outra pessoa", "Ele se autodeleta depois"], ans: 2 }
+    ]);
+    container.innerHTML = `
+      <div class="a6-content-box">
+        <h3 style="color:#00B894;">Revisão: Pacote Office Corporativo (Word, Excel, PPT)</h3>
+        ${qHtml}
+        <button class="btn btn-outline" onclick="a6SetSubStage('sim')" style="margin-top:1rem;">← Voltar à Prática</button>
+        <div style="text-align:center; margin-top:2rem;"><button class="btn btn-primary" onclick="renderA6Certificate(document.getElementById('a6-stage-content'))" style="font-size:1.2rem; padding:1rem 2rem;">🏆 Finalizar Curso e Resgatar Certificado 🏆</button></div>
+        <div style="clear:both;"></div>
+      </div>
+    `;
+  }
+}
+
+// ==========================================
+// STAGE 4: GOLPES DIGITAIS (SEGURANÇA)
+// ==========================================
+function renderA6Stage4(container) {
+  if (window.a6State.subStage === 'sim') {
+    const cases = [
+      { text: "E-mail do 'banco' pedindo para você clicar num link urgente e confirmar sua senha do cartão.", isGolpe: true },
+      { text: "Mensagem no WhatsApp de número desconhecido com foto do seu filho pedindo Pix emergencial.", isGolpe: true },
+      { text: "Acessar o site do seu banco digitando o endereço com HTTPS e cadeado verde na barra do navegador.", isGolpe: false },
+      { text: "Promoção de iPhone por R$ 200 reais no Instagram que leva para um site estranho sem cadeado.", isGolpe: true },
+      { text: "Você atende o telefone e uma gravação diz que seu CPF foi bloqueado. Digite 1 para falar com atendente.", isGolpe: true },
+      { text: "Comprar em uma loja oficial famosa, que você mesmo procurou no Google e verificou os comentários.", isGolpe: false },
+      { text: "Baixar um filme de um site cheio de botões falsos de 'Download' piscando.", isGolpe: true },
+      { text: "Você recebe um arquivo .exe no email de um 'advogado' dizendo ser um processo contra você.", isGolpe: true }
+    ];
+
+    let casesHtml = cases.map((c, idx) => `
+      <div style="background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:1rem; margin-bottom:1rem; box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+        <p style="margin:0 0 1rem; font-weight:500; color:#334155;">${idx+1}. ${c.text}</p>
+        <div style="display:flex; gap:1rem;">
+          <button onclick="a6CheckGolpe(${idx}, true, ${c.isGolpe})" style="padding:0.6rem 1rem; border-radius:6px; cursor:pointer; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; font-weight:bold;">🚨 É GOLPE!</button>
+          <button onclick="a6CheckGolpe(${idx}, false, ${c.isGolpe})" style="padding:0.6rem 1rem; border-radius:6px; cursor:pointer; background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;">✅ É SEGURO!</button>
+        </div>
+        <p id="a6-res-golpe-${idx}" style="margin:0.5rem 0 0; font-weight:bold;"></p>
+      </div>
+    `).join('');
+
+    container.innerHTML = `
+      <div class="a6-content-box">
+        <h3 style="color:#00B894;">Desafio Final: Segurança e Golpes Digitais (Prática)</h3>
+        <p style="color:var(--color-text-secondary); line-height: 1.6;">Saber usar o computador é ótimo, mas saber usá-lo com segurança é vital. Identifique abaixo quais situações são tentativas de golpe cibernético e quais são práticas seguras.</p>
+        
+        <div class="a6-simulator-box" style="background:#f8fafc; padding: 1.5rem; display:block;">
+          <h4 style="margin-bottom: 1rem; color:#0f172a;">Teste de Percepção: Identifique as 8 situações</h4>
+          ${casesHtml}
+        </div>
+
+        <button class="btn btn-primary" onclick="a6SetSubStage('quiz')" style="margin-top:1rem; float:right;">Concluí a Prática! Avançar para as Questões Teóricas →</button>
+        <div style="clear:both;"></div>
+      </div>
+    `;
+
+    window.a6CheckGolpe = function(idx, userAns, correctAns) {
+      const el = document.getElementById('a6-res-golpe-'+idx);
+      if (userAns === correctAns) {
+        el.innerText = 'CORRETO! Você acertou a identificação.';
+        el.style.color = '#10b981';
+      } else {
+        el.innerText = 'INCORRETO! Tenha cuidado na internet!';
+        el.style.color = '#dc2626';
+      }
+    }
+  } else {
+    const qHtml = a6GenerateQuestions(4, [
+      { q: "Qual a melhor forma de criar uma senha segura?", opts: ["Usar a data de nascimento", "Misturar letras, números e símbolos", "Usar '123456'", "Usar o próprio nome"], ans: 1 },
+      { q: "O que é Phishing?", opts: ["Um tipo de peixe", "Um email falso tentando roubar seus dados fingindo ser oficial", "Um antivírus", "Um jogo online"], ans: 1 },
+      { q: "Por que você NUNCA deve baixar anexos suspeitos de desconhecidos?", opts: ["Porque ocupa espaço no HD", "Porque podem conter vírus ou Ransomware", "Porque a internet vai cair", "Porque é ilegal"], ans: 1 },
+      { q: "O que indica que um site pode ser seguro na barra de endereço?", opts: ["Um cadeado fechado (HTTPS)", "A cor vermelha", "Muitas propagandas piscando", "Não ter www"], ans: 0 },
+      { q: "O que é a Autenticação em Duas Etapas (2FA)?", opts: ["Digitar a senha duas vezes", "Ter dois teclados", "Exigir uma segunda confirmação (SMS, App) além da senha", "Dividir a senha com um amigo"], ans: 2 },
+      { q: "O que fazer se um 'banco' te ligar pedindo a senha do cartão?", opts: ["Falar a senha rápido", "Desligar na hora, pois banco não pede senha", "Anotar num papel para o atendente", "Dar apenas os 3 números de trás"], ans: 1 },
+      { q: "Um amigo mandou no WhatsApp: 'Me empresta R$500 urgente no Pix'. O que fazer?", opts: ["Mandar imediatamente", "Ligar para o amigo e confirmar se é ele mesmo", "Bloquear o amigo para sempre", "Pedir dinheiro em troca"], ans: 1 },
+      { q: "Seu PC está muito lento de repente e abrindo pop-ups sozinho. O que pode ser?", opts: ["Excesso de RAM", "HD queimado", "Infecção por vírus/malware", "Falta de bateria"], ans: 2 }
+    ]);
+    container.innerHTML = `
+      <div class="a6-content-box">
+        <h3 style="color:#00B894;">Revisão: Segurança e Golpes Digitais (Questões Teóricas)</h3>
+        ${qHtml}
+        <button class="btn btn-outline" onclick="a6SetSubStage('sim')" style="margin-top:1rem;">← Voltar à Prática</button>
+        <div style="text-align:center; margin-top:2rem;">
+          <button class="btn btn-primary" onclick="a6SetStage(4)" style="margin-top:1rem; float:right;">Avançar para Etapa Final (O Desafio) →</button><div style="clear:both;"></div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+
+// ==========================================
+// STAGE 5: INTERNET & NUVEM
+// ==========================================
+function renderA6Stage5(container) {
+  if (window.a6State.subStage === 'sim') {
+    container.innerHTML = `
+      <div class="a6-content-box">
+        <h3 style="color:#00B894;">Revisão: Internet, Redes e Nuvem (Prática)</h3>
+        <p style="color:var(--color-text-secondary); line-height: 1.6;">A internet é o que conecta nossos computadores ao mundo. Saber diferenciar um Navegador, um Buscador e um Serviço de Nuvem é essencial.</p>
+        
+        <div class="a6-simulator-box" id="a6-sim-5" style="background:#f8fafc; padding: 2rem; border-left: 5px solid #8b5cf6; text-align:left;">
+          <h4 style="color:#0f172a; margin-top: 0; font-size: 1.2rem;">🌐 Missão: Categorizando o Mundo Digital</h4>
+          <p style="color:#334155; margin-bottom: 1.5rem;">Clique em cada serviço e escolha a qual categoria ele pertence. (Acerte os 5 para avançar)</p>
+
+          <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 600px; margin: 0 auto;">
+            ${renderInternetDropdown('Google Chrome', 'Navegador Web')}
+            ${renderInternetDropdown('Google Drive', 'Armazenamento em Nuvem')}
+            ${renderInternetDropdown('Wi-Fi', 'Conexão Sem Fio (Rede)')}
+            ${renderInternetDropdown('Google.com', 'Buscador de Pesquisa')}
+            ${renderInternetDropdown('Netflix', 'Serviço de Streaming (Nuvem)')}
+          </div>
+
+          <div id="a6-sim-5-msg" style="margin-top: 1.5rem; color:#10b981; font-weight:bold; text-align:center; min-height:24px; font-size: 1.1rem;"></div>
+        </div>
+
+        <button id="btn-next-quiz5" class="btn btn-primary" onclick="a6SetSubStage('quiz')" style="margin-top:1rem; float:right;">Concluí a Prática! Avançar para as Questões Teóricas →</button>
+        <div style="clear:both;"></div>
+      </div>
+    `;
+
+    window.a6CheckInternet = function() {
+      const selects = document.querySelectorAll('.a6-net-select');
+      let correct = 0;
+      selects.forEach(s => {
+        if(s.value === s.dataset.ans) {
+          s.style.borderColor = '#10b981';
+          s.style.backgroundColor = '#dcfce7';
+          correct++;
+        } else if(s.value !== '') {
+          s.style.borderColor = '#ef4444';
+          s.style.backgroundColor = '#fee2e2';
+        } else {
+          s.style.borderColor = '#cbd5e1';
+          s.style.backgroundColor = '#fff';
+        }
+      });
+
+      if(correct === 5) {
+        document.getElementById('a6-sim-5-msg').innerText = '🎉 Excelente! Você entende os diferentes serviços da Internet!';
+        document.getElementById('btn-next-quiz5').style.display = 'block';
+        document.getElementById('a6-sim-5').style.borderColor = '#10b981';
+      } else {
+        document.getElementById('btn-next-quiz5').style.display = 'none';
+      }
+    };
+
+  } else {
+    // QUIZ
+    const qHtml = a6GenerateQuestions(5, [
+      { q: "O que é um Navegador (Browser)?", opts: ["O cabo que dá internet", "Um programa usado para acessar e visualizar sites (Ex: Chrome, Edge)", "Um antivírus", "O teclado do PC"], ans: 1 },
+      { q: "O que significa salvar um arquivo 'Na Nuvem'?", opts: ["Imprimir o arquivo num papel", "Salvar em servidores seguros online (na internet), como Google Drive", "Apagar o arquivo para sempre", "Salvar dentro do pendrive do computador"], ans: 1 },
+      { q: "Qual a diferença entre o Wi-Fi e os Dados Móveis (4G/5G)?", opts: ["O Wi-Fi só funciona no celular", "O Wi-Fi transmite a rede de um roteador local fixo, já o 4G/5G vem de torres de celular e gasta franquia", "Os dois são a mesma coisa", "O 4G usa cabos e o Wi-Fi não"], ans: 1 },
+      { q: "Qual o tamanho máximo de arquivo que costuma caber em um anexo de E-mail comum (como Gmail)?", opts: ["25 Megabytes (MB)", "100 Gigabytes (GB)", "Ilimitado", "Apenas 1 Megabyte"], ans: 0 },
+      { q: "Como devemos enviar arquivos muito pesados (como um vídeo de 2 Gigabytes)?", opts: ["Por e-mail comum", "Comprimindo num disquete", "Fazendo upload para a Nuvem (Ex: OneDrive/WeTransfer) e mandando o link", "Pelo correio normal (Sedex)"], ans: 2 },
+      { q: "Para que serve um Buscador (ex: Google, Bing)?", opts: ["Para baixar vírus de propósito", "Para jogar video game", "Para rastrear arquivos no HD", "Para pesquisar informações, sites, imagens e notícias em toda a internet"], ans: 3 },
+      { q: "O que significa 'Fazer o Download' de um arquivo?", opts: ["Apagar o arquivo da internet", "Copiar um arquivo da internet (nuvem) para o seu computador/celular", "Copiar um arquivo do seu PC para a internet", "Assistir um filme sem baixar"], ans: 1 },
+      { q: "O que é mais seguro ao usar um Wi-Fi Público (ex: em um shopping ou praça)?", opts: ["Acessar o app do Banco e pagar contas", "Evitar acessar dados confidenciais ou inserir senhas importantes", "Mandar senhas no WhatsApp", "Baixar qualquer arquivo"], ans: 1 }
+    ]);
+    container.innerHTML = `
+      <div class="a6-content-box">
+        <h3 style="color:#00B894;">Revisão: Internet, Nuvem e Segurança Básica (Questões Teóricas)</h3>
+        ${qHtml}
+        <button class="btn btn-outline" onclick="a6SetSubStage('sim')" style="margin-top:1rem;">← Voltar à Prática</button>
+        <div style="text-align:center; margin-top:3rem;">
+          <button class="btn btn-primary" a6SetStage(3) style="font-size:1.2rem; padding:1rem 2rem;">Avançar para Etapa 3 (Segurança e Golpes) →</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function renderInternetDropdown(label, answer) {
+  const opts = [
+    'Buscador de Pesquisa',
+    'Armazenamento em Nuvem',
+    'Navegador Web',
+    'Conexão Sem Fio (Rede)',
+    'Serviço de Streaming (Nuvem)'
+  ].map(o => `<option value="${o}">${o}</option>`).join('');
+  
+  return `
+    <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:1rem; border:1px solid #cbd5e1; border-radius:8px;">
+      <strong style="color:#334155;">${label}</strong>
+      <select class="a6-net-select" data-ans="${answer}" onchange="a6CheckInternet()" style="padding:0.5rem; border-radius:6px; border:1px solid #cbd5e1; outline:none; font-weight:bold; color:#475569;">
+        <option value="">Selecione a Categoria...</option>
+        ${opts}
+      </select>
+    </div>
+  `;
+}
+
+
+// ==========================================
+// STAGE: CERTIFICADO FINAL
+// ==========================================
+window.renderA6Certificate = function(container) {
+  // Ocultar o stepper para dar destaque total
+  const stepper = document.querySelector('.a6-stepper');
+  if(stepper) stepper.style.display = 'none';
+
+  container.innerHTML = `
+    <div style="animation: fadeIn 1s ease; text-align:center; padding: 2rem 0;">
+      <h1 style="font-size: 3rem; margin-bottom: 0; color: #f59e0b; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">🎉 PARABÉNS! 🎉</h1>
+      <h2 style="color: var(--color-text-primary); margin-top: 0.5rem; font-size: 1.8rem;">Você é oficialmente um Mestre da Informática!</h2>
+      
+      <p style="max-width: 600px; margin: 1.5rem auto 2.5rem; color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.6;">
+        Toda grande jornada começa com um pequeno clique. Você desbravou o mundo do hardware, dominou os mistérios do sistema operacional, criou documentos incríveis e aprendeu a se proteger na selva digital da internet.
+        <br><br>
+        <strong>O mundo digital agora é seu!</strong>
+      </p>
+
+      <!-- CERTIFICADO CSS -->
+      <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border: 8px double #d97706; border-radius: 16px; padding: 3rem; max-width: 800px; margin: 0 auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3); position: relative; overflow: hidden;">
+        
+        <!-- Fundo decorativo -->
+        <div style="position: absolute; top: -50px; left: -50px; width: 200px; height: 200px; background: rgba(245,158,11,0.1); border-radius: 50%; filter: blur(20px);"></div>
+        <div style="position: absolute; bottom: -50px; right: -50px; width: 300px; height: 300px; background: rgba(16,185,129,0.1); border-radius: 50%; filter: blur(30px);"></div>
+
+        <div style="position: relative; z-index: 1;">
+          <h3 style="color: #f59e0b; font-family: 'Georgia', serif; font-size: 2.5rem; margin: 0; text-transform: uppercase; letter-spacing: 2px;">Certificado de Conclusão</h3>
+          <p style="color: #94a3b8; font-size: 1.2rem; margin-top: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Curso de Informática Básica</p>
+          
+          <div style="margin: 2.5rem 0;">
+            <p style="color: #cbd5e1; font-size: 1.1rem; margin-bottom: 0.5rem;">Certificamos que</p>
+            <h2 style="color: #fff; font-size: 2.2rem; margin: 0; border-bottom: 2px solid #475569; display: inline-block; padding: 0 2rem 0.5rem;">${window.currentUserProfile && window.currentUserProfile.full_name ? window.currentUserProfile.full_name : 'Aluno(a) de Destaque'}</h2>
+            <p style="color: #cbd5e1; font-size: 1.1rem; margin-top: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+              Concluiu com êxito todas as etapas de aprendizado, simulações práticas e avaliações de conhecimento, adquirindo as seguintes competências:
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left; max-width: 600px; margin: 0 auto 3rem; background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="color: #e2e8f0;"><span style="color:#10b981; margin-right:8px;">✔</span> Arquitetura e Hardware</div>
+            <div style="color: #e2e8f0;"><span style="color:#10b981; margin-right:8px;">✔</span> Sistema Windows e Pastas</div>
+            <div style="color: #e2e8f0;"><span style="color:#10b981; margin-right:8px;">✔</span> Internet, Nuvem e E-mail</div>
+            <div style="color: #e2e8f0;"><span style="color:#10b981; margin-right:8px;">✔</span> Segurança e Golpes Digitais</div>
+            <div style="color: #e2e8f0; grid-column: span 2; text-align:center; margin-top:0.5rem;"><span style="color:#10b981; margin-right:8px;">✔</span> Pacote Office (Word, Excel, PowerPoint)</div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 2rem;">
+            <div style="text-align: center;">
+              <div style="width: 150px; border-bottom: 1px solid #64748b; margin-bottom: 0.5rem; color:#e2e8f0; font-weight:bold; padding-bottom:5px;">${window.schoolProfile && window.schoolProfile.name ? window.schoolProfile.name : 'InforMestre Escolas'}</div>
+              <span style="color: #94a3b8; font-size: 0.9rem;">Instituição de Ensino</span>
+            </div>
+            
+            <div style="width: 80px; height: 80px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px dashed #fff; color: #fff; font-size: 2rem; transform: rotate(-15deg); box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+              🏆
+            </div>
+
+            <div style="text-align: center;">
+              <div style="width: 150px; border-bottom: 1px solid #64748b; margin-bottom: 0.5rem; color:#e2e8f0; font-family:monospace;">${new Date().toLocaleDateString('pt-BR')}</div>
+              <span style="color: #94a3b8; font-size: 0.9rem;">Data de Conclusão</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
+      <div style="margin-top: 3rem;">
+        <button class="btn btn-primary" onclick="window.InforMestreModule3.switchLessonTab('mission')" style="font-size: 1.2rem; padding: 1rem 2.5rem; background: #10b981; border: none; cursor: pointer; color: white; font-weight: bold; border-radius: 8px;">
+          Voltar para a Plataforma e Coletar Recompensas
+        </button>
+      </div>
+
+    </div>
+  `;
+};
+// Helper to generate multiple choice
+function a6GenerateQuestions(stageId, qArray) {
+  let html = '';
+  qArray.forEach((item, qIdx) => {
+    let optsHtml = item.opts.map((o, oIdx) => `
+      <div class="a6-option" id="a6-opt-${stageId}-${qIdx}-${oIdx}" onclick="a6SelectOpt(${stageId}, ${qIdx}, ${oIdx}, ${item.ans})">${o}</div>
+    `).join('');
+    
+    html += `
+      <div class="a6-question">
+        <p style="font-weight:bold; color:var(--color-text-primary); margin-bottom:1rem;">${qIdx+1}. ${item.q}</p>
+        ${optsHtml}
+        <p id="a6-feed-${stageId}-${qIdx}" style="margin-top:0.5rem; font-weight:bold;"></p>
+      </div>
+    `;
+  });
+  return html;
+}
+
+window.a6SelectOpt = function(stageId, qIdx, oIdx, correctIdx) {
+  for(let i=0; i<4; i++) {
+    const el = document.getElementById(`a6-opt-${stageId}-${qIdx}-${i}`);
+    if(el) {
+      el.classList.remove('selected');
+      el.style.borderColor = 'var(--color-border)';
+    }
+  }
+  const sel = document.getElementById(`a6-opt-${stageId}-${qIdx}-${oIdx}`);
+  if(sel) sel.classList.add('selected');
+
+  const feed = document.getElementById(`a6-feed-${stageId}-${qIdx}`);
+  if (oIdx === correctIdx) {
+    feed.innerText = 'Resposta Certa! 🎉';
+    feed.style.color = '#10b981';
+    sel.style.borderColor = '#10b981';
+  } else {
+    feed.innerText = 'Incorreto! Tente de novo.';
+    feed.style.color = '#ef4444';
+    sel.style.borderColor = '#ef4444';
+  }
+}
